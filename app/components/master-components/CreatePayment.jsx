@@ -1,15 +1,32 @@
 "use client"
-import React from "react";
+import React, { useState } from "react";
 import {Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure} from "@nextui-org/react";
-import { MdAdd } from 'react-icons/md';
+import { MdAdd, MdRemove } from 'react-icons/md';
+import {Listbox, ListboxItem, Input} from "@nextui-org/react";
 
 export default function CreatePayment() {
   const {isOpen, onOpen, onClose} = useDisclosure();
 
+  const [paymentOptions, setPaymentOptions] = useState([]);
   const handleOpen = () => {
     onOpen();
   }
-
+  const [optionInput, setInput] = useState('')
+  const handleChange = (event) => {
+    setInput(event.target.value)
+  }
+  const addOption = () =>{
+    if (optionInput.trim() !== '') { 
+      setPaymentOptions((prevOptions) => [...prevOptions, optionInput]); 
+      setInput(''); 
+    }
+  }
+  
+  const removeOption = (optionToRemove) => {
+    setPaymentOptions((prevOptions) =>
+      prevOptions.filter(option => option !== optionToRemove) // Filter out the option to remove
+    );
+  };
   return (
     <>
       <div class="p-md">
@@ -26,7 +43,7 @@ export default function CreatePayment() {
             </div>
         </div>
         <Modal 
-            size="2xl"
+            size="md"
             isOpen={isOpen} 
             onClose={onClose} 
         >
@@ -35,21 +52,39 @@ export default function CreatePayment() {
                 <>
                 <ModalHeader className="flex flex-col gap-1">Modal Title</ModalHeader>
                 <ModalBody>
-                    <p> 
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                    Nullam pulvinar risus non risus hendrerit venenatis.
-                    Pellentesque sit amet hendrerit risus, sed porttitor quam.
-                    </p>
-                    <p>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                    Nullam pulvinar risus non risus hendrerit venenatis.
-                    Pellentesque sit amet hendrerit risus, sed porttitor quam.
-                    </p>
-                    <p>
-                    Magna exercitation reprehenderit magna aute tempor cupidatat consequat elit
-                    dolor adipisicing. Mollit dolor eiusmod sunt ex incididunt cillum quis. 
-                    Velit duis sit officia eiusmod Lorem aliqua enim laboris do dolor eiusmod. 
-                    </p>
+                    <div>
+                      <span>Payment Method</span>
+                      <div>
+                        <span>Options</span>
+                        <div>
+                          <Listbox
+                            aria-label="User Menu"
+                            className="p-0 gap-0 divide-y divide-default-300/50 dark:divide-default-100/80 bg-content1 max-w-[300px] overflow-visible shadow-small rounded-medium"
+                            itemClasses={{
+                              base: "px-3 first:rounded-t-medium last:rounded-b-medium rounded-none gap-3 h-12 data-[hover=true]:bg-default-100/80",
+                            }}
+                          >
+                            {paymentOptions.map((option) => (
+                              <ListboxItem
+                                key={option}
+                                endContent={
+                                  <Button color="red" variant="light" className="rounded-full" onPress={removeOption(option)}>
+                                    <MdRemove/>
+                                  </Button>
+                                  }
+                              >
+                                {option}
+                              </ListboxItem>
+
+                            ))}
+                          </Listbox>
+                          <div className="flex items-center gap-5 py-3">
+                            <Input label="add option" value={optionInput} onChange={handleChange}/>
+                            <Button color="primary" onPress={addOption}><MdAdd/></Button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                 </ModalBody>
                 <ModalFooter>
                     <Button color="danger" variant="light" onPress={onClose}>
