@@ -1,7 +1,9 @@
 "use client"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { BiHome } from "react-icons/bi";
+import { IoHome } from "react-icons/io5";
+import { FaChartBar, FaUsers } from "react-icons/fa";
+import { IoBarChartSharp, IoSettingsSharp } from "react-icons/io5";
 import {Card, CardHeader, CardBody, Image} from "@nextui-org/react";
 
 export default function Aside (){
@@ -25,7 +27,7 @@ export default function Aside (){
                 href="/pages/admin"
                 className={`flex items-center gap-3 rounded-lg px-3 py-2 text-white transition-all hover:text-blue-200 text-md ${pathname === '/pages/admin'? 'bg-blue-400 text-white' : ''}`}
               >
-                <BiHome className="h-4 w-4" />
+                <IoHome className="h-4 w-4" />
                 Dashboard
               </Link>
               {/* <Accordion type="single" collapsible>
@@ -42,7 +44,7 @@ export default function Aside (){
                 href="/pages/admin/sales"
                 className={`flex items-center gap-3 rounded-lg px-3 py-2 text-white transition-all hover:text-blue-200 text-md ${pathname === '/pages/admin/sales'? 'bg-blue-400 text-white' : ''}`}
               >
-                {/* <ShoppingCart className="h-4 w-4" /> */}
+                <FaChartBar className="h-4 w-4" />
                 Sales
                 {/* <Badge className="ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-full">
                   8
@@ -52,21 +54,21 @@ export default function Aside (){
                 href="/pages/admin/expenses"
                 className={`flex items-center gap-3 rounded-lg px-3 py-2 text-white transition-all hover:text-blue-200 text-md ${pathname === '/pages/admin/expenses'? 'bg-blue-400 text-white' : ''}`}
               >
-                {/* <Package className="h-4 w-4" /> */}
+                <IoBarChartSharp className="h-4 w-4" />
                 Expenses
               </Link>
               <Link
                 href="/pages/admin/accounts"
                 className={`flex items-center gap-3 rounded-lg px-3 py-2 text-white transition-all hover:text-blue-200 text-md ${pathname === '/pages/admin/accounts'? 'bg-blue-400 text-white' : ''}`}
               >
-                {/* <Users className="h-4 w-4" /> */}
+                <FaUsers className="h-4 w-4" />
                 Accounts
               </Link>
               <Link
                 href="/pages/admin/settings"
                 className={`flex items-center gap-3 rounded-lg px-3 py-2 text-white transition-all hover:text-blue-200 text-md ${pathname === '/pages/admin/settings'? 'bg-blue-400 text-white' : ''}`}
               >
-                {/* <Settings className="h-4 w-4" /> */}
+                <IoSettingsSharp className="h-4 w-4" />
                 Setting
               </Link>
               <Link

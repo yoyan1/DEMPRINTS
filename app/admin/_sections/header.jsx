@@ -1,13 +1,13 @@
 "use client"
-import Link from "next/link"
+// import Link from "next/link"
 import {Input} from '@nextui-org/react'
-import { usePathname } from "next/navigation"
+// import { usePathname } from "next/navigation"
 import { BiSearch } from "react-icons/bi";
 import DropdownComponent from '@/app/components/adminComponents/dropdown/headerDropDown'
 
 
 export default function Header (){
-  const pathname = usePathname
+//   const pathname = usePathname
 
     return(
         <header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-4 lg:h-[60px] lg:px-6 bg-gradient-to-r from-blue-400 to-blue-950">

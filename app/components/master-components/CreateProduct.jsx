@@ -2,7 +2,7 @@
 import React from "react";
 import {Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure} from "@nextui-org/react";
 import { MdAdd } from 'react-icons/md';
-import { Input } from "@nextui-org/react";
+// import { Input } from "@nextui-org/react";
 
 export default function CreateProduct() {
   const {isOpen, onOpen, onClose} = useDisclosure();
