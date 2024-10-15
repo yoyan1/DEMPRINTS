@@ -1,9 +1,9 @@
 "use client"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { IoHome } from "react-icons/io5";
-import { FaChartBar, FaUsers } from "react-icons/fa";
-import { IoBarChartSharp, IoSettingsSharp } from "react-icons/io5";
+import { FaShoppingCart, FaUsers } from "react-icons/fa";
+import { IoIosGrid } from 'react-icons/io';
+import { IoSettingsSharp } from "react-icons/io5";
 import {Card, CardHeader, CardBody, Image} from "@nextui-org/react";
 
 export default function Aside (){
@@ -24,59 +24,37 @@ export default function Aside (){
           <div className="flex-1">
             <nav className="grid items-start px-2 text-sm font-medium lg:px-4">
               <Link
-                href="/pages/admin"
-                className={`flex items-center gap-3 rounded-lg px-3 py-2 text-white transition-all hover:text-blue-200 text-md ${pathname === '/pages/admin'? 'bg-blue-400 text-white' : ''}`}
+                href="/admin"
+                className={`flex  items-center gap-3 rounded-lg px-3 py-2 text-white transition-all hover:text-blue-200 text-md ${pathname === '/admin'? 'bg-blue-400 text-white' : ''}`}
               >
-                <IoHome className="h-4 w-4" />
+                <IoIosGrid className="h-4 w-4" />
                 Dashboard
               </Link>
-              {/* <Accordion type="single" collapsible>
-                <AccordionItem value="item-1">
-                  <AccordionTrigger>Is it accessible?</AccordionTrigger>
-                  <AccordionContent>
-                    Yes. It adheres to the WAI-ARIA design pattern.
-                  </AccordionContent>
-                </AccordionItem>
-              </Accordion> */}
 
 
               <Link
-                href="/pages/admin/sales"
-                className={`flex items-center gap-3 rounded-lg px-3 py-2 text-white transition-all hover:text-blue-200 text-md ${pathname === '/pages/admin/sales'? 'bg-blue-400 text-white' : ''}`}
+                href="/admin/sales"
+                className={`flex items-center gap-3 rounded-lg px-3 py-2 text-white transition-all hover:text-blue-200 text-md ${pathname === '/admin/sales'? 'bg-blue-400 text-white' : ''}`}
               >
-                <FaChartBar className="h-4 w-4" />
+                <FaShoppingCart className="h-4 w-4" />
                 Sales
                 {/* <Badge className="ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-full">
                   8
                 </Badge> */}
               </Link>
               <Link
-                href="/pages/admin/expenses"
-                className={`flex items-center gap-3 rounded-lg px-3 py-2 text-white transition-all hover:text-blue-200 text-md ${pathname === '/pages/admin/expenses'? 'bg-blue-400 text-white' : ''}`}
-              >
-                <IoBarChartSharp className="h-4 w-4" />
-                Expenses
-              </Link>
-              <Link
-                href="/pages/admin/accounts"
-                className={`flex items-center gap-3 rounded-lg px-3 py-2 text-white transition-all hover:text-blue-200 text-md ${pathname === '/pages/admin/accounts'? 'bg-blue-400 text-white' : ''}`}
+                href="/admin/employee-accounts"
+                className={`flex items-center gap-3 rounded-lg px-3 py-2 text-white transition-all hover:text-blue-200 text-md ${pathname === '/admin/employee-accounts'? 'bg-blue-400 text-white' : ''}`}
               >
                 <FaUsers className="h-4 w-4" />
                 Accounts
               </Link>
               <Link
-                href="/pages/admin/settings"
+                href="/admin/settings"
                 className={`flex items-center gap-3 rounded-lg px-3 py-2 text-white transition-all hover:text-blue-200 text-md ${pathname === '/pages/admin/settings'? 'bg-blue-400 text-white' : ''}`}
               >
                 <IoSettingsSharp className="h-4 w-4" />
                 Setting
-              </Link>
-              <Link
-                href="/pages/admin/test"
-                className={`flex items-center gap-3 rounded-lg px-3 py-2 text-white transition-all hover:text-blue-200 text-md ${pathname === '/pages/admin/test'? 'bg-blue-400 text-white' : ''}`}
-              >
-                {/* <TestTube className="h-4 w-4" /> */}
-                Test
               </Link>
             </nav>
           </div>

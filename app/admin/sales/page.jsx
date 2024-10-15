@@ -1,12 +1,10 @@
 "use client";
 import React from 'react'
-import AdminLayout from './layout/layout'
+import AdminLayout from '../layout/layout'
 import {Tabs, Tab, Card, CardBody} from "@nextui-org/react";
-import { FaChartLine } from "react-icons/fa";
-import { MdCandlestickChart } from "react-icons/md";
-import { FaChartArea } from "react-icons/fa6";
+import { FaFileAlt, FaPrint, FaFileExport, FaChartBar } from 'react-icons/fa';
 
-export default function Dashboard() {
+export default function sales() {
   return (
     <AdminLayout>
       <main className="flex flex-1 flex-col gap-4 m-4 lg:gap-6 lg:m-6 bg-white">
@@ -15,7 +13,7 @@ export default function Dashboard() {
             <Tabs aria-label="Options" color="primary">
               <Tab key="summary" title={
                 <div className="flex items-center space-x-2">
-                  <FaChartLine/>
+                  <FaFileAlt/>
                   <span>Summary</span>
                 </div>
               }>
@@ -29,8 +27,8 @@ export default function Dashboard() {
               </Tab>
               <Tab key="expenses" title={
                 <div className="flex items-center space-x-2">
-                  <MdCandlestickChart/>
-                  <span>Expenses</span>
+                  <FaPrint/>
+                  <span>Transaction</span>
                 </div>
               }>
                 <Card>
@@ -41,10 +39,23 @@ export default function Dashboard() {
                   </CardBody>
                 </Card>
               </Tab>
-              <Tab key="analysis" title={
+              <Tab key="print" title={
                 <div className="flex items-center space-x-2">
-                  <FaChartArea/>
-                  <span>Analysis</span>
+                  <FaFileExport/>
+                  <span>Printing and Exporting</span>
+                </div>
+              }>
+                <Card>
+                  <CardBody>
+                    Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt
+                    mollit anim id est laborum.
+                  </CardBody>
+                </Card>
+              </Tab>
+              <Tab key="create" title={
+                <div className="flex items-center space-x-2">
+                  <FaChartBar/>
+                  <span>Create Order</span>
                 </div>
               }>
                 <Card>
