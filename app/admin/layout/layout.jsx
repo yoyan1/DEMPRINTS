@@ -6,7 +6,7 @@ import Header from '../_sections/header.jsx'
 export default function AdminLayout({children}) {
   return (
     <div>
-      <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr] bg-slate-100">
+      <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
         <Aside/>
         <div className="flex flex-col">
             <Header/>
