@@ -1,6 +1,5 @@
 "use client"
-import React from "react";
-import AdminLayout from '../layout/layout'
+import React, {useState, useMemo} from "react";
 import {
   Table,
   TableHeader,
@@ -15,71 +14,82 @@ import {
   DropdownMenu,
   DropdownItem,
   Chip,
-  User,
   Pagination,
 } from "@nextui-org/react";
 import { FaPlus } from "react-icons/fa6";
 import { HiDotsVertical } from "react-icons/hi";
 import { CiSearch } from "react-icons/ci";
 import { IoChevronDown } from "react-icons/io5";
-import {columns, users, statusOptions} from "./data";
 import {capitalize} from "./utils";
+import ExpandTransaction from './ExpandModal'
 
-const statusColorMap = {
-  active: "success",
-  paused: "danger",
-  vacation: "warning",
+const itemColorMap = {
+  tarpaulin: "warning",
+  photoprint: "primary",
+  photocopy: "success",
+  others: "danger",
+};
+const typeColorMap = {
+  walk_in: "success",
+  online: "primary",
 };
 
-const INITIAL_VISIBLE_COLUMNS = ["name", "role", "status", "actions"];
+const INITIAL_VISIBLE_COLUMNS = ["transaction_no", "item_name", "unit_cost",  "customer_type", "customer_name", "payment_method", "sales_person"];
+const INITIAL_VISIBLE_COLUMNS_ALL = ["date", "time", "transaction_no", "item_no", "item_name", "unit_cost", "quantity", "amount", "discount", "total", "customer_type", "customer_name", "payment_method", "sales_person", "remarks"];
 
-export default function Employee() {
-  const [filterValue, setFilterValue] = React.useState("");
-  const [selectedKeys, setSelectedKeys] = React.useState(new Set([]));
-  const [visibleColumns, setVisibleColumns] = React.useState(new Set(INITIAL_VISIBLE_COLUMNS));
-  const [statusFilter, setStatusFilter] = React.useState("all");
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
-  const [sortDescriptor, setSortDescriptor] = React.useState({
+export default function Transaction(props) {
+  const [filterValue, setFilterValue] = useState("");
+  const [selectedKeys, setSelectedKeys] = useState(new Set([]));
+  const [visibleColumns, setVisibleColumns] = useState(props.isMaximized? INITIAL_VISIBLE_COLUMNS_ALL : new Set(INITIAL_VISIBLE_COLUMNS));
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [typeFilter, setTypeFilter] = useState("all");
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [sortDescriptor, setSortDescriptor] = useState({
     column: "age",
     direction: "ascending",
   });
-  const [page, setPage] = React.useState(1);
+  const [page, setPage] = useState(1);
 
   const hasSearchFilter = Boolean(filterValue);
 
-  const headerColumns = React.useMemo(() => {
-    if (visibleColumns === "all") return columns;
+  const headerColumns = useMemo(() => {
+    if (visibleColumns === "all") return props.columns;
 
-    return columns.filter((column) => Array.from(visibleColumns).includes(column.uid));
+    return props.columns.filter((column) => Array.from(visibleColumns).includes(column.uid));
   }, [visibleColumns]);
 
-  const filteredItems = React.useMemo(() => {
-    let filteredUsers = [...users];
+  const filteredItems = useMemo(() => {
+    let filteredUsers = [...props.transactions];
 
     if (hasSearchFilter) {
       filteredUsers = filteredUsers.filter((user) =>
         user.name.toLowerCase().includes(filterValue.toLowerCase()),
       );
     }
-    if (statusFilter !== "all" && Array.from(statusFilter).length !== statusOptions.length) {
+    if (statusFilter !== "all" && Array.from(statusFilter).length !== props.itemOptions.length) {
       filteredUsers = filteredUsers.filter((user) =>
-        Array.from(statusFilter).includes(user.status),
+        Array.from(statusFilter).includes(user.item_name.toLowerCase()),
+      );
+    }
+    if (typeFilter !== "all" && Array.from(typeFilter).length !== props.typeOptions.length) {
+      filteredUsers = filteredUsers.filter((user) =>
+        Array.from(typeFilter).includes(user.customer_type.toLowerCase()),
       );
     }
 
     return filteredUsers;
-  }, [users, filterValue, statusFilter]);
+  }, [props.transactions, filterValue, statusFilter, typeFilter]);
 
   const pages = Math.ceil(filteredItems.length / rowsPerPage);
 
-  const items = React.useMemo(() => {
+  const items = useMemo(() => {
     const start = (page - 1) * rowsPerPage;
     const end = start + rowsPerPage;
 
     return filteredItems.slice(start, end);
   }, [page, filteredItems, rowsPerPage]);
 
-  const sortedItems = React.useMemo(() => {
+  const sortedItems = useMemo(() => {
     return [...items].sort((a, b) => {
       const first = a[sortDescriptor.column];
       const second = b[sortDescriptor.column];
@@ -93,48 +103,43 @@ export default function Employee() {
     const cellValue = user[columnKey];
 
     switch (columnKey) {
-      case "name":
+        case "transaction_no":
+            return (
+            <div className="flex flex-col">
+                <p className="text-bold text-small capitalize">{cellValue}</p>
+            </div>
+            );
+        case "item_name":
         return (
-          <User
-            avatarProps={{radius: "lg", src: user.avatar}}
-            description={user.email}
-            name={cellValue}
-          >
-            {user.email}
-          </User>
-        );
-      case "role":
-        return (
-          <div className="flex flex-col">
-            <p className="text-bold text-small capitalize">{cellValue}</p>
-            <p className="text-bold text-tiny capitalize text-default-400">{user.team}</p>
-          </div>
-        );
-      case "status":
-        return (
-          <Chip className="capitalize" color={statusColorMap[user.status]} size="sm" variant="flat">
+          <Chip className="capitalize" color={itemColorMap[user.item_name.toLowerCase() === 'photo print'? 'photoprint' : user.item_name.toLowerCase()]} size="sm" variant="flat">
             {cellValue}
           </Chip>
         );
-      case "actions":
+        case "customer_type":
         return (
-          <div className="relative flex justify-end items-center gap-2">
-            <Dropdown>
-              <DropdownTrigger>
-                <Button isIconOnly size="sm" variant="light">
-                  <HiDotsVertical className="text-default-300" />
-                </Button>
-              </DropdownTrigger>
-              <DropdownMenu>
-                <DropdownItem>View</DropdownItem>
-                <DropdownItem>Edit</DropdownItem>
-                <DropdownItem>Delete</DropdownItem>
-              </DropdownMenu>
-            </Dropdown>
-          </div>
+          <Chip className="capitalize" color={typeColorMap[user.customer_type.toLowerCase() === 'walk in'? 'walk_in' : user.customer_type.toLowerCase()]} size="sm" variant="flat">
+            {cellValue}
+          </Chip>
         );
-      default:
-        return cellValue;
+        case "actions":
+            return (
+            <div className="relative flex justify-end items-center gap-2">
+                <Dropdown>
+                <DropdownTrigger>
+                    <Button isIconOnly size="sm" variant="light">
+                    <HiDotsVertical className="text-default-300" />
+                    </Button>
+                </DropdownTrigger>
+                <DropdownMenu>
+                    <DropdownItem>View</DropdownItem>
+                    <DropdownItem>Edit</DropdownItem>
+                    <DropdownItem>Delete</DropdownItem>
+                </DropdownMenu>
+                </Dropdown>
+            </div>
+            );
+        default:
+            return cellValue;
     }
   }, []);
 
@@ -169,7 +174,7 @@ export default function Employee() {
     setPage(1)
   },[])
 
-  const topContent = React.useMemo(() => {
+  const topContent = useMemo(() => {
     return (
       <div className="flex flex-col gap-4">
         <div className="flex justify-between gap-3 items-end">
@@ -186,7 +191,28 @@ export default function Employee() {
             <Dropdown>
               <DropdownTrigger className="hidden sm:flex">
                 <Button endContent={<IoChevronDown className="text-small" />} variant="flat">
-                  Status
+                  type
+                </Button>
+              </DropdownTrigger>
+              <DropdownMenu
+                disallowEmptySelection
+                aria-label="Table Columns"
+                closeOnSelect={false}
+                selectedKeys={typeFilter}
+                selectionMode="multiple"
+                onSelectionChange={setTypeFilter}
+              >
+                {props.typeOptions.map((type) => (
+                  <DropdownItem key={type.uid} className="capitalize">
+                    {capitalize(type.name)}
+                  </DropdownItem>
+                ))}
+              </DropdownMenu>
+            </Dropdown>
+            <Dropdown>
+              <DropdownTrigger className="hidden sm:flex">
+                <Button endContent={<IoChevronDown className="text-small" />} variant="flat">
+                  Item name
                 </Button>
               </DropdownTrigger>
               <DropdownMenu
@@ -197,9 +223,9 @@ export default function Employee() {
                 selectionMode="multiple"
                 onSelectionChange={setStatusFilter}
               >
-                {statusOptions.map((status) => (
-                  <DropdownItem key={status.uid} className="capitalize">
-                    {capitalize(status.name)}
+                {props.itemOptions.map((item) => (
+                  <DropdownItem key={item.uid} className="capitalize">
+                    {capitalize(item.name)}
                   </DropdownItem>
                 ))}
               </DropdownMenu>
@@ -218,7 +244,7 @@ export default function Employee() {
                 selectionMode="multiple"
                 onSelectionChange={setVisibleColumns}
               >
-                {columns.map((column) => (
+                {props.columns.map((column) => (
                   <DropdownItem key={column.uid} className="capitalize">
                     {capitalize(column.name)}
                   </DropdownItem>
@@ -228,10 +254,13 @@ export default function Employee() {
             <Button color="primary" endContent={<FaPlus />}>
               Add New
             </Button>
+            {!props.isMaximized? (
+                <ExpandTransaction columns={props.columns} transactions={props.transactions} itemOptions={props.itemOptions} typeOptions={props.typeOptions} />
+            ): null}
           </div>
         </div>
         <div className="flex justify-between items-center">
-          <span className="text-default-400 text-small">Total {users.length} users</span>
+          <span className="text-default-400 text-small">Total {props.transactions.length} users</span>
           <label className="flex items-center text-default-400 text-small">
             Rows per page:
             <select
@@ -251,12 +280,12 @@ export default function Employee() {
     statusFilter,
     visibleColumns,
     onRowsPerPageChange,
-    users.length,
+    props.transactions.length,
     onSearchChange,
     hasSearchFilter,
   ]);
 
-  const bottomContent = React.useMemo(() => {
+  const bottomContent = useMemo(() => {
     return (
       <div className="py-2 px-2 flex justify-between items-center">
         <span className="w-[30%] text-small text-default-400">
@@ -286,44 +315,45 @@ export default function Employee() {
   }, [selectedKeys, items.length, page, pages, hasSearchFilter]);
 
   return (
-    <AdminLayout>
-        <main className="flex flex-1 flex-col gap-4 m-4 lg:gap-6 lg:m-6 bg-white">
-          <Table
+    <div>
+        {topContent}
+        <div class="max-w-[82rem] overflow-x-scroll">
+            <Table
+                removeWrapper
             aria-label="Example table with custom cells, pagination and sorting"
             isHeaderSticky
-            bottomContent={bottomContent}
             bottomContentPlacement="outside"
             classNames={{
-              wrapper: "max-h-[382px]",
+                wrapper: "max-h-[382px]",
             }}
             selectedKeys={selectedKeys}
             selectionMode="multiple"
             sortDescriptor={sortDescriptor}
-            topContent={topContent}
             topContentPlacement="outside"
             onSelectionChange={setSelectedKeys}
             onSortChange={setSortDescriptor}
-          >
+            >
             <TableHeader columns={headerColumns}>
-              {(column) => (
+                {(column) => (
                 <TableColumn
-                  key={column.uid}
-                  align={column.uid === "actions" ? "center" : "start"}
-                  allowsSorting={column.sortable}
+                    key={column.uid}
+                    align={column.uid === "actions" ? "center" : "start"}
+                    allowsSorting={column.sortable}
                 >
-                  {column.name}
+                    {column.name}
                 </TableColumn>
-              )}
+                )}
             </TableHeader>
-            <TableBody emptyContent={"No users found"} items={sortedItems}>
-              {(item) => (
+            <TableBody emptyContent={"No users found"} items={sortedItems} class="max-w-[82rem] overflow-x-scroll">
+                {(item) => (
                 <TableRow key={item.id}>
-                  {(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}
+                    {(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}
                 </TableRow>
-              )}
+                )}
             </TableBody>
-          </Table>
-        </main>
-      </AdminLayout>
+            </Table>
+        </div>
+        {bottomContent}
+    </div>
   );
 }

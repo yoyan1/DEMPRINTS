@@ -41,10 +41,10 @@ export default function Dashboard() {
                   </CardBody>
                 </Card>
               </Tab>
-              <Tab key="analysis" title={
+              <Tab key="analytics" title={
                 <div className="flex items-center space-x-2">
                   <FaChartArea/>
-                  <span>Analysis</span>
+                  <span>Analytics</span>
                 </div>
               }>
                 <Card>

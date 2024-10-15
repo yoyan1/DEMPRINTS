@@ -4,7 +4,8 @@ import { usePathname } from "next/navigation"
 import { FaShoppingCart, FaUsers } from "react-icons/fa";
 import { IoIosGrid } from 'react-icons/io';
 import { IoSettingsSharp } from "react-icons/io5";
-import {Card, CardHeader, CardBody, Image} from "@nextui-org/react";
+import {Card, CardHeader, CardBody, Image, Button} from "@nextui-org/react";
+import { RxHamburgerMenu } from "react-icons/rx";
 
 export default function Aside (){
   const pathname = usePathname()
@@ -16,10 +17,9 @@ export default function Aside (){
               <Image src="/LogoV3.jpg" alt="demprint logo" width={40} height={40} className="rounded-full"/>
               <span className="text-white">DEMPRINTS</span>
             </Link>
-            {/* <Button variant="outline" size="icon" className="ml-auto h-8 w-8">
-              <Bell className="h-4 w-4" />
-              <span className="sr-only">Toggle notifications</span>
-            </Button> */}
+            <Button variant="outline" color="white" size="icon" className="ml-auto h-8 w-8">
+              <RxHamburgerMenu/>
+            </Button>
           </div>
           <div className="flex-1">
             <nav className="grid items-start px-2 text-sm font-medium lg:px-4">

@@ -3,6 +3,8 @@ import React from 'react'
 import AdminLayout from '../layout/layout'
 import {Tabs, Tab, Card, CardBody} from "@nextui-org/react";
 import { FaFileAlt, FaPrint, FaFileExport, FaChartBar } from 'react-icons/fa';
+import TransactionTable from '@/app/components/adminComponents/sales/TransactionTable'
+import {columns, transactions, itemOptions, typeOptions} from "./data";
 
 export default function sales() {
   return (
@@ -31,11 +33,9 @@ export default function sales() {
                   <span>Transaction</span>
                 </div>
               }>
-                <Card>
+                <Card className='no-shadow'>
                   <CardBody>
-                    Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-                    commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum
-                    dolore eu fugiat nulla pariatur.
+                    <TransactionTable columns={columns} transactions={transactions} itemOptions={itemOptions} typeOptions={typeOptions} isMaximized={false}/>
                   </CardBody>
                 </Card>
               </Tab>
