@@ -1,3 +1,4 @@
+import React from 'react'
 import {Dropdown, DropdownTrigger, DropdownMenu, DropdownItem,  User} from "@nextui-org/react";
 
 export default function DropdownComponents() {

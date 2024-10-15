@@ -1,8 +1,4 @@
 "use client"
-// import Link from "next/link"
-import {Input} from '@nextui-org/react'
-// import { usePathname } from "next/navigation"
-import { BiSearch } from "react-icons/bi";
 import DropdownComponent from '@/app/components/adminComponents/dropdown/headerDropDown'
 
 
@@ -89,13 +85,13 @@ export default function Header (){
             <form>
               <div className="relative">
                 {/* <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" /> */}
-                <Input
+                {/* <Input
                     placeholder="search.."
                     startContent={
                         <BiSearch className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
                     }
                     className="max-w-[300px]"
-                />
+                /> */}
 
               </div>
             </form>
