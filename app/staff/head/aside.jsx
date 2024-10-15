@@ -11,7 +11,7 @@ export default function Sidebar() {
       id="drawer-navigation"
     >
       <div className="overflow-y-auto py-5 px-3 h-full bg-white dark:bg-gray-800">
-        <form action="#" method="GET" className="md:hidden mb-2">
+        {/* <form action="#" method="GET" className="md:hidden mb-2">
           <label for="sidebar-search" className="sr-only">
             Search
           </label>
@@ -38,8 +38,8 @@ export default function Sidebar() {
               placeholder="Search"
             />
           </div>
-        </form>
-        <ul className="space-y-2">
+        </form> */}
+        <ul className="space-y-1">
           <li>
             <a
               href="#"
