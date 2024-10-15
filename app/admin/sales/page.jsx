@@ -35,7 +35,7 @@ export default function sales() {
               }>
                 <Card className='no-shadow'>
                   <CardBody>
-                    <TransactionTable columns={columns} transactions={transactions} itemOptions={itemOptions} typeOptions={typeOptions}/>
+                    <TransactionTable columns={columns} transactions={transactions} itemOptions={itemOptions} typeOptions={typeOptions} isMaximized={false}/>
                   </CardBody>
                 </Card>
               </Tab>

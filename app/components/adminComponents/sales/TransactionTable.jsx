@@ -21,6 +21,7 @@ import { HiDotsVertical } from "react-icons/hi";
 import { CiSearch } from "react-icons/ci";
 import { IoChevronDown } from "react-icons/io5";
 import {capitalize} from "./utils";
+import ExpandTransaction from './ExpandModal'
 
 const itemColorMap = {
   tarpaulin: "warning",
@@ -33,12 +34,13 @@ const typeColorMap = {
   online: "primary",
 };
 
-const INITIAL_VISIBLE_COLUMNS = ["transaction_no", "item_name", "unit_cost", "quantity", "customer_type", "customer_name", "payment_method", "sales_person"];
+const INITIAL_VISIBLE_COLUMNS = ["transaction_no", "item_name", "unit_cost",  "customer_type", "customer_name", "payment_method", "sales_person"];
+const INITIAL_VISIBLE_COLUMNS_ALL = ["date", "time", "transaction_no", "item_no", "item_name", "unit_cost", "quantity", "amount", "discount", "total", "customer_type", "customer_name", "payment_method", "sales_person", "remarks"];
 
 export default function Transaction(props) {
   const [filterValue, setFilterValue] = useState("");
   const [selectedKeys, setSelectedKeys] = useState(new Set([]));
-  const [visibleColumns, setVisibleColumns] = useState(new Set(INITIAL_VISIBLE_COLUMNS));
+  const [visibleColumns, setVisibleColumns] = useState(props.isMaximized? INITIAL_VISIBLE_COLUMNS_ALL : new Set(INITIAL_VISIBLE_COLUMNS));
   const [statusFilter, setStatusFilter] = useState("all");
   const [typeFilter, setTypeFilter] = useState("all");
   const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -252,6 +254,9 @@ export default function Transaction(props) {
             <Button color="primary" endContent={<FaPlus />}>
               Add New
             </Button>
+            {!props.isMaximized? (
+                <ExpandTransaction columns={props.columns} transactions={props.transactions} itemOptions={props.itemOptions} typeOptions={props.typeOptions} />
+            ): null}
           </div>
         </div>
         <div className="flex justify-between items-center">
@@ -310,41 +315,45 @@ export default function Transaction(props) {
   }, [selectedKeys, items.length, page, pages, hasSearchFilter]);
 
   return (
-    <Table
-        removeWrapper
-      aria-label="Example table with custom cells, pagination and sorting"
-      isHeaderSticky
-      bottomContent={bottomContent}
-      bottomContentPlacement="outside"
-      classNames={{
-        wrapper: "max-h-[382px]",
-      }}
-      selectedKeys={selectedKeys}
-      selectionMode="multiple"
-      sortDescriptor={sortDescriptor}
-      topContent={topContent}
-      topContentPlacement="outside"
-      onSelectionChange={setSelectedKeys}
-      onSortChange={setSortDescriptor}
-    >
-      <TableHeader columns={headerColumns}>
-        {(column) => (
-          <TableColumn
-            key={column.uid}
-            align={column.uid === "actions" ? "center" : "start"}
-            allowsSorting={column.sortable}
-          >
-            {column.name}
-          </TableColumn>
-        )}
-      </TableHeader>
-      <TableBody emptyContent={"No users found"} items={sortedItems}>
-        {(item) => (
-          <TableRow key={item.id}>
-            {(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}
-          </TableRow>
-        )}
-      </TableBody>
-    </Table>
+    <div>
+        {topContent}
+        <div class="max-w-[82rem] overflow-x-scroll">
+            <Table
+                removeWrapper
+            aria-label="Example table with custom cells, pagination and sorting"
+            isHeaderSticky
+            bottomContentPlacement="outside"
+            classNames={{
+                wrapper: "max-h-[382px]",
+            }}
+            selectedKeys={selectedKeys}
+            selectionMode="multiple"
+            sortDescriptor={sortDescriptor}
+            topContentPlacement="outside"
+            onSelectionChange={setSelectedKeys}
+            onSortChange={setSortDescriptor}
+            >
+            <TableHeader columns={headerColumns}>
+                {(column) => (
+                <TableColumn
+                    key={column.uid}
+                    align={column.uid === "actions" ? "center" : "start"}
+                    allowsSorting={column.sortable}
+                >
+                    {column.name}
+                </TableColumn>
+                )}
+            </TableHeader>
+            <TableBody emptyContent={"No users found"} items={sortedItems} class="max-w-[82rem] overflow-x-scroll">
+                {(item) => (
+                <TableRow key={item.id}>
+                    {(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}
+                </TableRow>
+                )}
+            </TableBody>
+            </Table>
+        </div>
+        {bottomContent}
+    </div>
   );
 }

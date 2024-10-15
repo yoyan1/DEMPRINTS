@@ -17,7 +17,7 @@ export default function Aside (){
               <Image src="/LogoV3.jpg" alt="demprint logo" width={40} height={40} className="rounded-full"/>
               <span className="text-white">DEMPRINTS</span>
             </Link>
-            <Button variant="outline" size="icon" className="ml-auto h-8 w-8">
+            <Button variant="outline" color="white" size="icon" className="ml-auto h-8 w-8">
               <RxHamburgerMenu/>
             </Button>
           </div>
