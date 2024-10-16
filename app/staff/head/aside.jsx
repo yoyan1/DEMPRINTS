@@ -1,7 +1,7 @@
 import React from "react";
 import { FaClipboardList, FaShoppingBag } from "react-icons/fa";
 import { BsPieChartFill } from "react-icons/bs";
-import { MdHelp } from "react-icons/md";
+// import { MdHelp } from "react-icons/md";
 
 export default function Sidebar() {
   return (

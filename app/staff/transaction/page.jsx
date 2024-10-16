@@ -25,8 +25,8 @@ import {
   ModalBody,
   ModalFooter,
   useDisclosure,
-  Checkbox,
-  Link,
+  // Checkbox,
+  // Link,
   Select,
   SelectItem,
 } from "@nextui-org/react";
@@ -40,7 +40,7 @@ import {
   columns,
   users,
   statusOptions,
-  transaction,
+  // transaction,
   transactions,
 } from "./data";
 
@@ -55,14 +55,14 @@ const INITIAL_VISIBLE_COLUMNS = ["name", "role", "status", "actions"];
 export default function App() {
   // -----------------------
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const variants = ["underlined"];
+  // const variants = ["underlined"];
   //  ----------------------
   const [filterValue, setFilterValue] = React.useState("");
   const [selectedKeys, setSelectedKeys] = React.useState(new Set([]));
-  const [visibleColumns, setVisibleColumns] = React.useState(
+  const [visibleColumns, ] = React.useState(
     new Set(INITIAL_VISIBLE_COLUMNS)
   );
-  const [statusFilter, setStatusFilter] = React.useState("all");
+  const [statusFilter, r] = React.useState("all");
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [sortDescriptor, setSortDescriptor] = React.useState({
     column: "age",
