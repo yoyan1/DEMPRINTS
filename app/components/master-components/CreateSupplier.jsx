@@ -44,15 +44,15 @@ export default function CreateSupplier() {
                                     <SelectItem>Individual</SelectItem>
                                     <SelectItem>Organization</SelectItem>
                                 </Select>
-                                <Input label="Name" variant="bordered"/>
-                                <Input label="Address" variant="bordered"/>
-                                <Input type="number" label="Contact No." variant="bordered"/>
+                                <Input label="Name" placeholder="Enter supplier name"/>
+                                <Input label="Address" placeholder="Enter supplier address"/>
+                                <Input type="number" label="Contact No." placeholder="Enter suplier contact #"/>
                                 <div>
                                     <span>Representative Details</span>
                                     <div className="flex flex-col gap-3">
-                                        <Input  label="Name" variant="bordered"/>
-                                        <Input label="Position" variant="bordered"/>
-                                        <Input label="Contact No." variant="bordered"/>
+                                        <Input  label="Name" placeholder="Enter representative name"/>
+                                        <Input label="Position" placeholder="Enter position"/>
+                                        <Input label="Contact No." placeholder="Enter representative contact #"/>
                                     </div>
                                 </div>
                             </div>

@@ -1,11 +1,14 @@
 "use client"
 import React from "react";
-import {Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure} from "@nextui-org/react";
+import {Modal, ModalContent, ModalHeader, ModalBody, Button, useDisclosure} from "@nextui-org/react";
+import {Tabs, Tab, Input} from "@nextui-org/react";
+import {Select,  SelectItem} from "@nextui-org/select";
 import { MdAdd } from 'react-icons/md';
 // import { Input } from "@nextui-org/react";
 
 export default function CreateProduct() {
   const {isOpen, onOpen, onClose} = useDisclosure();
+  const [selected, setSelected] = React.useState("category");
 
   const handleOpen = () => {
     onOpen();
@@ -27,27 +30,74 @@ export default function CreateProduct() {
             </div>
         </div>
           <Modal 
-              size="2xl"
+              size="lg"
               isOpen={isOpen} 
               onClose={onClose} 
           >
               <ModalContent>
-              {(onClose) => (
+              {() => (
                   <>
                   <ModalHeader className="flex flex-col gap-1">Product Master Data</ModalHeader>
                   <ModalBody>
-                      <div>
-                        
+                      <div className="pb-20">
+                        <Tabs
+                          fullWidth
+                          size="md"
+                          aria-label="Tabs form"
+                          selectedKey={selected}
+                          onSelectionChange={setSelected}
+                        >
+                          <Tab key="category" title="Category">
+                            <form className="flex flex-col gap-4">
+                              <span>Create Product</span>
+                              <Input isRequired label="Category" placeholder="Enter category" type="email" />
+                              <div className="flex gap-2 justify-end">
+                                <Button fullWidth color="primary">
+                                  Submit
+                                </Button>
+                              </div>
+                            </form>
+                          </Tab>
+                          <Tab key="unit" title="Measurement">
+                            <form className="flex flex-col gap-4 h-[300px]">
+                              <span>Create Unit of Measurement</span>
+                              <Input isRequired label="Unit" placeholder="Unit of measurement" />
+                              <div className="flex gap-2 justify-end">
+                                <Button fullWidth color="primary">
+                                  Submit
+                                </Button>
+                              </div>
+                            </form>
+                          </Tab>
+                          <Tab key="create" title="Product">
+                            <form className="flex flex-col gap-4 h-[300px]">
+                              <span>Create Product</span>
+                              <Select 
+                                label="Select an category" 
+                              >
+                                  <SelectItem>Category 1</SelectItem>
+                                  <SelectItem>Category 2</SelectItem>
+                                  <SelectItem>Category 3</SelectItem>
+                              </Select>
+                              <Input isRequired label="Product name" placeholder="Enter product name" />
+                              <Select 
+                                label="Select an unit" 
+                              >
+                                  <SelectItem>Unit 1</SelectItem>
+                                  <SelectItem>Unit 2</SelectItem>
+                                  <SelectItem>Unit 3</SelectItem>
+                              </Select>
+                              <Input isRequired label="Product price" placeholder="Enter product name" />
+                              <div className="flex gap-2 justify-end">
+                                <Button fullWidth color="primary">
+                                  Submit
+                                </Button>
+                              </div>
+                            </form>
+                          </Tab>
+                        </Tabs>
                       </div>
                   </ModalBody>
-                  <ModalFooter>
-                      <Button color="danger" variant="light" onPress={onClose}>
-                      Close
-                      </Button>
-                      <Button color="primary" onPress={onClose}>
-                      Action
-                      </Button>
-                  </ModalFooter>
                   </>
               )}
               </ModalContent>

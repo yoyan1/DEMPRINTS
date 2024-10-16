@@ -22,7 +22,7 @@ export default function CreateExpenses() {
                 </h5>
                 </div>
                 <div className="p-6 pt-0">
-                <Button color="primary" onPress={handleOpen}><MdAdd/> supplier</Button>
+                <Button color="primary" onPress={handleOpen}><MdAdd/> expenses</Button>
                 </div>
             </div>
             <Modal 
@@ -33,23 +33,11 @@ export default function CreateExpenses() {
                 <ModalContent>
                 {(onClose) => (
                     <>
-                    <ModalHeader className="flex flex-col gap-1">Modal Title</ModalHeader>
+                    <ModalHeader className="flex flex-col gap-1">Create Expenses</ModalHeader>
                     <ModalBody>
-                        <p> 
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                        Nullam pulvinar risus non risus hendrerit venenatis.
-                        Pellentesque sit amet hendrerit risus, sed porttitor quam.
-                        </p>
-                        <p>
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                        Nullam pulvinar risus non risus hendrerit venenatis.
-                        Pellentesque sit amet hendrerit risus, sed porttitor quam.
-                        </p>
-                        <p>
-                        Magna exercitation reprehenderit magna aute tempor cupidatat consequat elit
-                        dolor adipisicing. Mollit dolor eiusmod sunt ex incididunt cillum quis. 
-                        Velit duis sit officia eiusmod Lorem aliqua enim laboris do dolor eiusmod. 
-                        </p>
+                        <div>
+                            expenses
+                        </div>
                     </ModalBody>
                     <ModalFooter>
                         <Button color="danger" variant="light" onPress={onClose}>

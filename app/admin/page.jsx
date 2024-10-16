@@ -5,8 +5,8 @@ import {Tabs, Tab, Card, CardBody} from "@nextui-org/react";
 import { FaChartLine } from "react-icons/fa";
 import { MdCandlestickChart } from "react-icons/md";
 import { FaChartArea } from "react-icons/fa6";
-import ExpensesTable from '@/app/components/adminComponents/expenses/ExpensesTable'
-import {columns, transactions, itemOptions, typeOptions} from "./expensesData";
+// import ExpensesTable from '@/app/components/adminComponents/expenses/ExpensesTable'
+// import {columns, transactions, itemOptions, typeOptions} from "./expensesData";
 
 export default function Dashboard() {
   return (
