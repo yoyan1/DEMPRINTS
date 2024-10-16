@@ -39,19 +39,6 @@ export default function sales() {
                   </CardBody>
                 </Card>
               </Tab>
-              <Tab key="print" title={
-                <div className="flex items-center space-x-2">
-                  <FaFileExport/>
-                  <span>Printing and Exporting</span>
-                </div>
-              }>
-                <Card>
-                  <CardBody>
-                    Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt
-                    mollit anim id est laborum.
-                  </CardBody>
-                </Card>
-              </Tab>
               <Tab key="create" title={
                 <div className="flex items-center space-x-2">
                   <FaChartBar/>

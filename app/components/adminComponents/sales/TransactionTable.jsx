@@ -16,12 +16,11 @@ import {
   Chip,
   Pagination,
 } from "@nextui-org/react";
-import { FaPlus } from "react-icons/fa6";
-import { HiDotsVertical } from "react-icons/hi";
 import { CiSearch } from "react-icons/ci";
 import { IoChevronDown } from "react-icons/io5";
 import {capitalize} from "./utils";
 import ExpandTransaction from './ExpandModal'
+import ExportToPdf from '@/app/composables/exportToPdf'
 
 const itemColorMap = {
   tarpaulin: "warning",
@@ -40,7 +39,7 @@ const INITIAL_VISIBLE_COLUMNS_ALL = ["date", "time", "transaction_no", "item_no"
 export default function Transaction(props) {
   const [filterValue, setFilterValue] = useState("");
   const [selectedKeys, setSelectedKeys] = useState(new Set([]));
-  const [visibleColumns, setVisibleColumns] = useState(props.isMaximized? INITIAL_VISIBLE_COLUMNS_ALL : new Set(INITIAL_VISIBLE_COLUMNS));
+  const [visibleColumns] = useState(props.isMaximized? INITIAL_VISIBLE_COLUMNS_ALL : new Set(INITIAL_VISIBLE_COLUMNS));
   const [statusFilter, setStatusFilter] = useState("all");
   const [typeFilter, setTypeFilter] = useState("all");
   const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -55,29 +54,29 @@ export default function Transaction(props) {
   const headerColumns = useMemo(() => {
     if (visibleColumns === "all") return props.columns;
 
-    return props.columns.filter((column) => Array.from(visibleColumns).includes(column.uid));
+    return props.columns.filter((column) => Array.from(visibleColumns).includes(column.dataKey));
   }, [visibleColumns]);
 
   const filteredItems = useMemo(() => {
-    let filteredUsers = [...props.transactions];
+    let filteredTransactions = [...props.transactions];
 
     if (hasSearchFilter) {
-      filteredUsers = filteredUsers.filter((user) =>
-        user.name.toLowerCase().includes(filterValue.toLowerCase()),
+      filteredTransactions = filteredTransactions.filter((item) =>
+        item.item_name.toLowerCase().includes(filterValue.toLowerCase()),
       );
     }
     if (statusFilter !== "all" && Array.from(statusFilter).length !== props.itemOptions.length) {
-      filteredUsers = filteredUsers.filter((user) =>
+      filteredTransactions = filteredTransactions.filter((user) =>
         Array.from(statusFilter).includes(user.item_name.toLowerCase()),
       );
     }
     if (typeFilter !== "all" && Array.from(typeFilter).length !== props.typeOptions.length) {
-      filteredUsers = filteredUsers.filter((user) =>
+      filteredTransactions = filteredTransactions.filter((user) =>
         Array.from(typeFilter).includes(user.customer_type.toLowerCase()),
       );
     }
 
-    return filteredUsers;
+    return filteredTransactions;
   }, [props.transactions, filterValue, statusFilter, typeFilter]);
 
   const pages = Math.ceil(filteredItems.length / rowsPerPage);
@@ -121,23 +120,6 @@ export default function Transaction(props) {
             {cellValue}
           </Chip>
         );
-        case "actions":
-            return (
-            <div className="relative flex justify-end items-center gap-2">
-                <Dropdown>
-                <DropdownTrigger>
-                    <Button isIconOnly size="sm" variant="light">
-                    <HiDotsVertical className="text-default-300" />
-                    </Button>
-                </DropdownTrigger>
-                <DropdownMenu>
-                    <DropdownItem>View</DropdownItem>
-                    <DropdownItem>Edit</DropdownItem>
-                    <DropdownItem>Delete</DropdownItem>
-                </DropdownMenu>
-                </Dropdown>
-            </div>
-            );
         default:
             return cellValue;
     }
@@ -203,7 +185,7 @@ export default function Transaction(props) {
                 onSelectionChange={setTypeFilter}
               >
                 {props.typeOptions.map((type) => (
-                  <DropdownItem key={type.uid} className="capitalize">
+                  <DropdownItem key={type.dataKey} className="capitalize">
                     {capitalize(type.name)}
                   </DropdownItem>
                 ))}
@@ -224,43 +206,20 @@ export default function Transaction(props) {
                 onSelectionChange={setStatusFilter}
               >
                 {props.itemOptions.map((item) => (
-                  <DropdownItem key={item.uid} className="capitalize">
+                  <DropdownItem key={item.dataKey} className="capitalize">
                     {capitalize(item.name)}
                   </DropdownItem>
                 ))}
               </DropdownMenu>
             </Dropdown>
-            <Dropdown>
-              <DropdownTrigger className="hidden sm:flex">
-                <Button endContent={<IoChevronDown className="text-small" />} variant="flat">
-                  Columns
-                </Button>
-              </DropdownTrigger>
-              <DropdownMenu
-                disallowEmptySelection
-                aria-label="Table Columns"
-                closeOnSelect={false}
-                selectedKeys={visibleColumns}
-                selectionMode="multiple"
-                onSelectionChange={setVisibleColumns}
-              >
-                {props.columns.map((column) => (
-                  <DropdownItem key={column.uid} className="capitalize">
-                    {capitalize(column.name)}
-                  </DropdownItem>
-                ))}
-              </DropdownMenu>
-            </Dropdown>
-            <Button color="primary" endContent={<FaPlus />}>
-              Add New
-            </Button>
+            <ExportToPdf rows={sortedItems}/>
             {!props.isMaximized? (
                 <ExpandTransaction columns={props.columns} transactions={props.transactions} itemOptions={props.itemOptions} typeOptions={props.typeOptions} />
             ): null}
           </div>
         </div>
         <div className="flex justify-between items-center">
-          <span className="text-default-400 text-small">Total {props.transactions.length} users</span>
+          <span className="text-default-400 text-small">Total {props.transactions.length} transactions</span>
           <label className="flex items-center text-default-400 text-small">
             Rows per page:
             <select
@@ -317,7 +276,7 @@ export default function Transaction(props) {
   return (
     <div>
         {topContent}
-        <div class="max-w-[82rem] overflow-x-scroll">
+        <div className="max-w-[82rem] overflow-x-scroll">
             <Table
                 removeWrapper
             aria-label="Example table with custom cells, pagination and sorting"
@@ -336,15 +295,15 @@ export default function Transaction(props) {
             <TableHeader columns={headerColumns}>
                 {(column) => (
                 <TableColumn
-                    key={column.uid}
-                    align={column.uid === "actions" ? "center" : "start"}
+                    key={column.dataKey}
+                    align="center"
                     allowsSorting={column.sortable}
                 >
                     {column.name}
                 </TableColumn>
                 )}
             </TableHeader>
-            <TableBody emptyContent={"No users found"} items={sortedItems} class="max-w-[82rem] overflow-x-scroll">
+            <TableBody emptyContent={"No transaction found"} items={sortedItems} >
                 {(item) => (
                 <TableRow key={item.id}>
                     {(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}

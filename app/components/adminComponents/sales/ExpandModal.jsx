@@ -13,7 +13,7 @@ export default function ExpandTransaction(props) {
 
   return (
     <>
-      <div class="p-md">
+      <div className="p-md">
           <Button color="primary" variant="outline" onPress={handleOpen}><FaExpand/></Button>
           <Modal 
               size="full"
