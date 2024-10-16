@@ -4,8 +4,7 @@ import { usePathname } from "next/navigation"
 import { FaShoppingCart, FaUsers } from "react-icons/fa";
 import { IoIosGrid } from 'react-icons/io';
 import { IoSettingsSharp } from "react-icons/io5";
-import {Card, CardHeader, CardBody, Image, Button} from "@nextui-org/react";
-import { RxHamburgerMenu } from "react-icons/rx";
+import {Card, CardHeader, CardBody, Image} from "@nextui-org/react";
 
 export default function Aside (){
   const pathname = usePathname()
@@ -17,9 +16,6 @@ export default function Aside (){
               <Image src="/LogoV3.jpg" alt="demprint logo" width={40} height={40} className="rounded-full"/>
               <span className="text-white">DEMPRINTS</span>
             </Link>
-            <Button variant="outline" color="white" size="icon" className="ml-auto h-8 w-8">
-              <RxHamburgerMenu/>
-            </Button>
           </div>
           <div className="flex-1">
             <nav className="grid items-start px-2 text-sm font-medium lg:px-4">
@@ -51,7 +47,7 @@ export default function Aside (){
               </Link>
               <Link
                 href="/admin/settings"
-                className={`flex items-center gap-3 rounded-lg px-3 py-2 text-white transition-all hover:text-blue-200 text-md ${pathname === '/pages/admin/settings'? 'bg-blue-400 text-white' : ''}`}
+                className={`flex items-center gap-3 rounded-lg px-3 py-2 text-white transition-all hover:text-blue-200 text-md ${pathname === '/admin/settings'? 'bg-blue-400 text-white' : ''}`}
               >
                 <IoSettingsSharp className="h-4 w-4" />
                 Setting
