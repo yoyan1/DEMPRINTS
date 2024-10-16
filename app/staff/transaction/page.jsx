@@ -62,7 +62,7 @@ export default function App() {
   const [visibleColumns, ] = React.useState(
     new Set(INITIAL_VISIBLE_COLUMNS)
   );
-  const [statusFilter, r] = React.useState("all");
+  const [statusFilter, ] = React.useState("all");
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [sortDescriptor, setSortDescriptor] = React.useState({
     column: "age",
