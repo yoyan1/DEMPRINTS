@@ -5,6 +5,8 @@ import {Tabs, Tab, Card, CardBody} from "@nextui-org/react";
 import { FaChartLine } from "react-icons/fa";
 import { MdCandlestickChart } from "react-icons/md";
 import { FaChartArea } from "react-icons/fa6";
+import ExpensesTable from '@/app/components/adminComponents/expenses/ExpensesTable'
+import {columns, transactions, itemOptions, typeOptions} from "./expensesData";
 
 export default function Dashboard() {
   return (
@@ -35,9 +37,8 @@ export default function Dashboard() {
               }>
                 <Card>
                   <CardBody>
-                    Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-                    commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum
-                    dolore eu fugiat nulla pariatur.
+                    expenses
+                    {/* <ExpensesTable columns={columns} transactions={transactions} itemOptions={itemOptions} typeOptions={typeOptions} isMaximized={false}/> */}
                   </CardBody>
                 </Card>
               </Tab>

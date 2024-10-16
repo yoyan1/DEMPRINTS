@@ -2,7 +2,7 @@
 import React from 'react'
 import AdminLayout from '../layout/layout'
 import {Tabs, Tab, Card, CardBody} from "@nextui-org/react";
-import { FaFileAlt, FaPrint, FaChartBar } from 'react-icons/fa';
+import { FaFileAlt, FaPrint } from 'react-icons/fa';
 import TransactionTable from '@/app/components/adminComponents/sales/TransactionTable'
 import {columns, transactions, itemOptions, typeOptions} from "./data";
 
@@ -74,19 +74,6 @@ export default function sales() {
                 <Card className='no-shadow'>
                   <CardBody>
                     <TransactionTable columns={columns} transactions={transactions} itemOptions={itemOptions} typeOptions={typeOptions} isMaximized={false}/>
-                  </CardBody>
-                </Card>
-              </Tab>
-              <Tab key="create" title={
-                <div className="flex items-center space-x-2">
-                  <FaChartBar/>
-                  <span>Create Order</span>
-                </div>
-              }>
-                <Card>
-                  <CardBody>
-                    Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt
-                    mollit anim id est laborum.
                   </CardBody>
                 </Card>
               </Tab>

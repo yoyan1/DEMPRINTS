@@ -21,7 +21,7 @@ import { IoChevronDown } from "react-icons/io5";
 import {capitalize} from "@/app/composables/utils";
 import ExpandTransaction from './ExpandModal'
 import ExportToPdf from '@/app/composables/exportToPdf'
-import CreateTransaction from './AddTransaction'
+import CreateExpenses from './AddExpenses'
 
 const itemColorMap = {
   tarpaulin: "warning",
@@ -42,7 +42,7 @@ export default function Transaction(props) {
   const [selectedKeys, setSelectedKeys] = useState(new Set([]));
   const [visibleColumns] = useState(props.isMaximized? INITIAL_VISIBLE_COLUMNS_ALL : new Set(INITIAL_VISIBLE_COLUMNS));
   const [statusFilter, setStatusFilter] = useState("all");
-  const [typeFilter] = useState("all");
+  const [typeFilter, ] = useState("all");
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [sortDescriptor, setSortDescriptor] = useState({
     column: "age",
@@ -213,7 +213,7 @@ export default function Transaction(props) {
                 ))}
               </DropdownMenu>
             </Dropdown>
-            <CreateTransaction/>
+            <CreateExpenses/>
             <ExportToPdf rows={sortedItems}/>
             {!props.isMaximized? (
                 <ExpandTransaction columns={props.columns} transactions={props.transactions} itemOptions={props.itemOptions} typeOptions={props.typeOptions} />
