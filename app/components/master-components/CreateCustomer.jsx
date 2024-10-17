@@ -42,9 +42,9 @@ export default function CreateCustomer() {
                         <div>
                             <span>Customer Information</span>
                             <div className="flex flex-col gap-3">
-                                <Input label="Firstname" variant="bordered"/>
-                                <Input label="Middle name (optional)" variant="bordered"/>
-                                <Input label="Lastname" variant="bordered"/>
+                                <Input label="Firstname" placeholder="Enter customer name" variant="bordered"/>
+                                <Input label="Middle name (optional)" placeholder="Customer middle name" variant="bordered"/>
+                                <Input label="Lastname" placeholder="Customer lastname" variant="bordered"/>
                             </div>
                             <div className="pt-3">
                                 <span>Type</span>

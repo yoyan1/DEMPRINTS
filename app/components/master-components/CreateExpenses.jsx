@@ -1,6 +1,6 @@
 "use client"
 import React, { useState } from "react";
-import {Modal, ModalContent, ModalHeader, ModalBody, Button, useDisclosure, Tabs, Tab, Input, Tooltip, Listbox, ListboxItem, Chip, ScrollShadow} from "@nextui-org/react";
+import {Modal, ModalContent, ModalHeader, ModalBody, Button, useDisclosure, Tabs, Tab, Input, Listbox, ListboxItem} from "@nextui-org/react";
 import { IoMdAdd } from "react-icons/io";
 import { CiCircleRemove } from "react-icons/ci";
 
@@ -65,7 +65,7 @@ export default function CreateExpenses() {
                 <ModalContent>
                 {() => (
                     <>
-                    <ModalHeader className="flex flex-col gap-1">Create Expenses</ModalHeader>
+                    <ModalHeader className="flex flex-col gap-1">Expenses Master Data</ModalHeader>
                     <ModalBody>
                         <form>
                             <div className="flex flex-col ap-5">
@@ -83,29 +83,34 @@ export default function CreateExpenses() {
                                                     <div className="flex gap-4 items-end pb-5">
                                                         <Input onChange={handleNameChange} label="Category" placeholder="Enter new category"/>
                                                     </div>
-                                                    <div>
-                                                        <Listbox
-                                                        aria-label="Listbox Variants"
-                                                        color="solid" 
-                                                        topContent={category.name != ''? <span>Category {category.name}</span> : ''}
-                                                        >
-                                                            {category.list.map((list, index) => (
-                                                                <ListboxItem key={list}>
-                                                                    <div className="flex justify-between items-center">
-                                                                        <span className="text-lg">{list}</span>
-                                                                        <Button isIconOnly color="warning" variant="light" aria-label="Take a photo" onPress={() => removeItem(index)}>
-                                                                            <CiCircleRemove className="h-8 w-8"/>
-                                                                        </Button>
-                                                                    </div>
-                                                                </ListboxItem>
-                                                                
-                                                            ))}
-                                                        </Listbox>
-                                                    </div>
-                                                    <div className="flex gap-3 items-center">
-                                                        <Input value={inputValue} onChange={(e) => setInputValue(e.target.value)} label="Operational" placeholder="Enter new operationl"/>
-                                                        <Button onPress={addItemToList} color="primary" variant="light"><IoMdAdd className="h-8 w-8"/></Button>
-                                                    </div>
+                                                    {category.name != ''? (
+                                                        <div>
+                                                            <div>
+                                                                <Listbox
+                                                                aria-label="Listbox Variants"
+                                                                color="solid" 
+                                                                topContent={category.name != ''? <span>Category {category.name}</span> : ''}
+                                                                >
+                                                                    {category.list.map((list, index) => (
+                                                                        <ListboxItem key={list}>
+                                                                            <div className="flex justify-between items-center">
+                                                                                <span className="text-lg">{list}</span>
+                                                                                <Button isIconOnly color="warning" variant="light" aria-label="Take a photo" onPress={() => removeItem(index)}>
+                                                                                    <CiCircleRemove className="h-8 w-8"/>
+                                                                                </Button>
+                                                                            </div>
+                                                                        </ListboxItem>
+                                                                        
+                                                                    ))}
+                                                                </Listbox>
+                                                            </div>
+                                                            <div className="flex gap-3 items-center">
+                                                                <Input value={inputValue} onChange={(e) => setInputValue(e.target.value)} label="Operational" placeholder="Enter new operationl"/>
+                                                                <Button onPress={addItemToList} color="primary" variant="light"><IoMdAdd className="h-8 w-8"/></Button>
+                                                            </div>
+
+                                                        </div>
+                                                    ): null}    
                                                 </div>
                                                 <div className="flex justify-center pt-5">
                                                     <Button color="primary" className="w-44">Submit</Button>
@@ -113,7 +118,16 @@ export default function CreateExpenses() {
                                             </form>
                                         </Tab>
                                         <Tab key='update' title='Update category'>
-                                            <div>Update</div>
+                                            <div>
+                                                <Listbox
+                                                aria-label="Listbox Variants"
+                                                color="solid" 
+                                                >
+                                                    <ListboxItem>
+                                                        
+                                                    </ListboxItem>
+                                                </Listbox>
+                                            </div>
                                         </Tab>
                                     </Tabs>
                                 </div>
