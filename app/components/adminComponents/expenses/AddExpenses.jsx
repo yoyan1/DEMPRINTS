@@ -13,7 +13,7 @@ export default function CreateTransaction() {
 
   return (
     <>
-        <div class="p-md">
+        <div className="p-md">
             <Button color="primary" onPress={handleOpen}><MdAdd/> Order</Button>
             <Modal 
                 size="2xl"
