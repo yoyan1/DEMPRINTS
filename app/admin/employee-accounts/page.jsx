@@ -23,7 +23,7 @@ import { HiDotsVertical } from "react-icons/hi";
 import { CiSearch } from "react-icons/ci";
 import { IoChevronDown } from "react-icons/io5";
 import {columns, users, statusOptions} from "./data";
-import {capitalize} from "./utils";
+import {capitalize} from "@/app/composables/utils";
 
 const statusColorMap = {
   active: "success",

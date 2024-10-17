@@ -1,6 +1,6 @@
 "use client"
 import React from "react";
-import {Modal, ModalContent, ModalHeader, ModalBody, Button, useDisclosure} from "@nextui-org/react";
+import {Modal, ModalContent, ModalHeader, ModalBody, Button, useDisclosure, Listbox, ListboxItem} from "@nextui-org/react";
 import {Tabs, Tab, Input} from "@nextui-org/react";
 import {Select,  SelectItem} from "@nextui-org/select";
 import { MdAdd } from 'react-icons/md';
@@ -48,6 +48,14 @@ export default function CreateProduct() {
                           onSelectionChange={setSelected}
                         >
                           <Tab key="category" title="Category">
+                              <Listbox
+                              aria-label="Listbox Variants"
+                              color="solid" 
+                              topContent={<span>List of Category</span>}
+                              >
+                                  <ListboxItem>
+                                  </ListboxItem>
+                              </Listbox>
                             <form className="flex flex-col gap-4">
                               <span>Create Product</span>
                               <Input isRequired label="Category" placeholder="Enter category" type="email" />
@@ -59,6 +67,14 @@ export default function CreateProduct() {
                             </form>
                           </Tab>
                           <Tab key="unit" title="Measurement">
+                            <Listbox
+                              aria-label="Listbox Variants"
+                              color="solid" 
+                              topContent={<span>List Unit of Measurements</span>}
+                              >
+                                  <ListboxItem>
+                                  </ListboxItem>
+                              </Listbox>
                             <form className="flex flex-col gap-4">
                               <span>Create Unit of Measurement</span>
                               <Input isRequired label="Unit" placeholder="Unit of measurement" />

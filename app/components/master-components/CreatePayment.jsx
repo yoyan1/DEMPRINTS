@@ -1,6 +1,6 @@
 "use client"
 import React, { useState } from "react";
-import {Modal, ModalContent, ModalHeader, ModalBody, Button, useDisclosure, Tabs, Tab, Input} from "@nextui-org/react";
+import {Modal, ModalContent, ModalHeader, ModalBody, Button, useDisclosure, Tabs, Tab, Input, Listbox, ListboxItem} from "@nextui-org/react";
 import { MdAdd} from 'react-icons/md';
 
 export default function CreatePayment() {
@@ -44,6 +44,14 @@ export default function CreatePayment() {
                         onSelectionChange={setSelected}
                       >
                         <Tab key="options" title="Options">
+                          <Listbox
+                          aria-label="Listbox Variants"
+                          color="solid" 
+                          topContent={<span>Payment options</span>}
+                          >
+                              <ListboxItem>
+                              </ListboxItem>
+                          </Listbox>
                           <form className="flex flex-col gap-4">
                             <span>Create new Payment Options</span>
                             <Input isRequired label="Options" placeholder="Enter new options"/>
@@ -55,6 +63,14 @@ export default function CreatePayment() {
                           </form>
                         </Tab>
                         <Tab key="type" title="Type">
+                          <Listbox
+                          aria-label="Listbox Variants"
+                          color="solid" 
+                          topContent={<span>Payment type</span>}
+                          >
+                              <ListboxItem>
+                              </ListboxItem>
+                          </Listbox>
                           <form className="flex flex-col gap-4">
                             <span>Create new Payment Type</span>
                             <Input isRequired label="Type" placeholder="Enter new payment type"/>
