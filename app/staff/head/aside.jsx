@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { FaClipboardList, FaShoppingBag } from "react-icons/fa";
+import { FaClipboardList } from "react-icons/fa";
 import { BsPieChartFill } from "react-icons/bs";
 import { IoSettingsSharp } from "react-icons/io5";
 import Link from "next/link";
