@@ -1,32 +1,15 @@
 "use client"
 import React, { useState } from "react";
-import {Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure} from "@nextui-org/react";
-import { MdAdd, MdRemove } from 'react-icons/md';
-import {Listbox, ListboxItem, Input} from "@nextui-org/react";
+import {Modal, ModalContent, ModalHeader, ModalBody, Button, useDisclosure, Tabs, Tab, Input} from "@nextui-org/react";
+import { MdAdd} from 'react-icons/md';
 
 export default function CreatePayment() {
   const {isOpen, onOpen, onClose} = useDisclosure();
+  const [selected, setSelected] = useState("method");
 
-  const [paymentOptions, setPaymentOptions] = useState([]);
   const handleOpen = () => {
     onOpen();
   }
-  const [optionInput, setInput] = useState('')
-  const handleChange = (event) => {
-    setInput(event.target.value)
-  }
-  const addOption = () =>{
-    if (optionInput.trim() !== '') { 
-      setPaymentOptions((prevOptions) => [...prevOptions, optionInput]); 
-      setInput(''); 
-    }
-  }
-  
-  const removeOption = (optionToRemove) => {
-    setPaymentOptions((prevOptions) =>
-      prevOptions.filter(option => option !== optionToRemove) // Filter out the option to remove
-    );
-  };
   return (
     <>
       <div class="p-md">
@@ -48,52 +31,43 @@ export default function CreatePayment() {
             onClose={onClose} 
         >
             <ModalContent>
-            {(onClose) => (
+            {() => (
                 <>
-                <ModalHeader className="flex flex-col gap-1">Modal Title</ModalHeader>
+                <ModalHeader className="flex flex-col gap-1">Payment Method</ModalHeader>
                 <ModalBody>
                     <div>
-                      <span>Payment Method</span>
-                      <div>
-                        <span>Options</span>
-                        <div>
-                          <Listbox
-                            aria-label="User Menu"
-                            className="p-0 gap-0 divide-y divide-default-300/50 dark:divide-default-100/80 bg-content1 max-w-[300px] overflow-visible shadow-small rounded-medium"
-                            itemClasses={{
-                              base: "px-3 first:rounded-t-medium last:rounded-b-medium rounded-none gap-3 h-12 data-[hover=true]:bg-default-100/80",
-                            }}
-                          >
-                            {paymentOptions.map((option) => (
-                              <ListboxItem
-                                key={option}
-                                endContent={
-                                  <Button color="red" variant="light" className="rounded-full" onPress={removeOption(option)}>
-                                    <MdRemove/>
-                                  </Button>
-                                  }
-                              >
-                                {option}
-                              </ListboxItem>
-
-                            ))}
-                          </Listbox>
-                          <div className="flex items-center gap-5 py-3">
-                            <Input label="add option" value={optionInput} onChange={handleChange}/>
-                            <Button color="primary" onPress={addOption}><MdAdd/></Button>
-                          </div>
-                        </div>
-                      </div>
+                      <Tabs
+                        fullWidth
+                        size="md"
+                        aria-label="Tabs form"
+                        selectedKey={selected}
+                        onSelectionChange={setSelected}
+                      >
+                        <Tab key="options" title="Options">
+                          <form className="flex flex-col gap-4">
+                            <span>Create new Payment Options</span>
+                            <Input isRequired label="Options" placeholder="Enter new options"/>
+                            <div className="flex gap-2 justify-end">
+                              <Button fullWidth color="primary">
+                                Submit
+                              </Button>
+                            </div>
+                          </form>
+                        </Tab>
+                        <Tab key="type" title="Type">
+                          <form className="flex flex-col gap-4">
+                            <span>Create new Payment Type</span>
+                            <Input isRequired label="Type" placeholder="Enter new payment type"/>
+                            <div className="flex gap-2 justify-end">
+                              <Button fullWidth color="primary">
+                                Submit
+                              </Button>
+                            </div>
+                          </form>
+                        </Tab>
+                      </Tabs>
                     </div>
                 </ModalBody>
-                <ModalFooter>
-                    <Button color="danger" variant="light" onPress={onClose}>
-                    Close
-                    </Button>
-                    <Button color="primary" onPress={onClose}>
-                    Action
-                    </Button>
-                </ModalFooter>
                 </>
             )}
             </ModalContent>

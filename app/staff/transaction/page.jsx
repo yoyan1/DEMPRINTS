@@ -25,8 +25,8 @@ import {
   ModalBody,
   ModalFooter,
   useDisclosure,
-  Checkbox,
-  Link,
+  // Checkbox,
+  // Link,
   Select,
   SelectItem,
 } from "@nextui-org/react";
@@ -36,7 +36,17 @@ import { FiPrinter } from "react-icons/fi";
 import { LuPlus } from "react-icons/lu";
 import { IoEllipsisVertical, IoPersonSharp } from "react-icons/io5";
 import { FaSearch } from "react-icons/fa";
+<<<<<<< HEAD
 import { columns, users, statusOptions, transactions } from "./data";
+=======
+import {
+  columns,
+  users,
+  statusOptions,
+  // transaction,
+  transactions,
+} from "./data";
+>>>>>>> 93c5ca1853ebba506b4fbb056a89dff16a8fbfc2
 
 const statusColorMap = {
   active: "success",
@@ -66,14 +76,14 @@ const INITIAL_VISIBLE_COLUMNS = [
 export default function App() {
   // -----------------------
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const variants = ["underlined"];
+  // const variants = ["underlined"];
   //  ----------------------
   const [filterValue, setFilterValue] = React.useState("");
   const [selectedKeys, setSelectedKeys] = React.useState(new Set([]));
-  const [visibleColumns, setVisibleColumns] = React.useState(
+  const [visibleColumns, ] = React.useState(
     new Set(INITIAL_VISIBLE_COLUMNS)
   );
-  const [statusFilter, setStatusFilter] = React.useState("all");
+  const [statusFilter, ] = React.useState("all");
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [sortDescriptor, setSortDescriptor] = React.useState({
     column: "age",

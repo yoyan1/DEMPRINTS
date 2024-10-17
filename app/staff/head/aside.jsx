@@ -3,8 +3,11 @@
 import React from "react";
 import { FaClipboardList, FaShoppingBag } from "react-icons/fa";
 import { BsPieChartFill } from "react-icons/bs";
+<<<<<<< HEAD
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+=======
+>>>>>>> 93c5ca1853ebba506b4fbb056a89dff16a8fbfc2
 // import { MdHelp } from "react-icons/md";
 
 export default function Sidebar() {
