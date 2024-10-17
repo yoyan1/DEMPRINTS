@@ -36,9 +36,7 @@ import { FiPrinter } from "react-icons/fi";
 import { LuPlus } from "react-icons/lu";
 import { IoEllipsisVertical, IoPersonSharp } from "react-icons/io5";
 import { FaSearch } from "react-icons/fa";
-<<<<<<< HEAD
-import { columns, users, statusOptions, transactions } from "./data";
-=======
+
 import {
   columns,
   users,
@@ -46,7 +44,6 @@ import {
   // transaction,
   transactions,
 } from "./data";
->>>>>>> 93c5ca1853ebba506b4fbb056a89dff16a8fbfc2
 
 const statusColorMap = {
   active: "success",
@@ -147,7 +144,7 @@ export default function App() {
       case "customer_name":
         return (
           <User
-            avatarProps={{ radius: "lg", src: user.avatar }}
+            avatarProps={{ radius: "lg" }}
             description={user.email}
             name={cellValue}
           >
@@ -316,7 +313,8 @@ export default function App() {
   }, [selectedKeys, items.length, page, pages, hasSearchFilter]);
 
   return (
-    <>
+    < >
+    
       <Modal isOpen={isOpen} onOpenChange={onOpenChange} placement="top-center">
         <ModalContent>
           {(onClose) => (
@@ -358,7 +356,7 @@ export default function App() {
                     </SelectItem>
                   ))}
                 </Select>
-
+                
                 <Input
                   className="text-black"
                   style={{ color: "black" }}
@@ -370,6 +368,7 @@ export default function App() {
                   label="Quantity"
                   variant="underlined"
                 />
+                
                 <div className="flex py-2 px-1 justify-between"></div>
               </ModalBody>
               <ModalFooter>
@@ -396,6 +395,8 @@ export default function App() {
           topContentPlacement="outside"
           onSelectionChange={setSelectedKeys}
           onSortChange={setSortDescriptor}
+
+         
         >
           <TableHeader columns={headerColumns}>
             {(column) => (
