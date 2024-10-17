@@ -1,6 +1,6 @@
 import React from 'react';
-import { jsPDF } from 'jspdf';
-import 'jspdf-autotable';
+// import { jsPDF } from 'jspdf';
+// import 'jspdf-autotable';
 import { Button } from '@nextui-org/button';
 import { BiExport } from 'react-icons/bi';
 

@@ -5,9 +5,9 @@ import Sidebar from "./head/aside";
 export default function Layout({ children }) {
   return (
     <>
-      <div class="antialiased bg-gray-50 dark:bg-gray-900">
+      <div class="antialiased bg-white text-black">
         <div className="flex flex-col">
-          <Heading />
+          <Heading/>
         </div>
         <div className="flex flex-row">
          
