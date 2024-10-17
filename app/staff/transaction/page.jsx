@@ -36,13 +36,7 @@ import { FiPrinter } from "react-icons/fi";
 import { LuPlus } from "react-icons/lu";
 import { IoEllipsisVertical, IoPersonSharp } from "react-icons/io5";
 import { FaSearch } from "react-icons/fa";
-import {
-  columns,
-  users,
-  statusOptions,
-  transaction,
-  transactions,
-} from "./data";
+import { columns, users, statusOptions, transactions } from "./data";
 
 const statusColorMap = {
   active: "success",
@@ -50,7 +44,24 @@ const statusColorMap = {
   vacation: "warning",
 };
 
-const INITIAL_VISIBLE_COLUMNS = ["name", "role", "status", "actions"];
+const INITIAL_VISIBLE_COLUMNS = [
+  "date",
+  "time",
+  "transaction_no",
+  "item_no",
+  "item_name",
+  "unit_cost",
+  "quantity",
+  "amount",
+  "discount",
+  "total",
+  "customer_type",
+  "customer_name",
+  "payment_method",
+  "sales_person",
+  "remarks",
+  "actions",
+];
 
 export default function App() {
   // -----------------------
@@ -81,11 +92,11 @@ export default function App() {
   }, [visibleColumns]);
 
   const filteredItems = React.useMemo(() => {
-    let filteredUsers = [...users];
+    let filteredUsers = users;
 
     if (hasSearchFilter) {
       filteredUsers = filteredUsers.filter((user) =>
-        user.name.toLowerCase().includes(filterValue.toLowerCase())
+        user.customer_name?.toLowerCase().includes(filterValue.toLowerCase())
       );
     }
     if (
@@ -123,7 +134,7 @@ export default function App() {
     const cellValue = user[columnKey];
 
     switch (columnKey) {
-      case "name":
+      case "customer_name":
         return (
           <User
             avatarProps={{ radius: "lg", src: user.avatar }}
@@ -142,7 +153,7 @@ export default function App() {
             </p>
           </div>
         );
-      case "status":
+      case "item_name":
         return (
           <Chip
             className="capitalize"
@@ -208,7 +219,7 @@ export default function App() {
 
   const topContent = React.useMemo(() => {
     return (
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 mt-5">
         <div className="flex justify-between gap-3 items-end">
           <Input
             isClearable
@@ -300,64 +311,58 @@ export default function App() {
         <ModalContent>
           {(onClose) => (
             <>
-              <ModalHeader className="flex flex-col gap-1">Log in</ModalHeader>
+              <ModalHeader className="flex flex-col gap-1 text-black">
+                 <h3>Add Transaction</h3>
+              </ModalHeader>
               <ModalBody>
                 <Input
+                  style={{ color: "black" }}
                   autoFocus
                   endContent={
-                    <IoPersonSharp className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
+                    <IoPersonSharp
+                      className="text-2xl pointer-events-none flex-shrink-0"
+                      style={{ color: "gray" }}
+                    />
                   }
-                  label="Costumer Name"
-                  // placeholder="Enter your email"
+                  label="Customer Name"
                   variant="underlined"
                 />
 
-                <Select label="Select an Item" className="max-w-xs" autoFocus variant='underlined' endContent={
+                <Select
+                  label="Select an Item"
+                  className="max-w-xs text-black"
+                  autoFocus
+                  variant="underlined"
+                  endContent={
                     <FiPrinter className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
-                  }>
+                  }
+                  style={{ color: "black" }}
+                >
                   {transactions.map((transaction) => (
-                    <SelectItem variant='underlined' key={transaction.key}>
+                    <SelectItem
+                      variant="underlined"
+                      key={transaction.key}
+                      style={{ color: "black" }}
+                    >
                       {transaction.label}
                     </SelectItem>
                   ))}
                 </Select>
+
                 <Input
+                  className="text-black"
+                  style={{ color: "black" }}
                   autoFocus
-                  type='number'
+                  type="number"
                   endContent={
                     <TbNumbers className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
                   }
                   label="Quantity"
-                  // placeholder="Enter your email"
                   variant="underlined"
                 />
-
-                {/* <Input
-                        endContent={
-                          <MdOutlineLock className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
-                        }
-                        label="Password"
-                        placeholder="Enter your password"
-                        type="password"
-                        variant="underlined"
-                      /> */}
-                <div className="flex py-2 px-1 justify-between">
-                  {/* <Checkbox
-                    classNames={{
-                      label: "text-small",
-                    }}
-                  >
-                    Remember me
-                  </Checkbox> */}
-                  {/* <Link color="primary" href="#" size="sm">
-                    Forgot password?
-                  </Link> */}
-                </div>
+                <div className="flex py-2 px-1 justify-between"></div>
               </ModalBody>
               <ModalFooter>
-                {/* <Button color="danger" variant="flat" onPress={onClose}>
-                  Close
-                </Button> */}
                 <Button color="primary" onPress={onClose}>
                   Save
                 </Button>
@@ -366,43 +371,46 @@ export default function App() {
           )}
         </ModalContent>
       </Modal>
-      <Table
-        aria-label="Example table with custom cells, pagination and sorting"
-        isHeaderSticky
-        bottomContent={bottomContent}
-        bottomContentPlacement="outside"
-        classNames={{
-          wrapper: "max-h-[382px]",
-        }}
-        selectedKeys={selectedKeys}
-        selectionMode="multiple"
-        sortDescriptor={sortDescriptor}
-        topContent={topContent}
-        topContentPlacement="outside"
-        onSelectionChange={setSelectedKeys}
-        onSortChange={setSortDescriptor}
-      >
-        <TableHeader columns={headerColumns}>
-          {(column) => (
-            <TableColumn
-              key={column.uid}
-              align={column.uid === "actions" ? "center" : "start"}
-              allowsSorting={column.sortable}
-            >
-              {column.name}
-            </TableColumn>
-          )}
-        </TableHeader>
-        <TableBody emptyContent={"No users found"} items={sortedItems}>
-          {(item) => (
-            <TableRow key={item.id}>
-              {(columnKey) => (
-                <TableCell>{renderCell(item, columnKey)}</TableCell>
-              )}
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
+
+      <div className="overflow-x-auto">
+        <Table
+          aria-label="Example table with custom cells, pagination and sorting"
+          isHeaderSticky
+          bottomContent={bottomContent}
+          bottomContentPlacement="outside"
+          classNames=""
+          selectedKeys={selectedKeys}
+          selectionMode="multiple"
+          sortDescriptor={sortDescriptor}
+          topContent={topContent}
+          topContentPlacement="outside"
+          onSelectionChange={setSelectedKeys}
+          onSortChange={setSortDescriptor}
+        >
+          <TableHeader columns={headerColumns}>
+            {(column) => (
+              <TableColumn
+                key={column.uid}
+                align={column.uid === "actions" ? "center" : "start"}
+                allowsSorting={column.sortable}
+              >
+                {column.name}
+              </TableColumn>
+            )}
+          </TableHeader>
+          <TableBody emptyContent={"No users found"} items={sortedItems}>
+            {(item) => (
+              <TableRow key={item.id}>
+                {(columnKey) => (
+                  <TableCell className="text-black">
+                    {renderCell(item, columnKey)}
+                  </TableCell>
+                )}
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
     </>
   );
 }

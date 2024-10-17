@@ -10,9 +10,9 @@ export default function Layout({ children }) {
           <Heading />
         </div>
         <div className="flex flex-row">
-          {/* Sidebar placed on the left */}
-          <Sidebar className="w-64 p-4" />
-          <main className="flex-grow p-4">{children}</main>
+         
+          <Sidebar className="w-64 p-4 mr-5" />
+          {children}
         </div>
       </div>
     </>
