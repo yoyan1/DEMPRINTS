@@ -30,8 +30,7 @@ import {
   Select,
   SelectItem,
 } from "@nextui-org/react";
-import { TbNumbers } from "react-icons/tb";
-import { FiPrinter } from "react-icons/fi";
+
 // import { MdOutlineAlternateEmail, MdOutlineLock } from "react-icons/md";
 import { LuPlus } from "react-icons/lu";
 import { IoEllipsisVertical, IoPersonSharp } from "react-icons/io5";
@@ -41,7 +40,7 @@ import {
   columns,
   users,
   statusOptions,
-  // transaction,
+  costumer_types,
   transactions,
 } from "./data";
 
@@ -73,14 +72,12 @@ const INITIAL_VISIBLE_COLUMNS = [
 export default function App() {
   // -----------------------
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  // const variants = ["underlined"];
+  // const variants = [""];
   //  ----------------------
   const [filterValue, setFilterValue] = React.useState("");
   const [selectedKeys, setSelectedKeys] = React.useState(new Set([]));
-  const [visibleColumns, ] = React.useState(
-    new Set(INITIAL_VISIBLE_COLUMNS)
-  );
-  const [statusFilter, ] = React.useState("all");
+  const [visibleColumns] = React.useState(new Set(INITIAL_VISIBLE_COLUMNS));
+  const [statusFilter] = React.useState("all");
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [sortDescriptor, setSortDescriptor] = React.useState({
     column: "age",
@@ -141,16 +138,16 @@ export default function App() {
     const cellValue = user[columnKey];
 
     switch (columnKey) {
-      case "customer_name":
-        return (
-          <User
-            avatarProps={{ radius: "lg" }}
-            description={user.email}
-            name={cellValue}
-          >
-            {user.email}
-          </User>
-        );
+      // case "customer_name":
+      //   return (
+      //     <User
+      //       avatarProps={{ radius: "lg" }}
+      //       description={user.email}
+      //       name={cellValue}
+      //     >
+      //       {user.email}
+      //     </User>
+      //   );
       case "role":
         return (
           <div className="flex flex-col">
@@ -313,63 +310,122 @@ export default function App() {
   }, [selectedKeys, items.length, page, pages, hasSearchFilter]);
 
   return (
-    < >
-    
-      <Modal isOpen={isOpen} onOpenChange={onOpenChange} placement="top-center">
-        <ModalContent>
+    <>
+      <Modal
+        isOpen={isOpen}
+        onOpenChange={onOpenChange}
+        size="5xl"
+        placement="top-center"
+        className=""
+      >
+        <ModalContent
+          className="inset-0    justify-center z-50"
+          style={{ width: "50rem" }}
+        >
           {(onClose) => (
             <>
               <ModalHeader className="flex flex-col gap-1 text-black">
-                 <h3>Add Transaction</h3>
+                <h3>Add Transaction</h3>
               </ModalHeader>
               <ModalBody>
-                <Input
-                  style={{ color: "black" }}
-                  autoFocus
-                  endContent={
-                    <IoPersonSharp
-                      className="text-2xl pointer-events-none flex-shrink-0"
-                      style={{ color: "gray" }}
-                    />
-                  }
-                  label="Customer Name"
-                  variant="underlined"
-                />
+                <div className="w-full flex flex-col gap-8">
+                  <div className="flex w-full flex-wrap md:flex-nowrap mb-6 md:mb-0 gap-4">
+                    <div className="w-full flex flex-col gap-4">
+                      <Input
+                        style={{ color: "black" }}
+                        autoFocus
+                        label="Customer Name"
+                        variant=""
+                      />
 
-                <Select
-                  label="Select an Item"
-                  className="max-w-xs text-black"
-                  autoFocus
-                  variant="underlined"
-                  endContent={
-                    <FiPrinter className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
-                  }
-                  style={{ color: "black" }}
-                >
-                  {transactions.map((transaction) => (
-                    <SelectItem
-                      variant="underlined"
-                      key={transaction.key}
-                      style={{ color: "black" }}
-                    >
-                      {transaction.label}
-                    </SelectItem>
-                  ))}
-                </Select>
-                
-                <Input
-                  className="text-black"
-                  style={{ color: "black" }}
-                  autoFocus
-                  type="number"
-                  endContent={
-                    <TbNumbers className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
-                  }
-                  label="Quantity"
-                  variant="underlined"
-                />
-                
-                <div className="flex py-2 px-1 justify-between"></div>
+                      <Input
+                        className="text-black"
+                        style={{ color: "black" }}
+                        autoFocus
+                        type="number"
+                        label="Quantity"
+                        variant=""
+                      />
+                      <Input
+                        className="text-black"
+                        style={{ color: "black" }}
+                        autoFocus
+                        type="number"
+                        label="Quantity"
+                        variant=""
+                      />
+                      <Select
+                        label="Costumer Type"
+                        className="max-w-xs text-black"
+                        autoFocus
+                        variant=""
+                        style={{ color: "black" }}
+                      >
+                        {transactions.map((transaction) => (
+                          <SelectItem
+                            variant=""
+                            key={transaction.key}
+                            style={{ color: "black" }}
+                          >
+                            {transaction.label}
+                          </SelectItem>
+                        ))}
+                      </Select>
+                      <Select
+                        label="Select an Item"
+                        className="max-w-xs text-black"
+                        autoFocus
+                        variant=""
+                        style={{ color: "black" }}
+                      >
+                        {costumer_types.map((costumer_type) => (
+                          <SelectItem
+                            variant=""
+                            key={costumer_type.key}
+                            style={{ color: "black" }}
+                          >
+                            {costumer_type.label}
+                          </SelectItem>
+                        ))}
+                      </Select>
+                      <div className="w-full flex flex-col gap-8">
+                        <Input
+                          className="text-black"
+                          style={{ color: "black" }}
+                          autoFocus
+                          type="number"
+                          label="Unit Cost"
+                          variant=""
+                        />
+
+                        <Input
+                          className="text-black"
+                          style={{ color: "black" }}
+                          autoFocus
+                          type="number"
+                          label="Amount"
+                          variant=""
+                        />
+
+                        <Input
+                          className="text-black"
+                          style={{ color: "black" }}
+                          autoFocus
+                          type="number"
+                          label="Amount"
+                          variant=""
+                        />
+                        <Input
+                          className="text-black"
+                          autoFocus
+                          type="number"
+                          label="Discount"
+                          variant=""
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </ModalBody>
               <ModalFooter>
                 <Button color="primary" onPress={onClose}>
@@ -395,8 +451,6 @@ export default function App() {
           topContentPlacement="outside"
           onSelectionChange={setSelectedKeys}
           onSortChange={setSortDescriptor}
-
-         
         >
           <TableHeader columns={headerColumns}>
             {(column) => (

@@ -7,7 +7,7 @@ export default function Heading() {
       <nav
         className="border-b border-gray-200 px-4 py-2.5  left-0 right-0 top-0 z-50"
         style={{
-          background: "linear-gradient(#072ac8,#000000)",
+          backgroundImage: "linear-gradient(to right,#000000,#0496ff)",
         }}
       >
         <div className="flex flex-wrap justify-between items-center">

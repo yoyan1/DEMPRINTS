@@ -17,7 +17,8 @@ export default function Sidebar() {
         aria-label="Sidenav"
         id="drawer-navigation"
         style={{
-          backgroundImage: "linear-gradient(to right, #072ac8, #0000)",
+          backgroundImage: "linear-gradient(#000000,#0496ff)",
+          // backgroundColor:'#0496ff'
         }}
       >
         <div className="overflow-y-auto py-5 px-3 h-full bg-none">

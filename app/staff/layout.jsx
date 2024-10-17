@@ -10,7 +10,7 @@ export default function Layout({ children }) {
           <div className="flex flex-col">
             <Heading />
           </div>
-          <div className="flex flex-row bg-">
+          <div className="flex flex-row bg-white">
             <Sidebar className="w-64 p-4 mr-5" />
             {children}
           </div>
