@@ -16,7 +16,7 @@ export default function CreateProduct() {
 
   return (
     <>
-      <div class="p-md">
+      <div className="p-md">
         <div className="relative flex w-80 flex-col rounded-xl bg-white bg-clip-border text-gray-700 shadow-md">
             <div className="relative mx-4 -mt-6 h-40 overflow-hidden rounded-xl bg-blue-gray-500 bg-clip-border text-white shadow-lg shadow-blue-gray-500/40 bg-gradient-to-r from-blue-500 to-blue-600">
             </div>
@@ -39,7 +39,7 @@ export default function CreateProduct() {
                   <>
                   <ModalHeader className="flex flex-col gap-1">Product Master Data</ModalHeader>
                   <ModalBody>
-                      <div className="pb-20">
+                      <div>
                         <Tabs
                           fullWidth
                           size="md"
@@ -59,7 +59,7 @@ export default function CreateProduct() {
                             </form>
                           </Tab>
                           <Tab key="unit" title="Measurement">
-                            <form className="flex flex-col gap-4 h-[300px]">
+                            <form className="flex flex-col gap-4">
                               <span>Create Unit of Measurement</span>
                               <Input isRequired label="Unit" placeholder="Unit of measurement" />
                               <div className="flex gap-2 justify-end">
@@ -70,7 +70,7 @@ export default function CreateProduct() {
                             </form>
                           </Tab>
                           <Tab key="create" title="Product">
-                            <form className="flex flex-col gap-4 h-[300px]">
+                            <form className="flex flex-col gap-4">
                               <span>Create Product</span>
                               <Select 
                                 label="Select an category" 
