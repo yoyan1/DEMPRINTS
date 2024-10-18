@@ -11,7 +11,65 @@ export default function CreateUser() {
   const {isOpen, onOpen, onClose} = useDisclosure();
   const [step, setStep] = useState(1);
   const [isVisible, setIsVisible] = useState(false);
+  const [credentials, setCredentials] = useState({
+      email: null,
+      password: null,
+      firstname: '',
+      middlename: '',
+      lastname: '',
+      gender: '',
+      birth_date: null,
+      address: '',
+      contact_number: '',
+      contact_email: '',
+      contact_person: '',
+      mandatory_benefit: '',
+      job_title: '',
+      department: '',
+      hire_date: '',
+      wage: '',
+      basis: '',
+      frequency: '',
+      leave_entitlement: '',
+      contract: '',
+      pre_employment: '',
+      certificates: '',
+      review: '',
+      actions: '',
+  })
 
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    setCredentials((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  const [contactPerson, setContactPerson] = useState({
+    name: '',
+    address: '',
+    contact_number: 0,
+    relationship: ''
+  })
+  const handleChangeContact = (e) => {
+    const { name, value } = e.target;
+
+    setContactPerson((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+  const [mandatoryBenefit, setMandatoryBenefit] = useState({ss_no: 0, pab_ibig_no: 0, philhealth: 0})
+  const handleChangeBenefit = (e) => {
+    const { name, value } = e.target;
+
+    setMandatoryBenefit((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
   const toggleVisibility = () => setIsVisible(!isVisible);
 
   const handleClose = () => {
@@ -62,11 +120,14 @@ export default function CreateUser() {
                       <div className="flex flex-col">
                         <span>Credentials</span>
                         <div className="flex flex-col sm:flex-row md:flex-row lg:flex-row gap-5 pt-3">
-                          <Input type="email" label="Email" placeholder="Enter Email" labelPlacement="outside" variant="bordered" className="max-w-xs"/>
+                          <Input type="email" label="Email" placeholder="Enter Email" labelPlacement="outside" variant="bordered" className="max-w-xs" name="email" value={credentials.email} onChange={handleChange}/>
                           <Input
                             label="Password"
                             variant="bordered"
                             placeholder="Enter password"
+                            name="password"
+                            value={credentials.password} 
+                            onChange={handleChange}
                             endContent={
                               <button className="focus:outline-none" type="button" onClick={toggleVisibility} aria-label="toggle password visibility">
                                 {isVisible ? (
@@ -89,24 +150,24 @@ export default function CreateUser() {
                           <div className="flex flex-col gap-4 px-3 mx-2 border-r">
                             <div className="flex flex-col">
                               <div className="flex flex-col md:flex-row lg:flex-row gap-5 py-2">
-                                <Input type="text" labelPlacement="outside"  label="Firstname" variant="bordered" className="max-w-xs"/>
-                                <Input type="text" labelPlacement="outside"  label="Middlename (optional)" variant="bordered"/>
-                                <Input type="text" labelPlacement="outside"  label="Lastname" variant="bordered"/>
+                                <Input type="text" labelPlacement="outside"  label="Firstname" variant="bordered" className="max-w-xs" name="firstname" value={credentials.firstname} onChange={handleChange}/>
+                                <Input type="text" labelPlacement="outside"  label="Middlename (optional)" variant="bordered" name="middlename" value={credentials.middlename} onChange={handleChange}/>
+                                <Input type="text" labelPlacement="outside"  label="Lastname" variant="bordered" name="lastname" value={credentials.lastname} onChange={handleChange}/>
                               </div>
                               <div className="flex flex-col md:flex-row lg:flex-row gap-5">
-                                <Select  label="Select gender" labelPlacement="outside"  className="max-w-[163px]" variant="bordered">
+                                <Select  label="Select gender" labelPlacement="outside"  className="max-w-[163px]" variant="bordered" name="gender" value={credentials.gender} onChange={handleChange}>
                                   <SelectItem>Male</SelectItem>
                                   <SelectItem>Female</SelectItem>
                                 </Select>
-                                <DatePicker label="Birth date" labelPlacement="outside" className="max-w-[163px]" variant="bordered"/>
+                                <DatePicker label="Birth date" labelPlacement="outside" className="max-w-[163px]" variant="bordered" value={credentials.birth_date} onChange={(e) => setCredentials(prevData => ({...prevData, birth_date: eh}))}/>
                               </div>
                             </div>
                             <div className="flex flex-col border-t mt-3">
                               <span>Mandatory Benefit</span>
                               <div className="flex flex-col md:flex-row lg:flex-row gap-5">
-                                <Input type="number" labelPlacement="outside"  label="SS No." variant="bordered" className="max-w-xs"/>
-                                <Input type="number" labelPlacement="outside"  label="Pag-Ibig No." variant="bordered"/>
-                                <Input type="number" labelPlacement="outside"  label="Philhealth" variant="bordered"/>
+                                <Input type="number" labelPlacement="outside"  label="SS No." variant="bordered" className="max-w-xs" name="ss_no" value={mandatoryBenefit.ss_no} onChange={handleChangeBenefit}/>
+                                <Input type="number" labelPlacement="outside"  label="Pag-Ibig No." variant="bordered" name="pag_ibig_no" value={mandatoryBenefit.pab_ibig_no} onChange={handleChangeBenefit}/>
+                                <Input type="number" labelPlacement="outside"  label="Philhealth" variant="bordered" name="ss_no" value={mandatoryBenefit.philhealth} onChange={handleChangeBenefit}/>
                               </div>
                             </div>
                             <div className="h-52 bg-slate-400">
@@ -115,22 +176,23 @@ export default function CreateUser() {
                           </div>
                           <div className="flex flex-col py-2 px-3">
                             <span>Contact Information</span>
-                            <Input type="text" labelPlacement="outside"  label="Address" variant="bordered" className="pt-2"/>
+                            <Input type="text" labelPlacement="outside"  label="Address" variant="bordered" className="pt-2" name="address" value={credentials.address} onChange={handleChange}/>
                             <div className="flex gap-5 py-5">
-                              <Input type="number" labelPlacement="outside"  label="Contact #" variant="bordered"/>
-                              <Input type="email" labelPlacement="outside"  label="Email" variant="bordered"/>
+                              <Input type="number" labelPlacement="outside"  label="Contact #" variant="bordered" name="contact_number" value={credentials.contact_number} onChange={handleChange}/>
+                              <Input type="email" labelPlacement="outside"  label="Email" variant="bordered" name="contact_email" value={credentials.contact_email} onChange={handleChange}/>
                             </div>
                             <div className="border p-3 mt-5">
                               <span >Contact Person</span>
                               <div className="flex gap-5 py-2">
-                                <Input type="text" labelPlacement="outside" placeholder="Enter name"  label="Name" variant="bordered"/>
-                                <Input type="text" labelPlacement="outside"  label="Relationship" variant="bordered"/>
+                                <Input type="text" labelPlacement="outside" placeholder="Enter name"  label="Name" variant="bordered" name="name" value={contactPerson.birth_date} onChange={handleChangeContact}/>\
+                                <Input type="text" labelPlacement="outside"  label="Relationship" variant="bordered" name="relationship" value={contactPerson.relationship} onChange={handleChangeContact}/>
                               </div>
                               <div className="flex gap-5 pb-2">
-                                <Input type="number" labelPlacement="outside"  label="Contact #" variant="bordered"/>
+                                <Input type="number" labelPlacement="outside"  label="Contact #" variant="bordered"
+                                name="contact_number" value={contactPerson.contact_number} onChange={handleChangeContact}/>
                                 <Input type="email" labelPlacement="outside"  label="Email" variant="bordered"/>
                               </div>
-                              <Input type="text" labelPlacement="outside"  label="Address" variant="bordered"/>
+                              <Input type="text" labelPlacement="outside"  label="Address" variant="bordered" name="address" value={contactPerson.address} onChange={handleChangeContact}/>
                             </div>
                           </div>
                         </div>
