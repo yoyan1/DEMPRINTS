@@ -264,4 +264,8 @@ const transactions = [
   { key: "paper print", label: "Paper Print" },
   
 ];
-export { columns, users, statusOptions, transactions };
+const costumer_types = [
+  {key:'Walkin', label:'Walk-in'},
+  {key:'Online', label:'Online'}
+]
+export { columns, users, statusOptions, transactions , costumer_types};
