@@ -13,13 +13,13 @@ export default function Sidebar() {
   return (
     <main>
       <aside
-        className="  top-0 left-0 z-40 w-64 h-screen pt-1 transition-transform  -translate-x-full bg-white border-r border-gray-200 md:translate-x-0 dark:bg-gray-800 dark:border-gray-700 max-h-screen"
+        className="  top-0 left-0 z-40 w-64 h-screen pt-1 transition-transform  -translate-x-full bg-gradient-to-tr from-blue-950 to-blue-400 border-r border-gray-200 md:translate-x-0  dark:border-gray-700 max-h-screen"
         aria-label="Sidenav"
         id="drawer-navigation"
-        style={{
-          backgroundImage: "linear-gradient(#000000,#0496ff)",
-          // backgroundColor:'#0496ff'
-        }}
+        // style={{
+        //   backgroundImage: "linear-gradient(#000000,#0496ff)",
+        //   // backgroundColor:'#0496ff'
+        // }}
       >
         <div className="overflow-y-auto py-5 px-3 h-full bg-none">
           <ul className="space-y-1">
