@@ -38,6 +38,7 @@ export default function CreateUser() {
   const [credentials, setCredentials] = useState({
     email: "",
     password: "",
+    role: "staff",
     firstname: "",
     middlename: "",
     lastname: "",
@@ -174,10 +175,10 @@ export default function CreateUser() {
 
   const submit = async () => {
     const errors = isInvalid();
-    if (Object.keys(errors).length === 0) {
+    if (Object.keys(errors).length !== 0) {
+      console.log(credentials);
       return;
     }
-    console.log(credentials);
     try {
       const response = await axios.post('http://localhost:5000/api/users/register', credentials);
       if (response.status === 201) {
