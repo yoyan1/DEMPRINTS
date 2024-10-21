@@ -314,7 +314,7 @@ export default function App() {
       <Modal
         isOpen={isOpen}
         onOpenChange={onOpenChange}
-        size="5xl"
+        size="2xl"
         placement="top-center"
         className=""
       >
@@ -328,107 +328,114 @@ export default function App() {
                 <h3>Add Transaction</h3>
               </ModalHeader>
               <ModalBody>
-                <div className="w-full flex flex-col gap-8">
-                  <div className="flex w-full flex-wrap md:flex-nowrap mb-6 md:mb-0 gap-4">
-                    <div className="w-full flex flex-col gap-4">
-                      <Input
-                        style={{ color: "black" }}
-                        autoFocus
-                        label="Customer Name"
-                        variant=""
-                      />
-
-                      <Input
-                        className="text-black"
-                        style={{ color: "black" }}
-                        autoFocus
-                        type="number"
-                        label="Quantity"
-                        variant=""
-                      />
-                      <Input
-                        className="text-black"
-                        style={{ color: "black" }}
-                        autoFocus
-                        type="number"
-                        label="Quantity"
-                        variant=""
-                      />
-                      <Select
-                        label="Costumer Type"
-                        className="max-w-xs text-black"
-                        autoFocus
-                        variant=""
-                        style={{ color: "black" }}
-                      >
-                        {transactions.map((transaction) => (
-                          <SelectItem
-                            variant=""
-                            key={transaction.key}
-                            style={{ color: "black" }}
-                          >
-                            {transaction.label}
-                          </SelectItem>
-                        ))}
-                      </Select>
-                      <Select
-                        label="Select an Item"
-                        className="max-w-xs text-black"
-                        autoFocus
-                        variant=""
-                        style={{ color: "black" }}
-                      >
-                        {costumer_types.map((costumer_type) => (
-                          <SelectItem
-                            variant=""
-                            key={costumer_type.key}
-                            style={{ color: "black" }}
-                          >
-                            {costumer_type.label}
-                          </SelectItem>
-                        ))}
-                      </Select>
-                      <div className="w-full flex flex-col gap-8">
-                        <Input
-                          className="text-black"
+                <div className="flex w-full flex-wrap md:flex-nowrap gap-4">
+                  <div className="w-full md:w-1/2">
+                    <Select
+                      label="Item"
+                      className="max-w-xs text-black mb-3"
+                      autoFocus
+                      variant="underlined"
+                      style={{ color: "black" }}
+                    >
+                      {transactions.map((transaction) => (
+                        <SelectItem
+                          variant="bordered"
+                          key={transaction.key}
                           style={{ color: "black" }}
-                          autoFocus
-                          type="number"
-                          label="Unit Cost"
-                          variant=""
-                        />
+                        >
+                          {transaction.label}
+                        </SelectItem>
+                      ))}
+                    </Select>
 
-                        <Input
-                          className="text-black"
+                    <Input
+                      className="text-black mb-3"
+                      style={{ color: "black" }}
+                      autoFocus
+                      type="text"
+                      label="Unit Cost"
+                      variant="underlined"
+                    />
+                    <Input
+                      className="text-black mb-3"
+                      style={{ color: "black" }}
+                      autoFocus
+                      type="text"
+                      label="Quantity"
+                      variant="underlined"
+                    />
+                    <Input
+                      className="text-black mb-3"
+                      style={{ color: "black" }}
+                      autoFocus
+                      type="number"
+                      label="Discount"
+                      variant="underlined"
+                    />
+                    <Input
+                      className="text-black mb-3"
+                      style={{ color: "black" }}
+                      autoFocus
+                      type="number"
+                      label="Amount"
+                      variant="underlined"
+                    />
+                  </div>
+                  <div className="w-full md:w-1/2">
+                    <Input
+                      className="text-black mb-3"
+                      style={{ color: "black" }}
+                      autoFocus
+                      type="number"
+                      label="Total"
+                      variant="underlined"
+                    />
+                    <Select
+                      label="Costumer Type"
+                      className="max-w-xs text-black mb-3"
+                      autoFocus
+                      variant="underlined"
+                      style={{ color: "black" }}
+                    >
+                      {costumer_types.map((costumer_type) => (
+                        <SelectItem
+                          variant="bordered"
+                          key={costumer_type.key}
                           style={{ color: "black" }}
-                          autoFocus
-                          type="number"
-                          label="Amount"
-                          variant=""
-                        />
-
-                        <Input
-                          className="text-black"
-                          style={{ color: "black" }}
-                          autoFocus
-                          type="number"
-                          label="Amount"
-                          variant=""
-                        />
-                        <Input
-                          className="text-black"
-                          autoFocus
-                          type="number"
-                          label="Discount"
-                          variant=""
-                        />
-                      </div>
-                    </div>
+                        >
+                          {costumer_type.label}
+                        </SelectItem>
+                      ))}
+                    </Select>
+                    <Input
+                      className="text-black mb-3"
+                      style={{ color: "black" }}
+                      autoFocus
+                      type="text"
+                      label="Costumer Name"
+                      variant="underlined"
+                    />
+                    <Input
+                      className="text-black mb-3"
+                      style={{ color: "black" }}
+                      autoFocus
+                      type="text"
+                      label="Payment Method"
+                      variant="underlined"
+                    />
+                    <Input
+                      className="text-black mb-3"
+                      style={{ color: "black" }}
+                      autoFocus
+                      type="text"
+                      label="Sales Person"
+                      variant="underlined"
+                    />
                   </div>
                 </div>
               </ModalBody>
-              <ModalFooter>
-                <Button color="primary" onPress={onClose}>
+              <ModalFooter className="text-center" >
+                <Button color="primary" style={{width:'4rem'}} onPress={onClose}>
                   Save
                 </Button>
               </ModalFooter>
