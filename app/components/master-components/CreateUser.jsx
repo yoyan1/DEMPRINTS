@@ -13,6 +13,7 @@ import {
   Select,
   SelectItem,
   Input,
+  Spinner,
 } from "@nextui-org/react";
 import { MdAdd } from "react-icons/md";
 import { BsEyeSlash, BsEye } from "react-icons/bs";
@@ -24,6 +25,7 @@ export default function CreateUser() {
   const [isVisible, setIsVisible] = useState(false);
   const [errorMessages, setErrorMessages] = useState({});
   const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
   const [mandatoryBenefit, setMandatoryBenefit] = useState({
     ss_no: 0,
     pab_ibig_no: 0,
@@ -116,7 +118,7 @@ export default function CreateUser() {
   const toggleVisibility = () => setIsVisible(!isVisible);
 
   const handleClose = () => {
-    if (step === 1) {
+    if (step === 1 || step === 4) {
       onClose();
     } else {
       setStep((prevStep) => prevStep - 1);
@@ -172,21 +174,28 @@ export default function CreateUser() {
     setErrorMessages(errors);
     return errors;
   };
-
+  
+  const [isLoading, setIsLoading] = useState(false)
   const submit = async () => {
     const errors = isInvalid();
     if (Object.keys(errors).length !== 0) {
       console.log(credentials);
       return;
     }
+    setStep(4)
+    setIsLoading(true)
     try {
       const response = await axios.post('http://localhost:5000/api/users/register', credentials);
       if (response.status === 201) {
-        console.log('Registration successful:', response.data);
+        setIsLoading(false)
+        setSuccess('Registration successful')
         setError(null);
+        // onClose();
       } else {
+        setIsLoading(false)
         setError('Unexpected response from server');
       }
+
     } catch (error) {
       if (error.response) {
         console.error("Error response from server:", error.response.data);
@@ -290,6 +299,7 @@ export default function CreateUser() {
                                   type="text"
                                   labelPlacement="outside"
                                   label="Firstname"
+                                  placeholder="Enter first name"
                                   variant="bordered"
                                   className="max-w-xs"
                                   name="firstname"
@@ -303,6 +313,7 @@ export default function CreateUser() {
                                   type="text"
                                   labelPlacement="outside"
                                   label="Middlename (optional)"
+                                  placeholder="Enter middlename"
                                   variant="bordered"
                                   name="middlename"
                                   value={credentials.middlename}
@@ -312,6 +323,7 @@ export default function CreateUser() {
                                   type="text"
                                   labelPlacement="outside"
                                   label="Lastname"
+                                  placeholder="Enter lastname"
                                   variant="bordered"
                                   name="lastname"
                                   isInvalid={errorMessages.lastname? true : false}
@@ -323,7 +335,8 @@ export default function CreateUser() {
                               </div>
                               <div className="flex flex-col md:flex-row lg:flex-row gap-5">
                                 <Select
-                                  label="Select gender"
+                                  label="Gender"
+                                  placeholder="Select gender"
                                   labelPlacement="outside"
                                   className="max-w-[163px]"
                                   variant="bordered"
@@ -338,6 +351,7 @@ export default function CreateUser() {
                                   <SelectItem key="female">Female</SelectItem>
                                 </Select>
                                 <DatePicker
+                                  labelPlacement="outside"
                                   label="Birth date"
                                   variant="bordered"
                                   className="max-w-[284px]"
@@ -400,6 +414,7 @@ export default function CreateUser() {
                               type="text"
                               labelPlacement="outside"
                               label="Address"
+                              placeholder="Enter complete address"
                               variant="bordered"
                               className="pt-2"
                               name="address"
@@ -414,6 +429,7 @@ export default function CreateUser() {
                                 type="number"
                                 labelPlacement="outside"
                                 label="Contact #"
+                                placeholder="Enter contact number"
                                 variant="bordered"
                                 name="contact_number"
                                 isInvalid={errorMessages.contact_number? true : false}
@@ -426,6 +442,7 @@ export default function CreateUser() {
                                 type="email"
                                 labelPlacement="outside"
                                 label="Email"
+                                placeholder="Enter contact email"
                                 variant="bordered"
                                 name="contact_email"
                                 osInvalid={errorMessages.contact_email? true : false}
@@ -451,11 +468,12 @@ export default function CreateUser() {
                                   value={contactPerson.name}
                                   onChange={handleChangeContact}
                                 />
-                                \
+                                
                                 <Input
                                   type="text"
                                   labelPlacement="outside"
                                   label="Relationship"
+                                  placeholder="Relationship of contact person"
                                   variant="bordered"
                                   name="relationship"
                                   isInvalid={errorMessages.relationship? true : false}
@@ -470,6 +488,7 @@ export default function CreateUser() {
                                   type="number"
                                   labelPlacement="outside"
                                   label="Contact #"
+                                  placeholder="Enter person contact number"
                                   variant="bordered"
                                   name="contact_number"
                                   isInvalid={errorMessages.person_contact_number? true : false}
@@ -492,6 +511,7 @@ export default function CreateUser() {
                                 type="text"
                                 labelPlacement="outside"
                                 label="Address"
+                                placeholder="Enter contact person address"
                                 variant="bordered"
                                 name="address"
                                 isInvalid={errorMessages.contact_address? true : false}
@@ -613,6 +633,14 @@ export default function CreateUser() {
                           </div>
                         </div>
                       </div>
+                    ) : step === 4 ?(
+                      <div>
+                        {isLoading? (
+                          <Spinner label="Loading..." color="primary" />
+                        ): 
+                          <span>{error? error : success}</span>
+                        }
+                      </div>
                     ) : null}
                   </ModalBody>
                   <ModalFooter>
@@ -621,13 +649,15 @@ export default function CreateUser() {
                       variant="light"
                       onPress={handleClose}
                     >
-                      {step === 1 ? "close" : "prev"}
+                      {step === 1 || step === 4 ? "close" : "prev"}
                     </Button>
                     {step === 3 ? (
                       <Button color="primary" onPress={submit} type="submit">
                         submit
                       </Button>
-                    ) : (
+                    ) :step === 4 ?(
+                      <div></div>
+                    ): (
                       <Button color="primary" onPress={handleButtonClick}>
                         next
                       </Button>
