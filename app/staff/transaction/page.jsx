@@ -44,6 +44,7 @@ import {
   costumer_types,
   transactions,
 } from "./data";
+import axios from "axios";
 
 const statusColorMap = {
   active: "success",
@@ -71,6 +72,40 @@ const INITIAL_VISIBLE_COLUMNS = [
 ];
 
 export default function App() {
+  const [costumer_name, setCustomerName] = useState("");
+  const [costumer_type, setCustomerType] = useState("");
+  const [item_name, setItemName] = useState("");
+  const [quantity, setQuantity] = useState(0);
+  const [unit_cost, setUnitCost] = useState(0);
+  const [discount, setDiscount] = useState(0);
+  const [amount, setAmount] = useState(0);
+  const [total, setTotal] = useState(0);
+  const [payment_method, setPaymentMethod] = useState("");
+  const [salesperson, setSalesPerson] = useState("");
+
+  const handleSubmit = async () => {
+    try {
+      const response = await axios.post(
+        `http://localhost:5000/api/collection/addtransaction`,
+        {
+          costumer_name: '',
+          costumer_type:'',
+          item_name:'',
+          quantity:0,
+          unit_cost: 0,
+          discount: 0,
+          amount: 0,
+          total: 0,
+          payment_method: '',
+          salesperson:'',
+        }
+      );
+      console.log(response.data);
+      onClose(); // Close modal after successful submission
+    } catch (error) {
+      console.error("Transaction submission failed:", error);
+    }
+  };
   // -----------------------
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   // const variants = [""];
@@ -181,21 +216,6 @@ export default function App() {
     }
   }, []);
   // ----------------------------------
-  const [costumer, setCostumer] = useState({
-    name:'',
-    type: '',
-  });
-
-  const [item, setItem] = useState({
-    item_name:'',
-    quantity:'',
-    unit_cost: '',
-    discount:'',
-    amount: '',
-    total :'',
-  });
-  const [payment_method, setPaymentMethos] = useState();
-  const [salesperson, setSalesPerson] = useState("");
 
   // ----------------------------------
   ("");
@@ -211,8 +231,8 @@ export default function App() {
     }
   }, [page]);
 
-  const onRowsPerPageChange = React.useCallback((e) => {
-    setRowsPerPage(Number(e.target.value));
+  const onRowsPerPageChange = React.useCallback((event) => {
+    setRowsPerPage(Number(event.target.value));
     setPage(1);
   }, []);
 
@@ -322,149 +342,108 @@ export default function App() {
     <>
       <Modal
         isOpen={isOpen}
-        onOpenChange={onOpenChange}
+        // onOpenChange={onClose}
         size="2xl"
         placement="top-center"
-        className=""
       >
-        <ModalContent
-          className="inset-0    justify-center z-50"
-          style={{ width: "50rem" }}
-        >
-          {(onClose) => (
-            <>
-              <ModalHeader className="flex flex-col gap-1 text-black">
-                <h3>Add Transaction</h3>
-              </ModalHeader>
-              <ModalBody>
-                <div className="flex w-full flex-wrap md:flex-nowrap gap-4">
-                  <div className="w-full md:w-1/2">
-                    <Select
-                      label="Item"
-                      className="max-w-xs text-black mb-3"
-                      autoFocus
-                      value={item.item_name}
-                      variant="underlined"
-                      style={{ color: "black" }}
-                    >
-                      {transactions.map((transaction) => (
-                        <SelectItem
-                          variant="bordered"
-                          key={transaction.key}
-                          style={{ color: "black" }}
-                        >
-                          {transaction.label}
-                        </SelectItem>
-                      ))}
-                    </Select>
-
-                    <Input
-                      className="text-black mb-3"
-                      style={{ color: "black" }}
-                      autoFocus
-                      value={item.unitcost}
-                      // type="text"
-                      label="Unit Cost"
-                      
-                      variant="underlined"
-                    />
-                    <Input
-                      className="text-black mb-3"
-                      style={{ color: "black" }}
-                      autoFocus
-                      // type="text"
-                      value={item.quantity}
-                      label="Quantity"
-                      variant="underlined"
-                    />
-                    <Input
-                      className="text-black mb-3"
-                      style={{ color: "black" }}
-                      autoFocus
-                      // type="number"
-                      value={item.discount}
-                      label="Discount"
-                      variant="underlined"
-                    />
-                    <Input
-                      className="text-black mb-3"
-                      style={{ color: "black" }}
-                      autoFocus
-                      // type="number"
-                      value={item.amount}
-                      label="Amount"
-                      variant="underlined"
-                    />
-                  </div>
-                  <div className="w-full md:w-1/2">
-                    <Input
-                      className="text-black mb-3"
-                      style={{ color: "black" }}
-                      autoFocus
-                      // type="number"
-                      value={item.total}
-                      label="Total"
-                      variant="underlined"
-                    />
-                    <Select
-                      label="Costumer Type"
-                      className="max-w-xs text-black mb-3"
-                      autoFocus
-                      variant="underlined"
-                      value={costumer.type}
-                      style={{ color: "black" }}
-                    >
-                      {costumer_types.map((costumer_type) => (
-                        <SelectItem
-                          variant="bordered"
-                          key={costumer_type.key}
-                          style={{ color: "black" }}
-                        >
-                          {costumer_type.label}
-                        </SelectItem>
-                      ))}
-                    </Select>
-                    <Input
-                      className="text-black mb-3"
-                      style={{ color: "black" }}
-                      autoFocus
-                      // type="text"
-                      value={costumer.name}
-                      label="Costumer Name"
-                      variant="underlined"
-                    />
-                    <Input
-                      className="text-black mb-3"
-                      style={{ color: "black" }}
-                      autoFocus
-                      // type="text"
-                      value={payment_method}
-                      label="Payment Method"
-                      variant="underlined"
-                    />
-                    <Input
-                      className="text-black mb-3"
-                      style={{ color: "black" }}
-                      autoFocus
-                      // type="text"
-                      value={salesperson}
-                      label="Sales Person"
-                      variant="underlined"
-                    />
-                  </div>
-                </div>
-              </ModalBody>
-              <ModalFooter className="text-center">
-                <Button
-                  color="primary"
-                  style={{ width: "4rem" }}
-                  onPress={onClose}
+        <ModalContent style={{ width: "50rem" }}>
+          <ModalHeader className="flex flex-col gap-1 text-black">
+            <h3>Add Transaction</h3>
+          </ModalHeader>
+          <ModalBody>
+            <div className="flex w-full flex-wrap md:flex-nowrap gap-4">
+              <div className="w-full md:w-1/2">
+                <Select
+                  label="Item"
+                  value={item_name}
+                  onChange={setItemName}
+                  className="max-w-xs text-black mb-3"
                 >
-                  Save
-                </Button>
-              </ModalFooter>
-            </>
-          )}
+                  {transactions.map((transaction) => (
+                    <SelectItem key={transaction.key} value={transaction.label}>
+                      {transaction.label}
+                    </SelectItem>
+                  ))}
+                </Select>
+
+                <Input
+                  className="text-black mb-3"
+                  value={unit_cost}
+                  label="Unit Cost"
+                  type="number"
+                  onChange={(e) => setUnitCost(parseFloat(e.target.value))}
+                />
+                <Input
+                  className="text-black mb-3"
+                  value={quantity}
+                  label="Quantity"
+                  type="number"
+                  onChange={(e) => setQuantity(parseInt(e.target.value, 10))}
+                />
+                <Input
+                  className="text-black mb-3"
+                  value={discount}
+                  label="Discount"
+                  type="number"
+                  onChange={(e) => setDiscount(parseFloat(e.target.value))}
+                />
+                <Input
+                  className="text-black mb-3"
+                  value={amount}
+                  label="Amount"
+                  type="number"
+                  onChange={(e) => setAmount(parseFloat(e.target.value))}
+                />
+              </div>
+              <div className="w-full md:w-1/2">
+                <Input
+                  className="text-black mb-3"
+                  value={total}
+                  label="Total"
+                  type="number"
+                  onChange={(e) => setTotal(parseFloat(e.target.value))}
+                />
+                <Select
+                  label="Customer Type"
+                  value={costumer_type}
+                  onChange={setCustomerType}
+                  className="max-w-xs text-black mb-3"
+                >
+                  {costumer_types.map((type) => (
+                    <SelectItem key={type.key} value={type.label}>
+                      {type.label}
+                    </SelectItem>
+                  ))}
+                </Select>
+                <Input
+                  className="text-black mb-3"
+                  value={costumer_name}
+                  label="Customer Name"
+                  type="text"
+                  onChange={(e) => setCustomerName(e.target.value)}
+                />
+                <Input
+                  className="text-black mb-3"
+                  value={payment_method}
+                  label="Payment Method"
+                  type="text"
+                  onChange={(e) => setPaymentMethod(e.target.value)}
+                />
+                <Input
+                  className="text-black mb-3"
+                  value={salesperson}
+                  label="Sales Person"
+                  type="text"
+                  onChange={(e) => setSalesPerson(e.target.value)}
+                />
+              </div>
+            </div>
+          </ModalBody>
+          <ModalFooter>
+            <Button color="primary" onPress={handleSubmit}>
+              Save
+            </Button>
+          </ModalFooter>
         </ModalContent>
       </Modal>
 
