@@ -2,13 +2,27 @@
 import React, { useState } from "react";
 import {Modal, ModalContent, ModalHeader, ModalBody, Button, useDisclosure, Tabs, Tab, Input, Listbox, ListboxItem} from "@nextui-org/react";
 import { MdAdd} from 'react-icons/md';
+import axios from "axios";
 
 export default function CreatePayment() {
   const {isOpen, onOpen, onClose} = useDisclosure();
   const [selected, setSelected] = useState("method");
+  const [paymentType, setPaymentType] = useState('')
+  const [paymentOptions, setPaymentOptions] = useState('')
 
   const handleOpen = () => {
     onOpen();
+  }
+
+  const submitPaymentType = async () =>{
+    const response = await axios.post('http://localhost:5000/api/master/createPaymentType', {name: paymentType})
+    console.log(response)
+    setPaymentType('')
+  }
+  const submitPaymentOptions = async ()=>{
+    const response = await axios.post('http://localhost:5000/api/master/createPaymentOptions', {name: paymentOptions})
+    console.log(response)
+    setPaymentOptions('')
   }
   return (
     <>
@@ -54,9 +68,9 @@ export default function CreatePayment() {
                           </Listbox>
                           <form className="flex flex-col gap-4">
                             <span>Create new Payment Options</span>
-                            <Input isRequired label="Options" placeholder="Enter new options"/>
+                            <Input label="Options" placeholder="Enter new options" value={paymentOptions} onChange={(e)=>(setPaymentOptions(e.target.value))}/>
                             <div className="flex gap-2 justify-end">
-                              <Button fullWidth color="primary">
+                              <Button fullWidth color="primary" onPress={submitPaymentOptions}>
                                 Submit
                               </Button>
                             </div>
@@ -73,9 +87,9 @@ export default function CreatePayment() {
                           </Listbox>
                           <form className="flex flex-col gap-4">
                             <span>Create new Payment Type</span>
-                            <Input isRequired label="Type" placeholder="Enter new payment type"/>
+                            <Input label="Type" placeholder="Enter new payment type" value={paymentType} onChange={(e)=>(setPaymentType(e.target.value))}/>
                             <div className="flex gap-2 justify-end">
-                              <Button fullWidth color="primary">
+                              <Button fullWidth color="primary" onPress={submitPaymentType}>
                                 Submit
                               </Button>
                             </div>

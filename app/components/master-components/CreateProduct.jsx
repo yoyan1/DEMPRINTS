@@ -36,14 +36,14 @@ export default function CreateProduct() {
     onOpen();
   }
 
-  const handleProductDataChange = (e) =>{
-    const [name, value] = e.target
+  // const handleProductDataChange = (e) =>{
+  //   const [name, value] = e.target
 
-    setProductData((prevData) => ({
-      ...prevData,
-      [name]: value
-    }))
-  }
+  //   setProductData((prevData) => ({
+  //     ...prevData,
+  //     [name]: value
+  //   }))
+  // }
 
   const submitCategory = async () =>{
     const response = await axios.post('http://localhost:5000/api/master/createCategory', {category_name: category_name})
