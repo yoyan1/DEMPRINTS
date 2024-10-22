@@ -1,6 +1,7 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
+
 import {
   Table,
   TableHeader,
@@ -138,16 +139,6 @@ export default function App() {
     const cellValue = user[columnKey];
 
     switch (columnKey) {
-      // case "customer_name":
-      //   return (
-      //     <User
-      //       avatarProps={{ radius: "lg" }}
-      //       description={user.email}
-      //       name={cellValue}
-      //     >
-      //       {user.email}
-      //     </User>
-      //   );
       case "role":
         return (
           <div className="flex flex-col">
@@ -189,7 +180,25 @@ export default function App() {
         return cellValue;
     }
   }, []);
+  // ----------------------------------
+  const [costumer, setCostumer] = useState({
+    name:'',
+    type: '',
+  });
 
+  const [item, setItem] = useState({
+    item_name:'',
+    quantity:'',
+    unit_cost: '',
+    discount:'',
+    amount: '',
+    total :'',
+  });
+  const [payment_method, setPaymentMethos] = useState();
+  const [salesperson, setSalesPerson] = useState("");
+
+  // ----------------------------------
+  ("");
   const onNextPage = React.useCallback(() => {
     if (page < pages) {
       setPage(page + 1);
@@ -334,6 +343,7 @@ export default function App() {
                       label="Item"
                       className="max-w-xs text-black mb-3"
                       autoFocus
+                      value={item.item_name}
                       variant="underlined"
                       style={{ color: "black" }}
                     >
@@ -352,15 +362,18 @@ export default function App() {
                       className="text-black mb-3"
                       style={{ color: "black" }}
                       autoFocus
-                      type="text"
+                      value={item.unitcost}
+                      // type="text"
                       label="Unit Cost"
+                      
                       variant="underlined"
                     />
                     <Input
                       className="text-black mb-3"
                       style={{ color: "black" }}
                       autoFocus
-                      type="text"
+                      // type="text"
+                      value={item.quantity}
                       label="Quantity"
                       variant="underlined"
                     />
@@ -368,7 +381,8 @@ export default function App() {
                       className="text-black mb-3"
                       style={{ color: "black" }}
                       autoFocus
-                      type="number"
+                      // type="number"
+                      value={item.discount}
                       label="Discount"
                       variant="underlined"
                     />
@@ -376,7 +390,8 @@ export default function App() {
                       className="text-black mb-3"
                       style={{ color: "black" }}
                       autoFocus
-                      type="number"
+                      // type="number"
+                      value={item.amount}
                       label="Amount"
                       variant="underlined"
                     />
@@ -386,7 +401,8 @@ export default function App() {
                       className="text-black mb-3"
                       style={{ color: "black" }}
                       autoFocus
-                      type="number"
+                      // type="number"
+                      value={item.total}
                       label="Total"
                       variant="underlined"
                     />
@@ -395,6 +411,7 @@ export default function App() {
                       className="max-w-xs text-black mb-3"
                       autoFocus
                       variant="underlined"
+                      value={costumer.type}
                       style={{ color: "black" }}
                     >
                       {costumer_types.map((costumer_type) => (
@@ -411,7 +428,8 @@ export default function App() {
                       className="text-black mb-3"
                       style={{ color: "black" }}
                       autoFocus
-                      type="text"
+                      // type="text"
+                      value={costumer.name}
                       label="Costumer Name"
                       variant="underlined"
                     />
@@ -419,7 +437,8 @@ export default function App() {
                       className="text-black mb-3"
                       style={{ color: "black" }}
                       autoFocus
-                      type="text"
+                      // type="text"
+                      value={payment_method}
                       label="Payment Method"
                       variant="underlined"
                     />
@@ -427,15 +446,20 @@ export default function App() {
                       className="text-black mb-3"
                       style={{ color: "black" }}
                       autoFocus
-                      type="text"
+                      // type="text"
+                      value={salesperson}
                       label="Sales Person"
                       variant="underlined"
                     />
                   </div>
                 </div>
               </ModalBody>
-              <ModalFooter className="text-center" >
-                <Button color="primary" style={{width:'4rem'}} onPress={onClose}>
+              <ModalFooter className="text-center">
+                <Button
+                  color="primary"
+                  style={{ width: "4rem" }}
+                  onPress={onClose}
+                >
                   Save
                 </Button>
               </ModalFooter>
