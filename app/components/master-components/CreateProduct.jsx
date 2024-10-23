@@ -4,6 +4,8 @@ import {Modal, ModalContent, ModalHeader, ModalBody, Button, useDisclosure, List
 import {Tabs, Tab, Input} from "@nextui-org/react";
 import {Select,  SelectItem} from "@nextui-org/select";
 import { MdAdd } from 'react-icons/md';
+import { TbEdit } from "react-icons/tb";
+import { MdDeleteOutline } from "react-icons/md";
 import axios from "axios";
 // import { Input } from "@nextui-org/react";
 
@@ -44,21 +46,31 @@ export default function CreateProduct() {
   //     [name]: value
   //   }))
   // }
-
+  const [isLoading, setIsLoading] = useState(false)
   const submitCategory = async () =>{
+    setIsLoading(true)
     const response = await axios.post('http://localhost:5000/api/master/createCategory', {category_name: category_name})
     console.log(response);
+    setIsLoading(false)
+    fetchCategoryAndMeasurement()
+    setCategoryName('')
   }
   const submitMeasurement = async () =>{
+    setIsLoading(true)
     const response = await axios.post('http://localhost:5000/api/master/createMeasurement', {unit: unit})
     console.log(response);
+    setIsLoading(false)
+    fetchCategoryAndMeasurement()
+    setUnit('')
   }
-
+  
   const submitProduct = async () =>{
+    setIsLoading(true)
     const response = await axios.post('http://localhost:5000/api/master/createProduct', productData)
     console.log(response);
-
+    
     setProductData({ name: '', category: '', unit: '', price: 0,})
+    setIsLoading(false)
   }
 
   return (
@@ -90,7 +102,9 @@ export default function CreateProduct() {
                         <Tabs
                           fullWidth
                           size="md"
-                          aria-label="Tabs form"
+                          color="primary"
+                          aria-label="Tabs colors" 
+                          radius="full"
                           selectedKey={selected}
                           onSelectionChange={setSelected}
                         >
@@ -99,7 +113,35 @@ export default function CreateProduct() {
                               <span>Create Product Category</span>
                               <Input isRequired label="Category" placeholder="Enter category" type="email" value={category_name} onChange={(e) => setCategoryName(e.target.value)}/>
                               <div className="flex gap-2 justify-end">
-                                <Button type="submit" onPress={submitCategory} fullWidth color="primary">
+                                <Button 
+                                type="submit" 
+                                onPress={submitCategory} 
+                                fullWidth 
+                                color="primary"
+                                isLoading={isLoading}
+                                spinner={
+                                    <svg
+                                      className="animate-spin h-5 w-5 text-current"
+                                      fill="none"
+                                      viewBox="0 0 24 24"
+                                      xmlns="http://www.w3.org/2000/svg"
+                                    >
+                                      <circle
+                                        className="opacity-25"
+                                        cx="12"
+                                        cy="12"
+                                        r="10"
+                                        stroke="currentColor"
+                                        strokeWidth="4"
+                                      />
+                                      <path
+                                        className="opacity-75"
+                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                        fill="currentColor"
+                                      />
+                                    </svg>
+                                  }
+                                >
                                   Submit
                                 </Button>
                               </div>
@@ -109,30 +151,72 @@ export default function CreateProduct() {
                             color="solid" 
                             topContent={<span>List of Category</span>}
                             >
-                              {category.map(item =>(
-                                <ListboxItem key={item.id}>{item.name}</ListboxItem>
+                              {category.map((item) =>(
+                                <ListboxItem showDivider key={item}>
+                                  <div className="flex justify-between items-center">
+                                    {item.name} 
+                                    <div>
+                                      <Button isIconOnly color="primary" variant="light"><TbEdit className="h-5 w-5"/> </Button>
+                                      <Button isIconOnly color="danger" variant="light"><MdDeleteOutline className="h-5 w-5"/></Button>
+                                    </div>
+                                  </div>
+                                </ListboxItem>
                               ))}
                             </Listbox>
                           </Tab>
                           <Tab key="unit" title="Measurement">
+                            <form className="flex flex-col gap-4">
+                              <span>Create Unit of Measurement</span>
+                              <Input isRequired label="Unit" placeholder="Unit of measurement" value={unit} onChange={(e) => setUnit(e.target.value)}/>
+                              <div className="flex gap-2 justify-end">
+                                <Button 
+                                onPress={submitMeasurement} 
+                                fullWidth color="primary"
+                                isLoading={isLoading}
+                                spinner={
+                                    <svg
+                                      className="animate-spin h-5 w-5 text-current"
+                                      fill="none"
+                                      viewBox="0 0 24 24"
+                                      xmlns="http://www.w3.org/2000/svg"
+                                    >
+                                      <circle
+                                        className="opacity-25"
+                                        cx="12"
+                                        cy="12"
+                                        r="10"
+                                        stroke="currentColor"
+                                        strokeWidth="4"
+                                      />
+                                      <path
+                                        className="opacity-75"
+                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                        fill="currentColor"
+                                      />
+                                    </svg>
+                                  }
+                                >
+                                  Submit
+                                </Button>
+                              </div>
+                            </form>
                             <Listbox
                               aria-label="Listbox Variants"
                               color="solid" 
                               topContent={<span>List Unit of Measurements</span>}
                               >
-                                {measurement.map(item =>(
-                                  <ListboxItem key={item.id}>{item.name}</ListboxItem>
+                                {measurement.map((item) =>(
+                                  <ListboxItem showDivider key={item}>
+                                    <div className="flex justify-between items-center">
+                                      {item.name} 
+                                      <div>
+                                        <Button isIconOnly color="primary" variant="light"><TbEdit className="h-5 w-5"/> </Button>
+                                        <Button isIconOnly color="danger" variant="light"><MdDeleteOutline className="h-5 w-5"/></Button>
+                                      </div>
+                                    </div>
+                                  </ListboxItem>
                                 ))}
                               </Listbox>
-                            <form className="flex flex-col gap-4">
-                              <span>Create Unit of Measurement</span>
-                              <Input isRequired label="Unit" placeholder="Unit of measurement" value={unit} onChange={(e) => setUnit(e.target.value)}/>
-                              <div className="flex gap-2 justify-end">
-                                <Button onPress={submitMeasurement} fullWidth color="primary">
-                                  Submit
-                                </Button>
-                              </div>
-                            </form>
                           </Tab>
                           <Tab key="create" title="Product">
                             <form className="flex flex-col gap-4">
@@ -168,7 +252,33 @@ export default function CreateProduct() {
 
                               <Input type="number" label="Product price" placeholder="Enter product name" value={productData.price} name="price" onChange={(e)=>(setProductData((prevData)=>({...prevData, price: e.target.value})))}/>
                               <div className="flex gap-2 justify-end">
-                                <Button onPress={submitProduct} fullWidth color="primary">
+                                <Button 
+                                onPress={submitProduct} 
+                                fullWidth color="primary"
+                                isLoading={isLoading}
+                                spinner={
+                                    <svg
+                                      className="animate-spin h-5 w-5 text-current"
+                                      fill="none"
+                                      viewBox="0 0 24 24"
+                                      xmlns="http://www.w3.org/2000/svg"
+                                    >
+                                      <circle
+                                        className="opacity-25"
+                                        cx="12"
+                                        cy="12"
+                                        r="10"
+                                        stroke="currentColor"
+                                        strokeWidth="4"
+                                      />
+                                      <path
+                                        className="opacity-75"
+                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                        fill="currentColor"
+                                      />
+                                    </svg>
+                                  }
+                                >
                                   Submit
                                 </Button>
                               </div>

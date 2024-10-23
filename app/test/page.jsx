@@ -1,6 +1,7 @@
 "use client"
 import React, { useState } from 'react';
 import axios from 'axios';
+import Toast from '../components/public/toast'
 
 const UploadForm = () => {
   const [selectedFile, setSelectedFile] = useState(null);
@@ -28,6 +29,7 @@ const UploadForm = () => {
   
   return (
     <div>
+      <Toast/>
       <form onSubmit={handleSubmit}>
         <input type="file" onChange={handleFileChange} />
         <button type="submit">Upload</button>

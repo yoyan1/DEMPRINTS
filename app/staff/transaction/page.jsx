@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import {
   Table,
@@ -45,7 +45,6 @@ import {
   transactions,
 } from "./data";
 import axios from "axios";
-import { useParams } from "next/navigation";
 
 const statusColorMap = {
   active: "success",
@@ -183,7 +182,6 @@ export default function App() {
     }
   }, []);
   // ----------------------------------
-  const [transaction, setTransaction] = useState();
 
   const [costumer_name, setCostumerName] = useState("");
   const [costumer_type, setCostumerType] = useState("");
@@ -195,9 +193,24 @@ export default function App() {
   const [total, setTotal] = useState(0);
   const [payment_method, setPaymentMethod] = useState("");
   const [salesperson, setSalesPerson] = useState("");
-
   const [success_message, setSuccessMessage] = useState("");
+  const [payment, setPaymentt] = useState()
 
+  useEffect(() => {
+    fetchPayment();
+  }, []);
+
+  const fetchPayment = async () => {
+    try {
+      const response = await axios.get(
+        `http://localhost:5000/api/master/getPaymentOptions`
+      );
+      setPaymentt(response.data);
+      console.log(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   const handleSubmit = async () => {
     // event.preventDefault();
     try {
@@ -240,22 +253,7 @@ export default function App() {
     // }
     setSuccessMessage("");
   };
-  const {id} = useParams();
-  const fetchTransaction = async () => {
-    try {
-      const response = await axios.get(
-        `http://localhost:5000/api/collection/gettransaction`
-      );
-      setTransaction(response.data);
-    } catch (error) {
-      console.log("Faild", error);
-    }
-  };
 
-  useEffect(() =>{
-    fetchTransaction();
-    setTransaction();
-  },[id])
   // ----------------------------------
   ("");
   const onNextPage = React.useCallback(() => {
@@ -508,17 +506,27 @@ export default function App() {
                       variant="bordered"
                       onChange={(event) => setCostumerName(event.target.value)}
                     />
-                    <Input
-                      className="text-black mb-3"
-                      style={{ color: "black" }}
+
+                    <Select
+                      label="Payment Method"
+                      className="max-w-xs text-black mb-3"
                       autoFocus
                       isRequired
-                      type="text"
-                      value={payment_method}
-                      label="Payment Method"
                       variant="bordered"
+                      value={payment_method}
+                      style={{ color: "black" }}
                       onChange={(event) => setPaymentMethod(event.target.value)}
-                    />
+                    >
+                      {payment.map((method) => (
+                        <SelectItem
+                          variant="bordered"
+                          style={{ color: "black" }}
+                        >
+                          {method.name}
+                        </SelectItem>
+                      ))}
+                    </Select>
+
                     <Input
                       className="text-black mb-3"
                       style={{ color: "black" }}
@@ -593,6 +601,7 @@ export default function App() {
           )}
         </ModalContent>
       </Modal>
+
       <div className="overflow-x-auto">
         <Table
           aria-label="Example table with custom cells, pagination and sorting"
@@ -632,46 +641,6 @@ export default function App() {
           </TableBody>
         </Table>
       </div>
-
-      {/* <div className="overflow-x-auto">
-        <Table
-          aria-label="Example table with custom cells, pagination and sorting"
-          isHeaderSticky
-          bottomContent={bottomContent}
-          bottomContentPlacement="outside"
-          classNames=""
-          selectedKeys={selectedKeys}
-          selectionMode="multiple"
-          sortDescriptor={sortDescriptor}
-          topContent={topContent}
-          topContentPlacement="outside"
-          onSelectionChange={setSelectedKeys}
-          onSortChange={setSortDescriptor}
-        >
-          <TableHeader columns={headerColumns}>
-            {(column) => (
-              <TableColumn
-                key={column.uid}
-                align={column.uid === "actions" ? "center" : "start"}
-                allowsSorting={column.sortable}
-              >
-                {column.name}
-              </TableColumn>
-            )}
-          </TableHeader>
-          <TableBody emptyContent={"No users found"} items={sortedItems}>
-            {(item) => (
-              <TableRow key={item.id}>
-                {(columnKey) => (
-                  <TableCell className="text-black">
-                    {renderCell(item, columnKey)}
-                  </TableCell>
-                )}
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </div> */}
     </>
   );
 }
