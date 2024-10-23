@@ -1,14 +1,18 @@
 "use client"
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {Modal, ModalContent, ModalHeader, ModalBody, Button, useDisclosure, Tabs, Tab, Input, Listbox, ListboxItem} from "@nextui-org/react";
 import { IoMdAdd } from "react-icons/io";
 import { CiCircleRemove } from "react-icons/ci";
+import axios from "axios";
+import Toast from '../public/toast'
 
 export default function CreateExpenses() {
   const {isOpen, onOpen, onClose} = useDisclosure();
   const [selected, setSelected] = useState("operational");
   const [category, setCategory] = useState({name: '', list: []})
   const [inputValue, setInputValue] = useState('')
+  const [categoryList, setCategoryList] = useState([])
+    const [data, setData] = useState({})
 
   const handleOpen = () => {
     onOpen();
@@ -19,17 +23,17 @@ export default function CreateExpenses() {
   };
 
   const addItemToList = () => {
-    if(inputValue.trim() !== ''){
-        const newItem = inputValue;
-        if (newItem) {
-          setCategory((prevData) => ({
-            ...prevData,
-            list: [...prevData.list, newItem],
-          }));
+        if(inputValue.trim() !== ''){
+            const newItem = inputValue;
+            if (newItem) {
+            setCategory((prevData) => ({
+                ...prevData,
+                list: [...prevData.list, newItem],
+            }));
+            }
+            console.log(category);
+            setInputValue('')
         }
-        console.log(category);
-        setInputValue('')
-    }
 
   
     };
@@ -41,6 +45,45 @@ export default function CreateExpenses() {
         })
     };    
 
+    const fetchExpensesCategory = async () =>{
+        const result = await axios.get('http://localhost:5000/api/master/getExpensesCategory')
+        setCategoryList(result.data)
+    } 
+
+    const [isLoading, setIsLoading] = useState(false)
+    const submit = async () =>{
+        setIsLoading(true)
+        if(inputValue.trim() !== ''){
+            const newItem = inputValue;
+            if (newItem) {
+            setCategory((prevData) => ({
+                ...prevData,
+                list: [...prevData.list, newItem],
+            }));
+            }
+            console.log(category);
+            setInputValue('')
+        }
+
+        try{
+            const response = await axios.post('http://localhost:5000/api/master/createExpensesCategory', category)
+            setData({message: response.data.message, isSuccess: response.data.isSuccess})
+            setIsLoading(false)
+            fetchExpensesCategory()
+            setCategory({name: '', list: []})
+        } catch(e){
+            console.log(e)
+        }
+    } 
+  
+
+    useEffect(()=>{
+        fetchExpensesCategory()
+    }, [])
+
+    const close = () =>{
+        setData({})
+    }
 
   return (
     <>
@@ -67,6 +110,7 @@ export default function CreateExpenses() {
                     <>
                     <ModalHeader className="flex flex-col gap-1">Expenses Master Data</ModalHeader>
                     <ModalBody>
+                        <Toast data={data} isClose={close}/>
                         <form>
                             <div className="flex flex-col ap-5">
                                 <div>
@@ -113,7 +157,36 @@ export default function CreateExpenses() {
                                                     ): null}    
                                                 </div>
                                                 <div className="flex justify-center pt-5">
-                                                    <Button color="primary" className="w-44">Submit</Button>
+                                                    <Button 
+                                                    color="primary" 
+                                                    className="w-44" 
+                                                    onPress={submit} 
+                                                    isLoading={isLoading}
+                                                    spinner={
+                                                        <svg
+                                                          className="animate-spin h-5 w-5 text-current"
+                                                          fill="none"
+                                                          viewBox="0 0 24 24"
+                                                          xmlns="http://www.w3.org/2000/svg"
+                                                        >
+                                                          <circle
+                                                            className="opacity-25"
+                                                            cx="12"
+                                                            cy="12"
+                                                            r="10"
+                                                            stroke="currentColor"
+                                                            strokeWidth="4"
+                                                          />
+                                                          <path
+                                                            className="opacity-75"
+                                                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                                            fill="currentColor"
+                                                          />
+                                                        </svg>
+                                                      }
+                                                    >
+                                                        Submit
+                                                    </Button>
                                                 </div>
                                             </form>
                                         </Tab>
@@ -123,9 +196,11 @@ export default function CreateExpenses() {
                                                 aria-label="Listbox Variants"
                                                 color="solid" 
                                                 >
-                                                    <ListboxItem>
-                                                        
-                                                    </ListboxItem>
+                                                    {categoryList.map(item => (
+                                                        <ListboxItem key={item.id}>
+                                                            {item.name}
+                                                        </ListboxItem>
+                                                    ))}
                                                 </Listbox>
                                             </div>
                                         </Tab>
