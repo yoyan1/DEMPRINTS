@@ -44,6 +44,7 @@ import {
   costumer_types,
   transactions,
 } from "./data";
+import axios from "axios";
 
 const statusColorMap = {
   active: "success",
@@ -181,21 +182,51 @@ export default function App() {
     }
   }, []);
   // ----------------------------------
-  const [costumer, setCostumer] = useState({
-    name:'',
-    type: '',
-  });
 
-  const [item, setItem] = useState({
-    item_name:'',
-    quantity:'',
-    unit_cost: '',
-    discount:'',
-    amount: '',
-    total :'',
-  });
-  const [payment_method, setPaymentMethos] = useState();
+  const [costumer_name, setCostumerName] = useState("");
+  const [costumer_type, setCostumerType] = useState("");
+  const [item_name, setItemName] = useState("");
+  const [quantity, setQuantity] = useState(0);
+  const [unit_cost, setUnitCost] = useState(0);
+  const [discount, setDiscount] = useState(0);
+  const [amount, setAmount] = useState(0);
+  const [total, setTotal] = useState(0);
+  const [payment_method, setPaymentMethod] = useState("");
   const [salesperson, setSalesPerson] = useState("");
+
+  const [success_message, setSuccessMessage] = useState("");
+
+  const handleSubmit = async () => {
+    // event.preventDefault();
+    try {
+      const response = await axios.post(
+        `http://localhost:5000/api/collection/addtransaction`,
+        {
+          costumer_name,
+          costumer_type,
+          item_name,
+          quantity,
+          unit_cost,
+          discount,
+          amount,
+          total,
+          payment_method,
+          salesperson,
+        }
+      );
+
+      setSuccessMessage("Transaction added successfully!");
+
+      console.log(response.data);
+    } catch (error) {
+      console.log("Failed", error);
+    }
+  };
+
+  const handleClose = () => {
+    
+    setSuccessMessage("");
+  };
 
   // ----------------------------------
   ("");
@@ -211,8 +242,8 @@ export default function App() {
     }
   }, [page]);
 
-  const onRowsPerPageChange = React.useCallback((e) => {
-    setRowsPerPage(Number(e.target.value));
+  const onRowsPerPageChange = React.useCallback((event) => {
+    setRowsPerPage(Number(event.target.value));
     setPage(1);
   }, []);
 
@@ -336,6 +367,7 @@ export default function App() {
               <ModalHeader className="flex flex-col gap-1 text-black">
                 <h3>Add Transaction</h3>
               </ModalHeader>
+
               <ModalBody>
                 <div className="flex w-full flex-wrap md:flex-nowrap gap-4">
                   <div className="w-full md:w-1/2">
@@ -343,9 +375,10 @@ export default function App() {
                       label="Item"
                       className="max-w-xs text-black mb-3"
                       autoFocus
-                      value={item.item_name}
-                      variant="underlined"
+                      value={item_name}
+                      variant="bordered"
                       style={{ color: "black" }}
+                      onChange={(event) => setItemName(event.target.value)}
                     >
                       {transactions.map((transaction) => (
                         <SelectItem
@@ -362,38 +395,41 @@ export default function App() {
                       className="text-black mb-3"
                       style={{ color: "black" }}
                       autoFocus
-                      value={item.unitcost}
-                      // type="text"
+                      value={unit_cost}
+                      type="text"
                       label="Unit Cost"
-                      
-                      variant="underlined"
+                      variant="bordered"
+                      onChange={(event) => setUnitCost(event.target.value)}
                     />
                     <Input
                       className="text-black mb-3"
                       style={{ color: "black" }}
                       autoFocus
-                      // type="text"
-                      value={item.quantity}
+                      type="text"
+                      value={quantity}
                       label="Quantity"
-                      variant="underlined"
+                      variant="bordered"
+                      onChange={(event) => setQuantity(event.target.value)}
                     />
                     <Input
                       className="text-black mb-3"
                       style={{ color: "black" }}
                       autoFocus
-                      // type="number"
-                      value={item.discount}
+                      type="text"
+                      value={discount}
                       label="Discount"
-                      variant="underlined"
+                      variant="bordered"
+                      onChange={(event) => setDiscount(event.target.value)}
                     />
                     <Input
                       className="text-black mb-3"
                       style={{ color: "black" }}
                       autoFocus
-                      // type="number"
-                      value={item.amount}
+                      type="text"
+                      value={amount}
                       label="Amount"
-                      variant="underlined"
+                      variant="bordered"
+                      onChange={(event) => setAmount(event.target.value)}
                     />
                   </div>
                   <div className="w-full md:w-1/2">
@@ -401,18 +437,20 @@ export default function App() {
                       className="text-black mb-3"
                       style={{ color: "black" }}
                       autoFocus
-                      // type="number"
-                      value={item.total}
+                      type="text"
+                      value={total}
                       label="Total"
-                      variant="underlined"
+                      variant="bordered"
+                      onChange={(event) => setTotal(event.target.value)}
                     />
                     <Select
                       label="Costumer Type"
                       className="max-w-xs text-black mb-3"
                       autoFocus
-                      variant="underlined"
-                      value={costumer.type}
+                      variant="bordered"
+                      value={costumer_type}
                       style={{ color: "black" }}
+                      onChange={(event) => setCostumerType(event.target.value)}
                     >
                       {costumer_types.map((costumer_type) => (
                         <SelectItem
@@ -428,37 +466,85 @@ export default function App() {
                       className="text-black mb-3"
                       style={{ color: "black" }}
                       autoFocus
-                      // type="text"
-                      value={costumer.name}
+                      type="text"
+                      value={costumer_name}
                       label="Costumer Name"
-                      variant="underlined"
+                      variant="bordered"
+                      onChange={(event) => setCostumerName(event.target.value)}
                     />
                     <Input
                       className="text-black mb-3"
                       style={{ color: "black" }}
                       autoFocus
-                      // type="text"
+                      type="text"
                       value={payment_method}
                       label="Payment Method"
-                      variant="underlined"
+                      variant="bordered"
+                      onChange={(event) => setPaymentMethod(event.target.value)}
                     />
                     <Input
                       className="text-black mb-3"
                       style={{ color: "black" }}
                       autoFocus
-                      // type="text"
+                      type="text"
                       value={salesperson}
                       label="Sales Person"
-                      variant="underlined"
+                      variant="bordered"
+                      onChange={(event) => setSalesPerson(event.target.value)}
                     />
                   </div>
                 </div>
+                {success_message && (
+                  <div
+                    id="toast-undo"
+                    class="flex items-center w-full max-w-xs p-2 bg-green-500"
+                    role="alert"
+                  >
+                    <div className="text-sm font-normal">{success_message}</div>
+                    <div className="flex items-center ms-auto space-x-2 rtl:space-x-reverse">
+                      <a
+                        className="text-sm font-medium text-blue-600 p-1.5 hover:bg-blue-100 rounded-lg dark:text-blue-500 dark:hover:bg-gray-700"
+                        href="#"
+                      ></a>
+                      <button
+                        type="button"
+                        className="ms-auto -mx-1.5 -my-1.5 bg-black text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 p-1.5"
+                        data-dismiss-target="#toast-undo"
+                        aria-label="Close"
+                        onClick={handleClose}
+                      >
+                        <span className="sr-only">Close</span>
+                        <svg
+                          className="w-3 h-3"
+                          aria-hidden="true"
+                          fill="none"
+                          viewBox="0 0 14 14"
+                        >
+                          <path
+                            stroke="currentColor"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
+                          />
+                        </svg>
+                      </button>
+                    </div>
+                    {/* <button
+                      type="button"
+                      className="close"
+                      onClick={() => setSuccessMessage("")}
+                    ></button> */}
+                  </div>
+                )}
               </ModalBody>
-              <ModalFooter className="text-center">
+
+              <ModalFooter>
                 <Button
                   color="primary"
                   style={{ width: "4rem" }}
-                  onPress={onClose}
+                  onPress={handleSubmit}
+                  type="submit"
                 >
                   Save
                 </Button>
