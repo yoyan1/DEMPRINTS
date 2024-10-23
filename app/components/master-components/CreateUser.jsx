@@ -1,5 +1,5 @@
 "use client";
-import React, { useState} from "react";
+import React, { useState, useEffect} from "react";
 import axios from "axios";
 import {
   Modal,
@@ -30,6 +30,12 @@ export default function CreateUser() {
   const [errorMessages, setErrorMessages] = useState({});
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
+  const [jobData, setJobData] = useState({
+    job_title: [],
+    department: [],
+    compensation_basis: [],
+    frequency: []
+  })
   const [mandatoryBenefit, setMandatoryBenefit] = useState({
     ss_no: 0,
     pab_ibig_no: 0,
@@ -138,14 +144,6 @@ export default function CreateUser() {
   };
 
 
-  const jobOptions = [
-    "Executive Director",
-    "HR Officer",
-    "Operation Head",
-    "Graphic Artist",
-  ];
-  const depOptions = ["Management", "Operation", "Executive"];
-
   const isInvalid = () => {
     const errors = {};
 
@@ -179,7 +177,26 @@ export default function CreateUser() {
     setErrorMessages(errors);
     return errors;
   };
+
+  const fetchJobData = async () =>{
+      const result = await axios.get('http://localhost:5000/api/master/getJobData')
+      if(result.data){
+          const data = result.data[0]
+          console.log(result.data)
+          setJobData({
+              id: data._id,
+              job_title: data.job_title,
+              department: data.department,
+              compensation_basis: data.compensation_basis,
+              frequency: data.frequency,
+          })
+      }
+  }
   
+  useEffect(() =>{
+    fetchJobData()
+  }, [])
+
   const [isLoading, setIsLoading] = useState(false)
   const submit = async () => {
     const errors = isInvalid();
@@ -256,7 +273,7 @@ export default function CreateUser() {
                         onSelectionChange={setSelected}
                       >
                         <Tab key="job" title="Job Details">
-                            <JobDetails/>
+                            <JobDetails fetch={fetchJobData}/>
                         </Tab>
                         <Tab key="new" title="New Employee">
                             {step === 1 ? (
@@ -530,7 +547,7 @@ export default function CreateUser() {
                                       value={credentials.job_title}
                                       onChange={handleChange}
                                     >
-                                      {jobOptions.map((job) => (
+                                      {jobData.job_title.map((job) => (
                                         <SelectItem key={job}>{job}</SelectItem>
                                       ))}
                                     </Select>
@@ -544,7 +561,7 @@ export default function CreateUser() {
                                       value={credentials.department}
                                       onChange={handleChange}
                                     >
-                                      {depOptions.map((dep) => (
+                                      {jobData.department.map((dep) => (
                                         <SelectItem key={dep}>{dep}</SelectItem>
                                       ))}
                                     </Select>
@@ -590,9 +607,9 @@ export default function CreateUser() {
                                       value={credentials.basis}
                                       onChange={handleChange}
                                     >
-                                      <SelectItem key="hourly">Hourly</SelectItem>
-                                      <SelectItem key="daily">Daily</SelectItem>
-                                      <SelectItem key="basic pay">basic Pay</SelectItem>
+                                      {jobData.compensation_basis.map(item => (
+                                        <SelectItem key={item}>{item}</SelectItem>
+                                      ))}
                                     </Select>
                                     <Select
                                       label="Frequency"
@@ -603,12 +620,9 @@ export default function CreateUser() {
                                       value={credentials.frequency}
                                       onChange={handleChange}
                                     >
-                                      <SelectItem key="daily">Daily</SelectItem>
-                                      <SelectItem key="weekly">Weekly</SelectItem>
-                                      <SelectItem key="bi-monthly">
-                                        Bi-monthly
-                                      </SelectItem>
-                                      <SelectItem key="monthly">Monthly</SelectItem>
+                                      {jobData.frequency.map(item => (
+                                        <SelectItem key={item}>{item}</SelectItem>
+                                      ))}
                                     </Select>
                                   </div>
                                 </div>
@@ -636,53 +650,55 @@ export default function CreateUser() {
                         </Tab>
                       </Tabs>
                   </ModalBody>
-                  <ModalFooter>
-                    <Button
-                      color="danger"
-                      variant="light"
-                      onPress={handleClose}
-                    >
-                      {step === 1 || step === 4 ? "close" : "prev"}
-                    </Button>
-                    {step === 3 ? (
-                      <Button 
-                      color="primary" 
-                      onPress={submit} 
-                      type="submit"
-                      isLoading={isLoading}
-                      spinner={
-                          <svg
-                            className="animate-spin h-5 w-5 text-current"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <circle
-                              className="opacity-25"
-                              cx="12"
-                              cy="12"
-                              r="10"
-                              stroke="currentColor"
-                              strokeWidth="4"
-                            />
-                            <path
-                              className="opacity-75"
-                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                              fill="currentColor"
-                            />
-                          </svg>
-                        }
+                  {selected === 'new'? (
+                    <ModalFooter>
+                      <Button
+                        color="danger"
+                        variant="light"
+                        onPress={handleClose}
                       >
-                        submit
+                        {step === 1 || step === 4 ? "close" : "prev"}
                       </Button>
-                    ) :step === 4 ?(
-                      <div></div>
-                    ): (
-                      <Button color="primary" onPress={handleButtonClick}>
-                        next
-                      </Button>
-                    )}
-                  </ModalFooter>
+                      {step === 3 ? (
+                        <Button 
+                        color="primary" 
+                        onPress={submit} 
+                        type="submit"
+                        isLoading={isLoading}
+                        spinner={
+                            <svg
+                              className="animate-spin h-5 w-5 text-current"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <circle
+                                className="opacity-25"
+                                cx="12"
+                                cy="12"
+                                r="10"
+                                stroke="currentColor"
+                                strokeWidth="4"
+                              />
+                              <path
+                                className="opacity-75"
+                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                fill="currentColor"
+                              />
+                            </svg>
+                          }
+                        >
+                          submit
+                        </Button>
+                      ) :step === 4 ?(
+                        <div></div>
+                      ): (
+                        <Button color="primary" onPress={handleButtonClick}>
+                          next
+                        </Button>
+                      )}
+                    </ModalFooter>
+                  ): null}
                 </>
               )}
             </ModalContent>
