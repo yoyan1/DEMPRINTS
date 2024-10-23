@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import {
   Table,
@@ -45,6 +45,7 @@ import {
   transactions,
 } from "./data";
 import axios from "axios";
+import { useParams } from "next/navigation";
 
 const statusColorMap = {
   active: "success",
@@ -182,6 +183,7 @@ export default function App() {
     }
   }, []);
   // ----------------------------------
+  const [transaction, setTransaction] = useState();
 
   const [costumer_name, setCostumerName] = useState("");
   const [costumer_type, setCostumerType] = useState("");
@@ -224,10 +226,36 @@ export default function App() {
   };
 
   const handleClose = () => {
-    
+    // FormData={
+    //   costumer_name:'',
+    //       costumer_type :"",
+    //       item_name:'',
+    //       quantity:'',
+    //       unit_cost:'',
+    //       discount: '',
+    //       amount:'',
+    //       total:'',
+    //       payment_method:'',
+    //       salesperson:'',
+    // }
     setSuccessMessage("");
   };
+  const {id} = useParams();
+  const fetchTransaction = async () => {
+    try {
+      const response = await axios.get(
+        `http://localhost:5000/api/collection/gettransaction`
+      );
+      setTransaction(response.data);
+    } catch (error) {
+      console.log("Faild", error);
+    }
+  };
 
+  useEffect(() =>{
+    fetchTransaction();
+    setTransaction();
+  },[id])
   // ----------------------------------
   ("");
   const onNextPage = React.useCallback(() => {
@@ -375,6 +403,7 @@ export default function App() {
                       label="Item"
                       className="max-w-xs text-black mb-3"
                       autoFocus
+                      isRequired
                       value={item_name}
                       variant="bordered"
                       style={{ color: "black" }}
@@ -395,6 +424,7 @@ export default function App() {
                       className="text-black mb-3"
                       style={{ color: "black" }}
                       autoFocus
+                      isRequired
                       value={unit_cost}
                       type="text"
                       label="Unit Cost"
@@ -405,6 +435,7 @@ export default function App() {
                       className="text-black mb-3"
                       style={{ color: "black" }}
                       autoFocus
+                      isRequired
                       type="text"
                       value={quantity}
                       label="Quantity"
@@ -415,6 +446,7 @@ export default function App() {
                       className="text-black mb-3"
                       style={{ color: "black" }}
                       autoFocus
+                      isRequired
                       type="text"
                       value={discount}
                       label="Discount"
@@ -425,6 +457,7 @@ export default function App() {
                       className="text-black mb-3"
                       style={{ color: "black" }}
                       autoFocus
+                      isRequired
                       type="text"
                       value={amount}
                       label="Amount"
@@ -437,6 +470,7 @@ export default function App() {
                       className="text-black mb-3"
                       style={{ color: "black" }}
                       autoFocus
+                      isRequired
                       type="text"
                       value={total}
                       label="Total"
@@ -447,6 +481,7 @@ export default function App() {
                       label="Costumer Type"
                       className="max-w-xs text-black mb-3"
                       autoFocus
+                      isRequired
                       variant="bordered"
                       value={costumer_type}
                       style={{ color: "black" }}
@@ -466,6 +501,7 @@ export default function App() {
                       className="text-black mb-3"
                       style={{ color: "black" }}
                       autoFocus
+                      isRequired
                       type="text"
                       value={costumer_name}
                       label="Costumer Name"
@@ -476,6 +512,7 @@ export default function App() {
                       className="text-black mb-3"
                       style={{ color: "black" }}
                       autoFocus
+                      isRequired
                       type="text"
                       value={payment_method}
                       label="Payment Method"
@@ -486,6 +523,7 @@ export default function App() {
                       className="text-black mb-3"
                       style={{ color: "black" }}
                       autoFocus
+                      isRequired
                       type="text"
                       value={salesperson}
                       label="Sales Person"
@@ -497,10 +535,12 @@ export default function App() {
                 {success_message && (
                   <div
                     id="toast-undo"
-                    class="flex items-center w-full max-w-xs p-2 bg-green-500"
+                    class="flex items-center w-full max-w-xs p-1 "
                     role="alert"
                   >
-                    <div className="text-sm font-normal">{success_message}</div>
+                    <div className="text-sm font-normal text-green-900">
+                      {success_message}
+                    </div>
                     <div className="flex items-center ms-auto space-x-2 rtl:space-x-reverse">
                       <a
                         className="text-sm font-medium text-blue-600 p-1.5 hover:bg-blue-100 rounded-lg dark:text-blue-500 dark:hover:bg-gray-700"
@@ -553,7 +593,6 @@ export default function App() {
           )}
         </ModalContent>
       </Modal>
-
       <div className="overflow-x-auto">
         <Table
           aria-label="Example table with custom cells, pagination and sorting"
@@ -593,6 +632,46 @@ export default function App() {
           </TableBody>
         </Table>
       </div>
+
+      {/* <div className="overflow-x-auto">
+        <Table
+          aria-label="Example table with custom cells, pagination and sorting"
+          isHeaderSticky
+          bottomContent={bottomContent}
+          bottomContentPlacement="outside"
+          classNames=""
+          selectedKeys={selectedKeys}
+          selectionMode="multiple"
+          sortDescriptor={sortDescriptor}
+          topContent={topContent}
+          topContentPlacement="outside"
+          onSelectionChange={setSelectedKeys}
+          onSortChange={setSortDescriptor}
+        >
+          <TableHeader columns={headerColumns}>
+            {(column) => (
+              <TableColumn
+                key={column.uid}
+                align={column.uid === "actions" ? "center" : "start"}
+                allowsSorting={column.sortable}
+              >
+                {column.name}
+              </TableColumn>
+            )}
+          </TableHeader>
+          <TableBody emptyContent={"No users found"} items={sortedItems}>
+            {(item) => (
+              <TableRow key={item.id}>
+                {(columnKey) => (
+                  <TableCell className="text-black">
+                    {renderCell(item, columnKey)}
+                  </TableCell>
+                )}
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div> */}
     </>
   );
 }
