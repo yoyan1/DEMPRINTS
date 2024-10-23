@@ -1,8 +1,10 @@
 "use client"
 import React, { useEffect, useState } from "react";
-import {Modal, ModalContent, ModalHeader, ModalBody, Button, useDisclosure, Tabs, Tab, Input, Listbox, ListboxItem} from "@nextui-org/react";
+import {Modal, ModalContent, ModalHeader, ModalBody, Button, useDisclosure, Tabs, Tab, Input, Listbox, ListboxItem, Accordion, AccordionItem} from "@nextui-org/react";
 import { IoMdAdd } from "react-icons/io";
 import { CiCircleRemove } from "react-icons/ci";
+import { TbEdit } from "react-icons/tb";
+import { MdDeleteOutline } from "react-icons/md";
 import axios from "axios";
 import Toast from '../public/toast'
 
@@ -12,6 +14,7 @@ export default function CreateExpenses() {
   const [category, setCategory] = useState({name: '', list: []})
   const [inputValue, setInputValue] = useState('')
   const [categoryList, setCategoryList] = useState([])
+  const [selectedKeys, setSelectedKeys] = useState(new Set(["1"]));
     const [data, setData] = useState({})
 
   const handleOpen = () => {
@@ -84,7 +87,13 @@ export default function CreateExpenses() {
     const close = () =>{
         setData({})
     }
-
+    const itemClasses = {
+        base: "py-0 w-full",
+        title: "font-normal text-medium",
+        trigger: "px-2 py-0 data-[hover=true]:bg-default-100 rounded-lg h-14 flex items-center",
+        indicator: "text-medium",
+        content: "text-small px-2",
+      };
   return (
     <>
         <div className="p-md">
@@ -118,6 +127,8 @@ export default function CreateExpenses() {
                                         fullWidth
                                         size="md"
                                         aria-label="Tabs form"
+                                        color="primary"
+                                        radius="full"
                                         selectedKey={selected}
                                         onSelectionChange={setSelected}
                                     >
@@ -190,18 +201,40 @@ export default function CreateExpenses() {
                                                 </div>
                                             </form>
                                         </Tab>
-                                        <Tab key='update' title='Update category'>
+                                        <Tab key='list' title='category'>
                                             <div>
-                                                <Listbox
-                                                aria-label="Listbox Variants"
-                                                color="solid" 
+                                                <Accordion 
+                                                selectedKeys={selectedKeys} 
+                                                onSelectionChange={setSelectedKeys}
+                                                variant="splitted"
+                                                itemClasses={itemClasses}
                                                 >
-                                                    {categoryList.map(item => (
-                                                        <ListboxItem key={item.id}>
-                                                            {item.name}
-                                                        </ListboxItem>
+                                                    {categoryList.map((item) =>(
+                                                        <AccordionItem 
+                                                        key={item.id}
+                                                        aria-label={item.name} 
+                                                        title={item.name}
+                                                         >
+                                                            <div className="bg-slate-100 p-2 rounded border">
+                                                                <div className="flex justify-between items-center">
+                                                                    <span>List of category: {item.name}</span>
+                                                                    <div>
+                                                                        <Button isIconOnly color="primary" variant="light"><TbEdit className="h-5 w-5"/> </Button>
+                                                                        <Button isIconOnly color="danger" variant="light"><MdDeleteOutline className="h-5 w-5"/></Button>
+                                                                    </div>
+                                                                </div>
+                                                                <Listbox
+                                                                aria-label="Listbox Variants"
+                                                                color="solid" 
+                                                                >
+                                                                    {item.list.map((list) =>(
+                                                                        <ListboxItem showDivider key={list}>{list} </ListboxItem>
+                                                                        ))}
+                                                                </Listbox>
+                                                            </div>
+                                                        </AccordionItem>
                                                     ))}
-                                                </Listbox>
+                                                </Accordion>
                                             </div>
                                         </Tab>
                                     </Tabs>
