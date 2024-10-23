@@ -191,9 +191,10 @@ export default function App() {
   const [discount, setDiscount] = useState(0);
   const [amount, setAmount] = useState(0);
   const [total, setTotal] = useState(0);
-
   const [payment_method, setPaymentMethod] = useState("");
   const [salesperson, setSalesPerson] = useState("");
+
+  const [success_message, setSuccessMessage] = useState("");
 
   const handleSubmit = async () => {
     // event.preventDefault();
@@ -214,11 +215,17 @@ export default function App() {
         }
       );
 
-      // setMessage("Transaction added successfully!");
+      setSuccessMessage("Transaction added successfully!");
+
       console.log(response.data);
     } catch (error) {
       console.log("Failed", error);
     }
+  };
+
+  const handleClose = () => {
+    
+    setSuccessMessage("");
   };
 
   // ----------------------------------
@@ -344,7 +351,7 @@ export default function App() {
 
   return (
     <>
-     <Modal
+      <Modal
         isOpen={isOpen}
         onOpenChange={onOpenChange}
         size="2xl"
@@ -360,7 +367,7 @@ export default function App() {
               <ModalHeader className="flex flex-col gap-1 text-black">
                 <h3>Add Transaction</h3>
               </ModalHeader>
-              {/* <form onSubmit={handleSubmit}> */}
+
               <ModalBody>
                 <div className="flex w-full flex-wrap md:flex-nowrap gap-4">
                   <div className="w-full md:w-1/2">
@@ -369,7 +376,7 @@ export default function App() {
                       className="max-w-xs text-black mb-3"
                       autoFocus
                       value={item_name}
-                      variant="underlined"
+                      variant="bordered"
                       style={{ color: "black" }}
                       onChange={(event) => setItemName(event.target.value)}
                     >
@@ -391,7 +398,7 @@ export default function App() {
                       value={unit_cost}
                       type="text"
                       label="Unit Cost"
-                      variant="underlined"
+                      variant="bordered"
                       onChange={(event) => setUnitCost(event.target.value)}
                     />
                     <Input
@@ -401,7 +408,7 @@ export default function App() {
                       type="text"
                       value={quantity}
                       label="Quantity"
-                      variant="underlined"
+                      variant="bordered"
                       onChange={(event) => setQuantity(event.target.value)}
                     />
                     <Input
@@ -411,7 +418,7 @@ export default function App() {
                       type="text"
                       value={discount}
                       label="Discount"
-                      variant="underlined"
+                      variant="bordered"
                       onChange={(event) => setDiscount(event.target.value)}
                     />
                     <Input
@@ -421,7 +428,7 @@ export default function App() {
                       type="text"
                       value={amount}
                       label="Amount"
-                      variant="underlined"
+                      variant="bordered"
                       onChange={(event) => setAmount(event.target.value)}
                     />
                   </div>
@@ -433,14 +440,14 @@ export default function App() {
                       type="text"
                       value={total}
                       label="Total"
-                      variant="underlined"
+                      variant="bordered"
                       onChange={(event) => setTotal(event.target.value)}
                     />
                     <Select
                       label="Costumer Type"
                       className="max-w-xs text-black mb-3"
                       autoFocus
-                      variant="underlined"
+                      variant="bordered"
                       value={costumer_type}
                       style={{ color: "black" }}
                       onChange={(event) => setCostumerType(event.target.value)}
@@ -462,7 +469,7 @@ export default function App() {
                       type="text"
                       value={costumer_name}
                       label="Costumer Name"
-                      variant="underlined"
+                      variant="bordered"
                       onChange={(event) => setCostumerName(event.target.value)}
                     />
                     <Input
@@ -472,7 +479,7 @@ export default function App() {
                       type="text"
                       value={payment_method}
                       label="Payment Method"
-                      variant="underlined"
+                      variant="bordered"
                       onChange={(event) => setPaymentMethod(event.target.value)}
                     />
                     <Input
@@ -482,12 +489,56 @@ export default function App() {
                       type="text"
                       value={salesperson}
                       label="Sales Person"
-                      variant="underlined"
+                      variant="bordered"
                       onChange={(event) => setSalesPerson(event.target.value)}
                     />
                   </div>
                 </div>
+                {success_message && (
+                  <div
+                    id="toast-undo"
+                    class="flex items-center w-full max-w-xs p-2 bg-green-500"
+                    role="alert"
+                  >
+                    <div className="text-sm font-normal">{success_message}</div>
+                    <div className="flex items-center ms-auto space-x-2 rtl:space-x-reverse">
+                      <a
+                        className="text-sm font-medium text-blue-600 p-1.5 hover:bg-blue-100 rounded-lg dark:text-blue-500 dark:hover:bg-gray-700"
+                        href="#"
+                      ></a>
+                      <button
+                        type="button"
+                        className="ms-auto -mx-1.5 -my-1.5 bg-black text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 p-1.5"
+                        data-dismiss-target="#toast-undo"
+                        aria-label="Close"
+                        onClick={handleClose}
+                      >
+                        <span className="sr-only">Close</span>
+                        <svg
+                          className="w-3 h-3"
+                          aria-hidden="true"
+                          fill="none"
+                          viewBox="0 0 14 14"
+                        >
+                          <path
+                            stroke="currentColor"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
+                          />
+                        </svg>
+                      </button>
+                    </div>
+                    {/* <button
+                      type="button"
+                      className="close"
+                      onClick={() => setSuccessMessage("")}
+                    ></button> */}
+                  </div>
+                )}
               </ModalBody>
+
               <ModalFooter>
                 <Button
                   color="primary"
@@ -498,17 +549,6 @@ export default function App() {
                   Save
                 </Button>
               </ModalFooter>
-              {/* </form> */}
-              {/* <ModalFooter className="text-center">
-                <Button
-                  color="primary"
-                  style={{ width: "4rem" }}
-                  onClick={handleSubmit}
-                  type="submit"
-                >
-                  Save
-                </Button>
-              </ModalFooter> */}
             </>
           )}
         </ModalContent>
