@@ -72,40 +72,6 @@ const INITIAL_VISIBLE_COLUMNS = [
 ];
 
 export default function App() {
-  const [costumer_name, setCustomerName] = useState("");
-  const [costumer_type, setCustomerType] = useState("");
-  const [item_name, setItemName] = useState("");
-  const [quantity, setQuantity] = useState(0);
-  const [unit_cost, setUnitCost] = useState(0);
-  const [discount, setDiscount] = useState(0);
-  const [amount, setAmount] = useState(0);
-  const [total, setTotal] = useState(0);
-  const [payment_method, setPaymentMethod] = useState("");
-  const [salesperson, setSalesPerson] = useState("");
-
-  const handleSubmit = async () => {
-    try {
-      const response = await axios.post(
-        `http://localhost:5000/api/collection/addtransaction`,
-        {
-          costumer_name: '',
-          costumer_type:'',
-          item_name:'',
-          quantity:0,
-          unit_cost: 0,
-          discount: 0,
-          amount: 0,
-          total: 0,
-          payment_method: '',
-          salesperson:'',
-        }
-      );
-      console.log(response.data);
-      onClose(); // Close modal after successful submission
-    } catch (error) {
-      console.error("Transaction submission failed:", error);
-    }
-  };
   // -----------------------
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   // const variants = [""];
@@ -216,6 +182,44 @@ export default function App() {
     }
   }, []);
   // ----------------------------------
+
+  const [costumer_name, setCostumerName] = useState("");
+  const [costumer_type, setCostumerType] = useState("");
+  const [item_name, setItemName] = useState("");
+  const [quantity, setQuantity] = useState(0);
+  const [unit_cost, setUnitCost] = useState(0);
+  const [discount, setDiscount] = useState(0);
+  const [amount, setAmount] = useState(0);
+  const [total, setTotal] = useState(0);
+
+  const [payment_method, setPaymentMethod] = useState("");
+  const [salesperson, setSalesPerson] = useState("");
+
+  const handleSubmit = async () => {
+    // event.preventDefault();
+    try {
+      const response = await axios.post(
+        `http://localhost:5000/api/collection/addtransaction`,
+        {
+          costumer_name,
+          costumer_type,
+          item_name,
+          quantity,
+          unit_cost,
+          discount,
+          amount,
+          total,
+          payment_method,
+          salesperson,
+        }
+      );
+
+      // setMessage("Transaction added successfully!");
+      console.log(response.data);
+    } catch (error) {
+      console.log("Failed", error);
+    }
+  };
 
   // ----------------------------------
   ("");
@@ -340,110 +344,173 @@ export default function App() {
 
   return (
     <>
-      <Modal
+     <Modal
         isOpen={isOpen}
-        // onOpenChange={onClose}
+        onOpenChange={onOpenChange}
         size="2xl"
         placement="top-center"
+        className=""
       >
-        <ModalContent style={{ width: "50rem" }}>
-          <ModalHeader className="flex flex-col gap-1 text-black">
-            <h3>Add Transaction</h3>
-          </ModalHeader>
-          <ModalBody>
-            <div className="flex w-full flex-wrap md:flex-nowrap gap-4">
-              <div className="w-full md:w-1/2">
-                <Select
-                  label="Item"
-                  value={item_name}
-                  onChange={setItemName}
-                  className="max-w-xs text-black mb-3"
-                >
-                  {transactions.map((transaction) => (
-                    <SelectItem key={transaction.key} value={transaction.label}>
-                      {transaction.label}
-                    </SelectItem>
-                  ))}
-                </Select>
+        <ModalContent
+          className="inset-0    justify-center z-50"
+          style={{ width: "50rem" }}
+        >
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex flex-col gap-1 text-black">
+                <h3>Add Transaction</h3>
+              </ModalHeader>
+              {/* <form onSubmit={handleSubmit}> */}
+              <ModalBody>
+                <div className="flex w-full flex-wrap md:flex-nowrap gap-4">
+                  <div className="w-full md:w-1/2">
+                    <Select
+                      label="Item"
+                      className="max-w-xs text-black mb-3"
+                      autoFocus
+                      value={item_name}
+                      variant="underlined"
+                      style={{ color: "black" }}
+                      onChange={(event) => setItemName(event.target.value)}
+                    >
+                      {transactions.map((transaction) => (
+                        <SelectItem
+                          variant="bordered"
+                          key={transaction.key}
+                          style={{ color: "black" }}
+                        >
+                          {transaction.label}
+                        </SelectItem>
+                      ))}
+                    </Select>
 
-                <Input
-                  className="text-black mb-3"
-                  value={unit_cost}
-                  label="Unit Cost"
-                  type="number"
-                  onChange={(e) => setUnitCost(parseFloat(e.target.value))}
-                />
-                <Input
-                  className="text-black mb-3"
-                  value={quantity}
-                  label="Quantity"
-                  type="number"
-                  onChange={(e) => setQuantity(parseInt(e.target.value, 10))}
-                />
-                <Input
-                  className="text-black mb-3"
-                  value={discount}
-                  label="Discount"
-                  type="number"
-                  onChange={(e) => setDiscount(parseFloat(e.target.value))}
-                />
-                <Input
-                  className="text-black mb-3"
-                  value={amount}
-                  label="Amount"
-                  type="number"
-                  onChange={(e) => setAmount(parseFloat(e.target.value))}
-                />
-              </div>
-              <div className="w-full md:w-1/2">
-                <Input
-                  className="text-black mb-3"
-                  value={total}
-                  label="Total"
-                  type="number"
-                  onChange={(e) => setTotal(parseFloat(e.target.value))}
-                />
-                <Select
-                  label="Customer Type"
-                  value={costumer_type}
-                  onChange={setCustomerType}
-                  className="max-w-xs text-black mb-3"
+                    <Input
+                      className="text-black mb-3"
+                      style={{ color: "black" }}
+                      autoFocus
+                      value={unit_cost}
+                      type="text"
+                      label="Unit Cost"
+                      variant="underlined"
+                      onChange={(event) => setUnitCost(event.target.value)}
+                    />
+                    <Input
+                      className="text-black mb-3"
+                      style={{ color: "black" }}
+                      autoFocus
+                      type="text"
+                      value={quantity}
+                      label="Quantity"
+                      variant="underlined"
+                      onChange={(event) => setQuantity(event.target.value)}
+                    />
+                    <Input
+                      className="text-black mb-3"
+                      style={{ color: "black" }}
+                      autoFocus
+                      type="text"
+                      value={discount}
+                      label="Discount"
+                      variant="underlined"
+                      onChange={(event) => setDiscount(event.target.value)}
+                    />
+                    <Input
+                      className="text-black mb-3"
+                      style={{ color: "black" }}
+                      autoFocus
+                      type="text"
+                      value={amount}
+                      label="Amount"
+                      variant="underlined"
+                      onChange={(event) => setAmount(event.target.value)}
+                    />
+                  </div>
+                  <div className="w-full md:w-1/2">
+                    <Input
+                      className="text-black mb-3"
+                      style={{ color: "black" }}
+                      autoFocus
+                      type="text"
+                      value={total}
+                      label="Total"
+                      variant="underlined"
+                      onChange={(event) => setTotal(event.target.value)}
+                    />
+                    <Select
+                      label="Costumer Type"
+                      className="max-w-xs text-black mb-3"
+                      autoFocus
+                      variant="underlined"
+                      value={costumer_type}
+                      style={{ color: "black" }}
+                      onChange={(event) => setCostumerType(event.target.value)}
+                    >
+                      {costumer_types.map((costumer_type) => (
+                        <SelectItem
+                          variant="bordered"
+                          key={costumer_type.key}
+                          style={{ color: "black" }}
+                        >
+                          {costumer_type.label}
+                        </SelectItem>
+                      ))}
+                    </Select>
+                    <Input
+                      className="text-black mb-3"
+                      style={{ color: "black" }}
+                      autoFocus
+                      type="text"
+                      value={costumer_name}
+                      label="Costumer Name"
+                      variant="underlined"
+                      onChange={(event) => setCostumerName(event.target.value)}
+                    />
+                    <Input
+                      className="text-black mb-3"
+                      style={{ color: "black" }}
+                      autoFocus
+                      type="text"
+                      value={payment_method}
+                      label="Payment Method"
+                      variant="underlined"
+                      onChange={(event) => setPaymentMethod(event.target.value)}
+                    />
+                    <Input
+                      className="text-black mb-3"
+                      style={{ color: "black" }}
+                      autoFocus
+                      type="text"
+                      value={salesperson}
+                      label="Sales Person"
+                      variant="underlined"
+                      onChange={(event) => setSalesPerson(event.target.value)}
+                    />
+                  </div>
+                </div>
+              </ModalBody>
+              <ModalFooter>
+                <Button
+                  color="primary"
+                  style={{ width: "4rem" }}
+                  onPress={handleSubmit}
+                  type="submit"
                 >
-                  {costumer_types.map((type) => (
-                    <SelectItem key={type.key} value={type.label}>
-                      {type.label}
-                    </SelectItem>
-                  ))}
-                </Select>
-                <Input
-                  className="text-black mb-3"
-                  value={costumer_name}
-                  label="Customer Name"
-                  type="text"
-                  onChange={(e) => setCustomerName(e.target.value)}
-                />
-                <Input
-                  className="text-black mb-3"
-                  value={payment_method}
-                  label="Payment Method"
-                  type="text"
-                  onChange={(e) => setPaymentMethod(e.target.value)}
-                />
-                <Input
-                  className="text-black mb-3"
-                  value={salesperson}
-                  label="Sales Person"
-                  type="text"
-                  onChange={(e) => setSalesPerson(e.target.value)}
-                />
-              </div>
-            </div>
-          </ModalBody>
-          <ModalFooter>
-            <Button color="primary" onPress={handleSubmit}>
-              Save
-            </Button>
-          </ModalFooter>
+                  Save
+                </Button>
+              </ModalFooter>
+              {/* </form> */}
+              {/* <ModalFooter className="text-center">
+                <Button
+                  color="primary"
+                  style={{ width: "4rem" }}
+                  onClick={handleSubmit}
+                  type="submit"
+                >
+                  Save
+                </Button>
+              </ModalFooter> */}
+            </>
+          )}
         </ModalContent>
       </Modal>
 
