@@ -2,9 +2,9 @@
 import React, { useEffect, useState } from "react";
 import {Modal, ModalContent, ModalHeader, ModalBody, Button, useDisclosure, Tabs, Tab, Input, Listbox, ListboxItem} from "@nextui-org/react";
 import { MdAdd} from 'react-icons/md';
-import { TbEdit } from "react-icons/tb";
-import { MdDeleteOutline } from "react-icons/md";
 import axios from "axios";
+import Delete from "./actions/Delete";
+import UpdatePayment from "./form/updatePaymet"
 
 export default function CreatePayment() {
   const {isOpen, onOpen, onClose} = useDisclosure();
@@ -52,6 +52,10 @@ export default function CreatePayment() {
     setIsLoading(false)
     getPaymentMethod()
   }
+
+  const done = () =>{
+    getPaymentMethod()
+  }
   return (
     <>
       <div className="p-md">
@@ -71,6 +75,7 @@ export default function CreatePayment() {
             size="md"
             isOpen={isOpen} 
             onClose={onClose} 
+            scrollBehavior="outside"
         >
             <ModalContent>
             {() => (
@@ -98,8 +103,8 @@ export default function CreatePayment() {
                                 <div className="flex justify-between items-center">
                                   {item.name} 
                                   <div>
-                                    <Button isIconOnly color="primary" variant="light"><TbEdit className="h-5 w-5"/> </Button>
-                                    <Button isIconOnly color="danger" variant="light"><MdDeleteOutline className="h-5 w-5"/></Button>
+                                    <UpdatePayment data={item} type="Options" done={done}/>
+                                    <Delete id={item._id} type="Payment Options" done={done} collection="payments"/>
                                   </div>
                                 </div>
                               </ListboxItem>
@@ -149,12 +154,12 @@ export default function CreatePayment() {
                           topContent={<span>Payment type</span>}
                           >
                             {typeList.map((item) =>(
-                              <ListboxItem showDivider key={item}>
+                              <ListboxItem showDivider key={item.name}>
                                 <div className="flex justify-between items-center">
                                   {item.name} 
                                   <div>
-                                    <Button isIconOnly color="primary" variant="light"><TbEdit className="h-5 w-5"/> </Button>
-                                    <Button isIconOnly color="danger" variant="light"><MdDeleteOutline className="h-5 w-5"/></Button>
+                                    <UpdatePayment data={item} type="Types" done={done}/>
+                                    <Delete id={item._id} type="Payment Types" done={done} collection="payments"/>
                                   </div>
                                 </div>
                               </ListboxItem>

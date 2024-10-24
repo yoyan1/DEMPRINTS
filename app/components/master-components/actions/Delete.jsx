@@ -3,14 +3,30 @@ import { MdDeleteOutline } from "react-icons/md";
 import { CiWarning } from "react-icons/ci";
 import axios from "axios";
 
-export default function Delete({ id, type, done }) {
+export default function Delete({ id, type, done, collection }) {
   const {isOpen, onOpen, onClose} = useDisclosure()
 
   const deleteItem = async() =>{
-      const response = await axios.delete(`http://localhost:5000/api/master//products/${id}`)
+    if(collection === 'products'){
+      const response = await axios.delete(`http://localhost:5000/api/master/products/${id}`)
       console.log(response.data);
       done(response.data)
-      onClose()
+      
+    }
+    if(collection === 'payments'){
+      const response = await axios.delete(`http://localhost:5000/api/master/deletePaymentMethod/${id}`)
+      console.log(response.data);
+      done(response.data)
+
+    }
+    
+    if(collection === 'expenses'){
+      const response = await axios.delete(`http://localhost:5000/api/master/deleteExpensesCategory/${id}`)
+      console.log(response.data);
+      done(response.data)
+
+    }
+    onClose()
   }
   return (
     <>

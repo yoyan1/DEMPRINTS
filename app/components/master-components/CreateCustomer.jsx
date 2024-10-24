@@ -32,6 +32,7 @@ export default function CreateCustomer() {
             size="md"
             isOpen={isOpen} 
             onClose={onClose} 
+            scrollBehavior="outside"
         >
             <ModalContent>
             {(onClose) => (

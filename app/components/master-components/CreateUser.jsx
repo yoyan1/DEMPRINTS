@@ -255,6 +255,7 @@ export default function CreateUser() {
             size="2xl"
             isOpen={isOpen}
             onClose={onClose}
+            scrollBehavior="outside"
           >
             <ModalContent>
               {() => (
@@ -325,7 +326,7 @@ export default function CreateUser() {
                                 </div>
                               </div>
                             ) : step === 2 ? (
-                              <div className="max-h-[30rem] bg-grey-300 overflow-y-scroll">
+                              <div className="bg-grey-300">
                                 <span className="text-xl">Personal Information</span>
                                 <div className="mt-2">
                                   <div className="flex flex-col gap-4 mx-2 ">

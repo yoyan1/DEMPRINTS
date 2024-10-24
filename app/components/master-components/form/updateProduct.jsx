@@ -13,7 +13,31 @@ export default function UpdateProduct({ data, type, category, measurement, done,
   const [isLoading, setIsLoading] = useState(false)
 
   const updateItem = async () =>{
+    setIsLoading(true)
+    try{
+      if(type.toLowerCase() === 'category'){
+        const response = await axios.post(`http://localhost:5000/api/master/updateProductsData/${data._id}`,{name: category_name} )
+        console.log(response);
+        done(response.data)
+      }
+      if(type.toLowerCase() === 'measurement'){
+        const response = await axios.post(`http://localhost:5000/api/master/updateProductsData/${data._id}`,{name: unit} )
+        console.log(response);
+        done(response.data)
+      }
+      if(type.toLowerCase() === 'product'){
+        const response = await axios.post(`http://localhost:5000/api/master/updateProductsData/${data._id}`,{name: productData.name, category: productData.category, unit: productData.unit, price: productData.price} )
+        console.log(response);
+        done(response.data)
+      } 
+      onClose()
+      setIsLoading(false)
+    } catch(e){
+      console.log(e)
+      setIsLoading(false)
+    }
 
+    
   }
 
   return (
@@ -32,7 +56,10 @@ export default function UpdateProduct({ data, type, category, measurement, done,
                     </form>
 
                 ): type.toLowerCase() === 'measurement'? (
-                    <span>asdh</span>
+                  <form className="flex flex-col gap-4">
+                    <span>Create Unit of Measurement</span>
+                    <Input isRequired label="Unit" placeholder="Unit of measurement" value={unit} onChange={(e) => setUnit(e.target.value)}/>
+                  </form>
                 ):(
                     <form className="flex flex-col gap-4">
                         <span>Create Product</span>
@@ -40,7 +67,6 @@ export default function UpdateProduct({ data, type, category, measurement, done,
                             label="Select an category" 
                             value={productData.category}
                             name="category"
-                            selectedKeys={productData.category}
                             onChange={(e)=>(setProductData((prevData)=>({...prevData, category: e.target.value})))}
                         >
                             {category.map(item =>(
