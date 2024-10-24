@@ -170,12 +170,12 @@ export default function CreateProduct() {
                             topContent={<span>List of Category</span>}
                             >
                               {category.map((item) =>(
-                                <ListboxItem showDivider key={item}>
+                                <ListboxItem showDivider key={item.name}>
                                   <div className="flex justify-between items-center">
                                     {item.name} 
                                     <div>
                                       <UpdateProduct data={item} type="Category" done={done}/>
-                                      <Delete id={item._id} type="Category" done={done}/>
+                                      <Delete id={item._id} type="Category" done={done} collection="products"/>
                                     </div>
                                   </div>
                                 </ListboxItem>
@@ -224,12 +224,12 @@ export default function CreateProduct() {
                               topContent={<span>List Unit of Measurements</span>}
                               >
                                 {measurement.map((item) =>(
-                                  <ListboxItem showDivider key={item}>
+                                  <ListboxItem showDivider key={item.name}>
                                     <div className="flex justify-between items-center">
                                       {item.name} 
                                       <div>
                                         <UpdateProduct data={item} type="Measurement" done={done}/>
-                                        <Delete id={item._id} type="Measurement" done={done}/>
+                                        <Delete id={item._id} type="Measurement" done={done} collection="products"/>
                                       </div>
                                     </div>
                                   </ListboxItem>
@@ -276,7 +276,7 @@ export default function CreateProduct() {
                                             </div>
                                             <div>
                                               <UpdateProduct data={product} type="Product" category={category} measurement={measurement} done={done}/>
-                                              <Delete id={product._id} type="Product" done={done}/>
+                                              <Delete id={product._id} type="Product" done={done} collection="products"/>
                                             </div>
 
                                           </div>

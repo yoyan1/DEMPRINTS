@@ -3,10 +3,10 @@ import React, { useEffect, useState } from "react";
 import {Modal, ModalContent, ModalHeader, ModalBody, Button, useDisclosure, Tabs, Tab, Input, Listbox, ListboxItem, Accordion, AccordionItem} from "@nextui-org/react";
 import { IoMdAdd } from "react-icons/io";
 import { CiCircleRemove } from "react-icons/ci";
-import { TbEdit } from "react-icons/tb";
-import { MdDeleteOutline } from "react-icons/md";
 import axios from "axios";
 import Toast from '../public/toast'
+import Delete from './actions/Delete'
+import UpdateExpensesCategory from './form/updateExpensesCategory'
 
 export default function CreateExpenses() {
   const {isOpen, onOpen, onClose} = useDisclosure();
@@ -94,6 +94,11 @@ export default function CreateExpenses() {
         indicator: "text-medium",
         content: "text-small px-2",
       };
+    
+    const done = () =>{
+        fetchExpensesCategory()
+    }
+
   return (
     <>
         <div className="p-md">
@@ -113,6 +118,7 @@ export default function CreateExpenses() {
                 size="md"
                 isOpen={isOpen} 
                 onClose={onClose} 
+                scrollBehavior="outside"
             >
                 <ModalContent>
                 {() => (
@@ -219,8 +225,8 @@ export default function CreateExpenses() {
                                                                 <div className="flex justify-between items-center">
                                                                     <span>List of category: {item.name}</span>
                                                                     <div>
-                                                                        <Button isIconOnly color="primary" variant="light"><TbEdit className="h-5 w-5"/> </Button>
-                                                                        <Button isIconOnly color="danger" variant="light"><MdDeleteOutline className="h-5 w-5"/></Button>
+                                                                        <UpdateExpensesCategory data={item} done={done}/>
+                                                                        <Delete id={item._id} type="Expenses Category" done={done} collection="expenses"/>
                                                                     </div>
                                                                 </div>
                                                                 <Listbox

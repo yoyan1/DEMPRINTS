@@ -54,6 +54,7 @@ export default function CreateSupplier() {
                 size="md"
                 isOpen={isOpen} 
                 onClose={onClose} 
+                scrollBehavior="outside"
             >
                 <ModalContent>
                 {(onClose) => (

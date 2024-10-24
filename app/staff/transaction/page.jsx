@@ -702,7 +702,7 @@ export default function App() {
                   {transaction.salesperson}
                 </TableCell>
                 <TableCell className="text-black">
-                <Button onPres={() => handleDelete(transaction._id)}>Delete</Button>
+                <Button onPress={() => handleDelete(transaction._id)}>Delete</Button>
 
                 </TableCell>
               </TableRow>
