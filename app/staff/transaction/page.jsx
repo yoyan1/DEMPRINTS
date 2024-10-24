@@ -238,10 +238,8 @@ export default function App() {
 
   const handleDelete = async (id) => {
     try {
-      const response = await axios.delete(
-        `http://localhost:5000/api/collection/deleteTransaction/${id}`
-      );
-      console.log(response.data);
+      const response = await axios.delete(`http://localhost:5000/api/collection/deletetransaction/${id}`);
+      console.log(response.data)
     } catch (error) {
       console.log(error);
     }
@@ -704,9 +702,9 @@ export default function App() {
                   {transaction.salesperson}
                 </TableCell>
                 <TableCell className="text-black">
-                <Button  onPress={() => handleDelete(transaction.id)}>Detete</Button>
+                <Button onPres={() => handleDelete(transaction._id)}>Delete</Button>
+
                 </TableCell>
-                
               </TableRow>
             ))}
           </TableBody>
