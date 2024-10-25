@@ -10,7 +10,7 @@ export const useUserStore = create((set) => ({
       {name: "DEPARTMENT", uid: "department"},
       {name: "EMAIL", uid: "email"},
       {name: "STATUS", uid: "status", sortable: true},
-      {name: "ACTIONS", uid: "actions"},
+      {name: "ACTIONS", uid: "actions"}, 
     ],
 
     statusOptions: [

@@ -37,13 +37,7 @@ import { LuPlus } from "react-icons/lu";
 import { IoEllipsisVertical, IoPersonSharp } from "react-icons/io5";
 import { FaSearch } from "react-icons/fa";
 
-import {
-  columns,
-  users,
-  statusOptions,
-  costumer_types,
-  transactions,
-} from "./data";
+import { columns, users, statusOptions, costumer_types } from "./data";
 import axios from "axios";
 
 const statusColorMap = {
@@ -194,10 +188,16 @@ export default function App() {
   const [payment_method, setPaymentMethod] = useState("");
   const [salesperson, setSalesPerson] = useState("");
   const [success_message, setSuccessMessage] = useState("");
-  const [payment, setPaymentt] = useState()
+  // ----------------------
+  const [payment, setPaymentt] = useState([]);
+  const [products, setProduct] = useState([]);
+  const [transactions, setTransaction] = useState([]);
+  // ----------------------
 
   useEffect(() => {
     fetchPayment();
+    fetchProduct();
+    fetchTransactions();
   }, []);
 
   const fetchPayment = async () => {
@@ -211,6 +211,40 @@ export default function App() {
       console.log(error);
     }
   };
+
+  const fetchProduct = async () => {
+    try {
+      const response = await axios.get(
+        `http://localhost:5000/api/master/products`
+      );
+      setProduct(response.data);
+      console.log(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const fetchTransactions = async () => {
+    try {
+      const response = await axios.get(
+        `http://localhost:5000/api/collection/getTransaction`
+      );
+      setTransaction(response.data);
+      console.log(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      const response = await axios.delete(`http://localhost:5000/api/collection/deletetransaction/${id}`);
+      console.log(response.data)
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const handleSubmit = async () => {
     // event.preventDefault();
     try {
@@ -289,7 +323,7 @@ export default function App() {
 
   const topContent = React.useMemo(() => {
     return (
-      <div className="flex flex-col gap-4 mt-5">
+      <div className="flex flex-col gap-4 ml-3 mt-5">
         <div className="flex justify-between gap-3 items-end">
           <Input
             isClearable
@@ -302,7 +336,7 @@ export default function App() {
           />
 
           <div className="flex gap-3">
-            <Button color="primary" onPress={onOpen}>
+            <Button color="primary" size="m" onPress={onOpen}>
               <LuPlus />
               Add New
             </Button>
@@ -407,13 +441,12 @@ export default function App() {
                       style={{ color: "black" }}
                       onChange={(event) => setItemName(event.target.value)}
                     >
-                      {transactions.map((transaction) => (
+                      {products.map((products) => (
                         <SelectItem
                           variant="bordered"
-                          key={transaction.key}
                           style={{ color: "black" }}
                         >
-                          {transaction.label}
+                          {products.name}
                         </SelectItem>
                       ))}
                     </Select>
@@ -628,16 +661,52 @@ export default function App() {
               </TableColumn>
             )}
           </TableHeader>
-          <TableBody emptyContent={"No users found"} items={sortedItems}>
-            {(item) => (
-              <TableRow key={item.id}>
-                {(columnKey) => (
-                  <TableCell className="text-black">
-                    {renderCell(item, columnKey)}
-                  </TableCell>
-                )}
+          <TableBody emptyContent={"No transaction found"} items={sortedItems}>
+            {transactions.map((transaction) => (
+              <TableRow key={transaction.id}>
+                <TableCell className="text-black"></TableCell>
+                <TableCell className="text-black"></TableCell>
+                <TableCell className="text-black"></TableCell>
+                <TableCell className="text-black"></TableCell>
+                <TableCell className="text-black">
+                  {transaction.costumer_name}
+                </TableCell>
+                <TableCell className="text-black">
+                  {transaction.costumer_type}
+                </TableCell>
+                <TableCell className="text-black">
+                  {transaction.item_name}
+                </TableCell>
+                <TableCell className="text-black">
+                  {transaction.quantity}
+                </TableCell>
+                <TableCell className="text-black">
+                  {transaction.unit_cost}
+                </TableCell>
+                <TableCell className="text-black">
+                  {transaction.discount}
+                </TableCell>
+                <TableCell className="text-black">
+                  {transaction.amount}
+                </TableCell>
+                <TableCell className="text-black">
+                  {transaction.total}
+                </TableCell>
+                <TableCell className="text-black">
+                  {transaction.payment_method}
+                </TableCell>
+                <TableCell className="text-black">
+                  {transaction.payment_method}
+                </TableCell>
+                <TableCell className="text-black">
+                  {transaction.salesperson}
+                </TableCell>
+                <TableCell className="text-black">
+                <Button onPress={() => handleDelete(transaction._id)}>Delete</Button>
+
+                </TableCell>
               </TableRow>
-            )}
+            ))}
           </TableBody>
         </Table>
       </div>
