@@ -38,7 +38,7 @@ const statusColorMap = {
 const INITIAL_VISIBLE_COLUMNS = ["name", "job_title", "status", "actions"];
 
 export default function Employee() {
-  const {columns, statusOptions, users, loading, error, fetchUsers } = useUserStore();
+  const {columns, statusOptions, users, loading, fetchUsers } = useUserStore();
   const [filterValue, setFilterValue] = React.useState("");
   const [selectedKeys, setSelectedKeys] = React.useState(new Set([]));
   const [visibleColumns, setVisibleColumns] = React.useState(new Set(INITIAL_VISIBLE_COLUMNS));
@@ -130,7 +130,7 @@ export default function Employee() {
           <div className="flex justify-center items-center gap-2">
             <Tooltip content="Details">
               <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
-                <ViewDetails/>
+                <ViewDetails data={user}/>
               </span>
             </Tooltip>
             <Tooltip content="Edit user">
