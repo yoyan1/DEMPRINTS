@@ -1,21 +1,20 @@
 const columns = [
-  {name: "ID", uid: "id", sortable: true},
-  {name: "DATE", uid: "date", sortable: true},
-  {name: "TIME", uid: "time", sortable: true},
-  {name: "TRANSACTION NO.", uid: "transaction_no", sortable: true},
-  {name: "ITEM NO", uid: "item_no"},
-  {name: "ITEM NAME", uid: "item_name"},
-  {name: "UNIT COST", uid: "unit_cost", sortable: true},
-  {name: "QUANTITY", uid: "quantity", sortable: true},
-  {name: "AMOUNT", uid: "amount", sortable: true},
-  {name: "DISCOUNT", uid: "discount", sortable: true},
-  {name: "TOTAL", uid: "total", sortable: true},
-  {name: "CUSTOMER TYPE", uid: "customer_type", sortable: true},
-  {name: "CUSTOMER NAME", uid: "customer_name", sortable: true},
-  {name: "PAYMENT METHOD", uid: "payment_method", sortable: true},
-  {name: "SALES PERSON", uid: "sales_person", sortable: true},
-  {name: "REMARKS", uid: "remarks", sortable: true},
-  {name: "ACTIONS", uid: "actions"},
+  { uid: "date", name: "Date", sortable: true },
+  { uid: "time", name: "Time", sortable: true },
+  { uid: "transaction_no", name: "Transaction No", sortable: true },
+  { uid: "item_no", name: "Item No", sortable: true },
+  { uid: "item_name", name: "Item Name", sortable: true },
+  { uid: "unit_cost", name: "Unit Cost", sortable: true },
+  { uid: "quantity", name: "Quantity", sortable: true },
+  { uid: "amount", name: "Amount", sortable: true },
+  { uid: "discount", name: "Discount", sortable: true },
+  { uid: "total", name: "Total", sortable: true },
+  { uid: "customer_type", name: "Customer Type", sortable: true },
+  { uid: "customer_name", name: "Customer Name", sortable: true },
+  { uid: "payment_method", name: "Payment Method", sortable: true },
+  { uid: "sales_person", name: "Sales Person", sortable: true },
+  { uid: "remarks", name: "Remarks", sortable: true },
+  { uid: "actions", name: "Actions", sortable: false },
 ];
 
 const statusOptions = [
@@ -26,7 +25,7 @@ const statusOptions = [
 
 const users = [
   {
-   id: 1,
+    id: 1,
     date: '10/15/2014',
     time: '08: 00 am',
     transaction_no: "0001",
@@ -44,7 +43,7 @@ const users = [
     remarks: '',
   },
   {
-   id: 1,
+    id: 1,
     date: '10/15/2014',
     time: '08: 00 am',
     transaction_no: "0001",
@@ -62,7 +61,7 @@ const users = [
     remarks: '',
   },
   {
-   id: 1,
+    id: 1,
     date: '10/15/2014',
     time: '08: 00 am',
     transaction_no: "0001",
@@ -80,7 +79,7 @@ const users = [
     remarks: '',
   },
   {
-   id: 1,
+    id: 1,
     date: '10/15/2014',
     time: '08: 00 am',
     transaction_no: "0001",
@@ -98,7 +97,7 @@ const users = [
     remarks: '',
   },
   {
-   id: 1,
+    id: 1,
     date: '10/15/2014',
     time: '08: 00 am',
     transaction_no: "0001",
@@ -116,7 +115,7 @@ const users = [
     remarks: '',
   },
   {
-   id: 1,
+    id: 1,
     date: '10/15/2014',
     time: '08: 00 am',
     transaction_no: "0001",
@@ -134,7 +133,7 @@ const users = [
     remarks: '',
   },
   {
-   id: 1,
+    id: 1,
     date: '10/15/2014',
     time: '08: 00 am',
     transaction_no: "0001",
@@ -152,7 +151,7 @@ const users = [
     remarks: '',
   },
   {
-   id: 1,
+    id: 1,
     date: '10/15/2014',
     time: '08: 00 am',
     transaction_no: "0001",
@@ -170,7 +169,7 @@ const users = [
     remarks: '',
   },
   {
-   id: 1,
+    id: 1,
     date: '10/15/2014',
     time: '08: 00 am',
     transaction_no: "0001",
@@ -188,7 +187,7 @@ const users = [
     remarks: '',
   },
   {
-   id: 1,
+    id: 1,
     date: '10/15/2014',
     time: '08: 00 am',
     transaction_no: "0001",
@@ -206,7 +205,7 @@ const users = [
     remarks: '',
   },
   {
-   id: 1,
+    id: 1,
     date: '10/15/2014',
     time: '08: 00 am',
     transaction_no: "0001",
@@ -224,7 +223,7 @@ const users = [
     remarks: '',
   },
   {
-   id: 1,
+    id: 1,
     date: '10/15/2014',
     time: '08: 00 am',
     transaction_no: "0001",
@@ -247,7 +246,7 @@ const users = [
     transaction: "1",
     item: "Tarpulin",
     quantity: "1",
-    discount:'00.00',
+    discount: '00.00',
 
     unitcost: "00.00",
     total: "00.00",
@@ -256,16 +255,16 @@ const users = [
     paymentmetod: "Gcash",
     remark: "blabla",
   },
-  
+
 ];
 const transactions = [
   { key: "tarpulin", label: "Tarpulin" },
   { key: "printing p-shirt", label: "Printing T-shirt" },
   { key: "paper print", label: "Paper Print" },
-  
+
 ];
 const costumer_types = [
-  {key:'Walkin', label:'Walk-in'},
-  {key:'Online', label:'Online'}
+  { key: 'Walkin', label: 'Walk-in' },
+  { key: 'Online', label: 'Online' }
 ]
-export { columns, users, statusOptions, transactions , costumer_types};
+export { columns, users, statusOptions, transactions, costumer_types };
