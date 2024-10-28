@@ -15,6 +15,7 @@ import {
   DropdownItem,
   Chip,
   Pagination,
+  Spinner
 } from "@nextui-org/react";
 import { CiSearch } from "react-icons/ci";
 import { IoChevronDown } from "react-icons/io5";
@@ -280,7 +281,7 @@ export default function Transaction(props) {
         {topContent}
         <div className="max-w-[82rem] overflow-x-scroll">
             <Table
-                removeWrapper
+            removeWrapper
             aria-label="Example table with custom cells, pagination and sorting"
             isHeaderSticky
             bottomContentPlacement="outside"
@@ -305,9 +306,9 @@ export default function Transaction(props) {
                 </TableColumn>
                 )}
             </TableHeader>
-            <TableBody emptyContent={"No transaction found"} items={sortedItems} >
+            <TableBody emptyContent={"No transaction found"} items={sortedItems}  isLoading={props.loading} loadingContent={<Spinner label="Loading..." />} >
                 {(item) => (
-                <TableRow key={item.id}>
+                <TableRow key={item._id}>
                     {(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}
                 </TableRow>
                 )}

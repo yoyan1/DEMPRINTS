@@ -1,15 +1,21 @@
 "use client";
-import React from 'react'
+import React, { useEffect } from 'react'
 import AdminLayout from '../layout/layout'
 import {Tabs, Tab, Card, CardBody} from "@nextui-org/react";
 import { FaFileAlt, FaPrint } from 'react-icons/fa';
 import TransactionTable from '@/app/components/adminComponents/sales/TransactionTable'
-import {columns, transactions, itemOptions, typeOptions} from "./data";
+import {useSalesStore} from '@/app/stores/transactionStore'
 
-export default function sales() {
+export default function Sales() {
+  const {columns, itemOptions, typeOptions, transactions, loading, fetchTransactions } = useSalesStore();
+
+  useEffect(() =>{
+    fetchTransactions()
+  }, [fetchTransactions])
+
   return (
     <AdminLayout>
-      <main className="flex flex-1 rounded-md flex-col gap-4 m-4 lg:gap-6 lg:m-6 bg-white">
+      <main className="flex flex-1 rounded-md flex-col gap-4 m-4 lg:gap-6 lg:m-6">
         <div>
           <div className="flex justify-between items-start">
             <div>
@@ -73,7 +79,7 @@ export default function sales() {
               }>
                 <Card className='no-shadow'>
                   <CardBody>
-                    <TransactionTable columns={columns} transactions={transactions} itemOptions={itemOptions} typeOptions={typeOptions} isMaximized={false}/>
+                    <TransactionTable columns={columns} transactions={transactions} itemOptions={itemOptions} typeOptions={typeOptions} loading={loading} isMaximized={false}/>
                   </CardBody>
                 </Card>
               </Tab>

@@ -299,7 +299,7 @@ export default function Employee() {
 
   return (
     <AdminLayout>
-        <main className="flex flex-1 flex-col gap-4 m-4 lg:gap-6 lg:m-6 bg-white">
+        <main className="flex flex-1 flex-col gap-4 m-4 lg:gap-6 lg:m-6">
           <Table
             aria-label="Example table with custom cells, pagination and sorting"
             isHeaderSticky
