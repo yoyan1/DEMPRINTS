@@ -35,7 +35,7 @@ import {
 // import { MdOutlineAlternateEmail, MdOutlineLock } from "react-icons/md";
 import { FaFilePen } from "react-icons/fa6";
 
-import { columns, users, statusOptions, costumer_types } from "./data";
+import { columns, users, statusOptions, customer_types } from "./data";
 import axios from "axios";
 
 const statusColorMap = {
@@ -75,16 +75,19 @@ export default function App() {
 
   // ----------------------------------
 
-  const [costumer_name, setCostumerName] = useState("");
-  const [costumer_type, setCostumerType] = useState("");
+  const [customer_name, setCostumerName] = useState("");
+  const [customer_type, setCostumerType] = useState("");
   const [item_name, setItemName] = useState("");
+  const [transaction_no] = useState(0)
+  const [item_no] = useState(0)
   const [quantity, setQuantity] = useState(0);
   const [unit_cost, setUnitCost] = useState(0);
   const [discount, setDiscount] = useState(0);
   const [amount, setAmount] = useState(0);
   const [total, setTotal] = useState(0);
+  const [remarks] = useState('')
   const [payment_method, setPaymentMethod] = useState("");
-  const [salesperson, setSalesPerson] = useState("");
+  const [sales_person, setSalesPerson] = useState("");
   const [success_message, setSuccessMessage] = useState("");
   // ----------------------
   const [payment, setPaymentt] = useState([]);
@@ -148,19 +151,28 @@ export default function App() {
   const handleSubmit = async () => {
     // event.preventDefault();
     try {
+      const currentDate = new Date();
+      const formattedDate = currentDate.toISOString().split("T")[0]; // Format date as YYYY-MM-DD
+      const formattedTime = currentDate.toTimeString().split(" ")[0];
       const response = await axios.post(
-        `http://localhost:5000/api/collection/addtransaction`,
+        `http://localhost:5000/api/collection/addtransaction`
+        ,
         {
-          costumer_name,
-          costumer_type,
+          date:formattedDate,
+          time:formattedTime,
+          transaction_no,
+          item_no,
           item_name,
-          quantity,
           unit_cost,
-          discount,
+          quantity,
           amount,
+          discount,
           total,
+          customer_type,
+          customer_name,
           payment_method,
-          salesperson,
+          sales_person,
+          remarks,
         }
       );
 
@@ -175,7 +187,7 @@ export default function App() {
   const handleClose = () => {
     // FormData={
     //   costumer_name:'',
-    //       costumer_type :"",
+    //       customer_type :"",
     //       item_name:'',
     //       quantity:'',
     //       unit_cost:'',
@@ -183,7 +195,7 @@ export default function App() {
     //       amount:'',
     //       total:'',
     //       payment_method:'',
-    //       salesperson:'',
+    //       sales_person:'',
     // }
     setSuccessMessage("");
   };
@@ -207,11 +219,14 @@ export default function App() {
   }, []);
 
   const handleSearch = () => {
-    const results = transactiones.filter((transaction) =>
-      transaction.costumer_name
-        .toLowerCase()
-        .includes(searchInput.toLowerCase())
+    const results = transactions.filter(
+      (transaction) =>
+        transaction.costumer_name &&
+        transaction.costumer_name
+          .toLowerCase()
+          .includes(searchInput.toLowerCase())
     );
+
     setFilteredResults(results);
   };
 
@@ -251,6 +266,7 @@ export default function App() {
                     >
                       {products.map((products) => (
                         <SelectItem
+                        key={products.name}
                           variant="bordered"
                           style={{ color: "black" }}
                         >
@@ -322,17 +338,17 @@ export default function App() {
                       autoFocus
                       isRequired
                       variant="bordered"
-                      value={costumer_type}
+                      value={customer_type}
                       style={{ color: "black" }}
                       onChange={(event) => setCostumerType(event.target.value)}
                     >
-                      {costumer_types.map((costumer_type) => (
+                      {customer_types.map((customer_type) => (
                         <SelectItem
                           variant="bordered"
-                          key={costumer_type.key}
+                          key={customer_type.label}
                           style={{ color: "black" }}
                         >
-                          {costumer_type.label}
+                          {customer_type.label}
                         </SelectItem>
                       ))}
                     </Select>
@@ -342,7 +358,7 @@ export default function App() {
                       autoFocus
                       isRequired
                       type="text"
-                      value={costumer_name}
+                      value={customer_name}
                       label="Costumer Name"
                       variant="bordered"
                       onChange={(event) => setCostumerName(event.target.value)}
@@ -360,6 +376,7 @@ export default function App() {
                     >
                       {payment.map((method) => (
                         <SelectItem
+                          key={method.name}
                           variant="bordered"
                           style={{ color: "black" }}
                         >
@@ -374,7 +391,7 @@ export default function App() {
                       autoFocus
                       isRequired
                       type="text"
-                      value={salesperson}
+                      value={sales_person}
                       label="Sales Person"
                       variant="bordered"
                       onChange={(event) => setSalesPerson(event.target.value)}
@@ -490,9 +507,6 @@ export default function App() {
                       />
                     </div>
                   </form>
-
-                 
-                  
                 </div>
               </div>
               <div className="flex items-center lg:order-2">
@@ -550,11 +564,12 @@ export default function App() {
             ))}
           </TableHeader>
           <TableBody emptyContent={"No transaction found"}>
-            {filteredResults.map((transaction) => (
+            {transactions.map((transaction, index) => (
               <TableRow key={transaction.id}>
                 <TableCell className="text-black"></TableCell>
+                <TableCell className="text-black">{transaction.date}</TableCell>
                 <TableCell className="text-black"></TableCell>
-                <TableCell className="text-black"></TableCell>
+                {/* <TableCell className="text-black">{index + 1}</TableCell> */}
                 <TableCell className="text-black">
                   {transaction.item_name}
                 </TableCell>
@@ -574,7 +589,7 @@ export default function App() {
                   {transaction.unit_cost}
                 </TableCell>
                 <TableCell className="text-black">
-                  {transaction.costumer_type}
+                  {transaction.customer_type}
                 </TableCell>
                 <TableCell className="text-black">
                   {transaction.costumer_name}
@@ -586,7 +601,7 @@ export default function App() {
                   {transaction.payment_method}
                 </TableCell>
                 <TableCell className="text-black">
-                  {transaction.salesperson}
+                  {transaction.sales_person}
                 </TableCell>{" "}
                 <TableCell className="text-black"></TableCell>
                 <TableCell className="text-black">

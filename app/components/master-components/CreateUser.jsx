@@ -21,6 +21,7 @@ import { MdAdd } from "react-icons/md";
 import { BsEyeSlash, BsEye } from "react-icons/bs";
 import validateEmail from "@/app/composables/validateEmail";
 import JobDetails from './form/JobDetails'
+import { UploadImage } from '@/app/composables/uploadImage'
 
 export default function CreateUser() {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -74,6 +75,9 @@ export default function CreateUser() {
     review: "",
     actions: "",
   });
+  const [contract, setContract] = useState(null)
+  const [preEmploment, setPreEmployment] = useState(null)
+  const [certificates, setcertificates] = useState(null)
 
   const handleBirthDateChange = (date) => {
     setCredentials((prevData) => ({
@@ -197,43 +201,61 @@ export default function CreateUser() {
     fetchJobData()
   }, [])
 
-  const [isLoading, setIsLoading] = useState(false)
-  const submit = async () => {
-    const errors = isInvalid();
-    if (Object.keys(errors).length !== 0) {
-      console.log(credentials);
-      return;
-    }
-    setStep(4)
-    setIsLoading(true)
-    try {
-      const response = await axios.post('http://localhost:5000/api/users/register', credentials);
-      if (response.status === 201) {
-        setIsLoading(false)
-        setSuccess('Registration successful')
-        setError(null);
-        // onClose();
-      } else {
-        setIsLoading(false)
-        setError('Unexpected response from server');
-      }
-
-    } catch (error) {
-      if (error.response) {
-        console.error("Error response from server:", error.response.data);
-        setError(
-          error.response.data.message || "Error occurred during registration"
-        );
-      } else if (error.request) {
-        console.error("No response from server:", error.request);
-        setError("No response from server. Please try again later.");
-      } else {
-        console.error("Error setting up the request:", error.message);
-        setError("Error setting up request");
+  const upload = async () => {
+    const files = [
+      { key: 'contract', value: contract },
+      { key: 'pre_employment', value: preEmploment },
+      { key: 'certificates', value: certificates },
+    ];
+  
+    for (const { key, value } of files) {
+      if (value !== '') {
+        try {
+          const result = await UploadImage(value);
+          setCredentials((prevData) => ({
+            ...prevData,
+            [key]: result,
+          }));
+          console.log(result);
+        } catch (error) {
+          console.error(`Error uploading ${key}:`, error);
+          // Handle error as needed (e.g., set error state)
+        }
       }
     }
-    console.log(error);
   };
+
+const [isLoading, setIsLoading] = useState(false)
+const submit = async () => {
+  // Uncomment this if you want to validate
+  const errors = isInvalid();
+  if (Object.keys(errors).length !== 0) {
+    console.log(errors);
+    return;
+  }
+
+  setStep(4);
+  setIsLoading(true);
+  
+  try {
+    // await upload();
+    // Uncomment the registration logic below after uploading
+    const response = await axios.post('http://localhost:5000/api/users/register', credentials);
+    if (response.status === 201) {
+      setSuccess('Registration successful');
+    } else {
+      setError('Unexpected response from server');
+    }
+  } catch (error) {
+    console.error("Error during submission:", error);
+    setError("An error occurred during submission.");
+  } finally {
+    setIsLoading(false);
+  }
+
+  console.log(credentials);
+};
+
   return (
     <>
       <div className="p-md">
@@ -630,12 +652,13 @@ export default function CreateUser() {
                                 <div>
                                   <span>Legal Compliance and Audit</span>
                                   <div className="flex flex-col md:flex-row lg:flex-row gap-5 py-2 pt-3">
-                                    <Input radius="sm" type="file" label="Contract" />
+                                    <Input radius="sm" type="file" label="Contract" onChange={(e)=>(setContract(e.target.files[0])) }/>
                                     <Input radius="sm"
                                       type="file"
                                       label="Pre-employment document"
+                                      onChange={(e)=>(setPreEmployment(e.target.files[0])) }
                                     />
-                                    <Input radius="sm" type="file" label="Training certificates" />
+                                    <Input radius="sm" type="file" label="Training certificates" onChange={(e)=>(setcertificates(e.target.files[0])) }/>
                                   </div>
                                 </div>
                               </div>

@@ -1,4 +1,5 @@
 const columns = [
+  {ui: ' role'},
   { uid: "date", name: "Date", sortable: true },
   { uid: "time", name: "Time", sortable: true },
   { uid: "transaction_no", name: "Transaction No", sortable: true },
@@ -263,8 +264,8 @@ const transactions = [
   { key: "paper print", label: "Paper Print" },
 
 ];
-const costumer_types = [
+const customer_types = [
   { key: 'Walkin', label: 'Walk-in' },
   { key: 'Online', label: 'Online' }
 ]
-export { columns, users, statusOptions, transactions, costumer_types };
+export { columns, users, statusOptions, transactions, customer_types };

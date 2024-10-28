@@ -1,5 +1,5 @@
 "use client"
-import React from "react";
+import React, { useEffect } from "react";
 import AdminLayout from '../layout/layout'
 import {
   Table,
@@ -17,13 +17,17 @@ import {
   Chip,
   User,
   Pagination,
+  Spinner,
+  Tooltip
 } from "@nextui-org/react";
 import { FaPlus } from "react-icons/fa6";
-import { HiDotsVertical } from "react-icons/hi";
+import { BiEditAlt } from "react-icons/bi";
+import { RiDeleteBinLine } from "react-icons/ri";
 import { CiSearch } from "react-icons/ci";
 import { IoChevronDown } from "react-icons/io5";
-import {columns, users, statusOptions} from "./data";
+import { useUserStore } from "../../stores/userStore";
 import {capitalize} from "@/app/composables/utils";
+import ViewDetails from "@/app/components/adminComponents/employee/ViewDetails"
 
 const statusColorMap = {
   active: "success",
@@ -31,9 +35,10 @@ const statusColorMap = {
   vacation: "warning",
 };
 
-const INITIAL_VISIBLE_COLUMNS = ["name", "role", "status", "actions"];
+const INITIAL_VISIBLE_COLUMNS = ["name", "job_title", "status", "actions"];
 
 export default function Employee() {
+  const {columns, statusOptions, users, loading, fetchUsers } = useUserStore();
   const [filterValue, setFilterValue] = React.useState("");
   const [selectedKeys, setSelectedKeys] = React.useState(new Set([]));
   const [visibleColumns, setVisibleColumns] = React.useState(new Set(INITIAL_VISIBLE_COLUMNS));
@@ -43,6 +48,10 @@ export default function Employee() {
     column: "age",
     direction: "ascending",
   });
+  useEffect(()=>{
+    fetchUsers()
+  },[fetchUsers])
+  
   const [page, setPage] = React.useState(1);
 
   const hasSearchFilter = Boolean(filterValue);
@@ -103,11 +112,11 @@ export default function Employee() {
             {user.email}
           </User>
         );
-      case "role":
+      case "job_title":
         return (
           <div className="flex flex-col">
             <p className="text-bold text-small capitalize">{cellValue}</p>
-            <p className="text-bold text-tiny capitalize text-default-400">{user.team}</p>
+            <p className="text-bold text-tiny capitalize text-default-400">{user.department}</p>
           </div>
         );
       case "status":
@@ -118,19 +127,22 @@ export default function Employee() {
         );
       case "actions":
         return (
-          <div className="relative flex justify-end items-center gap-2">
-            <Dropdown>
-              <DropdownTrigger>
-                <Button isIconOnly size="sm" variant="light">
-                  <HiDotsVertical className="text-default-300" />
-                </Button>
-              </DropdownTrigger>
-              <DropdownMenu>
-                <DropdownItem>View</DropdownItem>
-                <DropdownItem>Edit</DropdownItem>
-                <DropdownItem>Delete</DropdownItem>
-              </DropdownMenu>
-            </Dropdown>
+          <div className="flex justify-center items-center gap-2">
+            <Tooltip content="Details">
+              <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
+                <ViewDetails data={user}/>
+              </span>
+            </Tooltip>
+            <Tooltip content="Edit user">
+              <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
+                <BiEditAlt />
+              </span>
+            </Tooltip>
+            <Tooltip color="danger" content="Delete user">
+              <span className="text-lg text-danger cursor-pointer active:opacity-50">
+                <RiDeleteBinLine />
+              </span>
+            </Tooltip>
           </div>
         );
       default:
@@ -315,7 +327,11 @@ export default function Employee() {
                 </TableColumn>
               )}
             </TableHeader>
-            <TableBody emptyContent={"No users found"} items={sortedItems}>
+            <TableBody 
+            emptyContent={"No users found"} 
+            items={sortedItems}
+            isLoading={loading}
+            loadingContent={<Spinner label="Loading..." />}>
               {(item) => (
                 <TableRow key={item.id}>
                   {(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}
