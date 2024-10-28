@@ -9,7 +9,7 @@ import {columns, transactions, itemOptions, typeOptions} from "./data";
 export default function sales() {
   return (
     <AdminLayout>
-      <main className="flex flex-1 rounded-md flex-col gap-4 m-4 lg:gap-6 lg:m-6 bg-white">
+      <main className="flex flex-1 rounded-md flex-col gap-4 m-4 lg:gap-6 lg:m-6">
         <div>
           <div className="flex justify-between items-start">
             <div>

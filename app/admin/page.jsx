@@ -1,61 +1,54 @@
 "use client";
 import React from 'react'
 import AdminLayout from './layout/layout'
-import {Tabs, Tab, Card, CardBody} from "@nextui-org/react";
-import { FaChartLine } from "react-icons/fa";
-import { MdCandlestickChart } from "react-icons/md";
-import { FaChartArea } from "react-icons/fa6";
-// import ExpensesTable from '@/app/components/adminComponents/expenses/ExpensesTable'
-// import {columns, transactions, itemOptions, typeOptions} from "./expensesData";
+import SalesSource from '@/app/components/adminComponents/dashboad/SalesSource';
+import SalesCategory from '@/app/components/adminComponents/dashboad/SalesCategory';
+import SalesRepresentative from '@/app/components/adminComponents/dashboad/SalesRepresentative';
+import Analytics from '@/app/components/adminComponents/dashboad/Analytics'
+import SummaryReport from '@/app/components/adminComponents/dashboad/SummaryReport'
+import { FaArrowDownShortWide, FaArrowUpShortWide } from "react-icons/fa6";
 
 export default function Dashboard() {
   return (
     <AdminLayout>
-      <main className="flex flex-1 flex-col gap-4 m-4 lg:gap-6 lg:m-6 bg-white">
-        <div>
+      <main className="flex flex-1 flex-col gap-4 m-4 lg:gap-6 lg:m-6 max-h-[85vh] overflow-y-scroll">
+        <div className='flex flex-col gap-4'>
           <div>
-            <Tabs aria-label="Options" color="primary">
-              <Tab key="summary" title={
-                <div className="flex items-center space-x-2">
-                  <FaChartLine/>
-                  <span>Summary</span>
+            <h1 className='text-xl'>Dashboard</h1>
+            <span className='text-default-400 text-sm'>An any way to manage sales with care and precision</span>
+          </div>
+          <div className='flex items-start w-full gap-5 pr-2'>
+            <div className='flex-1 flex flex-col gap-5'>
+              <div className='flex justify-between gap-5'>
+                <div className='p-5 flex-1 bg-blue-900 text-white rounded-xl'>
+                  <span className='text-sm text-slate-300'>October 27, 2024</span>
+                  <h1>Sale Revenue Increase <span className='text-green-400'>+10%</span> this week</h1>
                 </div>
-              }>
-                <Card>
-                  <CardBody>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
-                    incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
-                    exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                  </CardBody>
-                </Card>
-              </Tab>
-              <Tab key="expenses" title={
-                <div className="flex items-center space-x-2">
-                  <MdCandlestickChart/>
-                  <span>Expenses</span>
+                <div className='p-5 flex-1 border rounded-xl bg-white'>
+                  <span className='text-sm text-default-600'>Net Income</span>  
+                  <div className='flex justify-between'>
+                    <span className='text-2xl'>$ 100</span>
+                    <span className='flex text-success items-center text-sm'><FaArrowUpShortWide/>+10.2%</span>
+                  </div>
                 </div>
-              }>
-                <Card>
-                  <CardBody>
-                    expenses
-                    {/* <ExpensesTable columns={columns} transactions={transactions} itemOptions={itemOptions} typeOptions={typeOptions} isMaximized={false}/> */}
-                  </CardBody>
-                </Card>
-              </Tab>
-              <Tab key="analytics" title={
-                <div className="flex items-center space-x-2">
-                  <FaChartArea/>
-                  <span>Analytics</span>
+                <div className='p-5 flex-1 border rounded-xl bg-white'>
+                  <span className='text-sm text-default-600'>Expenses</span>
+                  <div className='flex justify-between'>
+                    <span className='text-2xl'>$ 100</span>
+                    <span className='flex text-red-600 items-center text-sm'><FaArrowUpShortWide/>+10.6%</span>
+                  </div>
                 </div>
-              }>
-                <Card>
-                  <CardBody>
-                    Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt
-                    mollit anim id est laborum.
-                  </CardBody>
-                </Card>
-              </Tab>
-            </Tabs>
+              </div>
+              <SalesRepresentative/>
+            </div>
+            <div className='flex flex-col gap-5'>
+              <SalesSource/>
+              <SalesCategory/>
+            </div>
+          </div>
+          <div>
+            <Analytics/>
+            <SummaryReport/>
           </div>
         </div>
       </main>
