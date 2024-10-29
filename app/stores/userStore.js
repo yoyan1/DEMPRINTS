@@ -24,7 +24,7 @@ export const useUserStore = create((set) => ({
     fetchUsers: async () => {
         set({ loading: true });
         try {
-        const response = await fetch('http://localhost:5000/api/users/getUsers'); 
+        const response = await fetch('http://localhost:5000/api/users'); 
         if (!response.ok) throw new Error('Network response was not ok');
         const data = await response.json();
         set({ users: data, loading: false });

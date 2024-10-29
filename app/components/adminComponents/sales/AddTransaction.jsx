@@ -9,6 +9,25 @@ export default function CreateTransaction() {
   const [products, setProducts] = useState([])
   const [options, setOptionList] = useState([])
   const [type, setTypeList] = useState([])
+  const [salesData, setSalesData] = useState({
+                                        date:null,
+                                        time: null,
+                                        transaction_no: "",
+                                        item_no: "",
+                                        item_name: "",
+                                        unit_cost: 0,
+                                        quantity: 0,
+                                        amount: 0,
+                                        discount: 0,
+                                        total: 0,
+                                        customer_type: "",
+                                        customer_name: "",
+                                        payment_type: "",
+                                        payment_options: "",
+                                        sales_person: "",
+                                        remarks: "",
+                                      })
+                                      
 
   const fetchAll = async  () =>{
     const result = await axios.get('http://localhost:5000/api/master/products');
@@ -23,7 +42,29 @@ export default function CreateTransaction() {
     fetchAll()
   }, [])
 
-  const customer_type = ['Walk in', 'Online']
+  const customer_type = ['Walk in', 'Online'];
+
+  const submit = async () => {
+    console.log('function called')
+    products.forEach((item) => {
+      if (item.name === salesData.item_name) {
+        const unitCost = item.price;
+        const total = unitCost * salesData.quantity;
+  
+        // Update state and log the new values
+        setSalesData((prevData) => {
+          const newData = {
+            ...prevData,
+            unit_cost: unitCost,
+            total: total,
+          };
+          console.log("Updated Sales Data:", newData); 
+          return newData; 
+        });
+      }
+    });
+  };  
+
   return (
     <>
       <Button onPress={onOpen} color="primary"><MdAdd/> order</Button>
@@ -39,7 +80,8 @@ export default function CreateTransaction() {
               <ModalBody>
                 <Select 
                   label="Product name" 
-                  name="unit"
+                  value={salesData.item_name}
+                  onChange={(e)=>(setSalesData((prevData)=>({...prevData, item_name: e.target.value})))}
                 >
                   {products.map(item => (
                     <SelectItem key={item.name} value={item.name}>
@@ -54,17 +96,23 @@ export default function CreateTransaction() {
                     label="Quantity"
                     placeholder="Enter quantity"
                     variant="bordered"
+                    value={salesData.quantity}
+                    onChange={(e)=>(setSalesData((prevData)=>({...prevData, quantity: e.target.value})))}
                     />
                     <Input
                     autoFocus
                     label="Discount"
                     placeholder="Enter cutomer discount"
                     variant="bordered"
+                    value={salesData.discount}
+                     onChange={(e)=>(setSalesData((prevData)=>({...prevData, discount: e.target.value})))}
                     />
                 </div>
                 <Select 
                   label="Customer type" 
                   name="unit"
+                  value={salesData.customer_type}
+                  onChange={(e)=>(setSalesData((prevData)=>({...prevData, customer_type: e.target.value})))}
                 >
                   {customer_type.map(item => (
                     <SelectItem key={item} value={item}>
@@ -77,10 +125,14 @@ export default function CreateTransaction() {
                   label="Customer name"
                   placeholder="Enter customer name"
                   variant="bordered"
+                  value={salesData.customer_name}
+                  onChange={(e)=>(setSalesData((prevData)=>({...prevData, customer_name: e.target.value})))}
                 />
                 <Select 
                   label="Payment type" 
                   name="unit"
+                  value={salesData.payment_type}
+                  onChange={(e)=>(setSalesData((prevData)=>({...prevData, payment_type: e.target.value})))}
                 >
                   {type.map(item => (
                     <SelectItem key={item.name} value={item.name}>
@@ -91,6 +143,8 @@ export default function CreateTransaction() {
                 <Select 
                   label="Payment options" 
                   name="unit"
+                  value={salesData.payment_options}
+                  onChange={(e)=>(setSalesData((prevData)=>({...prevData, payment_options: e.target.value})))}
                 >
                   {options.map(item => (
                     <SelectItem key={item.name} value={item.name}>
@@ -103,8 +157,8 @@ export default function CreateTransaction() {
                 <Button color="danger" variant="flat" onPress={onClose}>
                   Close
                 </Button>
-                <Button color="primary" onPress={onClose}>
-                  Sign in
+                <Button color="primary" onPress={submit}>
+                  Submit
                 </Button>
               </ModalFooter>
             </>
