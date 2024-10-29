@@ -37,7 +37,7 @@ export const useSalesStore = create((set) => ({
     fetchTransactions: async () => {
         set({ loading: true });
         try {
-        const response = await axios.get('https://demprints-backend.vercel.app/api/collection/getTransaction'); 
+        const response = await axios.get('http://localhost:5000/api/collection/getTransaction'); 
         // if (!response.ok) throw new Error('Network response was not ok');
         const data = await response.data;
         set({ transactions: data, loading: false });

@@ -5,7 +5,7 @@ export const UploadImage = async(data) => {
     formData.append('image', data); 
 
     try {
-      const response = await axios.post('https://demprints-backend.vercel.app/api/users/upload', formData, {
+      const response = await axios.post('http://localhost:5000/api/users/upload', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
