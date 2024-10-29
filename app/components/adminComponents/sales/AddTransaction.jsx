@@ -3,12 +3,14 @@ import {Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDis
 import { useEffect, useState } from "react";
 import { MdAdd } from "react-icons/md";
 import axios from "axios";
+import {getDateAndTime} from '@/app/composables/dateAndTime'
 
 export default function CreateTransaction() {
   const {isOpen, onOpen, onOpenChange} = useDisclosure();
   const [products, setProducts] = useState([])
   const [options, setOptionList] = useState([])
   const [type, setTypeList] = useState([])
+  const {date, time} = getDateAndTime()
   const [salesData, setSalesData] = useState({
                                         date:null,
                                         time: null,
@@ -46,6 +48,7 @@ export default function CreateTransaction() {
 
   const submit = async () => {
     console.log('function called')
+    console.log(date, time)
     products.forEach((item) => {
       if (item.name === salesData.item_name) {
         const unitCost = item.price;

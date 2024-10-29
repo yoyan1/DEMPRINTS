@@ -33,11 +33,9 @@ import {
 } from "@nextui-org/react";
 
 // import { MdOutlineAlternateEmail, MdOutlineLock } from "react-icons/md";
-import { LuPlus } from "react-icons/lu";
-import { IoEllipsisVertical, IoPersonSharp } from "react-icons/io5";
-import { FaSearch } from "react-icons/fa";
+import { FaFilePen } from "react-icons/fa6";
 
-import { columns, users, statusOptions, costumer_types } from "./data";
+import { columns, users, statusOptions, customer_types } from "./data";
 import axios from "axios";
 
 const statusColorMap = {
@@ -52,8 +50,8 @@ const INITIAL_VISIBLE_COLUMNS = [
   "transaction_no",
   "item_no",
   "item_name",
-  "unit_cost",
   "quantity",
+  "unit_cost",
   "amount",
   "discount",
   "total",
@@ -73,120 +71,23 @@ export default function App() {
   const [filterValue, setFilterValue] = React.useState("");
   const [selectedKeys, setSelectedKeys] = React.useState(new Set([]));
   const [visibleColumns] = React.useState(new Set(INITIAL_VISIBLE_COLUMNS));
-  const [statusFilter] = React.useState("all");
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
-  const [sortDescriptor, setSortDescriptor] = React.useState({
-    column: "age",
-    direction: "ascending",
-  });
-  const [page, setPage] = React.useState(1);
+  // const [statusFilter] = React.useState("all");
 
-  const hasSearchFilter = Boolean(filterValue);
-
-  const headerColumns = React.useMemo(() => {
-    if (visibleColumns === "all") return columns;
-
-    return columns.filter((column) =>
-      Array.from(visibleColumns).includes(column.uid)
-    );
-  }, [visibleColumns]);
-
-  const filteredItems = React.useMemo(() => {
-    let filteredUsers = users;
-
-    if (hasSearchFilter) {
-      filteredUsers = filteredUsers.filter((user) =>
-        user.customer_name?.toLowerCase().includes(filterValue.toLowerCase())
-      );
-    }
-    if (
-      statusFilter !== "all" &&
-      Array.from(statusFilter).length !== statusOptions.length
-    ) {
-      filteredUsers = filteredUsers.filter((user) =>
-        Array.from(statusFilter).includes(user.status)
-      );
-    }
-
-    return filteredUsers;
-  }, [users, filterValue, statusFilter]);
-
-  const pages = Math.ceil(filteredItems.length / rowsPerPage);
-
-  const items = React.useMemo(() => {
-    const start = (page - 1) * rowsPerPage;
-    const end = start + rowsPerPage;
-
-    return filteredItems.slice(start, end);
-  }, [page, filteredItems, rowsPerPage]);
-
-  const sortedItems = React.useMemo(() => {
-    return [...items].sort((a, b) => {
-      const first = a[sortDescriptor.column];
-      const second = b[sortDescriptor.column];
-      const cmp = first < second ? -1 : first > second ? 1 : 0;
-
-      return sortDescriptor.direction === "descending" ? -cmp : cmp;
-    });
-  }, [sortDescriptor, items]);
-
-  const renderCell = React.useCallback((user, columnKey) => {
-    const cellValue = user[columnKey];
-
-    switch (columnKey) {
-      case "role":
-        return (
-          <div className="flex flex-col">
-            <p className="text-bold text-small capitalize">{cellValue}</p>
-            <p className="text-bold text-tiny capitalize text-default-400">
-              {user.team}
-            </p>
-          </div>
-        );
-      case "item_name":
-        return (
-          <Chip
-            className="capitalize"
-            color={statusColorMap[user.status]}
-            size="sm"
-            variant="flat"
-          >
-            {cellValue}
-          </Chip>
-        );
-      case "actions":
-        return (
-          <div className="relative flex justify-end items-center gap-2">
-            <Dropdown>
-              <DropdownTrigger>
-                <Button isIconOnly size="sm" variant="light">
-                  <IoEllipsisVertical className="text-default-300" />
-                </Button>
-              </DropdownTrigger>
-              <DropdownMenu>
-                <DropdownItem>View</DropdownItem>
-                <DropdownItem>Edit</DropdownItem>
-                <DropdownItem>Delete</DropdownItem>
-              </DropdownMenu>
-            </Dropdown>
-          </div>
-        );
-      default:
-        return cellValue;
-    }
-  }, []);
   // ----------------------------------
 
-  const [costumer_name, setCostumerName] = useState("");
-  const [costumer_type, setCostumerType] = useState("");
+  const [customer_name, setCostumerName] = useState("");
+  const [customer_type, setCostumerType] = useState("");
   const [item_name, setItemName] = useState("");
+  const [transaction_no] = useState(0)
+  const [item_no] = useState(0)
   const [quantity, setQuantity] = useState(0);
   const [unit_cost, setUnitCost] = useState(0);
   const [discount, setDiscount] = useState(0);
   const [amount, setAmount] = useState(0);
   const [total, setTotal] = useState(0);
+  const [remarks] = useState('')
   const [payment_method, setPaymentMethod] = useState("");
-  const [salesperson, setSalesPerson] = useState("");
+  const [sales_person, setSalesPerson] = useState("");
   const [success_message, setSuccessMessage] = useState("");
   // ----------------------
   const [payment, setPaymentt] = useState([]);
@@ -238,8 +139,10 @@ export default function App() {
 
   const handleDelete = async (id) => {
     try {
-      const response = await axios.delete(`http://localhost:5000/api/collection/deletetransaction/${id}`);
-      console.log(response.data)
+      const response = await axios.delete(
+        `http://localhost:5000/api/collection/deletetransaction/${id}`
+      );
+      console.log(response.data);
     } catch (error) {
       console.log(error);
     }
@@ -248,19 +151,28 @@ export default function App() {
   const handleSubmit = async () => {
     // event.preventDefault();
     try {
+      const currentDate = new Date();
+      const formattedDate = currentDate.toISOString().split("T")[0]; // Format date as YYYY-MM-DD
+      const formattedTime = currentDate.toTimeString().split(" ")[0];
       const response = await axios.post(
-        `http://localhost:5000/api/collection/addtransaction`,
+        `http://localhost:5000/api/collection/addtransaction`
+        ,
         {
-          costumer_name,
-          costumer_type,
+          date:formattedDate,
+          time:formattedTime,
+          transaction_no,
+          item_no,
           item_name,
-          quantity,
           unit_cost,
-          discount,
+          quantity,
           amount,
+          discount,
           total,
+          customer_type,
+          customer_name,
           payment_method,
-          salesperson,
+          sales_person,
+          remarks,
         }
       );
 
@@ -275,7 +187,7 @@ export default function App() {
   const handleClose = () => {
     // FormData={
     //   costumer_name:'',
-    //       costumer_type :"",
+    //       customer_type :"",
     //       item_name:'',
     //       quantity:'',
     //       unit_cost:'',
@@ -283,131 +195,42 @@ export default function App() {
     //       amount:'',
     //       total:'',
     //       payment_method:'',
-    //       salesperson:'',
+    //       sales_person:'',
     // }
     setSuccessMessage("");
   };
+  // ----------------------------------
+  const [searchInput, setSearchInput] = useState("");
+  const [transactiones, setTransactions] = useState([]);
+  const [filteredResults, setFilteredResults] = useState([]);
+
+  useEffect(() => {
+    const fetchTransactions = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:5000/api/collection/getTransaction"
+        );
+        setTransactions(response.data); // Assuming the response is an array
+      } catch (error) {
+        console.error("Error fetching transactions:", error);
+      }
+    };
+    fetchTransactions();
+  }, []);
+
+  const handleSearch = () => {
+    const results = transactions.filter(
+      (transaction) =>
+        transaction.costumer_name &&
+        transaction.costumer_name
+          .toLowerCase()
+          .includes(searchInput.toLowerCase())
+    );
+
+    setFilteredResults(results);
+  };
 
   // ----------------------------------
-  ("");
-  const onNextPage = React.useCallback(() => {
-    if (page < pages) {
-      setPage(page + 1);
-    }
-  }, [page, pages]);
-
-  const onPreviousPage = React.useCallback(() => {
-    if (page > 1) {
-      setPage(page - 1);
-    }
-  }, [page]);
-
-  const onRowsPerPageChange = React.useCallback((event) => {
-    setRowsPerPage(Number(event.target.value));
-    setPage(1);
-  }, []);
-
-  const onSearchChange = React.useCallback((value) => {
-    if (value) {
-      setFilterValue(value);
-      setPage(1);
-    } else {
-      setFilterValue("");
-    }
-  }, []);
-
-  const onClear = React.useCallback(() => {
-    setFilterValue("");
-    setPage(1);
-  }, []);
-
-  const topContent = React.useMemo(() => {
-    return (
-      <div className="flex flex-col gap-4 ml-3 mt-5">
-        <div className="flex justify-between gap-3 items-end">
-          <Input
-            isClearable
-            className="w-full sm:max-w-[44%]"
-            placeholder="Search by name..."
-            startContent={<FaSearch className="text-black" />}
-            value={filterValue}
-            onClear={() => onClear()}
-            onValueChange={onSearchChange}
-          />
-
-          <div className="flex gap-3">
-            <Button color="primary" size="m" onPress={onOpen}>
-              <LuPlus />
-              Add New
-            </Button>
-          </div>
-        </div>
-        <div className="flex justify-between items-center">
-          <span className="text-default-400 text-small">
-            Total {users.length} users
-          </span>
-          <label className="flex items-center text-default-400 text-small">
-            Rows per page:
-            <select
-              className="bg-transparent outline-none text-default-400 text-small"
-              onChange={onRowsPerPageChange}
-            >
-              <option value="5">5</option>
-              <option value="10">10</option>
-              <option value="15">15</option>
-            </select>
-          </label>
-        </div>
-      </div>
-    );
-  }, [
-    filterValue,
-    statusFilter,
-    visibleColumns,
-    onRowsPerPageChange,
-    users.length,
-    onSearchChange,
-    hasSearchFilter,
-  ]);
-
-  const bottomContent = React.useMemo(() => {
-    return (
-      <div className="py-2 px-2 flex justify-between items-center">
-        <span className="w-[30%] text-small text-default-400">
-          {selectedKeys === "all"
-            ? "All items selected"
-            : `${selectedKeys.size} of ${filteredItems.length} selected`}
-        </span>
-        <Pagination
-          isCompact
-          showControls
-          showShadow
-          color="primary"
-          page={page}
-          total={pages}
-          onChange={setPage}
-        />
-        <div className="hidden sm:flex w-[30%] justify-end gap-2">
-          <Button
-            isDisabled={pages === 1}
-            size="sm"
-            variant="flat"
-            onPress={onPreviousPage}
-          >
-            Previous
-          </Button>
-          <Button
-            isDisabled={pages === 1}
-            size="sm"
-            variant="flat"
-            onPress={onNextPage}
-          >
-            Next
-          </Button>
-        </div>
-      </div>
-    );
-  }, [selectedKeys, items.length, page, pages, hasSearchFilter]);
 
   return (
     <>
@@ -443,6 +266,7 @@ export default function App() {
                     >
                       {products.map((products) => (
                         <SelectItem
+                        key={products.name}
                           variant="bordered"
                           style={{ color: "black" }}
                         >
@@ -514,17 +338,17 @@ export default function App() {
                       autoFocus
                       isRequired
                       variant="bordered"
-                      value={costumer_type}
+                      value={customer_type}
                       style={{ color: "black" }}
                       onChange={(event) => setCostumerType(event.target.value)}
                     >
-                      {costumer_types.map((costumer_type) => (
+                      {customer_types.map((customer_type) => (
                         <SelectItem
                           variant="bordered"
-                          key={costumer_type.key}
+                          key={customer_type.label}
                           style={{ color: "black" }}
                         >
-                          {costumer_type.label}
+                          {customer_type.label}
                         </SelectItem>
                       ))}
                     </Select>
@@ -534,7 +358,7 @@ export default function App() {
                       autoFocus
                       isRequired
                       type="text"
-                      value={costumer_name}
+                      value={customer_name}
                       label="Costumer Name"
                       variant="bordered"
                       onChange={(event) => setCostumerName(event.target.value)}
@@ -552,6 +376,7 @@ export default function App() {
                     >
                       {payment.map((method) => (
                         <SelectItem
+                          key={method.name}
                           variant="bordered"
                           style={{ color: "black" }}
                         >
@@ -566,7 +391,7 @@ export default function App() {
                       autoFocus
                       isRequired
                       type="text"
-                      value={salesperson}
+                      value={sales_person}
                       label="Sales Person"
                       variant="bordered"
                       onChange={(event) => setSalesPerson(event.target.value)}
@@ -636,22 +461,99 @@ export default function App() {
       </Modal>
 
       <div className="overflow-x-auto">
+        <header>
+          <nav
+            className="bg-white border-gray-200 px-4 lg:px-6 py-2.5 mt-5 mb-5 shadow "
+            style={{
+              borderRadius: "10px",
+              boxShadow: "0px 0px 10px 5px rgba(0, 0, 0, 0.1)",
+              padding: "8px",
+            }}
+          >
+            <div className="flex flex-wrap justify-between items-center mx-auto max-w-screen-xl">
+              <div className="flex justify-start items-center">
+                <div>
+                  <form
+                    onSubmit={(e) => {
+                      e.preventDefault(); // Prevent form submission
+                      handleSearch();
+                    }}
+                    className="hidden md:block md:pl-2"
+                  >
+                    <label htmlFor="topbar-search" className="sr-only">
+                      Search
+                    </label>
+                    <div className="relative md:w-64 md:w-96">
+                      <div className="flex absolute inset-y-0 left-0 items-center pl-3 pointer-events-none">
+                        <svg
+                          className="w-5 h-5 text-gray-500 dark:text-gray-400"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            clipRule="evenodd"
+                            d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+                          ></path>
+                        </svg>
+                      </div>
+                      <input
+                        type="text"
+                        id="topbar-search"
+                        className="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 pl-10 p-2.5 dark:border-gray-600 dark:placeholder-gray-400 dark:text-black dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                        placeholder="Search by customer name"
+                        value={searchInput}
+                        onChange={(e) => setSearchInput(e.target.value)}
+                      />
+                    </div>
+                  </form>
+                </div>
+              </div>
+              <div className="flex items-center lg:order-2">
+                <Button
+                  className="text-gray-800 dark:text-white hover:bg-gray-50 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 mr-2 dark:hover:bg-gray-700 focus:outline-none dark:focus:ring-gray-800"
+                  onPress={onOpen}
+                  size="sm"
+                  color="primary"
+                >
+                  <FaFilePen />
+                  Add
+                </Button>
+
+                <button
+                  data-collapse-toggle="mobile-menu-2"
+                  type="button"
+                  className="inline-flex items-center p-2 ml-1 text-sm text-gray-500 rounded-lg lg:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
+                  aria-controls="mobile-menu-2"
+                  aria-expanded="false"
+                >
+                  <span className="sr-only">Open main menu</span>
+                </button>
+              </div>
+              <div
+                className="hidden justify-between items-center w-full lg:flex lg:w-auto lg:order-1"
+                id="mobile-menu-2"
+              ></div>
+            </div>
+          </nav>
+        </header>
+
         <Table
           aria-label="Example table with custom cells, pagination and sorting"
           isHeaderSticky
-          bottomContent={bottomContent}
+          // bottomContent={bottomContent}
           bottomContentPlacement="outside"
           classNames=""
-          selectedKeys={selectedKeys}
+          // selectedKeys={selectedKeys}
           selectionMode="multiple"
-          sortDescriptor={sortDescriptor}
-          topContent={topContent}
+          // sortDescriptor={sortDescriptor}
+          // topContent={topContent}
           topContentPlacement="outside"
           onSelectionChange={setSelectedKeys}
-          onSortChange={setSortDescriptor}
+          // onSortChange={setSortDescriptor}
         >
-          <TableHeader columns={headerColumns}>
-            {(column) => (
+          <TableHeader>
+            {columns.map((column) => (
               <TableColumn
                 key={column.uid}
                 align={column.uid === "actions" ? "center" : "start"}
@@ -659,21 +561,15 @@ export default function App() {
               >
                 {column.name}
               </TableColumn>
-            )}
+            ))}
           </TableHeader>
-          <TableBody emptyContent={"No transaction found"} items={sortedItems}>
-            {transactions.map((transaction) => (
+          <TableBody emptyContent={"No transaction found"}>
+            {transactions.map((transaction, index) => (
               <TableRow key={transaction.id}>
                 <TableCell className="text-black"></TableCell>
+                <TableCell className="text-black">{transaction.date}</TableCell>
                 <TableCell className="text-black"></TableCell>
-                <TableCell className="text-black"></TableCell>
-                <TableCell className="text-black"></TableCell>
-                <TableCell className="text-black">
-                  {transaction.costumer_name}
-                </TableCell>
-                <TableCell className="text-black">
-                  {transaction.costumer_type}
-                </TableCell>
+                {/* <TableCell className="text-black">{index + 1}</TableCell> */}
                 <TableCell className="text-black">
                   {transaction.item_name}
                 </TableCell>
@@ -681,29 +577,37 @@ export default function App() {
                   {transaction.quantity}
                 </TableCell>
                 <TableCell className="text-black">
-                  {transaction.unit_cost}
+                  {transaction.amount}
                 </TableCell>
                 <TableCell className="text-black">
                   {transaction.discount}
                 </TableCell>
                 <TableCell className="text-black">
-                  {transaction.amount}
-                </TableCell>
-                <TableCell className="text-black">
                   {transaction.total}
                 </TableCell>
                 <TableCell className="text-black">
-                  {transaction.payment_method}
+                  {transaction.unit_cost}
+                </TableCell>
+                <TableCell className="text-black">
+                  {transaction.customer_type}
+                </TableCell>
+                <TableCell className="text-black">
+                  {transaction.costumer_name}
                 </TableCell>
                 <TableCell className="text-black">
                   {transaction.payment_method}
                 </TableCell>
                 <TableCell className="text-black">
-                  {transaction.salesperson}
+                  {transaction.payment_method}
                 </TableCell>
                 <TableCell className="text-black">
-                <Button onPress={() => handleDelete(transaction._id)}>Delete</Button>
-
+                  {transaction.sales_person}
+                </TableCell>{" "}
+                <TableCell className="text-black"></TableCell>
+                <TableCell className="text-black">
+                  <Button onPress={() => handleDelete(transaction._id)}>
+                    Delete
+                  </Button>
                 </TableCell>
               </TableRow>
             ))}
