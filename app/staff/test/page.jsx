@@ -25,9 +25,9 @@ import { BsThreeDotsVertical } from "react-icons/bs";
 import { FaMagnifyingGlass } from "react-icons/fa6";
 
 // import {ChevronDownIcon} from "./ChevronDownIcon";
-import { columns, users, statusOptions } from "./data";
+// import { columns = [], transactions = [], statusOptions = [] } from "./data";
 // import {capitalize} from "./utils";
-
+import { useTransactionStore } from "./data";
 // const statusColorMap = {
 //   active: "success",
 //   paused: "danger",
@@ -57,6 +57,8 @@ const INITIAL_VISIBLE_COLUMNS = [
 ];
 
 export default function App() {
+  const [fetchTransaction, column, transactions = []] = useTransactionStore();
+
   const [filterValue, setFilterValue] = React.useState("");
   const [selectedKeys, setSelectedKeys] = React.useState(new Set([]));
   const [visibleColumns, setVisibleColumns] = React.useState(
@@ -78,27 +80,27 @@ export default function App() {
     return columns.filter((column) =>
       Array.from(visibleColumns).includes(column.dataKey)
     );
-  }, [visibleColumns]);
+  }, [visibleColumns, columns]);
 
   const filteredItems = React.useMemo(() => {
-    let filteredUsers = [...users];
+    let filteredTransactions = [...transactions];
 
     if (hasSearchFilter) {
-      filteredUsers = filteredUsers.filter((user) =>
-        user.name.toLowerCase().includes(filterValue.toLowerCase())
+      filteredTransactions = filteredTransactions.filter((transaction) =>
+        transaction.customer_name.toLowerCase().includes(filterValue.toLowerCase())
       );
     }
-    if (
-      statusFilter !== "all" &&
-      Array.from(statusFilter).length !== statusOptions.length
-    ) {
-      filteredUsers = filteredUsers.filter((user) =>
-        Array.from(statusFilter).includes(user.status)
-      );
-    }
+    // if (
+    //   statusFilter !== "all" &&
+    //   Array.from(statusFilter).length !== statusOptions.length
+    // ) {
+    //   filteredTransactions = filteredTransactions.filter((user) =>
+    //     Array.from(statusFilter).includes(user.status)
+    //   );
+    // }
 
-    return filteredUsers;
-  }, [users, filterValue, statusFilter]);
+    return filteredTransactions;
+  }, [transactions, filterValue, statusFilter]);
 
   const pages = Math.ceil(filteredItems.length / rowsPerPage);
 
@@ -280,7 +282,7 @@ export default function App() {
         </div>
         <div className="flex justify-between items-center">
           <span className="text-default-400 text-small">
-            Total {users.length} users
+            Total {transactions.length} transactions
           </span>
           <label className="flex items-center text-default-400 text-small">
             Rows per page:
@@ -301,7 +303,7 @@ export default function App() {
     statusFilter,
     visibleColumns,
     onRowsPerPageChange,
-    users.length,
+    transactions.length,
     onSearchChange,
     hasSearchFilter,
   ]);
@@ -373,7 +375,7 @@ export default function App() {
           </TableColumn>
         )}
       </TableHeader>
-      <TableBody emptyContent={"No users found"} items={sortedItems}>
+      <TableBody emptyContent={"No transactions found"} items={sortedItems}>
         {(item) => (
           <TableRow key={item.id}>
             {(columnKey) => (

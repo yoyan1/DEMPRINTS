@@ -1,167 +1,36 @@
-// 'use client'
+'use client';
 
-// import {create} from 'zustand';
+import axios from 'axios';
+import { create } from 'zustand';
 
-export 
-const columns = [
-  { name: "ID", dataKey: "id", sortable: true },
-  { name: "DATE", dataKey: "date", sortable: true },
-  { name: "TIME", dataKey: "time", sortable: true },
-  { name: "TRANSACTION NO.", dataKey: "transaction_no", sortable: true },
-  { name: "ITEM NO", dataKey: "item_no" },
-  { name: "ITEM NAME", dataKey: "item_name" },
-  { name: "UNIT COST", dataKey: "unit_cost", sortable: true },
-  { name: "QUANTITY", dataKey: "quantity", sortable: true },
-  { name: "AMOUNT", dataKey: "amount", sortable: true },
-  { name: "DISCOUNT", dataKey: "discount", sortable: true },
-  { name: "TOTAL", dataKey: "total", sortable: true },
-  { name: "CUSTOMER TYPE", dataKey: "customer_type", sortable: true },
-  { name: "CUSTOMER NAME", dataKey: "customer_name", sortable: true },
-  { name: "PAYMENT METHOD", dataKey: "payment_method", sortable: true },
-  { name: "SALES PERSON", dataKey: "sales_person", sortable: true },
-  { name: "REMARKS", dataKey: "remarks", sortable: true },
-];
+export const useTransactionStore = create((set) => ({
+  columns: [
+    { name: "ID", dataKey: "id", sortable: true },
+    { name: "DATE", dataKey: "date", sortable: true },
+    { name: "TIME", dataKey: "time", sortable: true },
+    { name: "TRANSACTION NO.", dataKey: "transaction_no", sortable: true },
+    { name: "ITEM NO", dataKey: "item_no" },
+    { name: "ITEM NAME", dataKey: "item_name" },
+    { name: "UNIT COST", dataKey: "unit_cost", sortable: true },
+    { name: "QUANTITY", dataKey: "quantity", sortable: true },
+    { name: "AMOUNT", dataKey: "amount", sortable: true },
+    { name: "DISCOUNT", dataKey: "discount", sortable: true },
+    { name: "TOTAL", dataKey: "total", sortable: true },
+    { name: "CUSTOMER TYPE", dataKey: "customer_type", sortable: true },
+    { name: "CUSTOMER NAME", dataKey: "customer_name", sortable: true },
+    { name: "PAYMENT METHOD", dataKey: "payment_method", sortable: true },
+    { name: "SALES PERSON", dataKey: "sales_person", sortable: true },
+    { name: "REMARKS", dataKey: "remarks", sortable: true },
+  ],
 
-const statusOptions = [
-  { name: "Active", uid: "active" },
-  { name: "Paused", uid: "paused" },
-  { name: "Vacation", uid: "vacation" },
-];
+  transactions: [],
 
-const users = [
-  {
-    id: 1,
-    date: "09/08/24",
-    time: "08:00",
-    transaction_no: 1,
-    item_no: 1,
-    item_name: "Tarpulin",
-    unit_cost: 9,
-    quantity: 4,
-
-    amount: 90,
-    discount: 50,
-    total: 1000,
-    customer_type: "Walkin",
-    customer_name: "Roland",
-    payment_method: "Gcash",
-    sales_person: "Roland",
-    remarks: "Dako Pag Utang",
-  },
-  {
-    id: 8,
-    date: "09/08/24",
-    time: "08:00",
-    transaction_no: 1,
-    item_no: 1,
-    item_name: "Tarpulin",
-    unit_cost: 9,
-    quantity: 4,
-
-    amount: 90,
-    discount: 50,
-    total: 1000,
-    customer_type: "Walkin",
-    customer_name: "Roland",
-    payment_method: "Gcash",
-    sales_person: "Roland",
-    remarks: "Dako Pag Utang",
-  },
-  {
-    id: 9,
-    date: "09/08/24",
-    time: "08:00",
-    transaction_no: 1,
-    item_no: 1,
-    item_name: "Tarpulin",
-    unit_cost: 9,
-    quantity: 4,
-
-    amount: 90,
-    discount: 50,
-    total: 1000,
-    customer_type: "Walkin",
-    customer_name: "Roland",
-    payment_method: "Gcash",
-    sales_person: "Roland",
-    remarks: "Dako Pag Utang",
-  },
-  {
-    id: 7,
-    date: "09/08/24",
-    time: "08:00",
-    transaction_no: 1,
-    item_no: 1,
-    item_name: "Tarpulin",
-    unit_cost: 9,
-    quantity: 4,
-
-    amount: 90,
-    discount: 50,
-    total: 1000,
-    customer_type: "Walkin",
-    customer_name: "Roland",
-    payment_method: "Gcash",
-    sales_person: "Roland",
-    remarks: "Dako Pag Utang",
-  },
-  {
-    id: 3,
-    date: "09/08/24",
-    time: "08:00",
-    transaction_no: 1,
-    item_no: 1,
-    item_name: "Tarpulin",
-    unit_cost: 9,
-    quantity: 4,
-
-    amount: 90,
-    discount: 50,
-    total: 1000,
-    customer_type: "Walkin",
-    customer_name: "Roland",
-    payment_method: "Gcash",
-    sales_person: "Roland",
-    remarks: "Dako Pag Utang",
-  },
-  {
-    id: 3,
-    date: "09/08/24",
-    time: "08:00",
-    transaction_no: 1,
-    item_no: 1,
-    item_name: "Tarpulin",
-    unit_cost: 9,
-    quantity: 4,
-
-    amount: 90,
-    discount: 50,
-    total: 1000,
-    customer_type: "Walkin",
-    customer_name: "Roland",
-    payment_method: "Gcash",
-    sales_person: "Roland",
-    remarks: "Dako Pag Utang",
-  },
-  {
-    id: 2,
-    date: "09/08/24",
-    time: "08:00",
-    transaction_no: 1,
-    item_no: 1,
-    item_name: "Tarpulin",
-    unit_cost: 9,
-    quantity: 4,
-
-    amount: 90,
-    discount: 50,
-    total: 1000,
-    customer_type: "Walkin",
-    customer_name: "Roland",
-    payment_method: "Gcash",
-    sales_person: "Roland",
-    remarks: "Dako Pag Utang",
-  },
-];
-
-export { columns, users, statusOptions };
+  fetchTransaction: async () => {
+    try {
+      const response = await axios.get('http://localhost:5000/api/collection/getTransaction');
+      set({ transactions: response.data });
+    } catch (error) {
+      console.log(error);
+    }
+  }
+}));
