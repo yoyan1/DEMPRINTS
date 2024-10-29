@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import {
   Table,
@@ -17,25 +19,49 @@ import {
   Pagination,
 } from "@nextui-org/react";
 // import {PlusIcon} from "./PlusIcon";
-import {VerticalDotsIcon} from "./VerticalDotsIcon";
+import { FaPlus } from "react-icons/fa";
+// import {VerticalDotsIcon} from "./VerticalDotsIcon";
+import { BsThreeDotsVertical } from "react-icons/bs";
 import { FaMagnifyingGlass } from "react-icons/fa6";
 
 // import {ChevronDownIcon} from "./ChevronDownIcon";
-import {columns, users, statusOptions} from "./data";
+import { columns, users, statusOptions } from "./data";
 // import {capitalize} from "./utils";
 
-const statusColorMap = {
-  active: "success",
-  paused: "danger",
-  vacation: "warning",
+// const statusColorMap = {
+//   active: "success",
+//   paused: "danger",
+//   vacation: "warning",
+// };
+
+const itemColorMap = {
+  tarpaulin: "warning",
+  photoprint: "primary",
+  photocopy: "success",
+  others: "danger",
+};
+const typeColorMap = {
+  Walkin: "success",
+  online: "primary",
 };
 
-const INITIAL_VISIBLE_COLUMNS = ["name", "role", "status", "actions"];
+
+const INITIAL_VISIBLE_COLUMNS = [
+  "transaction_no",
+  "item_name",
+  "unit_cost",
+  "customer_type",
+  "customer_name",
+  "payment_method",
+  "sales_person",
+];
 
 export default function App() {
   const [filterValue, setFilterValue] = React.useState("");
   const [selectedKeys, setSelectedKeys] = React.useState(new Set([]));
-  const [visibleColumns, setVisibleColumns] = React.useState(new Set(INITIAL_VISIBLE_COLUMNS));
+  const [visibleColumns, setVisibleColumns] = React.useState(
+    new Set(INITIAL_VISIBLE_COLUMNS)
+  );
   const [statusFilter, setStatusFilter] = React.useState("all");
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [sortDescriptor, setSortDescriptor] = React.useState({
@@ -49,7 +75,9 @@ export default function App() {
   const headerColumns = React.useMemo(() => {
     if (visibleColumns === "all") return columns;
 
-    return columns.filter((column) => Array.from(visibleColumns).includes(column.uid));
+    return columns.filter((column) =>
+      Array.from(visibleColumns).includes(column.dataKey)
+    );
   }, [visibleColumns]);
 
   const filteredItems = React.useMemo(() => {
@@ -57,12 +85,15 @@ export default function App() {
 
     if (hasSearchFilter) {
       filteredUsers = filteredUsers.filter((user) =>
-        user.name.toLowerCase().includes(filterValue.toLowerCase()),
+        user.name.toLowerCase().includes(filterValue.toLowerCase())
       );
     }
-    if (statusFilter !== "all" && Array.from(statusFilter).length !== statusOptions.length) {
+    if (
+      statusFilter !== "all" &&
+      Array.from(statusFilter).length !== statusOptions.length
+    ) {
       filteredUsers = filteredUsers.filter((user) =>
-        Array.from(statusFilter).includes(user.status),
+        Array.from(statusFilter).includes(user.status)
       );
     }
 
@@ -92,36 +123,54 @@ export default function App() {
     const cellValue = user[columnKey];
 
     switch (columnKey) {
-      case "name":
-        return (
-          <User
-            avatarProps={{radius: "lg", src: user.avatar}}
-            description={user.email}
-            name={cellValue}
-          >
-            {user.email}
-          </User>
-        );
-      case "role":
+      case "transaction_no":
         return (
           <div className="flex flex-col">
             <p className="text-bold text-small capitalize">{cellValue}</p>
-            <p className="text-bold text-tiny capitalize text-default-400">{user.team}</p>
           </div>
         );
-      case "status":
+      case "item_name":
         return (
-          <Chip className="capitalize" color={statusColorMap[user.status]} size="sm" variant="flat">
+          <Chip
+            className="capitalize"
+            color={
+              itemColorMap[
+                user.item_name.toLowerCase() === "photo print"
+                  ? "photoprint"
+                  : user.item_name.toLowerCase()
+              ]
+            }
+            size="sm"
+            variant="flat"
+          >
             {cellValue}
           </Chip>
         );
+      case "customer_type":
+        return (
+          <Chip
+            className="capitalize"
+            color={
+              typeColorMap[
+                user.customer_type.toLowerCase() === "walk in"
+                  ? "walk_in"
+                  : user.customer_type.toLowerCase()
+              ]
+            }
+            size="sm"
+            variant="flat"
+          >
+            {cellValue}
+          </Chip>
+        );
+
       case "actions":
         return (
           <div className="relative flex justify-end items-center gap-2">
             <Dropdown>
               <DropdownTrigger>
                 <Button isIconOnly size="sm" variant="light">
-                  <VerticalDotsIcon className="text-default-300" />
+                  <BsThreeDotsVertical className="text-default-300" />
                 </Button>
               </DropdownTrigger>
               <DropdownMenu>
@@ -133,7 +182,7 @@ export default function App() {
           </div>
         );
       default:
-        return cellValue;
+        return cellValue ;
     }
   }, []);
 
@@ -163,10 +212,10 @@ export default function App() {
     }
   }, []);
 
-  const onClear = React.useCallback(()=>{
-    setFilterValue("")
-    setPage(1)
-  },[])
+  const onClear = React.useCallback(() => {
+    setFilterValue("");
+    setPage(1);
+  }, []);
 
   const topContent = React.useMemo(() => {
     return (
@@ -197,7 +246,7 @@ export default function App() {
                 onSelectionChange={setStatusFilter}
               >
                 {statusOptions.map((status) => (
-                  <DropdownItem key={status.uid} className="capitalize">
+                  <DropdownItem key={status.dataKey} className="capitalize">
                     {capitalize(status.name)}
                   </DropdownItem>
                 ))}
@@ -218,19 +267,21 @@ export default function App() {
                 onSelectionChange={setVisibleColumns}
               >
                 {columns.map((column) => (
-                  <DropdownItem key={column.uid} className="capitalize">
+                  <DropdownItem key={column.dataKey} className="capitalize">
                     {capitalize(column.name)}
                   </DropdownItem>
                 ))}
               </DropdownMenu>
             </Dropdown> */}
-            <Button color="primary" endContent={<PlusIcon />}>
+            <Button color="primary" endContent={<FaPlus />}>
               Add New
             </Button>
           </div>
         </div>
         <div className="flex justify-between items-center">
-          <span className="text-default-400 text-small">Total {users.length} users</span>
+          <span className="text-default-400 text-small">
+            Total {users.length} users
+          </span>
           <label className="flex items-center text-default-400 text-small">
             Rows per page:
             <select
@@ -273,10 +324,20 @@ export default function App() {
           onChange={setPage}
         />
         <div className="hidden sm:flex w-[30%] justify-end gap-2">
-          <Button isDisabled={pages === 1} size="sm" variant="flat" onPress={onPreviousPage}>
+          <Button
+            isDisabled={pages === 1}
+            size="sm"
+            variant="flat"
+            onPress={onPreviousPage}
+          >
             Previous
           </Button>
-          <Button isDisabled={pages === 1} size="sm" variant="flat" onPress={onNextPage}>
+          <Button
+            isDisabled={pages === 1}
+            size="sm"
+            variant="flat"
+            onPress={onNextPage}
+          >
             Next
           </Button>
         </div>
@@ -304,8 +365,8 @@ export default function App() {
       <TableHeader columns={headerColumns}>
         {(column) => (
           <TableColumn
-            key={column.uid}
-            align={column.uid === "actions" ? "center" : "start"}
+            key={column.dataKey}
+            align={column.dataKey === "actions" ? "center" : "start"}
             allowsSorting={column.sortable}
           >
             {column.name}
@@ -315,7 +376,9 @@ export default function App() {
       <TableBody emptyContent={"No users found"} items={sortedItems}>
         {(item) => (
           <TableRow key={item.id}>
-            {(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}
+            {(columnKey) => (
+              <TableCell>{renderCell(item, columnKey)}</TableCell>
+            )}
           </TableRow>
         )}
       </TableBody>
