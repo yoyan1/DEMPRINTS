@@ -6,7 +6,7 @@ import SalesCategory from '@/app/components/adminComponents/dashboad/SalesCatego
 import SalesRepresentative from '@/app/components/adminComponents/dashboad/SalesRepresentative';
 import Analytics from '@/app/components/adminComponents/dashboad/Analytics'
 import SummaryReport from '@/app/components/adminComponents/dashboad/SummaryReport'
-import { FaArrowDownShortWide, FaArrowUpShortWide } from "react-icons/fa6";
+import { FaArrowUpShortWide } from "react-icons/fa6";
 
 export default function Dashboard() {
   return (

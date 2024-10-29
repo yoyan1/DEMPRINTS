@@ -13,7 +13,7 @@ const PdfExport = (data) => {
         {name: "UNIT COST", dataKey: "unit_cost"},
         {name: "CUSTOMER TYPE", dataKey: "customer_type"},
         {name: "CUSTOMER NAME", dataKey: "customer_name"},
-        {name: "PAYMENT METHOD", dataKey: "payment_method"},
+        {name: "PAYMENT METHOD", dataKey: "payment_type"},
         {name: "SALES PERSON", dataKey: "sales_person"},
       ];
       
