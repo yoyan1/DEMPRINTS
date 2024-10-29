@@ -38,7 +38,7 @@ export default function CreateTransaction({isSubmit}) {
     const responseID = await axios.get('http://localhost:5000/api/collection/getId')
     if(responseID.data.length > 0){
       setIdGenerated(responseID.data)
-      console.log(responseID.data)hjhds
+      console.log(responseID.data)
     }
   }
 
