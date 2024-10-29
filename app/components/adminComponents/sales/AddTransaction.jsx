@@ -11,11 +11,11 @@ export default function CreateTransaction() {
   const [type, setTypeList] = useState([])
 
   const fetchAll = async  () =>{
-    const result = await axios.get('http://localhost:5000/api/master/products');
+    const result = await axios.get('https://demprints-backend.vercel.app/api/master/products');
     setProducts(result.data); 
-    const responseOptions = await axios.get('http://localhost:5000/api/master/getPaymentOptions')
+    const responseOptions = await axios.get('https://demprints-backend.vercel.app/api/master/getPaymentOptions')
     setOptionList(responseOptions.data)
-    const responseType = await axios.get('http://localhost:5000/api/master/getPaymentType')
+    const responseType = await axios.get('https://demprints-backend.vercel.app/api/master/getPaymentType')
     setTypeList(responseType.data)
   }
 

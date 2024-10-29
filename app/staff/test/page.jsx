@@ -15,7 +15,7 @@ export default function App() {
   const fetchTest = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/master/getPaymentOptions`
+        `https://demprints-backend.vercel.app/api/master/getPaymentOptions`
       );
       setTest(response.data)
       console.log(response.data);

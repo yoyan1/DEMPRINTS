@@ -23,11 +23,11 @@ export default function CreateProduct() {
   
   const fetchProductsData = async () => {
     try {
-        const response = await axios.get('http://localhost:5000/api/master/productCategory');
+        const response = await axios.get('https://demprints-backend.vercel.app/api/master/productCategory');
         setCategory(response.data); 
-        const res = await axios.get('http://localhost:5000/api/master/productMeasurement');
+        const res = await axios.get('https://demprints-backend.vercel.app/api/master/productMeasurement');
         setMeasurement(res.data); 
-        const result = await axios.get('http://localhost:5000/api/master/products');
+        const result = await axios.get('https://demprints-backend.vercel.app/api/master/products');
         setProducts(result.data); 
     } catch (error) {
         console.error("Error fetching categories:", error);
@@ -54,7 +54,7 @@ export default function CreateProduct() {
   const [isLoading, setIsLoading] = useState(false)
   const submitCategory = async () =>{
     setIsLoading(true)
-    const response = await axios.post('http://localhost:5000/api/master/createCategory', {category_name: category_name})
+    const response = await axios.post('https://demprints-backend.vercel.app/api/master/createCategory', {category_name: category_name})
     console.log(response);
     setIsLoading(false)
     fetchProductsData()
@@ -62,7 +62,7 @@ export default function CreateProduct() {
   }
   const submitMeasurement = async () =>{
     setIsLoading(true)
-    const response = await axios.post('http://localhost:5000/api/master/createMeasurement', {unit: unit})
+    const response = await axios.post('https://demprints-backend.vercel.app/api/master/createMeasurement', {unit: unit})
     console.log(response);
     setIsLoading(false)
     fetchProductsData()
@@ -71,7 +71,7 @@ export default function CreateProduct() {
   
   const submitProduct = async () =>{
     setIsLoading(true)
-    const response = await axios.post('http://localhost:5000/api/master/createProduct', productData)
+    const response = await axios.post('https://demprints-backend.vercel.app/api/master/createProduct', productData)
     console.log(response);
     
     setProductData({ name: '', category: '', unit: '', price: 0,})

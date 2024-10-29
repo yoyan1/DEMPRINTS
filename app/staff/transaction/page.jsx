@@ -203,7 +203,7 @@ export default function App() {
   const fetchPayment = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/master/getPaymentOptions`
+        `https://demprints-backend.vercel.app/api/master/getPaymentOptions`
       );
       setPaymentt(response.data);
       console.log(response.data);
@@ -215,7 +215,7 @@ export default function App() {
   const fetchProduct = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/master/products`
+        `https://demprints-backend.vercel.app/api/master/products`
       );
       setProduct(response.data);
       console.log(response.data);
@@ -227,7 +227,7 @@ export default function App() {
   const fetchTransactions = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/collection/getTransaction`
+        `https://demprints-backend.vercel.app/api/collection/getTransaction`
       );
       setTransaction(response.data);
       console.log(response.data);
@@ -238,7 +238,7 @@ export default function App() {
 
   const handleDelete = async (id) => {
     try {
-      const response = await axios.delete(`http://localhost:5000/api/collection/deletetransaction/${id}`);
+      const response = await axios.delete(`https://demprints-backend.vercel.app/api/collection/deletetransaction/${id}`);
       console.log(response.data)
     } catch (error) {
       console.log(error);
@@ -249,7 +249,7 @@ export default function App() {
     // event.preventDefault();
     try {
       const response = await axios.post(
-        `http://localhost:5000/api/collection/addtransaction`,
+        `https://demprints-backend.vercel.app/api/collection/addtransaction`,
         {
           costumer_name,
           costumer_type,

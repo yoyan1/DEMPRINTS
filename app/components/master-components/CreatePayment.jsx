@@ -19,9 +19,9 @@ export default function CreatePayment() {
 
   const getPaymentMethod = async () =>{
     try{
-      const responseOptions = await axios.get('http://localhost:5000/api/master/getPaymentOptions')
+      const responseOptions = await axios.get('https://demprints-backend.vercel.app/api/master/getPaymentOptions')
       setOptionList(responseOptions.data)
-      const responseType = await axios.get('http://localhost:5000/api/master/getPaymentType')
+      const responseType = await axios.get('https://demprints-backend.vercel.app/api/master/getPaymentType')
       setTypeList(responseType.data)
     } catch(e){
       consol.log(e)
@@ -36,7 +36,7 @@ export default function CreatePayment() {
   const submitPaymentType = async () =>{
     setIsLoading(true)
 
-    const response = await axios.post('http://localhost:5000/api/master/createPaymentType', {name: paymentType})
+    const response = await axios.post('https://demprints-backend.vercel.app/api/master/createPaymentType', {name: paymentType})
     console.log(response)
 
     setPaymentType('')
@@ -45,7 +45,7 @@ export default function CreatePayment() {
   }
   const submitPaymentOptions = async ()=>{
     setIsLoading(true)
-    const response = await axios.post('http://localhost:5000/api/master/createPaymentOptions', {name: paymentOptions})
+    const response = await axios.post('https://demprints-backend.vercel.app/api/master/createPaymentOptions', {name: paymentOptions})
     console.log(response)
 
     setPaymentOptions('')
