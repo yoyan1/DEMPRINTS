@@ -35,13 +35,13 @@ const typeColorMap = {
   online: "primary",
 };
 
-const INITIAL_VISIBLE_COLUMNS = ["transaction_no", "item_name", "unit_cost",  "customer_type", "customer_name", "payment_method", "sales_person"];
+const INITIAL_VISIBLE_COLUMNS = ["transaction_no", "item_name", "unit_cost",  "customer_type", "customer_name", "payment_type", "sales_person"];
 const INITIAL_VISIBLE_COLUMNS_ALL = ["date", "time", "transaction_no", "item_no", "item_name", "unit_cost", "quantity", "amount", "discount", "total", "customer_type", "customer_name", "payment_method", "sales_person", "remarks"];
 
-export default function Transaction(props) {
+export default function Transaction({columns, transactions, itemOptions, typeOptions, loading, isMaximized, refresh}) {
   const [filterValue, setFilterValue] = useState("");
   const [selectedKeys, setSelectedKeys] = useState(new Set([]));
-  const [visibleColumns] = useState(props.isMaximized? INITIAL_VISIBLE_COLUMNS_ALL : new Set(INITIAL_VISIBLE_COLUMNS));
+  const [visibleColumns] = useState(isMaximized? INITIAL_VISIBLE_COLUMNS_ALL : new Set(INITIAL_VISIBLE_COLUMNS));
   const [statusFilter, setStatusFilter] = useState("all");
   const [typeFilter] = useState("all");
   const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -54,32 +54,32 @@ export default function Transaction(props) {
   const hasSearchFilter = Boolean(filterValue);
 
   const headerColumns = useMemo(() => {
-    if (visibleColumns === "all") return props.columns;
+    if (visibleColumns === "all") return columns;
 
-    return props.columns.filter((column) => Array.from(visibleColumns).includes(column.dataKey));
+    return columns.filter((column) => Array.from(visibleColumns).includes(column.dataKey));
   }, [visibleColumns]);
 
   const filteredItems = useMemo(() => {
-    let filteredTransactions = [...props.transactions];
+    let filteredTransactions = [...transactions];
 
     if (hasSearchFilter) {
       filteredTransactions = filteredTransactions.filter((item) =>
         item.item_name.toLowerCase().includes(filterValue.toLowerCase()),
       );
     }
-    if (statusFilter !== "all" && Array.from(statusFilter).length !== props.itemOptions.length) {
+    if (statusFilter !== "all" && Array.from(statusFilter).length !== itemOptions.length) {
       filteredTransactions = filteredTransactions.filter((user) =>
         Array.from(statusFilter).includes(user.item_name.toLowerCase()),
       );
     }
-    if (typeFilter !== "all" && Array.from(typeFilter).length !== props.typeOptions.length) {
+    if (typeFilter !== "all" && Array.from(typeFilter).length !== typeOptions.length) {
       filteredTransactions = filteredTransactions.filter((user) =>
         Array.from(typeFilter).includes(user.customer_type.toLowerCase()),
       );
     }
 
     return filteredTransactions;
-  }, [props.transactions, filterValue, statusFilter, typeFilter]);
+  }, [transactions, filterValue, statusFilter, typeFilter]);
 
   const pages = Math.ceil(filteredItems.length / rowsPerPage);
 
@@ -186,7 +186,7 @@ export default function Transaction(props) {
                 selectionMode="multiple"
                 onSelectionChange={setTypeFilter}
               >
-                {props.typeOptions.map((type) => (
+                {typeOptions.map((type) => (
                   <DropdownItem key={type.dataKey} className="capitalize">
                     {capitalize(type.name)}
                   </DropdownItem>
@@ -207,22 +207,22 @@ export default function Transaction(props) {
                 selectionMode="multiple"
                 onSelectionChange={setStatusFilter}
               >
-                {props.itemOptions.map((item) => (
+                {itemOptions.map((item) => (
                   <DropdownItem key={item.dataKey} className="capitalize">
                     {capitalize(item.name)}
                   </DropdownItem>
                 ))}
               </DropdownMenu>
             </Dropdown>
-            <CreateTransaction/>
+            <CreateTransaction isSubmit={(data)=>(refresh(data))}/>
             <ExportToPdf rows={sortedItems}/>
-            {!props.isMaximized? (
-                <ExpandTransaction columns={props.columns} transactions={props.transactions} itemOptions={props.itemOptions} typeOptions={props.typeOptions} />
+            {!isMaximized? (
+                <ExpandTransaction columns={columns} transactions={transactions} itemOptions={itemOptions} typeOptions={typeOptions} />
             ): null}
           </div>
         </div>
         <div className="flex justify-between items-center">
-          <span className="text-default-400 text-small">Total {props.transactions.length} transactions</span>
+          <span className="text-default-400 text-small">Total {transactions.length} transactions</span>
           <label className="flex items-center text-default-400 text-small">
             Rows per page:
             <select
@@ -242,7 +242,7 @@ export default function Transaction(props) {
     statusFilter,
     visibleColumns,
     onRowsPerPageChange,
-    props.transactions.length,
+    transactions.length,
     onSearchChange,
     hasSearchFilter,
   ]);
@@ -306,7 +306,7 @@ export default function Transaction(props) {
                 </TableColumn>
                 )}
             </TableHeader>
-            <TableBody emptyContent={"No transaction found"} items={sortedItems}  isLoading={props.loading} loadingContent={<Spinner label="Loading..." />} >
+            <TableBody emptyContent={"No transaction found"} items={sortedItems}  isLoading={loading} loadingContent={<Spinner label="Loading..." />} >
                 {(item) => (
                 <TableRow key={item._id}>
                     {(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}

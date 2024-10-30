@@ -5,17 +5,14 @@ import { MdAdd } from "react-icons/md";
 import axios from "axios";
 import {getDateAndTime} from '@/app/composables/dateAndTime'
 
-export default function CreateTransaction() {
-  const {isOpen, onOpen, onOpenChange} = useDisclosure();
+export default function CreateTransaction({isSubmit}) {
+  const {isOpen, onOpen, onClose} = useDisclosure();
   const [products, setProducts] = useState([])
   const [options, setOptionList] = useState([])
   const [type, setTypeList] = useState([])
+  const [idGenerated, setIdGenerated] = useState({_id: '', count: 0})
   const {date, time} = getDateAndTime()
   const [salesData, setSalesData] = useState({
-                                        date:null,
-                                        time: null,
-                                        transaction_no: "",
-                                        item_no: "",
                                         item_name: "",
                                         unit_cost: 0,
                                         quantity: 0,
@@ -38,6 +35,11 @@ export default function CreateTransaction() {
     setOptionList(responseOptions.data)
     const responseType = await axios.get('http://localhost:5000/api/master/getPaymentType')
     setTypeList(responseType.data)
+    const responseID = await axios.get('http://localhost:5000/api/collection/getId')
+    if(responseID.data.length > 0){
+      setIdGenerated(responseID.data)
+      console.log(responseID.data)
+    }
   }
 
   useEffect(() =>{
@@ -46,26 +48,77 @@ export default function CreateTransaction() {
 
   const customer_type = ['Walk in', 'Online'];
 
-  const submit = async () => {
-    console.log('function called')
-    console.log(date, time)
+  const handleChange = (e) =>{
+    const {name, value} = e.target
     products.forEach((item) => {
       if (item.name === salesData.item_name) {
         const unitCost = item.price;
-        const total = unitCost * salesData.quantity;
+        const total = unitCost * value;
   
         // Update state and log the new values
         setSalesData((prevData) => {
           const newData = {
             ...prevData,
+            [name]: value,
             unit_cost: unitCost,
             total: total,
-          };
+          }
           console.log("Updated Sales Data:", newData); 
           return newData; 
         });
       }
     });
+  }
+  
+  const [isLoading, setIsLoading] = useState(false)
+  const submit = async () => {
+    setIsLoading(true)
+    console.log('function called')
+    const newId = idGenerated.count+1
+    const transaction_no =  `000${newId}`
+
+    const newData = {
+      date:date,
+      time: time,
+      transaction_no: transaction_no,
+      item_no: "0001",
+      item_name: salesData.item_name,
+      unit_cost: salesData.unit_cost,
+      quantity: salesData.quantity,
+      amount: salesData.unit_cost,
+      discount: salesData.discount,
+      total: salesData.total,
+      customer_type: salesData.customer_type,
+      customer_name: salesData.customer_name,
+      payment_type: salesData.payment_type,
+      payment_options: salesData.payment_options,
+      sales_person: "Hansam",
+      remarks: ""
+    }
+
+    const response = await axios.post('http://localhost:5000/api/collection/addTransaction', newData)
+    const updateId = await axios.post('http://localhost:5000/api/collection/updateID', {id: idGenerated._id, count: newId})
+    console.log(response.data)
+    console.log(updateId.data)
+    setIsLoading(false)
+    isSubmit(response.data)
+    setSalesData({
+      item_name: "",
+      unit_cost: 0,
+      quantity: 0,
+      amount: 0,
+      discount: 0,
+      total: 0,
+      customer_type: "",
+      customer_name: "",
+      payment_type: "",
+      payment_options: "",
+      sales_person: "",
+      remarks: "",
+    })
+    fetchAll()
+    onClose()
+    
   };  
 
   return (
@@ -73,11 +126,11 @@ export default function CreateTransaction() {
       <Button onPress={onOpen} color="primary"><MdAdd/> order</Button>
       <Modal 
         isOpen={isOpen} 
-        onOpenChange={onOpenChange}
+        onClose={onClose}
         placement="top-center"
       >
         <ModalContent>
-          {(onClose) => (
+          {() => (
             <>
               <ModalHeader className="flex flex-col gap-1">Create Order</ModalHeader>
               <ModalBody>
@@ -99,8 +152,10 @@ export default function CreateTransaction() {
                     label="Quantity"
                     placeholder="Enter quantity"
                     variant="bordered"
+                    disabled={salesData.item_name === ''? true : false}
                     value={salesData.quantity}
-                    onChange={(e)=>(setSalesData((prevData)=>({...prevData, quantity: e.target.value})))}
+                    name="quantity"
+                    onChange={handleChange}
                     />
                     <Input
                     autoFocus
@@ -160,7 +215,7 @@ export default function CreateTransaction() {
                 <Button color="danger" variant="flat" onPress={onClose}>
                   Close
                 </Button>
-                <Button color="primary" onPress={submit}>
+                <Button color="primary" onPress={submit} isLoading={isLoading}>
                   Submit
                 </Button>
               </ModalFooter>

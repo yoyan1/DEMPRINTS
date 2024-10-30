@@ -17,7 +17,7 @@ export const useSalesStore = create((set) => ({
         {name: "TOTAL", dataKey: "total", sortable: true},
         {name: "CUSTOMER TYPE", dataKey: "customer_type", sortable: true},
         {name: "CUSTOMER NAME", dataKey: "customer_name", sortable: true},
-        {name: "PAYMENT METHOD", dataKey: "payment_method", sortable: true},
+        {name: "PAYMENT METHOD", dataKey: "payment_type", sortable: true},
         {name: "SALES PERSON", dataKey: "sales_person", sortable: true},
         {name: "REMARKS", dataKey: "remarks", sortable: true},
     ],

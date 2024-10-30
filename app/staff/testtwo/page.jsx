@@ -18,33 +18,23 @@ import {
   User,
   Pagination,
 } from "@nextui-org/react";
-// import {PlusIcon} from "./PlusIcon";
+// import { PlusIcon } from "./PlusIcon";
 import { FaPlus } from "react-icons/fa";
-// import {VerticalDotsIcon} from "./VerticalDotsIcon";
+// import { VerticalDotsIcon } from "./VerticalDotsIcon";
 import { BsThreeDotsVertical } from "react-icons/bs";
+
+// import { SearchIcon } from "./SearchIcon";
 import { FaMagnifyingGlass } from "react-icons/fa6";
-
-// import {ChevronDownIcon} from "./ChevronDownIcon";
+// import { FaAngleDown } from "./FaAngleDown";
+import { FaAngleDown } from "react-icons/fa";
 import { columns, users, statusOptions } from "./data";
-// import {capitalize} from "./utils";
+// import {  } from "./utils";
 
-// const statusColorMap = {
-//   active: "success",
-//   paused: "danger",
-//   vacation: "warning",
-// };
-
-const itemColorMap = {
-  tarpaulin: "warning",
-  photoprint: "primary",
-  photocopy: "success",
-  others: "danger",
+const statusColorMap = {
+  active: "success",
+  paused: "danger",
+  vacation: "warning",
 };
-const typeColorMap = {
-  Walkin: "success",
-  online: "primary",
-};
-
 
 const INITIAL_VISIBLE_COLUMNS = [
   "transaction_no",
@@ -52,7 +42,6 @@ const INITIAL_VISIBLE_COLUMNS = [
   "unit_cost",
   "customer_type",
   "customer_name",
-  "payment_method",
   "sales_person",
 ];
 
@@ -85,7 +74,7 @@ export default function App() {
 
     if (hasSearchFilter) {
       filteredUsers = filteredUsers.filter((user) =>
-        user.name.toLowerCase().includes(filterValue.toLowerCase())
+        user.customer_name.toLowerCase().includes(filterValue.toLowerCase())
       );
     }
     if (
@@ -123,18 +112,27 @@ export default function App() {
     const cellValue = user[columnKey];
 
     switch (columnKey) {
-      case "transaction_no":
+      case "role":
         return (
           <div className="flex flex-col">
             <p className="text-bold text-small capitalize">{cellValue}</p>
+            <p className="text-bold text-tiny capitalize text-default-400">
+              {user.team}
+            </p>
+          </div>
+        );
+      case "transaction_no":
+        return (
+          <div className="flex flex-col">
+            <p className="text-bold text-small ">{cellValue}</p>
           </div>
         );
       case "item_name":
         return (
           <Chip
-            className="capitalize"
+            className=""
             color={
-              itemColorMap[
+              statusColorMap[
                 user.item_name.toLowerCase() === "photo print"
                   ? "photoprint"
                   : user.item_name.toLowerCase()
@@ -149,21 +147,14 @@ export default function App() {
       case "customer_type":
         return (
           <Chip
-            className="capitalize"
-            color={
-              typeColorMap[
-                user.customer_type.toLowerCase() === "walk in"
-                  ? "walk_in"
-                  : user.customer_type.toLowerCase()
-              ]
-            }
+            className=""
+            color={statusColorMap[user.status]}
             size="sm"
             variant="flat"
           >
             {cellValue}
           </Chip>
         );
-
       case "actions":
         return (
           <div className="relative flex justify-end items-center gap-2">
@@ -182,7 +173,7 @@ export default function App() {
           </div>
         );
       default:
-        return cellValue ;
+        return cellValue;
     }
   }, []);
 
@@ -231,9 +222,12 @@ export default function App() {
             onValueChange={onSearchChange}
           />
           <div className="flex gap-3">
-            {/* <Dropdown>
+            <Dropdown>
               <DropdownTrigger className="hidden sm:flex">
-                <Button endContent={<ChevronDownIcon className="text-small" />} variant="flat">
+                <Button
+                  endContent={<FaAngleDown className="text-small" />}
+                  variant="flat"
+                >
                   Status
                 </Button>
               </DropdownTrigger>
@@ -246,15 +240,18 @@ export default function App() {
                 onSelectionChange={setStatusFilter}
               >
                 {statusOptions.map((status) => (
-                  <DropdownItem key={status.dataKey} className="capitalize">
-                    {capitalize(status.name)}
+                  <DropdownItem key={status.dataKey} className="">
+                    {status.name}
                   </DropdownItem>
                 ))}
               </DropdownMenu>
-            </Dropdown> */}
-            {/* <Dropdown>
+            </Dropdown>
+            <Dropdown>
               <DropdownTrigger className="hidden sm:flex">
-                <Button endContent={<ChevronDownIcon className="text-small" />} variant="flat">
+                <Button
+                  endContent={<FaAngleDown className="text-small" />}
+                  variant="flat"
+                >
                   Columns
                 </Button>
               </DropdownTrigger>
@@ -267,12 +264,12 @@ export default function App() {
                 onSelectionChange={setVisibleColumns}
               >
                 {columns.map((column) => (
-                  <DropdownItem key={column.dataKey} className="capitalize">
-                    {capitalize(column.name)}
+                  <DropdownItem key={column.dataKey} className="">
+                    {column.name}
                   </DropdownItem>
                 ))}
               </DropdownMenu>
-            </Dropdown> */}
+            </Dropdown>
             <Button color="primary" endContent={<FaPlus />}>
               Add New
             </Button>
