@@ -4,13 +4,15 @@ import { useEffect, useState } from "react";
 import { MdAdd } from "react-icons/md";
 import axios from "axios";
 import {getDateAndTime} from '@/app/composables/dateAndTime'
+import {useUserStore} from '@/app/stores/userStore'
 
 export default function CreateTransaction({isSubmit}) {
+  const {users, fetchUsers} = useUserStore()
   const {isOpen, onOpen, onClose} = useDisclosure();
   const [products, setProducts] = useState([])
   const [options, setOptionList] = useState([])
   const [type, setTypeList] = useState([])
-  const [idGenerated, setIdGenerated] = useState({_id: '', count: 0})
+  const [idGenerated, setIdGenerated] = useState([{_id: '', count: 0}])
   const {date, time} = getDateAndTime()
   const [salesData, setSalesData] = useState({
                                         item_name: "",
@@ -45,6 +47,9 @@ export default function CreateTransaction({isSubmit}) {
   useEffect(() =>{
     fetchAll()
   }, [])
+  useEffect(() =>{
+    fetchUsers()
+  }, [fetchUsers])
 
   const customer_type = ['Walk in', 'Online'];
 
@@ -74,7 +79,7 @@ export default function CreateTransaction({isSubmit}) {
   const submit = async () => {
     setIsLoading(true)
     console.log('function called')
-    const newId = idGenerated.count+1
+    const newId = idGenerated[0].count+1
     const transaction_no =  `000${newId}`
 
     const newData = {
@@ -92,12 +97,12 @@ export default function CreateTransaction({isSubmit}) {
       customer_name: salesData.customer_name,
       payment_type: salesData.payment_type,
       payment_options: salesData.payment_options,
-      sales_person: "Hansam",
+      sales_person: salesData.sales_person,
       remarks: ""
     }
 
     const response = await axios.post('http://localhost:5000/api/collection/addTransaction', newData)
-    const updateId = await axios.post('http://localhost:5000/api/collection/updateID', {id: idGenerated._id, count: newId})
+    const updateId = await axios.post('http://localhost:5000/api/collection/updateID', {id: idGenerated[0]._id, count: newId})
     console.log(response.data)
     console.log(updateId.data)
     setIsLoading(false)
@@ -205,6 +210,17 @@ export default function CreateTransaction({isSubmit}) {
                   onChange={(e)=>(setSalesData((prevData)=>({...prevData, payment_options: e.target.value})))}
                 >
                   {options.map(item => (
+                    <SelectItem key={item.name} value={item.name}>
+                      {item.name}
+                    </SelectItem>
+                  ))}
+                </Select>
+                <Select 
+                  label="Sales Person" 
+                  value={salesData.sales_person}
+                  onChange={(e)=>(setSalesData((prevData)=>({...prevData, sales_person: e.target.value})))}
+                >
+                  {users.map(item => (
                     <SelectItem key={item.name} value={item.name}>
                       {item.name}
                     </SelectItem>

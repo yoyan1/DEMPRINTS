@@ -12,7 +12,6 @@ import {
 } from "@nextui-org/react";
 import { Tabs, Tab, Input } from "@nextui-org/react";
 import { Select, SelectItem } from "@nextui-org/select";
-import { MdAdd } from "react-icons/md";
 import { CiShoppingCart } from "react-icons/ci";
 import axios from "axios";
 import Delete from "./actions/Delete";
@@ -121,19 +120,9 @@ export default function CreateProduct() {
   return (
     <>
       <div className="p-md">
-        <div className="relative flex w-80 flex-col rounded-xl bg-white bg-clip-border text-gray-700 shadow-md">
-          <div className="relative mx-4 -mt-6 h-40 overflow-hidden rounded-xl bg-blue-gray-500 bg-clip-border text-white shadow-lg shadow-blue-gray-500/40 bg-gradient-to-r from-blue-500 to-blue-600"></div>
-          <div className="py-3 px-6">
-            <h5 className="mb-2 block font-sans text-xl font-semibold leading-snug tracking-normal text-blue-gray-900 antialiased">
-              Product / Services
-            </h5>
-          </div>
-          <div className="p-6 pt-0">
-            <Button color="primary" onPress={handleOpen}>
-              <MdAdd /> product / service
-            </Button>
-          </div>
-        </div>
+        <Button color="primary" onPress={handleOpen}>
+          View details
+        </Button>
         <Modal
           size="lg"
           isOpen={isOpen}
