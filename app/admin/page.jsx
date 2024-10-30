@@ -1,18 +1,49 @@
 "use client";
 import React from 'react'
 import AdminLayout from './layout/layout'
-import SalesSource from '@/app/components/adminComponents/dashboad/SalesSource';
-import SalesCategory from '@/app/components/adminComponents/dashboad/SalesCategory';
+import Revenue from '@/app/components/adminComponents/dashboad/Revenue'
+import ExpensesAnalysis from '@/app/components/adminComponents/dashboad/ExpensesAnalysis'
+import ExpensesSummary from '@/app/components/adminComponents/dashboad/ExpensesSummary'
+import SalesSourceSummary from '@/app/components/adminComponents/dashboad/SalesSourceSummary'
+// import SalesSource from '@/app/components/adminComponents/dashboad/SalesSource';
+// import SalesCategory from '@/app/components/adminComponents/dashboad/SalesCategory';
 import SalesRepresentative from '@/app/components/adminComponents/dashboad/SalesRepresentative';
-import Analytics from '@/app/components/adminComponents/dashboad/Analytics'
-import SummaryReport from '@/app/components/adminComponents/dashboad/SummaryReport'
-import { FaArrowUpShortWide } from "react-icons/fa6";
+// import Analytics from '@/app/components/adminComponents/dashboad/Analytics'
+// import SummaryReport from '@/app/components/adminComponents/dashboad/SummaryReport'
+// import { FaArrowUpShortWide } from "react-icons/fa6";
 
 export default function Dashboard() {
   return (
     <AdminLayout>
       <main className="flex flex-1 flex-col gap-4 m-4 lg:gap-6 lg:m-6 max-h-[85vh] overflow-y-scroll">
-        <div className='flex flex-col gap-4'>
+        <div>
+          <h1 className='text-xl'>Dashboard</h1>
+          <span className='text-default-400 text-sm'>An any way to manage sales with care and precision</span>
+        </div>
+        <div className="flex gap-5">
+          <div className="flex flex-col gap-5">
+            <div className='flex gap-5'>
+              <div className=' bg-white p-5 rounded-md shadow-md'>
+                <Revenue />
+              </div>
+              <div className=' bg-white p-5 rounded-md shadow-md'>
+                <ExpensesAnalysis/>
+              </div>
+            </div>
+            <div>
+              <SalesRepresentative/>
+            </div>
+          </div>
+          <div className='flex flex-col gap-5'>
+            <div className=' bg-white p-5 rounded-md shadow-md'>
+              <ExpensesSummary/>
+            </div>
+            <div className=' bg-white p-5 rounded-md shadow-md'>
+              <SalesSourceSummary/>
+            </div>
+          </div>
+        </div>
+        {/* <div className='flex flex-col gap-4'>
           <div>
             <h1 className='text-xl'>Dashboard</h1>
             <span className='text-default-400 text-sm'>An any way to manage sales with care and precision</span>
@@ -50,7 +81,7 @@ export default function Dashboard() {
             <Analytics/>
             <SummaryReport/>
           </div>
-        </div>
+        </div> */}
       </main>
     </AdminLayout>
   )
