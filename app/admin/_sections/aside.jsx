@@ -9,7 +9,7 @@ import {Card, CardHeader, CardBody, Image} from "@nextui-org/react";
 export default function Aside (){
   const pathname = usePathname()
     return(
-      <div className="hidden  bg-muted/40 md:block bg-gradient-to-tr from-blue-950 to-blue-400">
+      <div className="hidden sticky top-0 left-0  bg-muted/40 md:block bg-gradient-to-tr from-blue-950 to-blue-400">
         <div className="flex h-full max-h-screen flex-col gap-2">
           <div className="flex h-14 items-center  px-4 lg:h-[60px] lg:px-6">
             <Link href="/" className="flex items-center gap-2 font-semibold">

@@ -15,7 +15,7 @@ import SalesRepresentative from '@/app/components/adminComponents/dashboad/Sales
 export default function Dashboard() {
   return (
     <AdminLayout>
-      <main className="flex flex-1 flex-col gap-4 m-4 lg:gap-6 lg:m-6 max-h-[85vh] overflow-y-scroll">
+      <main className="flex flex-col gap-4 m-4 lg:gap-6 lg:m-6">
         <div>
           <h1 className='text-xl'>Dashboard</h1>
           <span className='text-default-400 text-sm'>An any way to manage sales with care and precision</span>
@@ -23,7 +23,7 @@ export default function Dashboard() {
         <div className="flex gap-5">
           <div className="flex flex-col gap-5">
             <div className='flex gap-5'>
-              <div className=' bg-white p-5 rounded-md shadow-md'>
+              <div className=' bg-white p-5 rounded-md shadow-md '>
                 <Revenue />
               </div>
               <div className=' bg-white p-5 rounded-md shadow-md'>

@@ -9,6 +9,10 @@ const legendItems = Object.entries(colors).map(([n, c]) => ({
     color: c,
   }))
 export default function BasicDonutChart (){
+    let total = 0
+    data.map(item =>{
+        total += item.value
+    })
   return (
     <>
         <div>
@@ -19,7 +23,7 @@ export default function BasicDonutChart (){
                 </div>
                 <Button size='sm' variant="bordered">View Report</Button>
             </div>
-            <div className='flex'>
+            <div className='flex items-center'>
                 <VisSingleContainer height={100} width={100}>
                     <VisDonut
                     value={useCallback(d => d.value, [])}
@@ -27,6 +31,9 @@ export default function BasicDonutChart (){
                     showEmptySegments={true}
                     padAngle={0.01}
                     arcWidth={5}
+                    color={useCallback((_, i) => legendItems[i].color, [])}
+                    centralLabel={`₱${total}`}
+                    centralSubLabel='Total sales from sales source'
                     />
                 </VisSingleContainer>
                 <VisBulletLegend className='flex flex-col justify-center ml-5' items={legendItems}/>
