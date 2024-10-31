@@ -1,12 +1,19 @@
 import React from "react";
-import {Listbox, ListboxItem, Avatar} from "@nextui-org/react";
+import {Listbox, ListboxItem, Avatar, Button} from "@nextui-org/react";
 import {users} from "./userData";
 
 export default function SalesRepresentative() {
   return (
     <div className="w-full border-small px-1 py-2 rounded-small border-default-200 dark:border-default-100 bg-white">
       <Listbox
-        topContent={<h1>Sales Representative Breakdown</h1>}
+        topContent={<div className="flex justify-between">
+                      <div className="px-2">
+                        <h1>Daily Transaction</h1>
+                        <span className="text-sm text-default-400">Data from today</span>
+                      </div>
+                      <Button size="sm" variant="bordered">View Report</Button>
+                    </div>
+                    }
         classNames={{
           list: "max-h-[320px] overflow-scroll",
         }}

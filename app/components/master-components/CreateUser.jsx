@@ -20,7 +20,7 @@ import {
 import { BsEyeSlash, BsEye } from "react-icons/bs";
 import validateEmail from "@/app/composables/validateEmail";
 import JobDetails from './form/JobDetails'
-import { UploadImage } from '@/app/composables/uploadImage'
+// import { UploadImage } from '@/app/composables/uploadImage'
 
 export default function CreateUser() {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -74,9 +74,9 @@ export default function CreateUser() {
     review: "",
     actions: "",
   });
-  const [contract, setContract] = useState(null)
-  const [preEmploment, setPreEmployment] = useState(null)
-  const [certificates, setcertificates] = useState(null)
+  // const [contract, setContract] = useState(null)
+  // const [preEmploment, setPreEmployment] = useState(null)
+  // const [certificates, setcertificates] = useState(null)
 
   const handleBirthDateChange = (date) => {
     setCredentials((prevData) => ({
@@ -182,7 +182,7 @@ export default function CreateUser() {
   };
 
   const fetchJobData = async () =>{
-      const result = await axios.get('http://localhost:5000/api/master/getJobData')
+      const result = await axios.get('https://demprints-backend.vercel.app/api/master/getJobData')
       if(result.data){
           const data = result.data[0]
           console.log(result.data)
@@ -200,29 +200,29 @@ export default function CreateUser() {
     fetchJobData()
   }, [])
 
-  const upload = async () => {
-    const files = [
-      { key: 'contract', value: contract },
-      { key: 'pre_employment', value: preEmploment },
-      { key: 'certificates', value: certificates },
-    ];
+  // const upload = async () => {
+  //   const files = [
+  //     { key: 'contract', value: contract },
+  //     { key: 'pre_employment', value: preEmploment },
+  //     { key: 'certificates', value: certificates },
+  //   ];
   
-    for (const { key, value } of files) {
-      if (value !== '') {
-        try {
-          const result = await UploadImage(value);
-          setCredentials((prevData) => ({
-            ...prevData,
-            [key]: result,
-          }));
-          console.log(result);
-        } catch (error) {
-          console.error(`Error uploading ${key}:`, error);
-          // Handle error as needed (e.g., set error state)
-        }
-      }
-    }
-  };
+  //   for (const { key, value } of files) {
+  //     if (value !== '') {
+  //       try {
+  //         const result = await UploadImage(value);
+  //         setCredentials((prevData) => ({
+  //           ...prevData,
+  //           [key]: result,
+  //         }));
+  //         console.log(result);
+  //       } catch (error) {
+  //         console.error(`Error uploading ${key}:`, error);
+  //         // Handle error as needed (e.g., set error state)
+  //       }
+  //     }
+  //   }
+  // };
 
 const [isLoading, setIsLoading] = useState(false)
 const submit = async () => {
@@ -239,7 +239,7 @@ const submit = async () => {
   try {
     // await upload();
     // Uncomment the registration logic below after uploading
-    const response = await axios.post('http://localhost:5000/api/users/register', credentials);
+    const response = await axios.post('https://demprints-backend.vercel.app/api/users/register', credentials);
     if (response.status === 201) {
       setSuccess('Registration successful');
     } else {
@@ -641,13 +641,13 @@ const submit = async () => {
                                 <div>
                                   <span>Legal Compliance and Audit</span>
                                   <div className="flex flex-col md:flex-row lg:flex-row gap-5 py-2 pt-3">
-                                    <Input radius="sm" type="file" label="Contract" onChange={(e)=>(setContract(e.target.files[0])) }/>
-                                    <Input radius="sm"
+                                    {/* <Input radius="sm" type="file" label="Contract" onChange={(e)=>(setContract(e.target.files[0])) }/> */}
+                                    {/* <Input radius="sm"
                                       type="file"
                                       label="Pre-employment document"
                                       onChange={(e)=>(setPreEmployment(e.target.files[0])) }
-                                    />
-                                    <Input radius="sm" type="file" label="Training certificates" onChange={(e)=>(setcertificates(e.target.files[0])) }/>
+                                    /> */}
+                                    {/* <Input radius="sm" type="file" label="Training certificates" onChange={(e)=>(setcertificates(e.target.files[0])) }/> */}
                                   </div>
                                 </div>
                               </div>

@@ -22,7 +22,7 @@ export default function CreateSupplier() {
 
   const submit = async () =>{
     console.log(supplierData)
-    const response = await axios.post('http://localhost:5000/api/master/createSupplier', supplierData)
+    const response = await axios.post('https://demprints-backend.vercel.app/api/master/createSupplier', supplierData)
     console.log(response)
     setSupplierData({
         type: '',

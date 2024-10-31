@@ -49,7 +49,7 @@ export default function CreateExpenses() {
     };    
 
     const fetchExpensesCategory = async () =>{
-        const result = await axios.get('http://localhost:5000/api/master/getExpensesCategory')
+        const result = await axios.get('https://demprints-backend.vercel.app/api/master/getExpensesCategory')
         setCategoryList(result.data)
     } 
 
@@ -69,7 +69,7 @@ export default function CreateExpenses() {
         }
 
         try{
-            const response = await axios.post('http://localhost:5000/api/master/createExpensesCategory', category)
+            const response = await axios.post('https://demprints-backend.vercel.app/api/master/createExpensesCategory', category)
             setData({message: response.data.message, isSuccess: response.data.isSuccess})
             setIsLoading(false)
             fetchExpensesCategory()

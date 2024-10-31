@@ -8,7 +8,7 @@ export default function AdminLayout({children}) {
     <div>
       <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr] bg-slate-50">
         <Aside/>
-        <div className="flex flex-col">
+        <div className="flex flex-col bg-slate-50">
             <Header/>
             {children}
         </div>
