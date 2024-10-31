@@ -7,7 +7,7 @@ export default function Home() {
       <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
         <Link href="/master" className="w-36 text-center rounded-sm py-1 bg-primary text-white">Master</Link>
         <Link href="/admin" className="w-36 text-center rounded-sm py-1 bg-primary text-white">Admin</Link>
-        <Link href="/staff/transaction" className="w-36 text-center rounded-sm py-1 bg-primary text-white">Staff</Link>
+        <Link href="/staff/transactions" className="w-36 text-center rounded-sm py-1 bg-primary text-white">Staff</Link>
       </main>
       <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
         <a
