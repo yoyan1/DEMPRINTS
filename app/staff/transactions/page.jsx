@@ -54,23 +54,23 @@ const INITIAL_VISIBLE_COLUMNS = [
   "payment_type",
   "sales_person",
 ];
-const INITIAL_VISIBLE_COLUMNS_ALL = [
-  "date",
-  "time",
-  "transaction_no",
-  "item_no",
-  "item_name",
-  "unit_cost",
-  "quantity",
-  "amount",
-  "discount",
-  "total",
-  "customer_type",
-  "customer_name",
-  "payment_method",
-  "sales_person",
-  "remarks",
-];
+// const INITIAL_VISIBLE_COLUMNS_ALL = [
+//   "date",
+//   "time",
+//   "transaction_no",
+//   "item_no",
+//   "item_name",
+//   "unit_cost",
+//   "quantity",
+//   "amount",
+//   "discount",
+//   "total",
+//   "customer_type",
+//   "customer_name",
+//   "payment_method",
+//   "sales_person",
+//   "remarks",
+// ];
 
 export default function Transaction() {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -381,17 +381,11 @@ export default function Transaction() {
       {topContent}
       <div className="max-w-[82rem] overflow-x-scroll">
         <Modal size="lg" isOpen={isOpen} onClose={onClose}>
-          <ModalHeader>
-
-          </ModalHeader>
+          <ModalHeader></ModalHeader>
           <ModalContent>
-            {(onClose) => (
-              <>
-                <ModalBody>
-                  <Addtransaction />
-                </ModalBody>
-              </>
-            )}
+            <ModalBody>
+              <Addtransaction />
+            </ModalBody>
           </ModalContent>
         </Modal>
         <Table
