@@ -6,7 +6,7 @@ import CreateCustomer from '../components/master-components/CreateCustomer'
 import CreateSupplier from '../components/master-components/CreateSupplier'
 import CreatePayment from '../components/master-components/CreatePayment'
 import CreateExpenses from '../components/master-components/CreateExpenses'
-import {Navbar, NavbarBrand, NavbarContent, NavbarItem, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Avatar, User} from "@nextui-org/react";
+import {Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Avatar, User} from "@nextui-org/react";
 import { CgProfile } from "react-icons/cg";
 import { FaBoxOpen } from "react-icons/fa6";
 import { FaUsersBetweenLines } from "react-icons/fa6";

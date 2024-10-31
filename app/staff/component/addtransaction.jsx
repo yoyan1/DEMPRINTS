@@ -36,7 +36,7 @@ export default function Addtransaction() {
   const [payment, setPaymentt] = useState([]);
   const [paymentTypes, setPaymenttype] = useState([]);
   const [products, setProduct] = useState([]);
-  const [transactions, setTransaction] = useState([]);
+  const [setTransaction] = useState([]);
   // ----------------------
 
   useEffect(() => {
@@ -93,16 +93,16 @@ export default function Addtransaction() {
     }
   };
 
-  const handleDelete = async (id) => {
-    try {
-      const response = await axios.delete(
-        `http://localhost:5000/api/collection/deletetransaction/${id}`
-      );
-      console.log(response.data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  // const handleDelete = async (id) => {
+  //   try {
+  //     const response = await axios.delete(
+  //       `http://localhost:5000/api/collection/deletetransaction/${id}`
+  //     );
+  //     console.log(response.data);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
 
   const handleSubmit = async () => {
     // event.preventDefault();
