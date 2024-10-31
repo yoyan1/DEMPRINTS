@@ -8,20 +8,20 @@ export default function Delete({ id, type, done, collection }) {
 
   const deleteItem = async() =>{
     if(collection === 'products'){
-      const response = await axios.delete(`http://localhost:5000/api/master/products/${id}`)
+      const response = await axios.delete(`https://demprints-backend.vercel.app/api/master/products/${id}`)
       console.log(response.data);
       done(response.data)
       
     }
     if(collection === 'payments'){
-      const response = await axios.delete(`http://localhost:5000/api/master/deletePaymentMethod/${id}`)
+      const response = await axios.delete(`https://demprints-backend.vercel.app/api/master/deletePaymentMethod/${id}`)
       console.log(response.data);
       done(response.data)
 
     }
     
     if(collection === 'expenses'){
-      const response = await axios.delete(`http://localhost:5000/api/master/deleteExpensesCategory/${id}`)
+      const response = await axios.delete(`https://demprints-backend.vercel.app/api/master/deleteExpensesCategory/${id}`)
       console.log(response.data);
       done(response.data)
 

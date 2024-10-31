@@ -182,7 +182,7 @@ export default function CreateUser() {
   };
 
   const fetchJobData = async () =>{
-      const result = await axios.get('http://localhost:5000/api/master/getJobData')
+      const result = await axios.get('https://demprints-backend.vercel.app/api/master/getJobData')
       if(result.data){
           const data = result.data[0]
           console.log(result.data)
@@ -239,7 +239,7 @@ const submit = async () => {
   try {
     // await upload();
     // Uncomment the registration logic below after uploading
-    const response = await axios.post('http://localhost:5000/api/users/register', credentials);
+    const response = await axios.post('https://demprints-backend.vercel.app/api/users/register', credentials);
     if (response.status === 201) {
       setSuccess('Registration successful');
     } else {

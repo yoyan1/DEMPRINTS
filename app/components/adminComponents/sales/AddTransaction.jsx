@@ -31,13 +31,13 @@ export default function CreateTransaction({isSubmit}) {
                                       
 
   const fetchAll = async  () =>{
-    const result = await axios.get('http://localhost:5000/api/master/products');
+    const result = await axios.get('https://demprints-backend.vercel.app/api/master/products');
     setProducts(result.data); 
-    const responseOptions = await axios.get('http://localhost:5000/api/master/getPaymentOptions')
+    const responseOptions = await axios.get('https://demprints-backend.vercel.app/api/master/getPaymentOptions')
     setOptionList(responseOptions.data)
-    const responseType = await axios.get('http://localhost:5000/api/master/getPaymentType')
+    const responseType = await axios.get('https://demprints-backend.vercel.app/api/master/getPaymentType')
     setTypeList(responseType.data)
-    const responseID = await axios.get('http://localhost:5000/api/collection/getId')
+    const responseID = await axios.get('https://demprints-backend.vercel.app/api/collection/getId')
     if(responseID.data.length > 0){
       setIdGenerated(responseID.data)
       console.log(responseID.data)
@@ -101,8 +101,8 @@ export default function CreateTransaction({isSubmit}) {
       remarks: ""
     }
 
-    const response = await axios.post('http://localhost:5000/api/collection/addTransaction', newData)
-    const updateId = await axios.post('http://localhost:5000/api/collection/updateID', {id: idGenerated[0]._id, count: newId})
+    const response = await axios.post('https://demprints-backend.vercel.app/api/collection/addTransaction', newData)
+    const updateId = await axios.post('https://demprints-backend.vercel.app/api/collection/updateID', {id: idGenerated[0]._id, count: newId})
     console.log(response.data)
     console.log(updateId.data)
     setIsLoading(false)

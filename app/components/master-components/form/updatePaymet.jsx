@@ -13,7 +13,7 @@ export default function UpdateProduct({ data, type, done, }) {
   const updateItem = async () =>{
     setIsLoading(true)
     try{
-      const response = await axios.post(`http://localhost:5000/api/master/updatePaymentMethod/${data._id}`, {name: inputValue} )
+      const response = await axios.post(`https://demprints-backend.vercel.app/api/master/updatePaymentMethod/${data._id}`, {name: inputValue} )
       console.log(response);
 
       done(response.data)

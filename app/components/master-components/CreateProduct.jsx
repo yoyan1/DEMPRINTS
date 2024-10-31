@@ -37,15 +37,15 @@ export default function CreateProduct() {
   const fetchProductsData = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:5000/api/master/productCategory"
+        "https://demprints-backend.vercel.app/api/master/productCategory"
       );
       setCategory(response.data);
       const res = await axios.get(
-        "http://localhost:5000/api/master/productMeasurement"
+        "https://demprints-backend.vercel.app/api/master/productMeasurement"
       );
       setMeasurement(res.data);
       const result = await axios.get(
-        "http://localhost:5000/api/master/products"
+        "https://demprints-backend.vercel.app/api/master/products"
       );
       setProducts(result.data);
     } catch (error) {
@@ -73,7 +73,7 @@ export default function CreateProduct() {
   const submitCategory = async () => {
     setIsLoading(true);
     const response = await axios.post(
-      "http://localhost:5000/api/master/createCategory",
+      "https://demprints-backend.vercel.app/api/master/createCategory",
       { category_name: category_name }
     );
     console.log(response);
@@ -84,7 +84,7 @@ export default function CreateProduct() {
   const submitMeasurement = async () => {
     setIsLoading(true);
     const response = await axios.post(
-      "http://localhost:5000/api/master/createMeasurement",
+      "https://demprints-backend.vercel.app/api/master/createMeasurement",
       { unit: unit }
     );
     console.log(response);
@@ -96,7 +96,7 @@ export default function CreateProduct() {
   const submitProduct = async () => {
     setIsLoading(true);
     const response = await axios.post(
-      "http://localhost:5000/api/master/createProduct",
+      "https://demprints-backend.vercel.app/api/master/createProduct",
       productData
     );
     console.log(response);
