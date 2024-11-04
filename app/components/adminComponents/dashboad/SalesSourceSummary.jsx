@@ -2,13 +2,14 @@ import React, { useCallback } from 'react'
 import { VisSingleContainer, VisDonut, VisBulletLegend } from '@unovis/react'
 import {Button} from '@nextui-org/react'
 import { capitalize } from '@/app/composables/utils'
-import { data, colors } from './salesSourceSummary'
+import { data, colors } from './salesSourceSummaryData'
 
 const legendItems = Object.entries(colors).map(([n, c]) => ({
     name: capitalize(n),
     color: c,
   }))
-export default function BasicDonutChart (){
+
+export default function SalesSourceSummary (){
     let total = 0
     data.map(item =>{
         total += item.value

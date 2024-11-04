@@ -1,16 +1,11 @@
-"use client";
+"use client"
 import React from 'react'
 import AdminLayout from './layout/layout'
 import Revenue from '@/app/components/adminComponents/dashboad/Revenue'
 import ExpensesAnalysis from '@/app/components/adminComponents/dashboad/ExpensesAnalysis'
 import ExpensesSummary from '@/app/components/adminComponents/dashboad/ExpensesSummary'
 import SalesSourceSummary from '@/app/components/adminComponents/dashboad/SalesSourceSummary'
-// import SalesSource from '@/app/components/adminComponents/dashboad/SalesSource';
-// import SalesCategory from '@/app/components/adminComponents/dashboad/SalesCategory';
 import SalesRepresentative from '@/app/components/adminComponents/dashboad/SalesRepresentative';
-// import Analytics from '@/app/components/adminComponents/dashboad/Analytics'
-// import SummaryReport from '@/app/components/adminComponents/dashboad/SummaryReport'
-// import { FaArrowUpShortWide } from "react-icons/fa6";
 
 export default function Dashboard() {
   return (
