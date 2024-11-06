@@ -18,10 +18,10 @@ export default function Dashboard() {
         <div className="flex gap-5">
           <div className="flex flex-col gap-5">
             <div className='flex gap-5'>
-              <div className=' bg-white p-5 rounded-md shadow-md '>
+              <div className='flex-1'>
                 <Revenue />
               </div>
-              <div className=' bg-white p-5 rounded-md shadow-md'>
+              <div className='flex-1'>
                 <ExpensesAnalysis/>
               </div>
             </div>
@@ -30,12 +30,8 @@ export default function Dashboard() {
             </div>
           </div>
           <div className='flex flex-col gap-5'>
-            <div className=' bg-white p-5 rounded-md shadow-md'>
               <ExpensesSummary/>
-            </div>
-            <div className=' bg-white p-5 rounded-md shadow-md'>
               <SalesSourceSummary/>
-            </div>
           </div>
         </div>
         {/* <div className='flex flex-col gap-4'>
