@@ -21,10 +21,9 @@ import {
 export const description = "A radial chart with a label"
 
 const chartData = [
-  { browser: "chrome", visitors: 275, fill: "var(--color-chrome)" },
-  { browser: "safari", visitors: 200, fill: "var(--color-safari)" },
-  { browser: "firefox", visitors: 187, fill: "var(--color-firefox)" },
-  { browser: "edge", visitors: 173, fill: "var(--color-edge)" },
+  { browser: "walk in", visitors: 275, fill: "var(--color-chrome)" },
+  { browser: "online", visitors: 200, fill: "var(--color-safari)" },
+  { browser: "direct refferal", visitors: 187, fill: "var(--color-firefox)" },
   { browser: "other", visitors: 90, fill: "var(--color-other)" },
 ]
 
@@ -33,20 +32,16 @@ const chartConfig = {
     label: "Visitors",
   },
   chrome: {
-    label: "Chrome",
+    label: "Walk in",
     color: "hsl(var(--chart-1))",
   },
   safari: {
-    label: "Safari",
+    label: "Online",
     color: "hsl(var(--chart-2))",
   },
   firefox: {
-    label: "Firefox",
+    label: "Direct Refferal",
     color: "hsl(var(--chart-3))",
-  },
-  edge: {
-    label: "Edge",
-    color: "hsl(var(--chart-4))",
   },
   other: {
     label: "Other",
