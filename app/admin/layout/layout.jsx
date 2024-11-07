@@ -11,8 +11,10 @@ export default function AdminLayout({children}) {
     <SidebarProvider>
       <AppSidebar />
       <SidebarInset>
-            {<Header/>}
-            {children}
+        <div className="dark:bg-gray-900 h-full">
+          {<Header/>}
+          {children}
+        </div>
       </SidebarInset>
     </SidebarProvider>
   )
