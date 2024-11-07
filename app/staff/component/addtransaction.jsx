@@ -31,12 +31,14 @@ export default function Addtransaction() {
   const [payment_options, setPaymentMethod] = useState("");
   const [sales_person, setSalesPerson] = useState("");
   const [success_message, setSuccessMessage] = useState("");
-  const [payment_type, setPaymentType] = useState('');
+  const [payment_type, setPaymentType] = useState("");
   // ----------------------
   const [payment, setPaymentt] = useState([]);
   const [paymentTypes, setPaymenttype] = useState([]);
   const [products, setProduct] = useState([]);
   const [setTransaction] = useState([]);
+  // ----------------------
+  const [idGenerated, setIdGenerated] = useState([{_id: '', count: 0}])
   // ----------------------
 
   useEffect(() => {
@@ -44,12 +46,13 @@ export default function Addtransaction() {
     fetchProduct();
     fetchTransactions();
     fetchPaymentType();
+    fetchID();
   }, []);
 
   const fetchPayment = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/master/getPaymentOptions`
+        `https://demprints-backend.vercel.app/api/master/getPaymentOptions`
       );
       setPaymentt(response.data);
       console.log(response.data);
@@ -60,7 +63,7 @@ export default function Addtransaction() {
   const fetchPaymentType = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/master/getPaymentType`
+        `https://demprints-backend.vercel.app/api/master/getPaymentType`
       );
       setPaymenttype(response.data);
       console.log(response.data);
@@ -72,7 +75,7 @@ export default function Addtransaction() {
   const fetchProduct = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/master/products`
+        `https://demprints-backend.vercel.app/api/master/products`
       );
       setProduct(response.data);
       console.log(response.data);
@@ -80,6 +83,18 @@ export default function Addtransaction() {
       console.log(error);
     }
   };
+
+  const fetchID = async () =>{
+    try{
+      const response = await axios.get(`https://demprints-backend.vercel.app/api/collection/getId`)
+      if(response.data.length > 0){
+        setIdGenerated(response.data)
+        console.log(response.data)
+      }
+    }catch(error){
+      console.log(error);
+    }
+  }
 
   const fetchTransactions = async () => {
     try {
@@ -110,13 +125,17 @@ export default function Addtransaction() {
       const currentDate = new Date();
       const formattedDate = currentDate.toISOString().split("T")[0]; // Format date as YYYY-MM-DD
       const formattedTime = currentDate.toTimeString().split(" ")[0];
+
+      const newId = idGenerated[0].count + 1;
+      const transaction_no = `000${newId}`;
+
       const response = await axios.post(
-        `http://localhost:5000/api/collection/addtransaction`,
+        `https://demprints-backend.vercel.app/api/collection/addtransaction`,
         {
           date: formattedDate,
           time: formattedTime,
-          transaction_no,
-          item_no,
+          transaction_no: transaction_no,
+          item_no: "0001",
           item_name,
           unit_cost,
           quantity,
@@ -175,89 +194,94 @@ export default function Addtransaction() {
 
   return (
     <>
-      <div className="flex w-full flex-wrap md:flex-nowrap gap-4">
-        <div className="w-full md:w-1/2">
-          <Select
-            label="Item"
-            className="max-w-xs text-black mb-3"
-            autoFocus
-            isRequired
-            value={item_name}
+      <Select
+        label="Item"
+        className="max-w-md mx-auto text-black relative z-0 w-full mb-2  mt-5 "
+        autoFocus
+        isRequired
+        value={item_name}
+        variant="bordered"
+        style={{ color: "black" }}
+        onChange={(event) => setItemName(event.target.value)}
+      >
+        {products.map((products) => (
+          <SelectItem
+            key={products.name}
             variant="bordered"
             style={{ color: "black" }}
-            onChange={(event) => setItemName(event.target.value)}
           >
-            {products.map((products) => (
-              <SelectItem
-                key={products.name}
-                variant="bordered"
-                style={{ color: "black" }}
-              >
-                {products.name}
-              </SelectItem>
-            ))}
-          </Select>
+            {products.name}
+          </SelectItem>
+        ))}
+      </Select>
 
-          <Input
-            className="text-black mb-3"
-            style={{ color: "black" }}
-            autoFocus
-            isRequired
-            value={unit_cost}
-            type="text"
-            label="Unit Cost"
-            variant="bordered"
-            onChange={(event) => setUnitCost(event.target.value)}
-          />
-          <Input
-            className="text-black mb-3"
-            style={{ color: "black" }}
-            autoFocus
-            isRequired
-            type="text"
-            value={quantity}
-            label="Quantity"
-            variant="bordered"
-            onChange={(event) => setQuantity(event.target.value)}
-          />
-          <Input
-            className="text-black mb-3"
-            style={{ color: "black" }}
-            autoFocus
-            isRequired
-            type="text"
-            value={discount}
-            label="Discount"
-            variant="bordered"
-            onChange={(event) => setDiscount(event.target.value)}
-          />
-          <Input
-            className="text-black mb-3"
-            style={{ color: "black" }}
-            autoFocus
-            isRequired
-            type="text"
-            value={amount}
-            label="Amount"
-            variant="bordered"
-            onChange={(event) => setAmount(event.target.value)}
-          />
-        </div>
-        <div className="w-full md:w-1/2">
-          <Input
-            className="text-black mb-3"
-            style={{ color: "black" }}
-            autoFocus
-            isRequired
-            type="text"
-            value={total}
-            label="Total"
-            variant="bordered"
-            onChange={(event) => setTotal(event.target.value)}
-          />
+      <div className="grid md:grid-cols-2 md:gap-6">
+        <Input
+          className="text-black relative z-0 w-full mb-2  "
+          style={{ color: "black" }}
+          autoFocus
+          isRequired
+          value={unit_cost}
+          type="text"
+          label="Unit Cost"
+          variant="bordered"
+          onChange={(event) => setUnitCost(event.target.value)}
+        />
+
+        <Input
+          className="text-black relative z-0 w-full mb-2  "
+          style={{ color: "black" }}
+          autoFocus
+          isRequired
+          type="text"
+          value={quantity}
+          label="Quantity"
+          variant="bordered"
+          onChange={(event) => setQuantity(event.target.value)}
+        />
+      </div>
+      <div className="grid md:grid-cols-2 md:gap-6">
+        <Input
+          className="text-black relative z-0 w-full mb-2  "
+          style={{ color: "black" }}
+          autoFocus
+          isRequired
+          type="text"
+          value={discount}
+          label="Discount"
+          variant="bordered"
+          onChange={(event) => setDiscount(event.target.value)}
+        />
+
+        <Input
+          className="text-black relative z-0 w-full mb-2  "
+          style={{ color: "black" }}
+          autoFocus
+          isRequired
+          type="text"
+          value={amount}
+          label="Amount"
+          variant="bordered"
+          onChange={(event) => setAmount(event.target.value)}
+        />
+      </div>
+      <div className="grid md:grid-cols-2 md:gap-6">
+        <Input
+          className="text-black relative z-0 w-full mb-2  "
+          style={{ color: "black" }}
+          autoFocus
+          isRequired
+          type="text"
+          value={total}
+          label="Total"
+          variant="bordered"
+          onChange={(event) => setTotal(event.target.value)}
+        />
+
+        <div className="relative z-0 w-full mb-2 group">
           <Select
             label="Costumer Type"
-            className="max-w-xs text-black mb-3"
+            className="max-w-xs text-black relative z-0 w-full mb-2  "
             autoFocus
             isRequired
             variant="bordered"
@@ -275,8 +299,12 @@ export default function Addtransaction() {
               </SelectItem>
             ))}
           </Select>
+        </div>
+      </div>
+      <div className="grid md:grid-cols-2 md:gap-6">
+        <div className="relative z-0 w-full mb-2 group">
           <Input
-            className="text-black mb-3"
+            className="text-black relative z-0 w-full mb-2  "
             style={{ color: "black" }}
             autoFocus
             isRequired
@@ -286,10 +314,11 @@ export default function Addtransaction() {
             variant="bordered"
             onChange={(event) => setCostumerName(event.target.value)}
           />
-
+        </div>
+        <div className="relative z-0 w-full mb-2 group">
           <Select
             label="Payment Option"
-            className="max-w-xs text-black mb-3"
+            className="max-w-xs text-black relative z-0 w-full mb-2  "
             autoFocus
             isRequired
             variant="bordered"
@@ -307,23 +336,32 @@ export default function Addtransaction() {
               </SelectItem>
             ))}
           </Select>
+        </div>
+      </div>
+      <div className="grid md:grid-cols-2 md:gap-6">
+        <div className="relative z-0 w-full mb-2 group">
           <Select
             label="Payment Type"
-            className="max-w-xs text-black mb-3 "
+            className="max-w-xs text-black relative z-0 w-full mb-2   "
             variant="bordered"
             autoFocus
             value={payment_type}
             onchange={(event) => setPaymentType(event.target.value)}
           >
             {paymentTypes.map((paymenttp) => (
-              <SelectItem className='text-black' variant="bordered" key={paymenttp.name}>
+              <SelectItem
+                className="text-black relative z-0 w-full mb-2 "
+                variant="bordered"
+                key={paymenttp.name}
+              >
                 {paymenttp.name}
               </SelectItem>
             ))}
           </Select>
-
+        </div>
+        <div className="relative z-0 w-full mb-3 group">
           <Input
-            className="text-black mb-3"
+            className="text-black relative z-0 w-full mb-2  "
             style={{ color: "black" }}
             autoFocus
             isRequired
@@ -333,18 +371,19 @@ export default function Addtransaction() {
             variant="bordered"
             onChange={(event) => setSalesPerson(event.target.value)}
           />
-          <div>
-            <Button
-              color="primary"
-              style={{ width: "4rem" }}
-              onPress={handleSubmit}
-              type="submit"
-            >
-              Save
-            </Button>
-          </div>
         </div>
       </div>
+      <div class="relative z-0 w-full mb-3 group">
+        <Button
+          color="primary"
+          style={{ width: "4rem" }}
+          onPress={handleSubmit}
+          type="submit"
+        >
+          Save
+        </Button>
+      </div>
+
       {success_message && (
         <div
           id="toast-undo"

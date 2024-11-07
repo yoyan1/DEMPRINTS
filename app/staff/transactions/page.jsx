@@ -28,6 +28,7 @@ import {
 import { CiSearch } from "react-icons/ci";
 import { IoChevronDown } from "react-icons/io5";
 import { capitalize } from "@/app/composables/utils";
+import { HiMiniViewfinderCircle } from "react-icons/hi2";
 // import ExpandTransaction from './ExpandModal'
 // import ExportToPdf from '@/app/composables/exportToPdf'
 // import CreateTransaction from './AddTransaction'
@@ -241,7 +242,7 @@ export default function Transaction() {
 
   const topContent = useMemo(() => {
     return (
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 mt-3">
         <div className="flex justify-between gap-3 items-end">
           <Input
             isClearable
@@ -307,6 +308,8 @@ export default function Transaction() {
             {/* {!isMaximized? (
                 <ExpandTransaction columns={columns} transactions={transactions} itemOptions={itemOptions} typeOptions={typeOptions} />
             ): null} */}
+
+              
           </div>
         </div>
         <div className="flex justify-between items-center">
@@ -380,11 +383,11 @@ export default function Transaction() {
     <div>
       {topContent}
       <div className="max-w-[82rem] overflow-x-scroll">
-        <Modal size="lg" isOpen={isOpen} onClose={onClose}>
+        <Modal  size="lg" isOpen={isOpen} onClose={onClose}>
           <ModalHeader></ModalHeader>
           <ModalContent>
-            <ModalBody>
-              <Addtransaction />
+            <ModalBody className="max-w-md mx-auto">
+              <Addtransaction/>
             </ModalBody>
           </ModalContent>
         </Modal>
