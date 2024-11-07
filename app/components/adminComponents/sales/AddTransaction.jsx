@@ -59,15 +59,16 @@ export default function CreateTransaction({isSubmit}) {
       if (item.name === salesData.item_name) {
         const unitCost = item.price;
         const total = unitCost * value;
-  
         // Update state and log the new values
         setSalesData((prevData) => {
           const newData = {
             ...prevData,
             [name]: value,
             unit_cost: unitCost,
+            amount: total,
             total: total,
           }
+
           console.log("Updated Sales Data:", newData); 
           return newData; 
         });
@@ -81,7 +82,11 @@ export default function CreateTransaction({isSubmit}) {
     console.log('function called')
     const newId = idGenerated[0].count+1
     const transaction_no =  `000${newId}`
-
+    const discount = salesData.discount > 0? salesData.discount / 100 : 0
+    console.log(discount);
+    const newTotal = discount !== 0? salesData.total * discount : salesData.total
+    const balance = newTotal - salesData.amount_paid
+    console.log(newTotal)
     const newData = {
       date:date,
       time: time,
@@ -90,15 +95,15 @@ export default function CreateTransaction({isSubmit}) {
       item_name: salesData.item_name,
       unit_cost: salesData.unit_cost,
       quantity: salesData.quantity,
-      amount: salesData.unit_cost,
+      amount: salesData.amount,
       discount: salesData.discount,
-      total: salesData.total,
+      total: newTotal,
       customer_type: salesData.customer_type,
       customer_name: salesData.customer_name,
       payment_type: salesData.payment_type,
       payment_options: salesData.payment_options,
       sales_person: salesData.sales_person,
-      remarks: ""
+      remarks: balance
     }
 
     const response = await axios.post('https://demprints-backend.vercel.app/api/collection/addTransaction', newData)
@@ -114,6 +119,7 @@ export default function CreateTransaction({isSubmit}) {
       amount: 0,
       discount: 0,
       total: 0,
+      amount_paid: 0,
       customer_type: "",
       customer_name: "",
       payment_type: "",
@@ -146,7 +152,7 @@ export default function CreateTransaction({isSubmit}) {
                 >
                   {products.map(item => (
                     <SelectItem key={item.name} value={item.name}>
-                      {item.name}
+                      {item.name} - {item.unit}
                     </SelectItem>
                   ))}
                 </Select>
@@ -226,6 +232,15 @@ export default function CreateTransaction({isSubmit}) {
                     </SelectItem>
                   ))}
                 </Select>
+                <Input
+                  autoFocus
+                  label="Amount Paid"
+                  placeholder="Enter paid amount"
+                  variant="bordered"
+                  type="number"
+                  value={salesData.amount_paid}
+                  onChange={(e)=>(setSalesData((prevData)=>({...prevData, amount_paid: e.target.value})))}
+                />
               </ModalBody>
               <ModalFooter>
                 <Button color="danger" variant="flat" onPress={onClose}>

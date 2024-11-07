@@ -37,15 +37,15 @@ export default function CreateProduct() {
   const fetchProductsData = async () => {
     try {
       const response = await axios.get(
-        "https://demprints-backend.vercel.app/api/master/productCategory"
+        `${process.env.NEXT_PUBLIC_API_URL}/master/productCategory`
       );
       setCategory(response.data);
       const res = await axios.get(
-        "https://demprints-backend.vercel.app/api/master/productMeasurement"
+        `${process.env.NEXT_PUBLIC_API_URL}/master/productMeasurement`
       );
       setMeasurement(res.data);
       const result = await axios.get(
-        "https://demprints-backend.vercel.app/api/master/products"
+        `${process.env.NEXT_PUBLIC_API_URL}/master/products`
       );
       setProducts(result.data);
     } catch (error) {
@@ -73,7 +73,7 @@ export default function CreateProduct() {
   const submitCategory = async () => {
     setIsLoading(true);
     const response = await axios.post(
-      "https://demprints-backend.vercel.app/api/master/createCategory",
+      `${process.env.NEXT_PUBLIC_API_URL}/master/createCategory`,
       { category_name: category_name }
     );
     console.log(response);
@@ -84,7 +84,7 @@ export default function CreateProduct() {
   const submitMeasurement = async () => {
     setIsLoading(true);
     const response = await axios.post(
-      "https://demprints-backend.vercel.app/api/master/createMeasurement",
+      `${process.env.NEXT_PUBLIC_API_URL}/master/createMeasurement`,
       { unit: unit }
     );
     console.log(response);
@@ -96,7 +96,7 @@ export default function CreateProduct() {
   const submitProduct = async () => {
     setIsLoading(true);
     const response = await axios.post(
-      "https://demprints-backend.vercel.app/api/master/createProduct",
+      `${process.env.NEXT_PUBLIC_API_URL}/master/createProduct`,
       productData
     );
     console.log(response);

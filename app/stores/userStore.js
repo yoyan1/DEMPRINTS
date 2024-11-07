@@ -24,7 +24,7 @@ export const useUserStore = create((set) => ({
     fetchUsers: async () => {
         set({ loading: true });
         try {
-        const response = await fetch('https://demprints-backend.vercel.app/api/users'); 
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users`); 
         if (!response.ok) throw new Error('Network response was not ok');
         const data = await response.json();
         set({ users: data, loading: false });

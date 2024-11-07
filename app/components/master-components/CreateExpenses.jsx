@@ -7,13 +7,14 @@ import axios from "axios";
 import Toast from '../public/toast'
 import Delete from './actions/Delete'
 import UpdateExpensesCategory from './form/updateExpensesCategory'
+import { useExpensesCategory } from '@/app/stores/ExpensesCategory'
 
 export default function CreateExpenses() {
   const {isOpen, onOpen, onClose} = useDisclosure();
+  const { categoryList, fetchExpensesCategory } = useExpensesCategory()
   const [selected, setSelected] = useState("operational");
   const [category, setCategory] = useState({name: '', list: []})
   const [inputValue, setInputValue] = useState('')
-  const [categoryList, setCategoryList] = useState([])
   const [selectedKeys, setSelectedKeys] = useState(new Set(["1"]));
     const [data, setData] = useState({})
 
@@ -48,10 +49,6 @@ export default function CreateExpenses() {
         })
     };    
 
-    const fetchExpensesCategory = async () =>{
-        const result = await axios.get('https://demprints-backend.vercel.app/api/master/getExpensesCategory')
-        setCategoryList(result.data)
-    } 
 
     const [isLoading, setIsLoading] = useState(false)
     const submit = async () =>{
@@ -131,7 +128,7 @@ export default function CreateExpenses() {
                                             <form>
                                                 <div className="flex flex-col gap-3">
                                                     <div className="flex gap-4 items-end pb-5">
-                                                        <Input onChange={handleNameChange} label="Category" placeholder="Enter new category"/>
+                                                        <Input onChange={handleNameChange} value={category.name} label="Category" placeholder="Enter new category"/>
                                                     </div>
                                                     {category.name != ''? (
                                                         <div>
@@ -144,7 +141,7 @@ export default function CreateExpenses() {
                                                                     {category.list.map((list, index) => (
                                                                         <ListboxItem key={list}>
                                                                             <div className="flex justify-between items-center">
-                                                                                <span className="text-lg">{list}</span>
+                                                                                <span className="text-sm">{list}</span>
                                                                                 <Button isIconOnly color="warning" variant="light" aria-label="Take a photo" onPress={() => removeItem(index)}>
                                                                                     <CiCircleRemove className="h-8 w-8"/>
                                                                                 </Button>

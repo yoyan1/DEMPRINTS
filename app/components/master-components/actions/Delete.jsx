@@ -1,3 +1,5 @@
+"use client"
+import React, {useState} from 'react'
 import {Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure} from "@nextui-org/react";
 import { MdDeleteOutline } from "react-icons/md";
 import { CiWarning } from "react-icons/ci";
@@ -5,8 +7,10 @@ import axios from "axios";
 
 export default function Delete({ id, type, done, collection }) {
   const {isOpen, onOpen, onClose} = useDisclosure()
+  const [isLoading, setIsLoading] = useState(false)
 
   const deleteItem = async() =>{
+    setIsLoading(true)
     if(collection === 'products'){
       const response = await axios.delete(`https://demprints-backend.vercel.app/api/master/products/${id}`)
       console.log(response.data);
@@ -26,6 +30,13 @@ export default function Delete({ id, type, done, collection }) {
       done(response.data)
 
     }
+    if(collection === 'customerType'){
+      const response = await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/master/deleteCustomerType/${id}`)
+      console.log(response.data);
+      done(response.data)
+
+    }
+    setIsLoading(false)
     onClose()
   }
   return (
@@ -43,7 +54,7 @@ export default function Delete({ id, type, done, collection }) {
                 <Button color="danger" variant="light" onPress={onClose}>
                   Cancel
                 </Button>
-                <Button color="primary" onPress={deleteItem}>
+                <Button color="primary" onPress={deleteItem} isLoading={isLoading}>
                   Proceed
                 </Button>
               </ModalFooter>

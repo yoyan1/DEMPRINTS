@@ -82,7 +82,7 @@ export default function UpdateProduct({ data, done, }) {
                                       {category.list.map((list, index) => (
                                           <ListboxItem key={list}>
                                               <div className="flex justify-between items-center">
-                                                  <span className="text-lg">{list}</span>
+                                                  <span className="text-sm">{list}</span>
                                                   <Button isIconOnly color="warning" variant="light" aria-label="Take a photo" onPress={() => removeItem(index)}>
                                                       <CiCircleRemove className="h-8 w-8"/>
                                                   </Button>

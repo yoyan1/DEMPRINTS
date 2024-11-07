@@ -1,7 +1,5 @@
 "use client";
 import React, { useEffect } from 'react'
-import {Tabs, Tab, Card, CardBody} from "@nextui-org/react";
-import { FaFileAlt, FaPrint } from 'react-icons/fa';
 import TransactionTable from '@/app/components/adminComponents/sales/TransactionTable'
 import {useSalesStore} from '@/app/stores/transactionStore'
 import AdminLayout from '../layout/layout'
@@ -27,63 +25,7 @@ export default function Sales() {
               </div>
             </div>
             <div>
-              <Tabs aria-label="Options" color="primary">
-                <Tab key="summary" title={
-                  <div className="flex items-center space-x-2">
-                    <FaFileAlt/>
-                    <span>Summary</span>
-                  </div>
-                }>
-                  <Card>
-                    <CardBody>
-                      <div className="flex gap-10 justify-between">
-                        <div className="flex-1 rounded-md flex flex-col gap-5 bg-gradient-to-tr from-blue-800 to-blue-400 text-white p-5">
-                          <h1 className="text-xl">Overall Revenue</h1>
-                          <div>
-                            <h1 className="text-xl">$25,000</h1>
-                            <div className="text-xs">
-                              <span className="mr-3 text-gray-600 px-1 rounded-lg bg-gray-50">+ 9%</span>
-                              this month
-                            </div>
-                          </div>
-                        </div>
-                        <div className="flex-1 rounded-md flex flex-col gap-5 bg-gradient-to-tr from-blue-800 to-blue-400 text-white p-5">
-                          <h1 className="text-xl">Overall Revenue</h1>
-                          <div>
-                            <h1 className="text-xl">$25,000</h1>
-                            <div className="text-xs">
-                              <span className="mr-3 text-gray-600 px-1 rounded-lg bg-gray-50">+ 9%</span>
-                              this month
-                            </div>
-                          </div>
-                        </div>
-                        <div className="flex-1 rounded-md flex flex-col gap-5 bg-gradient-to-tr from-blue-800 to-blue-400 text-white p-5">
-                          <h1 className="text-xl">Overall Revenue</h1>
-                          <div>
-                            <h1 className="text-xl">$25,000</h1>
-                            <div className="text-xs">
-                              <span className="mr-3 text-gray-600 px-1 rounded-lg bg-gray-50">+ 9%</span>
-                              this month
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </CardBody>
-                  </Card>
-                </Tab>
-                <Tab key="expenses" title={
-                  <div className="flex items-center space-x-2">
-                    <FaPrint/>
-                    <span>Transaction</span>
-                  </div>
-                }>
-                  <Card className='no-shadow'>
-                    <CardBody>
-                      <TransactionTable columns={columns} transactions={transactions} itemOptions={itemOptions} typeOptions={typeOptions} loading={loading} isMaximized={false} refresh={fetchTransactions}/>
-                    </CardBody>
-                  </Card>
-                </Tab>
-              </Tabs>
+              <TransactionTable columns={columns} transactions={transactions} itemOptions={itemOptions} typeOptions={typeOptions} loading={loading} isMaximized={false} refresh={fetchTransactions}/>
             </div>
           </div>
         </main>
