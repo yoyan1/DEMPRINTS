@@ -1,7 +1,7 @@
 "use client"
 
 import { type LucideIcon } from "lucide-react"
-
+import { Link } from "@nextui-org/react"
 import {
   Collapsible,
   CollapsibleTrigger,
@@ -41,12 +41,12 @@ export function NavMain({
           >
             <SidebarMenuItem>
               <CollapsibleTrigger asChild>
-                <a href={`/admin/${item.url}`}>
-                  <SidebarMenuButton tooltip={item.title}>
+                <Link href={`/admin/${item.url}`} className={item.isActive? 'w-full bg-primary text-white rounded-full' : 'w-full text-slate-600 dark:text-white'}>
+                  <SidebarMenuButton tooltip={item.title} >
                     {item.icon && <item.icon />}
                     <span>{item.title}</span>
                   </SidebarMenuButton>
-                </a>
+                </Link>
               </CollapsibleTrigger>
             </SidebarMenuItem>
           </Collapsible>
