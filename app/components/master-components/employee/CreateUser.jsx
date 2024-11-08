@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect} from "react";
 import axios from "axios";
+import { useToast } from "@/hooks/use-toast";
 import {
   Modal,
   ModalContent,
@@ -17,13 +18,15 @@ import {
   Tabs,
   Tab
 } from "@nextui-org/react";
+import { FaPlus } from "react-icons/fa6";
 import { BsEyeSlash, BsEye } from "react-icons/bs";
 import validateEmail from "@/app/composables/validateEmail";
-import JobDetails from './form/JobDetails'
+import JobDetails from '../form/JobDetails'
 // import { UploadImage } from '@/app/composables/uploadImage'
 
-export default function CreateUser() {
+export default function CreateUser({done}) {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { toast } = useToast()
   const [selected, setSelected] = useState("job");
   const [step, setStep] = useState(1);
   const [isVisible, setIsVisible] = useState(false);
@@ -187,12 +190,13 @@ export default function CreateUser() {
           const data = result.data[0]
           console.log(result.data)
           setJobData({
-              id: data._id,
-              job_title: data.job_title,
-              department: data.department,
-              compensation_basis: data.compensation_basis,
-              frequency: data.frequency,
+            id: data._id,
+            job_title: data.job_title,
+            department: data.department,
+            compensation_basis: data.compensation_basis,
+            frequency: data.frequency,
           })
+
       }
   }
   
@@ -242,12 +246,32 @@ const submit = async () => {
     const response = await axios.post('https://demprints-backend.vercel.app/api/users/register', credentials);
     if (response.status === 201) {
       setSuccess('Registration successful');
+      toast({
+        variant: "outline",
+        title: "Success!",
+        color: "success",
+        description: "Registration successful",
+      })
+      done(dsd)
     } else {
       setError('Unexpected response from server');
+      toast({
+        variant: "destructive",
+        title: "Error!",
+        color: "success",
+        description: "Unexpected response from server",
+      })
+      
     }
   } catch (error) {
     console.error("Error during submission:", error);
     setError("An error occurred during submission.");
+    toast({
+      variant: "destructive",
+      title: "Error!",
+      color: "success",
+      description: "An error occurred during submission.",
+    })
   } finally {
     setIsLoading(false);
   }
@@ -259,7 +283,7 @@ const submit = async () => {
     <>
       <div className="p-md">
         <Button color="primary" onPress={onOpen}>
-          View details
+        <FaPlus /> employee
         </Button>
         <form onSubmit={submit}>
           <Modal

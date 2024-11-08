@@ -4,35 +4,47 @@ import {Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDis
 import { MdDeleteOutline } from "react-icons/md";
 import { CiWarning } from "react-icons/ci";
 import axios from "axios";
+import { useToast } from '@/hooks/use-toast';
 
 export default function Delete({ id, type, done, collection }) {
   const {isOpen, onOpen, onClose} = useDisclosure()
+  const { toast } = useToast()
   const [isLoading, setIsLoading] = useState(false)
-
+  
+  const onDeleted = (message) => {
+    toast({
+      variant: "success",
+      title: "Success!",
+      color: "success",
+      description: message,
+    })
+  }
   const deleteItem = async() =>{
     setIsLoading(true)
     if(collection === 'products'){
       const response = await axios.delete(`https://demprints-backend.vercel.app/api/master/products/${id}`)
       console.log(response.data);
+      onDeleted(response.data)
       done(response.data)
-      
     }
     if(collection === 'payments'){
       const response = await axios.delete(`https://demprints-backend.vercel.app/api/master/deletePaymentMethod/${id}`)
       console.log(response.data);
+      onDeleted(response.data)
       done(response.data)
-
     }
     
     if(collection === 'expenses'){
       const response = await axios.delete(`https://demprints-backend.vercel.app/api/master/deleteExpensesCategory/${id}`)
       console.log(response.data);
+      onDeleted(response.data)
       done(response.data)
 
     }
     if(collection === 'customerType'){
       const response = await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/master/deleteCustomerType/${id}`)
       console.log(response.data);
+      onDeleted(response.data)
       done(response.data)
 
     }

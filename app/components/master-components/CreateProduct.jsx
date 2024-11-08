@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import { useToast } from "@/hooks/use-toast";
 import {
   Modal,
   ModalContent,
@@ -20,6 +21,7 @@ import UpdateProduct from "./form/updateProduct";
 
 export default function CreateProduct() {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { toast } = useToast()
   const [selected, setSelected] = useState("category");
   const [key, setKey] = useState("list");
   const [category, setCategory] = useState([]);
@@ -77,6 +79,12 @@ export default function CreateProduct() {
       { category_name: category_name }
     );
     console.log(response);
+    toast({
+      variant: "outline",
+      title: "Success!",
+      color: "success",
+      description: response.data,
+    })
     setIsLoading(false);
     fetchProductsData();
     setCategoryName("");
@@ -88,6 +96,12 @@ export default function CreateProduct() {
       { unit: unit }
     );
     console.log(response);
+    toast({
+      variant: "outline",
+      title: "Success!",
+      color: "success",
+      description: response.data,
+    })
     setIsLoading(false);
     fetchProductsData();
     setUnit("");

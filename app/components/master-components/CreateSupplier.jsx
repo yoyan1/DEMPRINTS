@@ -1,5 +1,6 @@
 "use client"
 import React, { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 import {Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure} from "@nextui-org/react";
 import { Input } from "@nextui-org/react";
 import { Select, SelectItem } from "@nextui-org/react";
@@ -7,6 +8,7 @@ import axios from "axios";
 
 export default function CreateSupplier() {
   const {isOpen, onOpen, onClose} = useDisclosure();
+  const { toast } = useToast()
   const [supplierData, setSupplierData] = useState({
         type: '',
         name: '',
@@ -24,6 +26,12 @@ export default function CreateSupplier() {
     console.log(supplierData)
     const response = await axios.post('https://demprints-backend.vercel.app/api/master/createSupplier', supplierData)
     console.log(response)
+    toast({
+      variant: "outline",
+      title: "Success!",
+      color: "success",
+      description: response.data,
+    })
     setSupplierData({
         type: '',
         name: '',

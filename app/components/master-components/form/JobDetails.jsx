@@ -1,11 +1,13 @@
 "use client"
 import React, { useEffect, useState } from 'react'
+import { useToast } from '@/hooks/use-toast'
 import { Input, Button, Listbox, ListboxItem } from '@nextui-org/react'
 import { MdAdd } from 'react-icons/md'
 import { MdOutlineDeleteOutline } from "react-icons/md";
 import axios from 'axios';
 
 export default function JobDetails({fetch}) {
+    const { toast } = useToast()
     const [jobData, setJobData] = useState({
         id: '',
         job_title: [],
@@ -117,6 +119,12 @@ export default function JobDetails({fetch}) {
             console.log(jobData.id)
             const response = await axios.post('https://demprints-backend.vercel.app/api/master/createJobData', jobData)
             console.log(response);
+            toast({
+                variant: "outline",
+                title: "Success!",
+                color: "success",
+                description: response.data,
+              })
         } catch(e){
             console.log(e)
         }

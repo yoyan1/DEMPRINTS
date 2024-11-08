@@ -4,13 +4,24 @@ import {Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Input,
 import { TbEdit } from "react-icons/tb";
 import { LuClipboardEdit } from "react-icons/lu";
 import axios from "axios";
+import { useToast } from '@/hooks/use-toast';
 
 export default function UpdateProduct({ data, type, category, measurement, done, }) {
   const {isOpen, onOpen, onClose} = useDisclosure()
+  const { toast } = useToast()
   const [category_name, setCategoryName] = useState(data.name)
   const [unit, setUnit] = useState(data.name)
   const [productData, setProductData] = useState(data)
   const [isLoading, setIsLoading] = useState(false)
+
+  const onDone = (isSuccess, message) =>{
+    toast({
+      variant: "outline",
+      title: isSuccess? 'Success!' : 'Error!',
+      color: "success",
+      description: message,
+    })
+  }
 
   const updateItem = async () =>{
     setIsLoading(true)
@@ -18,22 +29,26 @@ export default function UpdateProduct({ data, type, category, measurement, done,
       if(type.toLowerCase() === 'category'){
         const response = await axios.post(`https://demprints-backend.vercel.app/api/master/updateProductsData/${data._id}`,{name: category_name} )
         console.log(response);
+        onDone(true, response.data)
         done(response.data)
       }
       if(type.toLowerCase() === 'measurement'){
         const response = await axios.post(`https://demprints-backend.vercel.app/api/master/updateProductsData/${data._id}`,{name: unit} )
         console.log(response);
+        onDone(true, response.data)
         done(response.data)
       }
       if(type.toLowerCase() === 'product'){
         const response = await axios.post(`https://demprints-backend.vercel.app/api/master/updateProductsData/${data._id}`,{name: productData.name, category: productData.category, unit: productData.unit, price: productData.price} )
         console.log(response);
+        onDone(response.data)
         done(response.data)
       } 
       onClose()
       setIsLoading(false)
     } catch(e){
       console.log(e)
+      onDone(false, e)
       setIsLoading(false)
     }
 

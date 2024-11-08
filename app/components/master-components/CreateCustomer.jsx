@@ -5,12 +5,14 @@ import { Input } from "@nextui-org/react";
 import { Select, SelectItem } from "@nextui-org/react";
 import { IoIosAdd } from "react-icons/io";
 import axios from "axios";
+import { useToast } from "@/hooks/use-toast";
 import UpdateCustomerType from './form/updateCustomerType'
 import Delete from './actions/Delete'
 import { useCustomerType } from '@/app/stores/customerType'
 
 export default function CreateCustomer() {
   const {isOpen, onOpen, onClose} = useDisclosure();
+  const { toast } = useToast()
   const {customerType, fetchCustomerType } = useCustomerType()
   const [selected, setSelected] = useState("operational");
   const [inputType, setInputType] = useState('')
@@ -32,7 +34,12 @@ export default function CreateCustomer() {
         setIsLoading(false)
     }
     const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/master/createCustomerType`, {name: inputType})
-    console.log(response.data)
+    toast({
+        variant: "success",
+        title: "Success!",
+        color: "success",
+        description: response.data,
+      })
     setInputType('')
     setIsLoading(false)
     fetchCustomerType()

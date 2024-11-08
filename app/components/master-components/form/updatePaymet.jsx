@@ -4,9 +4,11 @@ import {Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Input,
 import { TbEdit } from "react-icons/tb";
 import { LuClipboardEdit } from "react-icons/lu";
 import axios from "axios";
+import { useToast } from '@/hooks/use-toast';
 
 export default function UpdateProduct({ data, type, done, }) {
   const {isOpen, onOpen, onClose} = useDisclosure()
+  const { toast } = useToast()
   const [inputValue, setInputValue] = useState(data.name)
   const [isLoading, setIsLoading] = useState(false)
 
@@ -15,7 +17,12 @@ export default function UpdateProduct({ data, type, done, }) {
     try{
       const response = await axios.post(`https://demprints-backend.vercel.app/api/master/updatePaymentMethod/${data._id}`, {name: inputValue} )
       console.log(response);
-
+      toast({
+        variant: "outline",
+        title: "Success!",
+        color: "success",
+        description: response.data,
+      })
       done(response.data)
       onClose()
       setIsLoading(false)
