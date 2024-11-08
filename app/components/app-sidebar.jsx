@@ -20,66 +20,71 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "./ui/sidebar"
+import { usePathname } from "next/navigation";
 
 // This is sample data.
-const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
-  teams: [
-    {
-      name: "Acme Inc",
-      logo: GalleryVerticalEnd,
-      plan: "Enterprise",
-    },
-  ],
-  navMain: [
-    {
-      title: "Overview",
-      url: "",
-      icon: FaChartPie,
-      isActive: true,
-    },
-    {
-      title: "Sales",
-      url: "sales",
-      icon: IoCartOutline,
-    },
-    {
-      title: "Accounts",
-      url: "employee-accounts",
-      icon: FaUsers,
-    },
-    {
-      title: "Settings",
-      url: "settings",
-      icon: Settings2,
-    },
-  ],
-  projects: [
-    {
-      name: "Design Engineering",
-      url: "#",
-      icon: Frame,
-    },
-    {
-      name: "Sales & Marketing",
-      url: "#",
-      icon: PieChart,
-    },
-    {
-      name: "Travel",
-      url: "#",
-      icon: Map,
-    },
-  ],
-}
 
 export function AppSidebar({ ...props }) {
+  const path = usePathname()
+  const data = {
+    user: {
+      name: "Dem Columida",
+      email: "m@example.com",
+      avatar: "/avatars/shadcn.jpg",
+    },
+    teams: [
+      {
+        name: "Demprints",
+        logo: GalleryVerticalEnd,
+        plan: "Ads and Copy Services",
+      },
+    ],
+    navMain: [
+      {
+        title: "Overview",
+        url: "",
+        icon: FaChartPie,
+        isActive: path === '/admin'? true : false,
+      },
+      {
+        title: "Sales",
+        url: "sales",
+        icon: IoCartOutline,
+        isActive: path === '/admin/sales'? true : false
+      },
+      {
+        title: "Accounts",
+        url: "employee-accounts",
+        icon: FaUsers,
+        isActive: path === '/admin/employee-accounts'? true : false
+      },
+      {
+        title: "Settings",
+        url: "settings",
+        icon: Settings2,
+        isActive: path === '/admin/settings'? true : false
+      },
+    ],
+    projects: [
+      {
+        name: "Design Engineering",
+        url: "#",
+        icon: Frame,
+      },
+      {
+        name: "Sales & Marketing",
+        url: "#",
+        icon: PieChart,
+      },
+      {
+        name: "Travel",
+        url: "#",
+        icon: Map,
+      },
+    ],
+  }
   return (
-    <Sidebar collapsible="icon" {...props} color="primary">
+    <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
         <TeamSwitcher teams={data.teams} />
       </SidebarHeader>

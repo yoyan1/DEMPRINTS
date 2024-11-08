@@ -1,18 +1,19 @@
 import React from 'react'
-import Aside from '../_sections/aside.jsx'
-import Header from '../_sections/header.jsx'
-
+import Header from '../_sections/header'
+import { AppSidebar } from "@/app/components/app-sidebar"
+import {
+  SidebarInset,
+  SidebarProvider,
+} from "@/app/components/ui/sidebar"
 
 export default function AdminLayout({children}) {
   return (
-    <div>
-      <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr] bg-slate-50">
-        <Aside/>
-        <div className="flex flex-col bg-slate-50">
-            <Header/>
+    <SidebarProvider>
+      <AppSidebar />
+      <SidebarInset>
+            {<Header/>}
             {children}
-        </div>
-        </div>
-    </div>
+      </SidebarInset>
+    </SidebarProvider>
   )
 } 

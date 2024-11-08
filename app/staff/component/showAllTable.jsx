@@ -5,7 +5,6 @@ import {
   ModalContent,
   ModalHeader,
   ModalBody,
-  ModalFooter,
   Button,
   useDisclosure,
 } from "@nextui-org/react";
@@ -35,7 +34,6 @@ import { HiMiniViewfinderCircle } from "react-icons/hi2";
 // import CreateTransaction from './AddTransaction'
 import Addtransaction from "../component/addtransaction";
 import { useSalesStore } from "@/app/stores/transactionStore";
-import AllTransaction from "../component/showAllTable";
 
 const itemColorMap = {
   tarpaulin: "warning",
@@ -49,13 +47,21 @@ const typeColorMap = {
 };
 
 const INITIAL_VISIBLE_COLUMNS = [
+  "date",
+  "time",
   "transaction_no",
+  "item_no",
   "item_name",
   "unit_cost",
+  "quantity",
+  "amount",
+  "discount",
+  "total",
   "customer_type",
   "customer_name",
-  "payment_type",
+  "payment_method",
   "sales_person",
+  "remarks",
 ];
 // const INITIAL_VISIBLE_COLUMNS_ALL = [
 //   "date",
@@ -75,17 +81,8 @@ const INITIAL_VISIBLE_COLUMNS = [
 //   "remarks",
 // ];
 
-export default function Transaction() {
-  const {
-    isOpen: isAddTransactionOpen,
-    onOpen: openAddTransaction,
-    onClose: closeAddTransaction,
-  } = useDisclosure();
-  const {
-    isOpen: isAllTransactionOpen,
-    onOpen: openAllTransaction,
-    onClose: closeAllTransaction,
-  } = useDisclosure();
+export default function AllTransaction() {
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const {
     columns,
     transactions,
@@ -247,13 +244,10 @@ export default function Transaction() {
     setPage(1);
   }, []);
 
-  const handleOpenAddTransaction = () => {
-    openAddTransaction();
+  const handleOpen = () => {
+    onOpen(true);
   };
 
-  const handleShowAllTransactions = () => {
-    openAllTransaction();
-  };
   const topContent = useMemo(() => {
     return (
       <div className="flex flex-col gap-4 mt-3">
@@ -313,23 +307,21 @@ export default function Transaction() {
                 ))}
               </DropdownMenu>
             </Dropdown>
-           
+            <Button color="primary" onPress={() => handleOpen()}>
+              Add{" "}
+            </Button>
+
             {/* <CreateTransaction isSubmit={(data)=>(refresh(data))}/> */}
             {/* <ExportToPdf rows={sortedItems}/> */}
             {/* {!isMaximized? (
                 <ExpandTransaction columns={columns} transactions={transactions} itemOptions={itemOptions} typeOptions={typeOptions} />
             ): null} */}
           </div>
-          <div className="flex gap-1">
-            <Button color="primary" onPress={handleOpenAddTransaction}>
-              Add{" "}
-            </Button>
-          </div>
-          <div className="flex gap-1">
-            <Button variant="transparent" onPress={handleShowAllTransactions}>
+          {/* <div className="flex gap-3">
+            <Button>
               <HiMiniViewfinderCircle />
             </Button>
-          </div>
+          </div> */}
         </div>
         <div className="flex justify-between items-center">
           <span className="text-default-400 text-small">
@@ -402,38 +394,12 @@ export default function Transaction() {
     <div>
       {topContent}
       <div className="max-w-[82rem] overflow-x-scroll">
-        <Modal
-          size="lg"
-          isOpen={isAddTransactionOpen}
-          onClose={closeAddTransaction}
-          onValueChange="outside"
-        >
+        <Modal size="lg" isOpen={isOpen} onClose={onClose}>
+          <ModalHeader></ModalHeader>
           <ModalContent>
-            {/* <ModalHeader>Add Transaction</ModalHeader> */}
             <ModalBody className="max-w-md mx-auto">
               <Addtransaction />
             </ModalBody>
-          </ModalContent>
-        </Modal>
-
-        <Modal
-          size="full"
-          isOpen={isAllTransactionOpen}
-          onClose={closeAllTransaction}
-        >
-          <ModalContent>
-            <ModalBody>
-              <AllTransaction />
-            </ModalBody>
-            <ModalFooter>
-              <Button
-                color="danger"
-                variant="light"
-                onPress={closeAllTransaction}
-              >
-                Close
-              </Button>
-            </ModalFooter>
           </ModalContent>
         </Modal>
         <Table

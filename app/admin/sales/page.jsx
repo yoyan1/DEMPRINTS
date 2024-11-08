@@ -1,15 +1,10 @@
 "use client";
 import React, { useEffect } from 'react'
-import { AppSidebar } from "@/app/components/app-sidebar"
 import {Tabs, Tab, Card, CardBody} from "@nextui-org/react";
 import { FaFileAlt, FaPrint } from 'react-icons/fa';
 import TransactionTable from '@/app/components/adminComponents/sales/TransactionTable'
 import {useSalesStore} from '@/app/stores/transactionStore'
-import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
-} from "@/app/components/ui/sidebar"
+import AdminLayout from '../layout/layout'
 
 export default function Sales() {
   const {columns, itemOptions, typeOptions, transactions, loading, fetchTransactions } = useSalesStore();
@@ -19,10 +14,7 @@ export default function Sales() {
   }, [fetchTransactions])
 
   return (
-    <SidebarProvider>
-      <AppSidebar />
-      <SidebarInset>
-        <SidebarTrigger className="-ml-1" />
+    <AdminLayout>
         <main className="flex flex-1 rounded-md flex-col gap-4 m-4 lg:gap-6 lg:m-6">
           <div>
             <div className="flex justify-between items-start">
@@ -95,7 +87,6 @@ export default function Sales() {
             </div>
           </div>
         </main>
-      </SidebarInset>
-    </SidebarProvider>
+    </AdminLayout>
   )
 }
