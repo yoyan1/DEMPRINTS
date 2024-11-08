@@ -2,7 +2,7 @@
 import React from "react";
 import {Modal, ModalContent, ModalHeader, ModalBody, Button, useDisclosure} from "@nextui-org/react";
 import { FaExpand } from "react-icons/fa";
-import ExpensesTable from './ExpensesTable'
+import TransactionTable from './ExpensesTable'
 
 export default function ExpandTransaction(props) {
   const {isOpen, onOpen, onClose} = useDisclosure();
@@ -26,7 +26,7 @@ export default function ExpandTransaction(props) {
                   <ModalHeader className="flex flex-col gap-1">Sales Transaction</ModalHeader>
                   <ModalBody>
                       <div>
-                        <ExpensesTable columns={props.columns} transactions={props.transactions} itemOptions={props.itemOptions} typeOptions={props.typeOptions} isMaximized={true}/>
+                        <TransactionTable columns={props.columns} transactions={props.transactions} itemOptions={props.itemOptions} typeOptions={props.typeOptions} isMaximized={true}/>
                       </div>
                   </ModalBody>
                   </>

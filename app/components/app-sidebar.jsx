@@ -10,6 +10,7 @@ import {
 } from "lucide-react"
 import { IoCartOutline } from "react-icons/io5";
 import { FaUsers, FaChartPie } from "react-icons/fa";
+import { GiExpense } from "react-icons/gi";
 import { NavMain } from "@/app/components/nav-main"
 import { NavUser } from "@/app/components/nav-user"
 import { TeamSwitcher } from "@/app/components/team-switcher"
@@ -51,6 +52,12 @@ export function AppSidebar({ ...props }) {
         url: "sales",
         icon: IoCartOutline,
         isActive: path === '/admin/sales'? true : false
+      },
+      {
+        title: "Expenses",
+        url: "expenses",
+        icon: GiExpense,
+        isActive: path === '/admin/expenses'? true : false
       },
       {
         title: "Accounts",
