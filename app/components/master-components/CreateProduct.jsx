@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import { useToast } from "@/hooks/use-toast";
 import {
   Modal,
   ModalContent,
@@ -20,6 +21,7 @@ import UpdateProduct from "./form/updateProduct";
 
 export default function CreateProduct() {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { toast } = useToast()
   const [selected, setSelected] = useState("category");
   const [key, setKey] = useState("list");
   const [category, setCategory] = useState([]);
@@ -37,15 +39,15 @@ export default function CreateProduct() {
   const fetchProductsData = async () => {
     try {
       const response = await axios.get(
-        "https://demprints-backend.vercel.app/api/master/productCategory"
+        `${process.env.NEXT_PUBLIC_API_URL}/master/productCategory`
       );
       setCategory(response.data);
       const res = await axios.get(
-        "https://demprints-backend.vercel.app/api/master/productMeasurement"
+        `${process.env.NEXT_PUBLIC_API_URL}/master/productMeasurement`
       );
       setMeasurement(res.data);
       const result = await axios.get(
-        "https://demprints-backend.vercel.app/api/master/products"
+        `${process.env.NEXT_PUBLIC_API_URL}/master/products`
       );
       setProducts(result.data);
     } catch (error) {
@@ -73,10 +75,16 @@ export default function CreateProduct() {
   const submitCategory = async () => {
     setIsLoading(true);
     const response = await axios.post(
-      "https://demprints-backend.vercel.app/api/master/createCategory",
+      `${process.env.NEXT_PUBLIC_API_URL}/master/createCategory`,
       { category_name: category_name }
     );
     console.log(response);
+    toast({
+      variant: "outline",
+      title: "Success!",
+      color: "success",
+      description: response.data,
+    })
     setIsLoading(false);
     fetchProductsData();
     setCategoryName("");
@@ -84,10 +92,16 @@ export default function CreateProduct() {
   const submitMeasurement = async () => {
     setIsLoading(true);
     const response = await axios.post(
-      "https://demprints-backend.vercel.app/api/master/createMeasurement",
+      `${process.env.NEXT_PUBLIC_API_URL}/master/createMeasurement`,
       { unit: unit }
     );
     console.log(response);
+    toast({
+      variant: "outline",
+      title: "Success!",
+      color: "success",
+      description: response.data,
+    })
     setIsLoading(false);
     fetchProductsData();
     setUnit("");
@@ -96,7 +110,7 @@ export default function CreateProduct() {
   const submitProduct = async () => {
     setIsLoading(true);
     const response = await axios.post(
-      "https://demprints-backend.vercel.app/api/master/createProduct",
+      `${process.env.NEXT_PUBLIC_API_URL}/master/createProduct`,
       productData
     );
     console.log(response);

@@ -4,18 +4,19 @@ import {Modal, ModalContent, ModalHeader, ModalBody, Button, useDisclosure, Tabs
 import { IoMdAdd } from "react-icons/io";
 import { CiCircleRemove } from "react-icons/ci";
 import axios from "axios";
-import Toast from '../public/toast'
+import { useToast } from "@/hooks/use-toast";
 import Delete from './actions/Delete'
 import UpdateExpensesCategory from './form/updateExpensesCategory'
+import { useExpensesCategory } from '@/app/stores/ExpensesCategory'
 
 export default function CreateExpenses() {
   const {isOpen, onOpen, onClose} = useDisclosure();
+  const { toast } = useToast()
+  const { categoryList, fetchExpensesCategory } = useExpensesCategory()
   const [selected, setSelected] = useState("operational");
   const [category, setCategory] = useState({name: '', list: []})
   const [inputValue, setInputValue] = useState('')
-  const [categoryList, setCategoryList] = useState([])
   const [selectedKeys, setSelectedKeys] = useState(new Set(["1"]));
-    const [data, setData] = useState({})
 
   const handleOpen = () => {
     onOpen();
@@ -48,10 +49,6 @@ export default function CreateExpenses() {
         })
     };    
 
-    const fetchExpensesCategory = async () =>{
-        const result = await axios.get('https://demprints-backend.vercel.app/api/master/getExpensesCategory')
-        setCategoryList(result.data)
-    } 
 
     const [isLoading, setIsLoading] = useState(false)
     const submit = async () =>{
@@ -70,8 +67,13 @@ export default function CreateExpenses() {
 
         try{
             const response = await axios.post('https://demprints-backend.vercel.app/api/master/createExpensesCategory', category)
-            setData({message: response.data.message, isSuccess: response.data.isSuccess})
             setIsLoading(false)
+            toast({
+                variant: "outline",
+                title: response.data.isSuccess? "Success!" : "Error!",
+                color: "success",
+                description: response.data.message,
+              })
             fetchExpensesCategory()
             setCategory({name: '', list: []})
         } catch(e){
@@ -84,9 +86,6 @@ export default function CreateExpenses() {
         fetchExpensesCategory()
     }, [])
 
-    const close = () =>{
-        setData({})
-    }
     const itemClasses = {
         base: "py-0 w-full",
         title: "font-normal text-medium",
@@ -114,7 +113,6 @@ export default function CreateExpenses() {
                     <>
                     <ModalHeader className="flex flex-col gap-1">Expenses Master Data</ModalHeader>
                     <ModalBody>
-                        <Toast data={data} isClose={close}/>
                         <form>
                             <div className="flex flex-col ap-5">
                                 <div>
@@ -131,7 +129,7 @@ export default function CreateExpenses() {
                                             <form>
                                                 <div className="flex flex-col gap-3">
                                                     <div className="flex gap-4 items-end pb-5">
-                                                        <Input onChange={handleNameChange} label="Category" placeholder="Enter new category"/>
+                                                        <Input onChange={handleNameChange} value={category.name} label="Category" placeholder="Enter new category"/>
                                                     </div>
                                                     {category.name != ''? (
                                                         <div>
@@ -144,7 +142,7 @@ export default function CreateExpenses() {
                                                                     {category.list.map((list, index) => (
                                                                         <ListboxItem key={list}>
                                                                             <div className="flex justify-between items-center">
-                                                                                <span className="text-lg">{list}</span>
+                                                                                <span className="text-sm">{list}</span>
                                                                                 <Button isIconOnly color="warning" variant="light" aria-label="Take a photo" onPress={() => removeItem(index)}>
                                                                                     <CiCircleRemove className="h-8 w-8"/>
                                                                                 </Button>

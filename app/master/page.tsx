@@ -1,6 +1,8 @@
 "use client"
 import React from 'react'
-import CreateUser from '../components/master-components/CreateUser'
+import { Toaster } from '../components/ui/toaster'
+import DarkMode from '../components/public-component/darkMode'
+import Employee from '../components/master-components/employee/wrapperModal'
 import CreateProduct from '../components/master-components/CreateProduct'
 import CreateCustomer from '../components/master-components/CreateCustomer'
 import CreateSupplier from '../components/master-components/CreateSupplier'
@@ -18,12 +20,14 @@ import { TbReportMoney } from "react-icons/tb";
 export default function page() {
   return (
     <main>
-        <div className='flex justify-between w-full p-3'>
+        <Toaster/>
+        <div className='flex justify-between items-center w-full p-3'>
             <div className='flex items-center gap-2'>
                 <Avatar src="/LogoV3.jpg" size="md" />
                 <p className="font-bold text-inherit">DEMPRINTS</p>
             </div>
-            <div>
+            <div className='flex items-center gap-5'>
+                <DarkMode/>
                 <Dropdown placement="bottom-start">
                     <DropdownTrigger>
                     <User
@@ -61,10 +65,10 @@ export default function page() {
                 </Dropdown>              
             </div>
         </div>
-        <div className="bg-slate-100 p-10">
+        <div className="bg-slate-100 dark:bg-gray-900 p-10">
             <div className="flex flex-col gap-10 justify-center items-center h-full">
                 <div className='flex gap-5 flex-col md:flex-row lg:flex-row'>
-                    <div className="flex-1 relative flex flex-col justify-between rounded-xl bg-white bg-clip-border text-gray-700 shadow-md">
+                    <div className="flex-1 relative flex flex-col justify-between rounded-xl bg-white dark:bg-black bg-clip-border text-gray-700 shadow-md">
                         <div className="flex justify-center items-center relative mx-4 -mt-6 h-40 overflow-hidden rounded-xl bg-blue-gray-500 bg-clip-border text-white shadow-lg shadow-blue-gray-500/40 bg-gradient-to-r from-blue-500 to-blue-600">
                             <CgProfile className="w-32 h-32"/>
                         </div>
@@ -75,10 +79,10 @@ export default function page() {
                             <p className="text-xm text-default-400">{'Manage user accounts, personal info, and employment details'}</p>
                         </div>
                         <div className="p-6 pt-0">
-                            <CreateUser/>
+                            <Employee/>
                         </div>
                     </div>
-                    <div className="flex-1 relative flex flex-col justify-between rounded-xl bg-white bg-clip-border text-gray-700 shadow-md">
+                    <div className="flex-1 relative flex flex-col justify-between rounded-xl bg-white dark:bg-black bg-clip-border text-gray-700 shadow-md">
                         <div className="flex justify-center items-center relative mx-4 -mt-6 h-40 overflow-hidden rounded-xl bg-blue-gray-500 bg-clip-border text-white shadow-lg shadow-blue-gray-500/40 bg-gradient-to-r from-blue-500 to-blue-600">
                             <FaBoxOpen className="w-32 h-32"/>
                         </div>
@@ -92,7 +96,7 @@ export default function page() {
                             <CreateProduct/>
                         </div>
                     </div>
-                    <div className="flex-1 relative flex flex-col justify-between rounded-xl bg-white bg-clip-border text-gray-700 shadow-md">
+                    <div className="flex-1 relative flex flex-col justify-between rounded-xl bg-white dark:bg-black bg-clip-border text-gray-700 shadow-md">
                         <div className="flex justify-center items-center relative mx-4 -mt-6 h-40 overflow-hidden rounded-xl bg-blue-gray-500 bg-clip-border text-white shadow-lg shadow-blue-gray-500/40 bg-gradient-to-r from-blue-500 to-blue-600">
                             <FaUsersBetweenLines className="w-32 h-32"/>
                         </div>
@@ -108,7 +112,7 @@ export default function page() {
                     </div>
                 </div>
                 <div className='flex gap-5 flex-col md:flex-row lg:flex-row'>
-                    <div className="flex-1 relative flex flex-col justify-between rounded-xl bg-white bg-clip-border text-gray-700 shadow-md">
+                    <div className="flex-1 relative flex flex-col justify-between rounded-xl bg-white dark:bg-black bg-clip-border text-gray-700 shadow-md">
                         <div className="flex justify-center items-center relative mx-4 -mt-6 h-40 overflow-hidden rounded-xl bg-blue-gray-500 bg-clip-border text-white shadow-lg shadow-blue-gray-500/40 bg-gradient-to-r from-blue-500 to-blue-600">
                             <VscOrganization className="w-32 h-32"/>
                         </div>
@@ -122,7 +126,7 @@ export default function page() {
                             <CreateSupplier/>
                         </div>
                     </div>
-                    <div className="flex-1 relative flex flex-col justify-between rounded-xl bg-white bg-clip-border text-gray-700 shadow-md">
+                    <div className="flex-1 relative flex flex-col justify-between rounded-xl bg-white dark:bg-black bg-clip-border text-gray-700 shadow-md">
                         <div className="flex justify-center items-center relative mx-4 -mt-6 h-40 overflow-hidden rounded-xl bg-blue-gray-500 bg-clip-border text-white shadow-lg shadow-blue-gray-500/40 bg-gradient-to-r from-blue-500 to-blue-600">
                             <FaCashRegister className="w-32 h-32"/>
                         </div>
@@ -136,7 +140,7 @@ export default function page() {
                             <CreatePayment/>
                         </div>
                     </div>
-                    <div className="flex-1 relative flex flex-col justify-between rounded-xl bg-white bg-clip-border text-gray-700 shadow-md">
+                    <div className="flex-1 relative flex flex-col justify-between rounded-xl bg-white dark:bg-black bg-clip-border text-gray-700 shadow-md">
                         <div className="flex justify-center items-center relative mx-4 -mt-6 h-40 overflow-hidden rounded-xl bg-blue-gray-500 bg-clip-border text-white shadow-lg shadow-blue-gray-500/40 bg-gradient-to-r from-blue-500 to-blue-600">
                             <TbReportMoney className="w-32 h-32"/>
                         </div>

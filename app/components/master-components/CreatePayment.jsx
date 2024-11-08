@@ -4,9 +4,11 @@ import {Modal, ModalContent, ModalHeader, ModalBody, Button, useDisclosure, Tabs
 import axios from "axios";
 import Delete from "./actions/Delete";
 import UpdatePayment from "./form/updatePaymet"
+import { useToast } from "@/hooks/use-toast";
 
 export default function CreatePayment() {
   const {isOpen, onOpen, onClose} = useDisclosure();
+  const { toast } = useToast()
   const [selected, setSelected] = useState("method");
   const [paymentType, setPaymentType] = useState('')
   const [paymentOptions, setPaymentOptions] = useState('')
@@ -37,7 +39,12 @@ export default function CreatePayment() {
 
     const response = await axios.post('https://demprints-backend.vercel.app/api/master/createPaymentType', {name: paymentType})
     console.log(response)
-
+    toast({
+      variant: "outline",
+      title: "Success!",
+      color: "success",
+      description: response.data,
+    })
     setPaymentType('')
     setIsLoading(false)
     getPaymentMethod()
@@ -46,7 +53,12 @@ export default function CreatePayment() {
     setIsLoading(true)
     const response = await axios.post('https://demprints-backend.vercel.app/api/master/createPaymentOptions', {name: paymentOptions})
     console.log(response)
-
+    toast({
+      variant: "outline",
+      title: "Success!",
+      color: "success",
+      description: response.data,
+    })
     setPaymentOptions('')
     setIsLoading(false)
     getPaymentMethod()

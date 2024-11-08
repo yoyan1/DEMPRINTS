@@ -6,9 +6,11 @@ import { CiCircleRemove } from 'react-icons/ci';
 import { LuClipboardEdit } from "react-icons/lu";
 import { IoMdAdd } from 'react-icons/io';
 import axios from "axios";
+import { useToast } from '@/hooks/use-toast';
 
 export default function UpdateProduct({ data, done, }) {
   const {isOpen, onOpen, onClose} = useDisclosure()
+  const { toast } = useToast()
   const [inputValue, setInputValue] = useState('')
   const [category, setCategory] = useState(data)
   const [isLoading, setIsLoading] = useState(false)
@@ -45,7 +47,12 @@ export default function UpdateProduct({ data, done, }) {
     try{
       const response = await axios.post(`https://demprints-backend.vercel.app/api/master/updateExpensesCategory/${data._id}`, {name: category.name, list: category.list} )
       console.log(response);
-
+      toast({
+        variant: "outline",
+        title: "Success!",
+        color: "success",
+        description: response.data,
+      })
       done(response.data)
       onClose()
       setIsLoading(false)
@@ -82,7 +89,7 @@ export default function UpdateProduct({ data, done, }) {
                                       {category.list.map((list, index) => (
                                           <ListboxItem key={list}>
                                               <div className="flex justify-between items-center">
-                                                  <span className="text-lg">{list}</span>
+                                                  <span className="text-sm">{list}</span>
                                                   <Button isIconOnly color="warning" variant="light" aria-label="Take a photo" onPress={() => removeItem(index)}>
                                                       <CiCircleRemove className="h-8 w-8"/>
                                                   </Button>

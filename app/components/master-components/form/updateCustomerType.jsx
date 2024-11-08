@@ -6,7 +6,7 @@ import { LuClipboardEdit } from "react-icons/lu";
 import axios from "axios";
 import { useToast } from '@/hooks/use-toast';
 
-export default function UpdateProduct({ data, type, done, }) {
+export default function UpdateCustomer({ data, done }) {
   const {isOpen, onOpen, onClose} = useDisclosure()
   const { toast } = useToast()
   const [inputValue, setInputValue] = useState(data.name)
@@ -15,7 +15,7 @@ export default function UpdateProduct({ data, type, done, }) {
   const updateItem = async () =>{
     setIsLoading(true)
     try{
-      const response = await axios.post(`https://demprints-backend.vercel.app/api/master/updatePaymentMethod/${data._id}`, {name: inputValue} )
+      const response = await axios.post(`http://demprints-backend.vercel.app/api/master/updateCustomerType/${data._id}`, {name: inputValue} )
       console.log(response);
       toast({
         variant: "outline",
@@ -41,12 +41,13 @@ export default function UpdateProduct({ data, type, done, }) {
         <ModalContent>
           {(onClose) => (
             <>
-              <ModalHeader className="flex gap-1 items-center"><LuClipboardEdit className="bg-primary-200 p-1 h-7 w-7 text-primary border border-primary rounded"/>Update {type}</ModalHeader>
+              <ModalHeader className="flex gap-1 items-center"><LuClipboardEdit className="bg-primary-200 p-1 h-7 w-7 text-primary border border-primary rounded"/>Update Customer Type</ModalHeader>
               <ModalBody>
-                  <form  className="flex flex-col gap-4">
-                  <span>Create Payment {type}</span>
-                  <Input isRequired label={type} placeholder={`Enter payment ${type}`}  value={inputValue} onChange={(e) => setInputValue(e.target.value)}/>
-                  </form>
+                  <div  className="flex flex-col gap-4">
+                    <span>Customer Type</span>
+                    {data._id}
+                    <Input isRequired label="Customer type"  value={inputValue} onChange={(e) => setInputValue(e.target.value)}/>
+                  </div>
               </ModalBody>
               <ModalFooter>
                 <Button color="danger" variant="light" onPress={onClose}>
