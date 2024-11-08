@@ -6,7 +6,7 @@ import { BsPieChartFill } from "react-icons/bs";
 import { IoSettingsSharp } from "react-icons/io5";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-
+import DarkMode from '@/app/components/public-component/darkMode.jsx';
 
 export default function Sidebar() {
   const pathname = usePathname();
@@ -55,6 +55,7 @@ export default function Sidebar() {
               </span>
             </Link>
           </ul>
+          <DarkMode/>
         </div>
         
       </aside>

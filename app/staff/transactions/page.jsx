@@ -313,23 +313,32 @@ export default function Transaction() {
                 ))}
               </DropdownMenu>
             </Dropdown>
-           
+
             {/* <CreateTransaction isSubmit={(data)=>(refresh(data))}/> */}
             {/* <ExportToPdf rows={sortedItems}/> */}
             {/* {!isMaximized? (
                 <ExpandTransaction columns={columns} transactions={transactions} itemOptions={itemOptions} typeOptions={typeOptions} />
             ): null} */}
           </div>
-          <div className="flex gap-1">
+          {/* <div className="flex gap-3">
             <Button color="primary" onPress={handleOpenAddTransaction}>
               Add{" "}
             </Button>
-          </div>
-          <div className="flex gap-1">
+          </div> */}
+
+          <div className="flex items-center">
+            <Button color="primary" onPress={handleOpenAddTransaction}>
+              Add{" "}
+            </Button>
             <Button variant="transparent" onPress={handleShowAllTransactions}>
               <HiMiniViewfinderCircle />
             </Button>
           </div>
+          {/* <div className="flex gap-3">
+            <Button variant="transparent" onPress={handleShowAllTransactions}>
+              <HiMiniViewfinderCircle />
+            </Button>
+          </div> */}
         </div>
         <div className="flex justify-between items-center">
           <span className="text-default-400 text-small">
