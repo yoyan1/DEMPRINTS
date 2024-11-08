@@ -5,8 +5,8 @@ import axios from 'axios';
 export const useSalesStore = create((set) => ({
     columns: [
         {name: "ID", dataKey: "id", sortable: true},
-        {name: "DATE", dataKey: "date", sortable: true},
-        {name: "TIME", dataKey: "time", sortable: true},
+        {name: "TRANSACTION DATE", dataKey: "date", sortable: true},
+        {name: "TRS. TIME", dataKey: "time", sortable: true},
         {name: "TRANSACTION NO.", dataKey: "transaction_no", sortable: true},
         {name: "ITEM NO", dataKey: "item_no"},
         {name: "ITEM NAME", dataKey: "item_name"},

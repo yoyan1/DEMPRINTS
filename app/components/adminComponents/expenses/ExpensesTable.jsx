@@ -15,13 +15,15 @@ import {
   DropdownItem,
   Chip,
   Pagination,
+  Spinner
 } from "@nextui-org/react";
 import { CiSearch } from "react-icons/ci";
 import { IoChevronDown } from "react-icons/io5";
 import {capitalize} from "@/app/composables/utils";
 import ExpandTransaction from './ExpandModal'
 import ExportToPdf from '@/app/composables/exportToPdf'
-import CreateExpenses from './AddExpenses'
+import CreateTransaction from './AddTransaction'
+import { formatDate, formatTime } from "@/app/composables/formateDateAndTime";
 
 const itemColorMap = {
   tarpaulin: "warning",
@@ -34,15 +36,15 @@ const typeColorMap = {
   online: "primary",
 };
 
-const INITIAL_VISIBLE_COLUMNS = ["transaction_no", "item_name", "unit_cost",  "customer_type", "customer_name", "payment_method", "sales_person"];
+const INITIAL_VISIBLE_COLUMNS = ["transaction_no", "item_name", "unit_cost",  "customer_type", "customer_name", "payment_type", "sales_person"];
 const INITIAL_VISIBLE_COLUMNS_ALL = ["date", "time", "transaction_no", "item_no", "item_name", "unit_cost", "quantity", "amount", "discount", "total", "customer_type", "customer_name", "payment_method", "sales_person", "remarks"];
 
-export default function Transaction(props) {
+export default function Transaction({columns, transactions, itemOptions, typeOptions, loading, isMaximized, refresh}) {
   const [filterValue, setFilterValue] = useState("");
   const [selectedKeys, setSelectedKeys] = useState(new Set([]));
-  const [visibleColumns] = useState(props.isMaximized? INITIAL_VISIBLE_COLUMNS_ALL : new Set(INITIAL_VISIBLE_COLUMNS));
+  const [visibleColumns] = useState(isMaximized? INITIAL_VISIBLE_COLUMNS_ALL : new Set(INITIAL_VISIBLE_COLUMNS));
   const [statusFilter, setStatusFilter] = useState("all");
-  const [typeFilter, ] = useState("all");
+  const [typeFilter] = useState("all");
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [sortDescriptor, setSortDescriptor] = useState({
     column: "age",
@@ -53,32 +55,32 @@ export default function Transaction(props) {
   const hasSearchFilter = Boolean(filterValue);
 
   const headerColumns = useMemo(() => {
-    if (visibleColumns === "all") return props.columns;
+    if (visibleColumns === "all") return columns;
 
-    return props.columns.filter((column) => Array.from(visibleColumns).includes(column.dataKey));
+    return columns.filter((column) => Array.from(visibleColumns).includes(column.dataKey));
   }, [visibleColumns]);
 
   const filteredItems = useMemo(() => {
-    let filteredTransactions = [...props.transactions];
+    let filteredTransactions = [...transactions];
 
     if (hasSearchFilter) {
       filteredTransactions = filteredTransactions.filter((item) =>
         item.item_name.toLowerCase().includes(filterValue.toLowerCase()),
       );
     }
-    if (statusFilter !== "all" && Array.from(statusFilter).length !== props.itemOptions.length) {
+    if (statusFilter !== "all" && Array.from(statusFilter).length !== itemOptions.length) {
       filteredTransactions = filteredTransactions.filter((user) =>
         Array.from(statusFilter).includes(user.item_name.toLowerCase()),
       );
     }
-    if (typeFilter !== "all" && Array.from(typeFilter).length !== props.typeOptions.length) {
+    if (typeFilter !== "all" && Array.from(typeFilter).length !== typeOptions.length) {
       filteredTransactions = filteredTransactions.filter((user) =>
         Array.from(typeFilter).includes(user.customer_type.toLowerCase()),
       );
     }
 
     return filteredTransactions;
-  }, [props.transactions, filterValue, statusFilter, typeFilter]);
+  }, [transactions, filterValue, statusFilter, typeFilter]);
 
   const pages = Math.ceil(filteredItems.length / rowsPerPage);
 
@@ -103,6 +105,18 @@ export default function Transaction(props) {
     const cellValue = user[columnKey];
 
     switch (columnKey) {
+        case "date":
+            return (
+            <div className="flex flex-col">
+                <p className="text-bold text-small capitalize">{formatDate(cellValue)}</p>
+            </div>
+            );
+        case "time":
+            return (
+            <div className="flex flex-col">
+                <p className="text-bold text-small capitalize">{formatTime(cellValue)}</p>
+            </div>
+            );
         case "transaction_no":
             return (
             <div className="flex flex-col">
@@ -120,6 +134,22 @@ export default function Transaction(props) {
           <Chip className="capitalize" color={typeColorMap[user.customer_type.toLowerCase() === 'walk in'? 'walk_in' : user.customer_type.toLowerCase()]} size="sm" variant="flat">
             {cellValue}
           </Chip>
+        );
+        case "discount":
+        return (
+          <div>{cellValue}%</div>
+        );
+        case "customer_name":
+        return (
+          <div className="text-left">{cellValue}</div>
+        );
+        case "sales_person":
+        return (
+          <div className="text-left">{cellValue}</div>
+        );
+        case "remarks":
+        return (
+          <div className="text-left">{cellValue}</div>
         );
         default:
             return cellValue;
@@ -159,7 +189,7 @@ export default function Transaction(props) {
 
   const topContent = useMemo(() => {
     return (
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 ">
         <div className="flex justify-between gap-3 items-end">
           <Input
             isClearable
@@ -185,7 +215,7 @@ export default function Transaction(props) {
                 selectionMode="multiple"
                 onSelectionChange={setTypeFilter}
               >
-                {props.typeOptions.map((type) => (
+                {typeOptions.map((type) => (
                   <DropdownItem key={type.dataKey} className="capitalize">
                     {capitalize(type.name)}
                   </DropdownItem>
@@ -206,22 +236,22 @@ export default function Transaction(props) {
                 selectionMode="multiple"
                 onSelectionChange={setStatusFilter}
               >
-                {props.itemOptions.map((item) => (
+                {itemOptions.map((item) => (
                   <DropdownItem key={item.dataKey} className="capitalize">
                     {capitalize(item.name)}
                   </DropdownItem>
                 ))}
               </DropdownMenu>
             </Dropdown>
-            <CreateExpenses/>
+            <CreateTransaction isSubmit={(data)=>(refresh(data))}/>
             <ExportToPdf rows={sortedItems}/>
-            {!props.isMaximized? (
-                <ExpandTransaction columns={props.columns} transactions={props.transactions} itemOptions={props.itemOptions} typeOptions={props.typeOptions} />
+            {!isMaximized? (
+                <ExpandTransaction columns={columns} transactions={transactions} itemOptions={itemOptions} typeOptions={typeOptions} />
             ): null}
           </div>
         </div>
         <div className="flex justify-between items-center">
-          <span className="text-default-400 text-small">Total {props.transactions.length} transactions</span>
+          <span className="text-default-400 text-small">Total {transactions.length} transactions</span>
           <label className="flex items-center text-default-400 text-small">
             Rows per page:
             <select
@@ -241,7 +271,7 @@ export default function Transaction(props) {
     statusFilter,
     visibleColumns,
     onRowsPerPageChange,
-    props.transactions.length,
+    transactions.length,
     onSearchChange,
     hasSearchFilter,
   ]);
@@ -278,17 +308,15 @@ export default function Transaction(props) {
   return (
     <div>
         {topContent}
-        <div className="max-w-[82rem] overflow-x-scroll">
+        <div className="overflow-x-scroll dark:bg-gray-800">
             <Table
-                removeWrapper
+            removeWrapper
             aria-label="Example table with custom cells, pagination and sorting"
             isHeaderSticky
             bottomContentPlacement="outside"
             classNames={{
                 wrapper: "max-h-[382px]",
             }}
-            selectedKeys={selectedKeys}
-            selectionMode="multiple"
             sortDescriptor={sortDescriptor}
             topContentPlacement="outside"
             onSelectionChange={setSelectedKeys}
@@ -305,9 +333,9 @@ export default function Transaction(props) {
                 </TableColumn>
                 )}
             </TableHeader>
-            <TableBody emptyContent={"No transaction found"} items={sortedItems} >
+            <TableBody emptyContent={"No transaction found"} items={sortedItems}  isLoading={loading} loadingContent={<Spinner label="Loading..." />} >
                 {(item) => (
-                <TableRow key={item.id}>
+                <TableRow key={item._id}>
                     {(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}
                 </TableRow>
                 )}

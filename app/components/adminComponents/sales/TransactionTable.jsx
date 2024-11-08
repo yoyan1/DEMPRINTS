@@ -23,6 +23,7 @@ import {capitalize} from "@/app/composables/utils";
 import ExpandTransaction from './ExpandModal'
 import ExportToPdf from '@/app/composables/exportToPdf'
 import CreateTransaction from './AddTransaction'
+import { formatDate, formatTime } from "@/app/composables/formateDateAndTime";
 
 const itemColorMap = {
   tarpaulin: "warning",
@@ -104,6 +105,18 @@ export default function Transaction({columns, transactions, itemOptions, typeOpt
     const cellValue = user[columnKey];
 
     switch (columnKey) {
+        case "date":
+            return (
+            <div className="flex flex-col">
+                <p className="text-bold text-small capitalize">{formatDate(cellValue)}</p>
+            </div>
+            );
+        case "time":
+            return (
+            <div className="flex flex-col">
+                <p className="text-bold text-small capitalize">{formatTime(cellValue)}</p>
+            </div>
+            );
         case "transaction_no":
             return (
             <div className="flex flex-col">
@@ -121,6 +134,22 @@ export default function Transaction({columns, transactions, itemOptions, typeOpt
           <Chip className="capitalize" color={typeColorMap[user.customer_type.toLowerCase() === 'walk in'? 'walk_in' : user.customer_type.toLowerCase()]} size="sm" variant="flat">
             {cellValue}
           </Chip>
+        );
+        case "discount":
+        return (
+          <div>{cellValue}%</div>
+        );
+        case "customer_name":
+        return (
+          <div className="text-left">{cellValue}</div>
+        );
+        case "sales_person":
+        return (
+          <div className="text-left">{cellValue}</div>
+        );
+        case "remarks":
+        return (
+          <div className="text-left">{cellValue}</div>
         );
         default:
             return cellValue;
@@ -160,7 +189,7 @@ export default function Transaction({columns, transactions, itemOptions, typeOpt
 
   const topContent = useMemo(() => {
     return (
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 ">
         <div className="flex justify-between gap-3 items-end">
           <Input
             isClearable
@@ -279,7 +308,7 @@ export default function Transaction({columns, transactions, itemOptions, typeOpt
   return (
     <div>
         {topContent}
-        <div className="max-w-[82rem] overflow-x-scroll">
+        <div className="overflow-x-scroll dark:bg-gray-800">
             <Table
             removeWrapper
             aria-label="Example table with custom cells, pagination and sorting"
@@ -288,8 +317,6 @@ export default function Transaction({columns, transactions, itemOptions, typeOpt
             classNames={{
                 wrapper: "max-h-[382px]",
             }}
-            selectedKeys={selectedKeys}
-            selectionMode="multiple"
             sortDescriptor={sortDescriptor}
             topContentPlacement="outside"
             onSelectionChange={setSelectedKeys}
