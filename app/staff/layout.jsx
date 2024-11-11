@@ -7,9 +7,9 @@ export default function Layout({ children }) {
   return (
     <>
       <div class="antialiased bg-white text-black">
-        <div className="antialiased bg-gray-50 dark:bg-gray-900">
+        <div className="antialiased bg-gray-50 dark:bg-gray-900 ">
           <div className="flex flex-col">
-            <Heading>
+            <Heading >
               <div class="flex justify-start items-center">
                 <button
                   data-drawer-target="drawer-navigation"
@@ -52,9 +52,9 @@ export default function Layout({ children }) {
               </div>
             </Heading>
           </div>
-          <div className="flex flex-row bg-white">
+          <div className="flex flex-row bg-white dark:bg-black dark:text-white ">
             <Sidebar
-              className="w-64 p-4 mr-5"
+              className="w-64 p-4 mr-5 dark:bg-black dark:text-white "
               aria-label="Sidenav"
               id="drawer-navigation"
             />
