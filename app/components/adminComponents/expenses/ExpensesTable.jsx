@@ -22,7 +22,7 @@ import { IoChevronDown } from "react-icons/io5";
 import {capitalize} from "@/app/composables/utils";
 import ExpandTransaction from './ExpandModal'
 import ExportToPdf from '@/app/composables/exportToPdf'
-import CreateTransaction from './AddTransaction'
+import CreateTransaction from './AddExpenses'
 import { formatDate, formatTime } from "@/app/composables/formateDateAndTime";
 
 const itemColorMap = {

@@ -16,6 +16,7 @@ export default function CreateTransaction({isSubmit}) {
   const {date, time} = getDateAndTime()
   const [salesData, setSalesData] = useState({
                                         item_name: "",
+                                        measurement: "",
                                         unit_cost: 0,
                                         quantity: 0,
                                         amount: 0,
@@ -32,7 +33,8 @@ export default function CreateTransaction({isSubmit}) {
 
   const fetchAll = async  () =>{
     const result = await axios.get('https://demprints-backend.vercel.app/api/master/products');
-    setProducts(result.data); 
+    let ascending = result.data.slice().sort();
+    setProducts(ascending);
     const responseOptions = await axios.get('https://demprints-backend.vercel.app/api/master/getPaymentOptions')
     setOptionList(responseOptions.data)
     const responseType = await axios.get('https://demprints-backend.vercel.app/api/master/getPaymentType')
@@ -53,13 +55,31 @@ export default function CreateTransaction({isSubmit}) {
 
   const customer_type = ['Walk in', 'Online'];
 
+  const handleMeasurementChange = (e) =>{
+    const value = e.target.value
+    products.forEach((item) => {
+      if (item.unit === value && item.name === salesData.item_name) {
+        const unitCost = item.price;
+        const total = salesData.quantity > 0? unitCost * salesData.quantity : unitCost;
+        setSalesData((prevData) => (
+          {
+            ...prevData,
+            measurement: value,
+            unit_cost: unitCost,
+            amount: total,
+            total: total,
+          }
+        ));
+      }
+    })
+  }
+
   const handleChange = (e) =>{
     const {name, value} = e.target
     products.forEach((item) => {
-      if (item.name === salesData.item_name) {
+      if (item.name === salesData.item_name && item.unit === salesData.measurement) {
         const unitCost = item.price;
         const total = unitCost * value;
-        // Update state and log the new values
         setSalesData((prevData) => {
           const newData = {
             ...prevData,
@@ -68,25 +88,32 @@ export default function CreateTransaction({isSubmit}) {
             amount: total,
             total: total,
           }
-
-          console.log("Updated Sales Data:", newData); 
           return newData; 
         });
       }
     });
   }
   
+  const discounted = (e) =>{
+    const value = e.target.value
+    const discount = value > 0? value / 100 : 0
+    const newTotal = discount !== 0? salesData.total * discount : 0
+    const total = salesData.amount - newTotal
+
+    setSalesData((prevData) => (
+      {...prevData, discount: value, total: total}
+    ))
+
+  }
+
+
   const [isLoading, setIsLoading] = useState(false)
   const submit = async () => {
     setIsLoading(true)
     console.log('function called')
     const newId = idGenerated[0].count+1
     const transaction_no =  `000${newId}`
-    const discount = salesData.discount > 0? salesData.discount / 100 : 0
-    console.log(discount);
-    const newTotal = discount !== 0? salesData.total * discount : salesData.total
-    const balance = newTotal - salesData.amount_paid
-    console.log(newTotal)
+    const balance = salesData.total - salesData.amount_paid
     const newData = {
       date:date,
       time: time,
@@ -97,13 +124,13 @@ export default function CreateTransaction({isSubmit}) {
       quantity: salesData.quantity,
       amount: salesData.amount,
       discount: salesData.discount,
-      total: newTotal,
+      total: salesData.total,
       customer_type: salesData.customer_type,
       customer_name: salesData.customer_name,
       payment_type: salesData.payment_type,
       payment_options: salesData.payment_options,
       sales_person: salesData.sales_person,
-      remarks: balance
+      remarks: balance > 0? balance : 0
     }
 
     const response = await axios.post('https://demprints-backend.vercel.app/api/collection/addTransaction', newData)
@@ -145,38 +172,75 @@ export default function CreateTransaction({isSubmit}) {
             <>
               <ModalHeader className="flex flex-col gap-1">Create Order</ModalHeader>
               <ModalBody>
-                <Select 
-                  label="Product name" 
-                  value={salesData.item_name}
-                  onChange={(e)=>(setSalesData((prevData)=>({...prevData, item_name: e.target.value})))}
-                >
-                  {products.map(item => (
-                    <SelectItem key={item.name} value={item.name}>
-                      {item.name} - {item.unit}
-                    </SelectItem>
-                  ))}
-                </Select>
-                <div className="flex gap-2">
-                    <Input
-                    autoFocus
-                    type="number"
-                    label="Quantity"
-                    placeholder="Enter quantity"
-                    variant="bordered"
-                    disabled={salesData.item_name === ''? true : false}
-                    value={salesData.quantity}
-                    name="quantity"
-                    onChange={handleChange}
-                    />
-                    <Input
-                    autoFocus
-                    label="Discount"
-                    placeholder="Enter cutomer discount"
-                    variant="bordered"
-                    value={salesData.discount}
-                     onChange={(e)=>(setSalesData((prevData)=>({...prevData, discount: e.target.value})))}
-                    />
+                <div className="flex gap-3">
+                  <Select 
+                    label="Product name" 
+                    value={salesData.item_name}
+                    onChange={(e)=> (setSalesData((prevData)=>(
+                      {
+                        ...prevData, 
+                        item_name: e.target.value, 
+                        measurement: '',
+                        unit_cost: 0,
+                        quantity: 0,
+                        total: 0
+                      }
+                    )))}
+                  >
+                    {products.map((item, index) => (
+                      index > 0? (
+                        item.name !== products[index-1].name? (
+                          <SelectItem key={item.name}>
+                            {item.name}
+                          </SelectItem>
+                        ): null
+                      ): (
+                        <SelectItem key={item.name}>
+                          {item.name}
+                        </SelectItem>
+                      )
+                    ))}
+                  </Select>
+                  {salesData.item_name? (
+                    <Select 
+                      label="Unit of Measurement" 
+                      value={salesData.measurement}
+                      onChange={handleMeasurementChange}
+                    >
+                      
+                      {products.map(item => (
+                        salesData.item_name == item.name? (
+                          <SelectItem key={item.unit}>
+                            {item.unit}
+                          </SelectItem>
+                        ) : null
+                      ))}
+                    </Select>
+                  ): null}
                 </div>
+                {salesData.measurement? (
+                  <div className="flex gap-2">
+                      <Input
+                      autoFocus
+                      type="number"
+                      label="Quantity"
+                      placeholder="Enter quantity"
+                      variant="bordered"
+                      disabled={salesData.item_name === ''? true : false}
+                      value={salesData.quantity}
+                      name="quantity"
+                      onChange={handleChange}
+                      />
+                      <Input
+                      autoFocus
+                      label="Discount"
+                      placeholder="Enter cutomer discount"
+                      variant="bordered"
+                      value={salesData.discount}
+                      onChange={discounted}
+                      />
+                  </div>
+                ): null}
                 <Select 
                   label="Customer type" 
                   name="unit"
@@ -197,30 +261,32 @@ export default function CreateTransaction({isSubmit}) {
                   value={salesData.customer_name}
                   onChange={(e)=>(setSalesData((prevData)=>({...prevData, customer_name: e.target.value})))}
                 />
-                <Select 
-                  label="Payment type" 
-                  name="unit"
-                  value={salesData.payment_type}
-                  onChange={(e)=>(setSalesData((prevData)=>({...prevData, payment_type: e.target.value})))}
-                >
-                  {type.map(item => (
-                    <SelectItem key={item.name} value={item.name}>
-                      {item.name}
-                    </SelectItem>
-                  ))}
-                </Select>
-                <Select 
-                  label="Payment options" 
-                  name="unit"
-                  value={salesData.payment_options}
-                  onChange={(e)=>(setSalesData((prevData)=>({...prevData, payment_options: e.target.value})))}
-                >
-                  {options.map(item => (
-                    <SelectItem key={item.name} value={item.name}>
-                      {item.name}
-                    </SelectItem>
-                  ))}
-                </Select>
+                <div className="flex gap-3">
+                  <Select 
+                    label="Payment type" 
+                    name="unit"
+                    value={salesData.payment_type}
+                    onChange={(e)=>(setSalesData((prevData)=>({...prevData, payment_type: e.target.value})))}
+                  >
+                    {type.map(item => (
+                      <SelectItem key={item.name} value={item.name}>
+                        {item.name}
+                      </SelectItem>
+                    ))}
+                  </Select>
+                  <Select 
+                    label="Payment options" 
+                    name="unit"
+                    value={salesData.payment_options}
+                    onChange={(e)=>(setSalesData((prevData)=>({...prevData, payment_options: e.target.value})))}
+                  >
+                    {options.map(item => (
+                      <SelectItem key={item.name} value={item.name}>
+                        {item.name}
+                      </SelectItem>
+                    ))}
+                  </Select>
+                </div>
                 <Select 
                   label="Sales Person" 
                   value={salesData.sales_person}
@@ -241,6 +307,12 @@ export default function CreateTransaction({isSubmit}) {
                   value={salesData.amount_paid}
                   onChange={(e)=>(setSalesData((prevData)=>({...prevData, amount_paid: e.target.value})))}
                 />
+                {salesData.measurement? (
+                  <div className="flex justify-between">
+                    <span>total amount: {salesData.total}</span>
+                    <span>Product cost: {salesData.unit_cost}</span>
+                  </div>
+                ): null}
               </ModalBody>
               <ModalFooter>
                 <Button color="danger" variant="flat" onPress={onClose}>
