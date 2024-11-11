@@ -2,7 +2,6 @@
 
 import { TrendingUp } from "lucide-react"
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts"
-
 import {
   Card,
   CardContent,
@@ -17,30 +16,61 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/app/components/ui/chart"
+import { useSalesStore } from '@/app/stores/transactionStore'
+import { useEffect, useState } from "react"
 
 export const description = "A stacked area chart"
 
-const chartData = [
-  { month: "January", desktop: 186, mobile: 80 },
-  { month: "February", desktop: 305, mobile: 200 },
-  { month: "March", desktop: 237, mobile: 120 },
-  { month: "April", desktop: 73, mobile: 190 },
-  { month: "May", desktop: 209, mobile: 130 },
-  { month: "June", desktop: 214, mobile: 140 },
-]
 
 const chartConfig = {
-  desktop: {
+  sales: {
     label: "Expenses",
     color: "hsl(var(--chart-1))",
   },
-  mobile: {
+  expenses: {
     label: "Sales",
     color: "hsl(var(--chart-2))",
   },
 } satisfies ChartConfig
 
 export default function Revenue() {
+  const {transactions, loading, fetchTransactions } = useSalesStore()
+  const [chartData, setChartData] = useState([
+    { month: "January", sales: 0, expenses: 0 },
+    { month: "February", sales: 0, expenses: 0 },
+    { month: "March", sales: 0, expenses: 0 },
+    { month: "April", sales: 0, expenses: 0 },
+    { month: "May", sales: 0, expenses: 0 },
+    { month: "June", sales: 0, expenses: 0 },
+    { month: "July", sales: 0, expenses: 0 },
+    { month: "August", sales: 0, expenses: 0 },
+    { month: "September", sales: 0, expenses: 0 },
+    { month: "October", sales: 0, expenses: 0 },
+    { month: "November", sales: 0, expenses: 0 },
+    { month: "December", sales: 0, expenses: 0 },
+  ])
+
+  useEffect(()=>{
+    fetchTransactions()
+  }, [fetchTransactions])
+
+  const getData = () =>{
+    transactions.map((item) =>{
+      const date = item.date.split('-')
+      // if(date[1].toString() === '11'){
+        const total = chartData[10].sales + item.total
+        const newData = [...chartData]
+        newData[10] = { ...newData[10], sales: total}
+        console.log(date[1], total);
+        
+      // }
+
+
+    })
+  }
+  useEffect(()=>{
+    getData()
+  }, [])
   return (
     <Card>
       <CardHeader>
@@ -54,10 +84,7 @@ export default function Revenue() {
           <AreaChart
             accessibilityLayer
             data={chartData}
-            margin={{
-              left: 12,
-              right: 12,
-            }}
+            
           >
             <CartesianGrid vertical={false} />
             <XAxis
@@ -72,19 +99,19 @@ export default function Revenue() {
               content={<ChartTooltipContent indicator="dot" />}
             />
             <Area
-              dataKey="mobile"
+              dataKey="expenses"
               type="natural"
-              fill="var(--color-mobile)"
+              fill="var(--color-expenses)"
               fillOpacity={0.4}
-              stroke="var(--color-mobile)"
+              stroke="var(--color-expenses)"
               stackId="a"
             />
             <Area
-              dataKey="desktop"
+              dataKey="sales"
               type="natural"
-              fill="var(--color-desktop)"
+              fill="var(--color-sales)"
               fillOpacity={0.4}
-              stroke="var(--color-desktop)"
+              stroke="var(--color-sales)"
               stackId="a"
             />
           </AreaChart>
