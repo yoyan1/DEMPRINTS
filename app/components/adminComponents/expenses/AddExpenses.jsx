@@ -4,40 +4,30 @@ import { useEffect, useState } from "react";
 import { MdAdd } from "react-icons/md";
 import axios from "axios";
 import {getDateAndTime} from '@/app/composables/dateAndTime'
-import {useUserStore} from '@/app/stores/userStore'
-
+import { useExpensesStore } from '@/app/stores/ExpensesStore'
+ 
 export default function CreateTransaction({isSubmit}) {
-  const {users, fetchUsers} = useUserStore()
   const {isOpen, onOpen, onClose} = useDisclosure();
-  const [products, setProducts] = useState([])
-  const [options, setOptionList] = useState([])
-  const [type, setTypeList] = useState([])
+  const { categoryList, loading, fetchExpensesCategory} = useExpensesStore()
+  const [category, setCategory] = useState([])
   const [idGenerated, setIdGenerated] = useState([{_id: '', count: 0}])
-  const {date, time} = getDateAndTime()
-  const [salesData, setSalesData] = useState({
-                                        item_name: "",
-                                        unit_cost: 0,
-                                        quantity: 0,
-                                        amount: 0,
-                                        discount: 0,
-                                        total: 0,
-                                        customer_type: "",
-                                        customer_name: "",
-                                        payment_type: "",
-                                        payment_options: "",
-                                        sales_person: "",
-                                        remarks: "",
+  const {date} = getDateAndTime()
+  const [expensesData, setExpensesData] = useState({
+                                          date: date,
+                                          category: "",
+                                          type: "",
+                                          transaction_no: "", 
+                                          item_name: "", 
+                                          unit_cost: 0, 
+                                          quantity: 0, 
+                                          total: 0,
                                       })
                                       
 
   const fetchAll = async  () =>{
-    const result = await axios.get('https://demprints-backend.vercel.app/api/master/products');
-    setProducts(result.data); 
-    const responseOptions = await axios.get('https://demprints-backend.vercel.app/api/master/getPaymentOptions')
-    setOptionList(responseOptions.data)
-    const responseType = await axios.get('https://demprints-backend.vercel.app/api/master/getPaymentType')
-    setTypeList(responseType.data)
-    const responseID = await axios.get('https://demprints-backend.vercel.app/api/collection/getId')
+    const result = await axios.get('https://demprints-backend.vercel.app/api/master/getExpensesCategory');
+    setCategory(result.data); 
+    const responseID = await axios.get('http://localhost:5000/api/collection/getIDExpenses')
     if(responseID.data.length > 0){
       setIdGenerated(responseID.data)
       console.log(responseID.data)
@@ -46,90 +36,62 @@ export default function CreateTransaction({isSubmit}) {
 
   useEffect(() =>{
     fetchAll()
+    fetchExpensesCategory()
   }, [])
-  useEffect(() =>{
-    fetchUsers()
-  }, [fetchUsers])
 
-  const customer_type = ['Walk in', 'Online'];
 
   const handleChange = (e) =>{
     const {name, value} = e.target
-    products.forEach((item) => {
-      if (item.name === salesData.item_name) {
-        const unitCost = item.price;
-        const total = unitCost * value;
-        // Update state and log the new values
-        setSalesData((prevData) => {
-          const newData = {
-            ...prevData,
-            [name]: value,
-            unit_cost: unitCost,
-            amount: total,
-            total: total,
-          }
-
-          console.log("Updated Sales Data:", newData); 
-          return newData; 
-        });
-      }
-    });
+    if(name === 'unit_cost'){
+      const total =  expensesData.quantity > 0? value * expensesData.quantity : 0
+      setExpensesData((prevData) => ({...prevData, unit_cost: value, total: total}))
+    } else if (name === 'quantity'){
+      const total =  value > 0? expensesData.unit_cost * value : 0
+      setExpensesData((prevData) => ({...prevData, quantity: value, total: total, }))
+    } else {
+      console.log("error");
+      
+    }
   }
   
   const [isLoading, setIsLoading] = useState(false)
   const submit = async () => {
     setIsLoading(true)
-    console.log('function called')
     const newId = idGenerated[0].count+1
     const transaction_no =  `000${newId}`
-    const discount = salesData.discount > 0? salesData.discount / 100 : 0
-    console.log(discount);
-    const newTotal = discount !== 0? salesData.total * discount : salesData.total
-    const balance = newTotal - salesData.amount_paid
-    console.log(newTotal)
     const newData = {
-      date:date,
-      time: time,
-      transaction_no: transaction_no,
-      item_no: "0001",
-      item_name: salesData.item_name,
-      unit_cost: salesData.unit_cost,
-      quantity: salesData.quantity,
-      amount: salesData.amount,
-      discount: salesData.discount,
-      total: newTotal,
-      customer_type: salesData.customer_type,
-      customer_name: salesData.customer_name,
-      payment_type: salesData.payment_type,
-      payment_options: salesData.payment_options,
-      sales_person: salesData.sales_person,
-      remarks: balance
+      date: date,
+      category: expensesData.category,
+      type: expensesData.type,
+      transaction_no: transaction_no, 
+      item_name: expensesData.item_name,
+      unit_cost: expensesData.unit_cost, 
+      quantity: expensesData.quantity,
+      total: expensesData.total,
     }
-
-    const response = await axios.post('https://demprints-backend.vercel.app/api/collection/addTransaction', newData)
-    const updateId = await axios.post('https://demprints-backend.vercel.app/api/collection/updateID', {id: idGenerated[0]._id, count: newId})
-    console.log(response.data)
-    console.log(updateId.data)
+    console.log(newData)
+    try{
+      const response = await axios.post('http://localhost:5000/api/collection/createExpenses', newData)
+      const updateId = await axios.post('http://localhost:5000/api/collection/updateIDExpenses', {id: idGenerated[0]._id, count: newId})
+      console.log(response.data.message)
+      console.log(updateId.data)
+      fetchAll()
+      isSubmit("done")
+      setExpensesData({
+        date: "",
+        category: "",
+        type: "",
+        transaction_no: "", 
+        item_name: "",
+        unit_cost: 0, 
+        quantity: 0,
+        total: 0,
+      })
+      onClose()
+    } catch(e){
+      console.log(e);
+    }
     setIsLoading(false)
-    isSubmit(response.data)
-    setSalesData({
-      item_name: "",
-      unit_cost: 0,
-      quantity: 0,
-      amount: 0,
-      discount: 0,
-      total: 0,
-      amount_paid: 0,
-      customer_type: "",
-      customer_name: "",
-      payment_type: "",
-      payment_options: "",
-      sales_person: "",
-      remarks: "",
-    })
-    fetchAll()
-    onClose()
-    
   };  
 
   return (
@@ -143,104 +105,60 @@ export default function CreateTransaction({isSubmit}) {
         <ModalContent>
           {() => (
             <>
-              <ModalHeader className="flex flex-col gap-1">Create Order</ModalHeader>
+              <ModalHeader className="flex flex-col gap-1">Create Expenses</ModalHeader>
               <ModalBody>
                 <Select 
-                  label="Product name" 
-                  value={salesData.item_name}
-                  onChange={(e)=>(setSalesData((prevData)=>({...prevData, item_name: e.target.value})))}
+                  label="Category" 
+                  value={expensesData.category}
+                  onChange={(e) =>(setExpensesData((prevData)=>({...prevData, category: e.target.value, type: ""})))}
+                  isLoading={loading}
                 >
-                  {products.map(item => (
-                    <SelectItem key={item.name} value={item.name}>
-                      {item.name} - {item.unit}
-                    </SelectItem>
+                  {categoryList.map((item) =>(
+                    <SelectItem key={item.name}>{item.name}</SelectItem>
                   ))}
                 </Select>
-                <div className="flex gap-2">
-                    <Input
-                    autoFocus
-                    type="number"
-                    label="Quantity"
-                    placeholder="Enter quantity"
-                    variant="bordered"
-                    disabled={salesData.item_name === ''? true : false}
-                    value={salesData.quantity}
-                    name="quantity"
-                    onChange={handleChange}
-                    />
-                    <Input
-                    autoFocus
-                    label="Discount"
-                    placeholder="Enter cutomer discount"
-                    variant="bordered"
-                    value={salesData.discount}
-                     onChange={(e)=>(setSalesData((prevData)=>({...prevData, discount: e.target.value})))}
-                    />
-                </div>
-                <Select 
-                  label="Customer type" 
-                  name="unit"
-                  value={salesData.customer_type}
-                  onChange={(e)=>(setSalesData((prevData)=>({...prevData, customer_type: e.target.value})))}
-                >
-                  {customer_type.map(item => (
-                    <SelectItem key={item} value={item}>
-                      {item}
-                    </SelectItem>
-                  ))}
-                </Select>
+                {expensesData.category? (
+                  <Select 
+                    label="Type" 
+                    value={expensesData.type}
+                    onChange={(e) =>(setExpensesData((prevData)=>({...prevData, type: e.target.value})))}
+                  >
+                    {categoryList.map((item) =>(
+                      item.name === expensesData.category? (
+                        item.list.map((list) => (
+                          <SelectItem key={list}>{list}</SelectItem>
+                        ))
+                      ): null
+                    ))}
+                  </Select>
+                ): null}
                 <Input
-                  autoFocus
-                  label="Customer name"
-                  placeholder="Enter customer name"
+                  label="Item Name"
+                  placeholder="Enter item name"
                   variant="bordered"
-                  value={salesData.customer_name}
-                  onChange={(e)=>(setSalesData((prevData)=>({...prevData, customer_name: e.target.value})))}
+                  value={expensesData.item_name}
+                  onChange={(e)=>(setExpensesData((prevData)=>({...prevData, item_name: e.target.value})))}
                 />
-                <Select 
-                  label="Payment type" 
-                  name="unit"
-                  value={salesData.payment_type}
-                  onChange={(e)=>(setSalesData((prevData)=>({...prevData, payment_type: e.target.value})))}
-                >
-                  {type.map(item => (
-                    <SelectItem key={item.name} value={item.name}>
-                      {item.name}
-                    </SelectItem>
-                  ))}
-                </Select>
-                <Select 
-                  label="Payment options" 
-                  name="unit"
-                  value={salesData.payment_options}
-                  onChange={(e)=>(setSalesData((prevData)=>({...prevData, payment_options: e.target.value})))}
-                >
-                  {options.map(item => (
-                    <SelectItem key={item.name} value={item.name}>
-                      {item.name}
-                    </SelectItem>
-                  ))}
-                </Select>
-                <Select 
-                  label="Sales Person" 
-                  value={salesData.sales_person}
-                  onChange={(e)=>(setSalesData((prevData)=>({...prevData, sales_person: e.target.value})))}
-                >
-                  {users.map(item => (
-                    <SelectItem key={item.name} value={item.name}>
-                      {item.name}
-                    </SelectItem>
-                  ))}
-                </Select>
                 <Input
-                  autoFocus
-                  label="Amount Paid"
-                  placeholder="Enter paid amount"
-                  variant="bordered"
+                  label="Cost"
+                  placeholder="Enter unit cost"
                   type="number"
-                  value={salesData.amount_paid}
-                  onChange={(e)=>(setSalesData((prevData)=>({...prevData, amount_paid: e.target.value})))}
+                  variant="bordered"
+                  name="unit_cost"
+                  value={expensesData.unit_cost}
+                  onChange={handleChange}
                 />
+                <Input
+                  label="Quantity"
+                  placeholder="Enter item quantity"
+                  variant="bordered"
+                  name="quantity"
+                  value={expensesData.quantity}
+                  onChange={handleChange}
+                />
+                <div>
+                  total amount: {expensesData.total}
+                </div>
               </ModalBody>
               <ModalFooter>
                 <Button color="danger" variant="flat" onPress={onClose}>

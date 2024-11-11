@@ -7,12 +7,12 @@ import axios from "axios";
 import { useToast } from "@/hooks/use-toast";
 import Delete from './actions/Delete'
 import UpdateExpensesCategory from './form/updateExpensesCategory'
-import { useExpensesCategory } from '@/app/stores/ExpensesCategory'
+import { useExpensesStore } from '@/app/stores/ExpensesCategory'
 
 export default function CreateExpenses() {
   const {isOpen, onOpen, onClose} = useDisclosure();
   const { toast } = useToast()
-  const { categoryList, fetchExpensesCategory } = useExpensesCategory()
+  const { categoryList, fetchExpensesCategory } = useExpensesStore()
   const [selected, setSelected] = useState("operational");
   const [category, setCategory] = useState({name: '', list: []})
   const [inputValue, setInputValue] = useState('')

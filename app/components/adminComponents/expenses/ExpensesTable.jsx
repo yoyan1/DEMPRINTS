@@ -1,5 +1,5 @@
 "use client"
-import React, {useState, useMemo} from "react";
+import React, {useState, useMemo, useEffect} from "react";
 import {
   Table,
   TableHeader,
@@ -19,6 +19,7 @@ import {
 } from "@nextui-org/react";
 import { CiSearch } from "react-icons/ci";
 import { IoChevronDown } from "react-icons/io5";
+import { useExpensesStore } from "@/app/stores/ExpensesStore";
 import {capitalize} from "@/app/composables/utils";
 import ExpandTransaction from './ExpandModal'
 import ExportToPdf from '@/app/composables/exportToPdf'
@@ -36,14 +37,20 @@ const typeColorMap = {
   online: "primary",
 };
 
-const INITIAL_VISIBLE_COLUMNS = ["transaction_no", "item_name", "unit_cost",  "customer_type", "customer_name", "payment_type", "sales_person"];
-const INITIAL_VISIBLE_COLUMNS_ALL = ["date", "time", "transaction_no", "item_no", "item_name", "unit_cost", "quantity", "amount", "discount", "total", "customer_type", "customer_name", "payment_method", "sales_person", "remarks"];
+const INITIAL_VISIBLE_COLUMNS = ["date", "transaction_no", "item_name", "category", "type", "unit_cost", "quantity", "total"];
 
-export default function Transaction({columns, transactions, itemOptions, typeOptions, loading, isMaximized, refresh}) {
+export default function Transaction() {
+  const {categoryList, fetchExpensesCategory, columns, loading, expenses, fetchExpenses,} = useExpensesStore()
+  useEffect(()=>{
+    fetchExpenses()
+  }, [fetchExpenses])
+  useEffect(()=>{
+    fetchExpensesCategory()
+  }, [fetchExpensesCategory])
   const [filterValue, setFilterValue] = useState("");
   const [selectedKeys, setSelectedKeys] = useState(new Set([]));
-  const [visibleColumns] = useState(isMaximized? INITIAL_VISIBLE_COLUMNS_ALL : new Set(INITIAL_VISIBLE_COLUMNS));
-  const [statusFilter, setStatusFilter] = useState("all");
+  const [visibleColumns] = useState(new Set(INITIAL_VISIBLE_COLUMNS));
+  const [categoryFilter, setcategoryFilter] = useState("all");
   const [typeFilter] = useState("all");
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [sortDescriptor, setSortDescriptor] = useState({
@@ -61,26 +68,21 @@ export default function Transaction({columns, transactions, itemOptions, typeOpt
   }, [visibleColumns]);
 
   const filteredItems = useMemo(() => {
-    let filteredTransactions = [...transactions];
+    let filteredExpenses = [...expenses];
 
     if (hasSearchFilter) {
-      filteredTransactions = filteredTransactions.filter((item) =>
+      filteredExpenses = filteredExpenses.filter((item) =>
         item.item_name.toLowerCase().includes(filterValue.toLowerCase()),
       );
     }
-    if (statusFilter !== "all" && Array.from(statusFilter).length !== itemOptions.length) {
-      filteredTransactions = filteredTransactions.filter((user) =>
-        Array.from(statusFilter).includes(user.item_name.toLowerCase()),
-      );
-    }
-    if (typeFilter !== "all" && Array.from(typeFilter).length !== typeOptions.length) {
-      filteredTransactions = filteredTransactions.filter((user) =>
-        Array.from(typeFilter).includes(user.customer_type.toLowerCase()),
+    if (categoryFilter !== "all" && Array.from(categoryFilter).length !== categoryList.length) {
+      filteredExpenses = filteredExpenses.filter((item) =>
+        Array.from(categoryFilter).includes(item.category),
       );
     }
 
-    return filteredTransactions;
-  }, [transactions, filterValue, statusFilter, typeFilter]);
+    return filteredExpenses;
+  }, [expenses, filterValue, categoryFilter,]);
 
   const pages = Math.ceil(filteredItems.length / rowsPerPage);
 
@@ -123,18 +125,18 @@ export default function Transaction({columns, transactions, itemOptions, typeOpt
                 <p className="text-bold text-small capitalize">{cellValue}</p>
             </div>
             );
-        case "item_name":
+        case "category":
         return (
-          <Chip className="capitalize" color={itemColorMap[user.item_name.toLowerCase() === 'photo print'? 'photoprint' : user.item_name.toLowerCase()]} size="sm" variant="flat">
+          <Chip className="capitalize" size="sm" variant="flat">
             {cellValue}
           </Chip>
         );
-        case "customer_type":
-        return (
-          <Chip className="capitalize" color={typeColorMap[user.customer_type.toLowerCase() === 'walk in'? 'walk_in' : user.customer_type.toLowerCase()]} size="sm" variant="flat">
-            {cellValue}
-          </Chip>
-        );
+        // case "customer_type":
+        // return (
+        //   <Chip className="capitalize" color={typeColorMap[user.customer_type.toLowerCase() === 'walk in'? 'walk_in' : user.customer_type.toLowerCase()]} size="sm" variant="flat">
+        //     {cellValue}
+        //   </Chip>
+        // );
         case "discount":
         return (
           <div>{cellValue}%</div>
@@ -224,34 +226,34 @@ export default function Transaction({columns, transactions, itemOptions, typeOpt
             </Dropdown> */}
             <Dropdown>
               <DropdownTrigger className="hidden sm:flex">
-                <Button endContent={<IoChevronDown className="text-small" />} variant="flat">
-                  Item name
+                <Button endContent={<IoChevronDown className="text-small" />} variant="flat" isLoading={loading}>
+                  category
                 </Button>
               </DropdownTrigger>
               <DropdownMenu
                 disallowEmptySelection
                 aria-label="Table Columns"
                 closeOnSelect={false}
-                selectedKeys={statusFilter}
+                selectedKeys={categoryFilter}
                 selectionMode="multiple"
-                onSelectionChange={setStatusFilter}
+                onSelectionChange={setcategoryFilter}
               >
-                {itemOptions.map((item) => (
-                  <DropdownItem key={item.dataKey} className="capitalize">
+                {categoryList.map((item) => (
+                  <DropdownItem key={item.name} className="capitalize">
                     {capitalize(item.name)}
                   </DropdownItem>
                 ))}
               </DropdownMenu>
             </Dropdown>
-            <CreateTransaction isSubmit={(data)=>(refresh(data))}/>
-            <ExportToPdf rows={sortedItems}/>
+            <CreateTransaction isSubmit={fetchExpenses}/>
+            {/* <ExportToPdf rows={sortedItems}/>
             {!isMaximized? (
-                <ExpandTransaction columns={columns} transactions={transactions} itemOptions={itemOptions} typeOptions={typeOptions} />
-            ): null}
+                <ExpandTransaction columns={columns} expenses={expenses} itemOptions={itemOptions} typeOptions={typeOptions} />
+            ): null} */}
           </div>
         </div>
         <div className="flex justify-between items-center">
-          <span className="text-default-400 text-small">Total {transactions.length} transactions</span>
+          <span className="text-default-400 text-small">Total {expenses.length} expenses</span>
           <label className="flex items-center text-default-400 text-small">
             Rows per page:
             <select
@@ -268,10 +270,10 @@ export default function Transaction({columns, transactions, itemOptions, typeOpt
     );
   }, [
     filterValue,
-    statusFilter,
+    categoryFilter,
     visibleColumns,
     onRowsPerPageChange,
-    transactions.length,
+    expenses.length,
     onSearchChange,
     hasSearchFilter,
   ]);
