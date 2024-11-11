@@ -20,6 +20,7 @@ export default function Addtransaction() {
   const [customer_name, setCostumerName] = useState("");
   const [customer_type, setCostumerType] = useState("");
   const [item_name, setItemName] = useState("");
+  
   const [transaction_no] = useState(0);
   const [item_no] = useState(0);
   const [quantity, setQuantity] = useState(0);
@@ -36,6 +37,7 @@ export default function Addtransaction() {
   const [payment, setPaymentt] = useState([]);
   const [paymentTypes, setPaymenttype] = useState([]);
   const [products, setProduct] = useState([]);
+  const [unit, setUnit] = useState([])
   const [setTransaction] = useState([]);
   // ----------------------
   const [idGenerated, setIdGenerated] = useState([{ _id: "", count: 0 }]);
@@ -126,23 +128,23 @@ export default function Addtransaction() {
       const currentDate = new Date();
       const formattedDate = currentDate.toISOString().split("T")[0]; // Format date as YYYY-MM-DD
       const formattedTime = currentDate.toTimeString().split(" ")[0];
-
+  
       const newId = idGenerated[0].count + 1; // Ensure `idGenerated` is correctly set
       const transaction_no = `000${newId}`;
-
-      // const amount = unit_cost * quantity;
-      const total = amount - discount; // You can apply discount logic if needed
-
+  
+      // Calculate total based on `amount` and `discount`
+      const total = amount - discount;
+  
       const selectedProduct = products.find((item) => item.name === item_name);
-      const finalUnitCost = selectedProduct ? selectedProduct.price : unit_cost; // Use `unit_cost` if selectedProduct is not found
-
+      const finalUnitCost = selectedProduct ? selectedProduct.price : unit_cost;
+  
       // Send the transaction data
       const response = await axios.post(
         `https://demprints-backend.vercel.app/api/collection/addtransaction`,
         {
           date: formattedDate,
           time: formattedTime,
-          transaction_no: transaction_no,
+          transaction_no,
           item_no: "0000",
           item_name,
           unit_cost: finalUnitCost,
@@ -158,60 +160,50 @@ export default function Addtransaction() {
           remarks,
         }
       );
-
+  
       setSuccessMessage("Transaction added successfully!");
       console.log(response.data);
     } catch (error) {
       console.log("Failed", error);
     }
   };
-
-  // const [quantity, setQuantity] = useState(1); // Default initial quantity is set to 1
-  // const [quantity, setQuantity] = useState(1);
+  
   const handleChange = (e) => {
     const { name, value } = e.target;
-
-    // Find the selected product and retrieve its unit cost
+  
     const selectedProduct = products.find((item) => item.name === item_name);
-    if (selectedProduct) {
-      const unitCost = selectedProduct.price;
-
-      // Determine new quantity based on the input field, defaulting to current quantity if not changed
-      const newQuantity =
-        name === "quantity" ? Math.max(parseFloat(value), 0) : quantity;
-
-      // Calculate total cost for the specified quantity
-      const totalItemCost = unitCost * newQuantity;
-
-      // Calculate other amounts like `amount` and `total` based on the input
-      const newAmount = name === "amount" ? parseFloat((value), 0): amount;
-      const toTal = totalItemCost - newAmount;
-
-      // Define discount and total based on conditions
-      const newDiscount = name === "discount" ? parseFloat(value) : discount;
-      const total = toTal - newDiscount;
-      const result = total - amount;
-      // Update state values accordingly
-      if (name === "quantity") {
-        setQuantity(newQuantity);
-        setAmount(totalItemCost); // Update the amount based on unit cost and quantity
-        setTotal(result); // Set total after discount
-      } else if (name === "discount") {
-        setDiscount(newDiscount);
-        setTotal(result);
-      }
-
-      setUnitCost(unitCost); // Set unit cost for the product
-
-      console.log("Updated Sales Data:", {
-        quantity: newQuantity,
-        unit_cost: unitCost,
-        amount: totalItemCost,
-        discount: newDiscount,
-        total: total,
-      });
+    const unitCost = selectedProduct ? selectedProduct.price : unit_cost;
+  
+    const newQuantity = name === "quantity" ? Math.max(parseFloat(value), 0) : quantity;
+    const newDiscount = name === "discount" ? parseFloat(value) : discount;
+    
+    // Calculate total item cost (amount)
+    const totalItemCost = unitCost * newQuantity;
+    const total = totalItemCost - newDiscount;
+  
+    // Update state values based on changed field
+    if (name === "quantity") {
+      setQuantity(newQuantity);
+      setAmount(totalItemCost); // Update the amount based on unit cost and quantity
+      setTotal(total); // Set total after discount
+    } else if (name === "discount") {
+      setDiscount(newDiscount);
+      setTotal(total);
+    } else if (name === "amount") {
+      setAmount(parseFloat(value));
     }
+  
+    setUnitCost(unitCost); // Always set the unit cost
+  
+    console.log("Updated Sales Data:", {
+      quantity: newQuantity,
+      unit_cost: unitCost,
+      amount: totalItemCost,
+      discount: newDiscount,
+      total,
+    });
   };
+  
 
   // const handleDiscountChange = (e) =>{
   //   const { name, value } = e.target;
@@ -279,6 +271,8 @@ export default function Addtransaction() {
 
   return (
     <>
+      
+      <div className="grid md:grid-cols-2 md:gap-6">
       <Select
         label="Item"
         className="max-w-md mx-auto text-black relative z-0 w-full mb-2 mt-5"
@@ -299,7 +293,27 @@ export default function Addtransaction() {
           </SelectItem>
         ))}
       </Select>
-
+       {/* <Select
+          label="Measurement"
+          className="max-w-md mx-auto text-black relative z-0 w-full mb-2 mt-5"
+          autoFocus
+          isRequired
+          value={unit}
+          variant="bordered"
+          style={{ color: "black" }}
+          onChange={(event) => setUnit(event.target.value)}
+        >
+          {products.map((product) => (
+            <SelectItem
+              key={`${product.unit}-${product.price}`} // Unique key
+              variant="bordered"
+              style={{ color: "black" }}
+            >
+              {product.unit} - ${product.price}
+            </SelectItem>
+          ))}
+        </Select> */}
+      </div>
       <div className="grid md:grid-cols-2 md:gap-6">
         <Input
           className="text-black relative z-0 w-full mb-2"
