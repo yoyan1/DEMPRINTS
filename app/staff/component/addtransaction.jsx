@@ -13,7 +13,7 @@ import {
 
 // import { MdOutlineAlternateEmail, MdOutlineLock } from "react-icons/md";
 
-import { customer_types } from "./data";
+import { customer_types, transactions } from "./data";
 import axios from "axios";
 
 export default function Addtransaction() {
@@ -38,7 +38,7 @@ export default function Addtransaction() {
   const [products, setProduct] = useState([]);
   const [setTransaction] = useState([]);
   // ----------------------
-  const [idGenerated, setIdGenerated] = useState([{_id: '', count: 0}])
+  const [idGenerated, setIdGenerated] = useState([{ _id: "", count: 0 }]);
   // ----------------------
 
   useEffect(() => {
@@ -84,17 +84,19 @@ export default function Addtransaction() {
     }
   };
 
-  const fetchID = async () =>{
-    try{
-      const response = await axios.get(`https://demprints-backend.vercel.app/api/collection/getId`)
-      if(response.data.length > 0){
-        setIdGenerated(response.data)
-        console.log(response.data)
+  const fetchID = async () => {
+    try {
+      const response = await axios.get(
+        `https://demprints-backend.vercel.app/api/collection/getId`
+      );
+      if (response.data.length > 0) {
+        setIdGenerated(response.data);
+        console.log(response.data);
       }
-    }catch(error){
+    } catch (error) {
       console.log(error);
     }
-  }
+  };
 
   const fetchTransactions = async () => {
     try {
@@ -120,24 +122,30 @@ export default function Addtransaction() {
   // };
 
   const handleSubmit = async () => {
-    // event.preventDefault();
     try {
       const currentDate = new Date();
       const formattedDate = currentDate.toISOString().split("T")[0]; // Format date as YYYY-MM-DD
       const formattedTime = currentDate.toTimeString().split(" ")[0];
 
-      const newId = idGenerated[0].count + 1;
+      const newId = idGenerated[0].count + 1; // Ensure `idGenerated` is correctly set
       const transaction_no = `000${newId}`;
 
+      // const amount = unit_cost * quantity;
+      const total = amount - discount; // You can apply discount logic if needed
+
+      const selectedProduct = products.find((item) => item.name === item_name);
+      const finalUnitCost = selectedProduct ? selectedProduct.price : unit_cost; // Use `unit_cost` if selectedProduct is not found
+
+      // Send the transaction data
       const response = await axios.post(
         `https://demprints-backend.vercel.app/api/collection/addtransaction`,
         {
           date: formattedDate,
           time: formattedTime,
           transaction_no: transaction_no,
-          item_no: "0001",
+          item_no: "0000",
           item_name,
-          unit_cost,
+          unit_cost: finalUnitCost,
           quantity,
           amount,
           discount,
@@ -152,12 +160,89 @@ export default function Addtransaction() {
       );
 
       setSuccessMessage("Transaction added successfully!");
-
       console.log(response.data);
     } catch (error) {
       console.log("Failed", error);
     }
   };
+
+  // const [quantity, setQuantity] = useState(1); // Default initial quantity is set to 1
+  // const [quantity, setQuantity] = useState(1);
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    // Find the selected product and retrieve its unit cost
+    const selectedProduct = products.find((item) => item.name === item_name);
+    if (selectedProduct) {
+      const unitCost = selectedProduct.price;
+
+      // Determine new quantity based on the input field, defaulting to current quantity if not changed
+      const newQuantity =
+        name === "quantity" ? Math.max(parseFloat(value), 0) : quantity;
+
+      // Calculate total cost for the specified quantity
+      const totalItemCost = unitCost * newQuantity;
+
+      // Calculate other amounts like `amount` and `total` based on the input
+      const newAmount = name === "amount" ? parseFloat((value), 0): amount;
+      const toTal = totalItemCost - newAmount;
+
+      // Define discount and total based on conditions
+      const newDiscount = name === "discount" ? parseFloat(value) : discount;
+      const total = toTal - newDiscount;
+      const result = total - amount;
+      // Update state values accordingly
+      if (name === "quantity") {
+        setQuantity(newQuantity);
+        setAmount(totalItemCost); // Update the amount based on unit cost and quantity
+        setTotal(result); // Set total after discount
+      } else if (name === "discount") {
+        setDiscount(newDiscount);
+        setTotal(result);
+      }
+
+      setUnitCost(unitCost); // Set unit cost for the product
+
+      console.log("Updated Sales Data:", {
+        quantity: newQuantity,
+        unit_cost: unitCost,
+        amount: totalItemCost,
+        discount: newDiscount,
+        total: total,
+      });
+    }
+  };
+
+  // const handleDiscountChange = (e) =>{
+  //   const { name, value } = e.target;
+  // }
+
+  // const handleDiscountChange = () => {
+  //   const { name, value } = e.target;
+
+  //   const selectedProduct = products.find((item) => item.name === item_name);
+  //   if (selectedProduct) {
+  //     const unitCost = selectedProduct.price;
+
+  //     const total = unitCost * value;
+
+  //     if (name === "quantity") {
+  //       setQuantity(value);
+  //       setUnitCost(unitCost);
+  //       setAmount(total);
+  //       setTotal(total);
+  //     } else if (name === "discount") {
+  //       setDiscount(value);
+  //     }
+
+  //     console.log("Updated Sales Data:", {
+  //       quantity: value,
+  //       unit_cost: unitCost,
+  //       amount: total,
+  //       total: total,
+  //     });
+  //   }
+  // }
 
   const handleClose = () => {
     // FormData={
@@ -196,7 +281,7 @@ export default function Addtransaction() {
     <>
       <Select
         label="Item"
-        className="max-w-md mx-auto text-black relative z-0 w-full mb-2  mt-5 "
+        className="max-w-md mx-auto text-black relative z-0 w-full mb-2 mt-5"
         autoFocus
         isRequired
         value={item_name}
@@ -204,84 +289,77 @@ export default function Addtransaction() {
         style={{ color: "black" }}
         onChange={(event) => setItemName(event.target.value)}
       >
-        {products.map((products) => (
+        {products.map((product) => (
           <SelectItem
-            key={products.name}
+            key={product.name}
             variant="bordered"
             style={{ color: "black" }}
           >
-            {products.name}
+            {product.name}
           </SelectItem>
         ))}
       </Select>
 
       <div className="grid md:grid-cols-2 md:gap-6">
         <Input
-          className="text-black relative z-0 w-full mb-2  "
+          className="text-black relative z-0 w-full mb-2"
           style={{ color: "black" }}
           autoFocus
           isRequired
-          value={unit_cost}
-          type="text"
-          label="Unit Cost"
-          variant="bordered"
-          onChange={(event) => setUnitCost(event.target.value)}
-        />
-
-        <Input
-          className="text-black relative z-0 w-full mb-2  "
-          style={{ color: "black" }}
-          autoFocus
-          isRequired
-          type="text"
           value={quantity}
           label="Quantity"
           variant="bordered"
-          onChange={(event) => setQuantity(event.target.value)}
+          type="number" // Enforcing numeric input
+          name="quantity" // Set the name attribute for handleChange to identify the field
+          onChange={handleChange}
         />
       </div>
+
       <div className="grid md:grid-cols-2 md:gap-6">
         <Input
-          className="text-black relative z-0 w-full mb-2  "
+          className="text-black relative z-0 w-full mb-2"
           style={{ color: "black" }}
           autoFocus
           isRequired
-          type="text"
-          value={discount}
-          label="Discount"
+          value={discount} // Bind to discount state
+          name="discount" // Corrected name attribute
+          label="Discount" // Label for discount
           variant="bordered"
-          onChange={(event) => setDiscount(event.target.value)}
+          // type="number"
+          onChange={handleChange} // Uncomment to ensure handleChange is triggered
         />
 
-        <Input
-          className="text-black relative z-0 w-full mb-2  "
-          style={{ color: "black" }}
-          autoFocus
-          isRequired
-          type="text"
-          value={amount}
-          label="Amount"
-          variant="bordered"
-          onChange={(event) => setAmount(event.target.value)}
-        />
+          <Input
+            className="text-black relative z-0 w-full mb-2"
+            style={{ color: "black" }}
+            autoFocus
+            isRequired
+            value={amount}
+            label="Amount"
+            variant="bordered"
+            name="amount" // Add name attribute
+            // type="number" // Enforcing numeric input
+            // onChange={handleChange}
+          />
       </div>
+
       <div className="grid md:grid-cols-2 md:gap-6">
         <Input
-          className="text-black relative z-0 w-full mb-2  "
+          className="text-black relative z-0 w-full mb-2"
           style={{ color: "black" }}
           autoFocus
           isRequired
-          type="text"
+          // type="text"
           value={total}
           label="Total"
           variant="bordered"
-          onChange={(event) => setTotal(event.target.value)}
+          readOnly
         />
 
         <div className="relative z-0 w-full mb-2 group">
           <Select
-            label="Costumer Type"
-            className="max-w-xs text-black relative z-0 w-full mb-2  "
+            label="Customer Type"
+            className="max-w-xs text-black relative z-0 w-full mb-2"
             autoFocus
             isRequired
             variant="bordered"
@@ -289,36 +367,35 @@ export default function Addtransaction() {
             style={{ color: "black" }}
             onChange={(event) => setCostumerType(event.target.value)}
           >
-            {customer_types.map((customer_type) => (
+            {customer_types.map((type) => (
               <SelectItem
                 variant="bordered"
-                key={customer_type.label}
+                key={type.label}
                 style={{ color: "black" }}
               >
-                {customer_type.label}
+                {type.label}
               </SelectItem>
             ))}
           </Select>
         </div>
       </div>
+
       <div className="grid md:grid-cols-2 md:gap-6">
-        <div className="relative z-0 w-full mb-2 group">
-          <Input
-            className="text-black relative z-0 w-full mb-2  "
-            style={{ color: "black" }}
-            autoFocus
-            isRequired
-            type="text"
-            value={customer_name}
-            label="Costumer Name"
-            variant="bordered"
-            onChange={(event) => setCostumerName(event.target.value)}
-          />
-        </div>
+        <Input
+          className="text-black relative z-0 w-full mb-2"
+          style={{ color: "black" }}
+          autoFocus
+          isRequired
+          type="text"
+          value={customer_name}
+          label="Customer Name"
+          variant="bordered"
+          onChange={(event) => setCostumerName(event.target.value)}
+        />
         <div className="relative z-0 w-full mb-2 group">
           <Select
             label="Payment Option"
-            className="max-w-xs text-black relative z-0 w-full mb-2  "
+            className="max-w-xs text-black relative z-0 w-full mb-2"
             autoFocus
             isRequired
             variant="bordered"
@@ -338,46 +415,45 @@ export default function Addtransaction() {
           </Select>
         </div>
       </div>
+
       <div className="grid md:grid-cols-2 md:gap-6">
-        <div className="relative z-0 w-full mb-2 group">
-          <Select
-            label="Payment Type"
-            className="max-w-xs text-black relative z-0 w-full mb-2   "
-            variant="bordered"
-            autoFocus
-            value={payment_type}
-            onchange={(event) => setPaymentType(event.target.value)}
-          >
-            {paymentTypes.map((paymenttp) => (
-              <SelectItem
-                className="text-black relative z-0 w-full mb-2 "
-                variant="bordered"
-                key={paymenttp.name}
-              >
-                {paymenttp.name}
-              </SelectItem>
-            ))}
-          </Select>
-        </div>
-        <div className="relative z-0 w-full mb-3 group">
-          <Input
-            className="text-black relative z-0 w-full mb-2  "
-            style={{ color: "black" }}
-            autoFocus
-            isRequired
-            type="text"
-            value={sales_person}
-            label="Sales Person"
-            variant="bordered"
-            onChange={(event) => setSalesPerson(event.target.value)}
-          />
-        </div>
+        <Select
+          label="Payment Type"
+          className="max-w-xs text-black relative z-0 w-full mb-2"
+          variant="bordered"
+          autoFocus
+          value={payment_type}
+          onChange={(event) => setPaymentType(event.target.value)}
+        >
+          {paymentTypes.map((type) => (
+            <SelectItem
+              key={type.name}
+              variant="bordered"
+              style={{ color: "black" }}
+            >
+              {type.name}
+            </SelectItem>
+          ))}
+        </Select>
+
+        <Input
+          className="text-black relative z-0 w-full mb-2"
+          style={{ color: "black" }}
+          autoFocus
+          isRequired
+          type="text"
+          value={sales_person}
+          label="Sales Person"
+          variant="bordered"
+          onChange={(event) => setSalesPerson(event.target.value)}
+        />
       </div>
-      <div class="relative z-0 w-full mb-3 group">
+
+      <div className="relative z-0 w-full mb-3 group">
         <Button
           color="primary"
           style={{ width: "4rem" }}
-          onPress={handleSubmit}
+          onClick={handleSubmit}
           type="submit"
         >
           Save
@@ -385,43 +461,32 @@ export default function Addtransaction() {
       </div>
 
       {success_message && (
-        <div
-          id="toast-undo"
-          class="flex items-center w-full max-w-xs p-1 "
-          role="alert"
-        >
+        <div className="flex items-center w-full max-w-xs p-1" role="alert">
           <div className="text-sm font-normal text-green-900">
             {success_message}
           </div>
-          <div className="flex items-center ms-auto space-x-2 rtl:space-x-reverse">
-            <a
-              className="text-sm font-medium text-blue-600 p-1.5 hover:bg-blue-100 rounded-lg dark:text-blue-500 dark:hover:bg-gray-700"
-              href="#"
-            ></a>
-            <button
-              type="button"
-              className="ms-auto -mx-1.5 -my-1.5 bg-black text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 p-1.5"
-              data-dismiss-target="#toast-undo"
-              aria-label="Close"
-              onClick={handleClose}
+          <button
+            type="button"
+            className="ms-auto -mx-1.5 -my-1.5 bg-black text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 p-1.5"
+            aria-label="Close"
+            onClick={() => setSuccessMessage("")}
+          >
+            <span className="sr-only">Close</span>
+            <svg
+              className="w-3 h-3"
+              aria-hidden="true"
+              fill="none"
+              viewBox="0 0 14 14"
             >
-              <span className="sr-only">Close</span>
-              <svg
-                className="w-3 h-3"
-                aria-hidden="true"
-                fill="none"
-                viewBox="0 0 14 14"
-              >
-                <path
-                  stroke="currentColor"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
-                />
-              </svg>
-            </button>
-          </div>
+              <path
+                stroke="currentColor"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
+              />
+            </svg>
+          </button>
         </div>
       )}
     </>
