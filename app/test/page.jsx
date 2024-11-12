@@ -1,25 +1,31 @@
 "use client"
-import React, { useEffect } from 'react';
-import {useUserStore} from '../stores/userStore';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import { Button } from '@nextui-org/button';
 
 export default function UserList () {
-  const { users, loading, error, fetchUsers } = useUserStore();
+  const [imageUrl, setImageUrl] = useState()
 
-  useEffect(() => {
-    fetchUsers();
-  }, [fetchUsers]);
+  const getImage = async () => {
+    const response = await axios.get('http://localhost:5000/api/users/images/6732c73e89f917d12bb244c3', {
+      responseType: 'blob',  
+    });
+    return URL.createObjectURL(response.data);
+  }
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error}</div>;
+  const loadImage = async() =>{
+    const contractImage = await getImage()
+    setImageUrl(contractImage)
+  }
+
+  useEffect(()=>{
+    loadImage()
+  }, [])
 
   return (
     <div>
-      <h1>User List</h1>
-      <ul>
-        {users.map((user) => (
-          <li key={user.id}>{user.email}</li>
-        ))}
-      </ul>
+      <img src={imageUrl}/>
+      <Button onClick={getImage}>get</Button>
     </div>
   );
 };

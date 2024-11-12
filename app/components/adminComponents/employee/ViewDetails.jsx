@@ -1,5 +1,5 @@
 "use client"
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure, Avatar} from "@nextui-org/react";
 import { FaRegEye } from "react-icons/fa6";
 import { BiEditAlt } from "react-icons/bi";
@@ -7,10 +7,38 @@ import { FaPhoneFlip } from "react-icons/fa6";
 import { MdEmail } from "react-icons/md";
 import { TbMailbox } from "react-icons/tb";
 import { FaUser } from "react-icons/fa";
+import axios from "axios";
+import ViewImage from "./Image";
 
 export default function ViewDetails({data}) {
   const {isOpen, onOpen, onOpenChange} = useDisclosure();
     const name = data.name.split(" ")
+
+    const [contractImage, setContractImage] = useState()
+    const [preEmploymentImage, setPreEmploymentImage] = useState()
+    const [certificatesImage, setCertificatesImage] = useState()
+
+    const getImage = async (id) => {
+        const response = await axios.get(`https://demprints-backend.vercel.app/api/users/images/${id}`, {
+        responseType: 'blob',  
+        });
+        return URL.createObjectURL(response.data);
+    }
+
+    const loadImage = async() =>{
+        const contract = await getImage(data.contract)
+        setContractImage(contract)
+        const pre_employment = await getImage(data.pre_employment)
+        setPreEmploymentImage(pre_employment)
+        const certificates = await getImage(data.certificates)
+        setCertificatesImage(certificates)
+    }
+
+    useEffect(()=>{
+        loadImage()
+    }, [])
+
+
   return (
     <>
       <Button isIconOnly variant="light" onPress={onOpen}><FaRegEye className="text-default-400 h-5 w-5"/></Button>
@@ -142,6 +170,14 @@ export default function ViewDetails({data}) {
                             </div>
                         </div>
                     </div>
+                    {contractImage || preEmploymentImage || certificatesImage?(
+                        <div className="border p-4 rounded-md">
+                            <span className="mb-2">Compliance and Audit</span>
+                            {contractImage? <ViewImage imageUrl={contractImage}/> : null}
+                            {preEmploymentImage? <ViewImage imageUrl={preEmploymentImage}/> : null }
+                            {certificatesImage? <ViewImage imageUrl={certificatesImage}/> : null}
+                        </div>
+                    ) : null }
                 </div>
               </ModalBody>
               <ModalFooter>

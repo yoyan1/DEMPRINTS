@@ -22,7 +22,7 @@ import { FaPlus } from "react-icons/fa6";
 import { BsEyeSlash, BsEye } from "react-icons/bs";
 import validateEmail from "@/app/composables/validateEmail";
 import JobDetails from '../form/JobDetails'
-// import { UploadImage } from '@/app/composables/uploadImage'
+import { UploadImage } from '@/app/composables/uploadImage'
 
 export default function CreateUser({done}) {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -75,11 +75,10 @@ export default function CreateUser({done}) {
     pre_employment: "",
     certificates: "",
     review: "",
-    actions: "",
   });
-  // const [contract, setContract] = useState(null)
-  // const [preEmploment, setPreEmployment] = useState(null)
-  // const [certificates, setcertificates] = useState(null)
+  const [contract, setContract] = useState(null)
+  const [preEmploment, setPreEmployment] = useState(null)
+  const [certificates, setcertificates] = useState(null)
 
   const handleBirthDateChange = (date) => {
     setCredentials((prevData) => ({
@@ -204,32 +203,44 @@ export default function CreateUser({done}) {
     fetchJobData()
   }, [])
 
-  // const upload = async () => {
-  //   const files = [
-  //     { key: 'contract', value: contract },
-  //     { key: 'pre_employment', value: preEmploment },
-  //     { key: 'certificates', value: certificates },
-  //   ];
-  
-  //   for (const { key, value } of files) {
-  //     if (value !== '') {
-  //       try {
-  //         const result = await UploadImage(value);
-  //         setCredentials((prevData) => ({
-  //           ...prevData,
-  //           [key]: result,
-  //         }));
-  //         console.log(result);
-  //       } catch (error) {
-  //         console.error(`Error uploading ${key}:`, error);
-  //         // Handle error as needed (e.g., set error state)
-  //       }
-  //     }
-  //   }
-  // };
+  const upload = async () => {
+    const files = [
+      { key: 'contract', value: contract },
+      { key: 'pre_employment', value: preEmploment },
+      { key: 'certificates', value: certificates },
+    ];
+    let contractID = ''
+    let preEmploymentID = ''
+    let certID = ''
+    for (const { key, value } of files) {
+      if (value !== '') {
+        try {
+          const result = await UploadImage(value);
+          setCredentials((prevData) => ({
+            ...prevData,
+            [key]: result,
+          }));
+          if(key === 'contract'){
+            contractID = result
+          } 
+          if(key === 'pre_employment'){
+            preEmploymentID = result
+          } 
+          if(key === 'certificates'){
+            certID = result
+          } 
+          console.log(result);
+        } catch (error) {
+          console.error(`Error uploading ${key}:`, error);
+          // Handle error as needed (e.g., set error state)
+        }
+      }
+    }
+    submit(contractID, preEmploymentID, certID)
+  };
 
 const [isLoading, setIsLoading] = useState(false)
-const submit = async () => {
+const submit = async (id, id2, id3) => {
   // Uncomment this if you want to validate
   const errors = isInvalid();
   if (Object.keys(errors).length !== 0) {
@@ -241,9 +252,35 @@ const submit = async () => {
   setIsLoading(true);
   
   try {
-    // await upload();
     // Uncomment the registration logic below after uploading
-    const response = await axios.post('https://demprints-backend.vercel.app/api/users/register', credentials);
+    const newData = {
+      email: credentials.email,
+      password: credentials.password,
+      role: "staff",
+      firstname: credentials.firstname,
+      middlename: credentials.middlename,
+      lastname: credentials.lastname,
+      gender: credentials.gender,
+      birth_date: credentials.birth_date,
+      address: credentials.address,
+      contact_number: credentials.contact_number,
+      contact_email: credentials.contact_email,
+      contact_person: credentials.contact_person,
+      mandatory_benefit: credentials.mandatory_benefit,
+      job_title: credentials.job_title,
+      department: credentials.department,
+      hire_date: credentials.hire_date,
+      wage: credentials.wage,
+      basis: credentials.basis,
+      frequency: credentials.frequency,
+      leave_entitlement: credentials.leave_entitlement,
+      contract: id,
+      pre_employment: id2,
+      certificates: id3,
+      review: credentials.review,
+    }
+    console.log(newData)
+    const response = await axios.post('https://demprints-backend.vercel.app/api/users/register', newData);
     if (response.status === 201) {
       setSuccess('Registration successful');
       toast({
@@ -252,7 +289,7 @@ const submit = async () => {
         color: "success",
         description: "Registration successful",
       })
-      done(dsd)
+      done('')
     } else {
       setError('Unexpected response from server');
       toast({
@@ -274,6 +311,7 @@ const submit = async () => {
     })
   } finally {
     setIsLoading(false);
+    setStep(1)
   }
 
   console.log(credentials);
@@ -665,13 +703,13 @@ const submit = async () => {
                                 <div>
                                   <span>Legal Compliance and Audit</span>
                                   <div className="flex flex-col md:flex-row lg:flex-row gap-5 py-2 pt-3">
-                                    {/* <Input radius="sm" type="file" label="Contract" onChange={(e)=>(setContract(e.target.files[0])) }/> */}
-                                    {/* <Input radius="sm"
+                                    <Input radius="sm" type="file" label="Contract" onChange={(e)=>(setContract(e.target.files[0])) }/>
+                                    <Input radius="sm"
                                       type="file"
                                       label="Pre-employment document"
                                       onChange={(e)=>(setPreEmployment(e.target.files[0])) }
-                                    /> */}
-                                    {/* <Input radius="sm" type="file" label="Training certificates" onChange={(e)=>(setcertificates(e.target.files[0])) }/> */}
+                                    />
+                                    <Input radius="sm" type="file" label="Training certificates" onChange={(e)=>(setcertificates(e.target.files[0])) }/>
                                   </div>
                                 </div>
                               </div>
@@ -699,7 +737,7 @@ const submit = async () => {
                       {step === 3 ? (
                         <Button 
                         color="primary" 
-                        onPress={submit} 
+                        onPress={upload} 
                         type="submit"
                         isLoading={isLoading}
                         spinner={

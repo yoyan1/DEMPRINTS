@@ -21,6 +21,6 @@
       "@/*": ["./*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "app/components/master-components/CreateUser.jsx", "app/components/adminComponents/dashboad/Analytics.jsx", "app/components/adminComponents/dashboad/data.js", "app/components/adminComponents/dashboad/ExpensesAnalysis.tsx", "app/components/adminComponents/dashboad/Revenue.tsx", "app/components/adminComponents/dashboad/dataSummary.js", "app/components/nav-main.tsx", "app/components/app-sidebar.jsx"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "app/components/master-components/CreateUser.jsx", "app/components/adminComponents/dashboad/Analytics.jsx", "app/components/adminComponents/dashboad/data.js", "app/components/adminComponents/dashboad/ExpensesAnalysis.tsx", "app/components/adminComponents/dashboad/Revenue.tsx", "app/components/adminComponents/dashboad/dataSummary.js", "app/components/nav-main.tsx", "app/components/app-sidebar.jsx", "app/components/adminComponents/employee/Image.jsx"],
   "exclude": ["node_modules"]
 }

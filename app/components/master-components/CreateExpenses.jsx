@@ -7,7 +7,7 @@ import axios from "axios";
 import { useToast } from "@/hooks/use-toast";
 import Delete from './actions/Delete'
 import UpdateExpensesCategory from './form/updateExpensesCategory'
-import { useExpensesStore } from '@/app/stores/ExpensesCategory'
+import { useExpensesStore } from '@/app/stores/ExpensesStore'
 
 export default function CreateExpenses() {
   const {isOpen, onOpen, onClose} = useDisclosure();

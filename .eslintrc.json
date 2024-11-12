@@ -1,21 +1,21 @@
 {
   "extends": ["next/core-web-vitals", "next/typescript"],
-  // "rules": {
-  //   "no-unused-vars": [
-  //     "warn",
-  //     { "vars": "all", "args": "after-used", "ignoreRestSiblings": true }
-  //   ]
-  // },
-  // "overrides": [
-  //   {
-  //     "files": ["*.js", "*.jsx", "*.ts", "*.tsx"],
-  //     "env": {
-  //       "NODE_ENV": "production"
-  //     },
-  //     "rules": {
-  //       "no-unused-vars": "off"
-  //     }
-  //   }
-  // ]
+  "rules": {
+    "no-unused-vars": [
+      "warn",
+      { "vars": "all", "args": "after-used", "ignoreRestSiblings": true }
+    ]
+  },
+  "overrides": [
+    {
+      "files": ["*.js", "*.jsx", "*.ts", "*.tsx"],
+      "env": {
+        "NODE_ENV": "production"
+      },
+      "rules": {
+        "no-unused-vars": "off"
+      }
+    }
+  ]
 }
 

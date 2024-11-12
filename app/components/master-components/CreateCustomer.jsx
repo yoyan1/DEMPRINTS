@@ -33,7 +33,7 @@ export default function CreateCustomer() {
         return
         setIsLoading(false)
     }
-    const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/master/createCustomerType`, {name: inputType})
+    const response = await axios.post(`https://demprints-backend.vercel.app/api/master/createCustomerType`, {name: inputType})
     toast({
         variant: "success",
         title: "Success!",

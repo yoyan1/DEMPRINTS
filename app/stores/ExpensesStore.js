@@ -9,7 +9,7 @@ export const useExpensesStore = create((set) => ({
     fetchExpensesCategory: async () => {
         set({ loading: true });
         try {
-        const response = await fetch('http://localhost:5000/api/master/getExpensesCategory'); 
+        const response = await fetch(`https://demprints-backend.vercel.app/api/master/getExpensesCategory`); 
         if (!response.ok) throw new Error('Network response was not ok');
         const data = await response.json();
         set({ categoryList: data, loading: false });
@@ -21,8 +21,8 @@ export const useExpensesStore = create((set) => ({
         {name: "ID", dataKey: "id", sortable: true},
         {name: "TRANSACTION DATE", dataKey: "date", sortable: true},
         {name: "TRANSACTION NO.", dataKey: "transaction_no", sortable: true},
-        {name: "Category", dataKey: "category"},
-        {name: "Type", dataKey: "type"},
+        {name: "CATEGORY", dataKey: "category"},
+        {name: "TYPE", dataKey: "type"},
         {name: "ITEM NAME", dataKey: "item_name"},
         {name: "UNIT COST", dataKey: "unit_cost", sortable: true},
         {name: "QUANTITY", dataKey: "quantity", sortable: true},
@@ -31,7 +31,7 @@ export const useExpensesStore = create((set) => ({
     fetchExpenses: async () => {
         set({ loading: true });
         try {
-        const response = await fetch('http://localhost:5000/api/collection/expenses'); 
+        const response = await fetch(`https://demprints-backend.vercel.app/api/collection/expenses`); 
         if (!response.ok) throw new Error('Network response was not ok');
         const data = await response.json();
         set({ expenses: data, loading: false });
