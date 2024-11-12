@@ -11,7 +11,7 @@ import DarkMode from '@/app/components/public-component/darkMode.jsx';
 export default function Sidebar() {
   const pathname = usePathname();
   return (
-    <main>
+   
       <aside
         className="  top-0 left-0 z-40 w-64 h-screen pt-1 transition-transform  -translate-x-full bg-gradient-to-tr from-blue-950 to-blue-400 border-r border-gray-200 md:translate-x-0  dark:border-gray-700 max-h-screen"
         aria-label="Sidenav"
@@ -59,6 +59,6 @@ export default function Sidebar() {
         </div>
         
       </aside>
-    </main>
+    
   );
 }
