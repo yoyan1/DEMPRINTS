@@ -52,7 +52,7 @@ export default function Layout({ children }) {
           </a>
         </div>
       </Heading>
-     
+      <div className="flex">
         <Sidebar
           className="fixed top-0 left-0 z-40 w-40 h-screen pt-14 transition-transform -translate-x-full dark:bg-black dark:text-white"
           aria-label="Sidenav"
@@ -61,7 +61,7 @@ export default function Layout({ children }) {
         <main className=" sticky   bg-white dark:bg-black text-black dark:text-white">
           {children}
         </main>
-      
+      </div>
     </div>
   );
 }
