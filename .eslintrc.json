@@ -9,9 +9,9 @@
   "overrides": [
     {
       "files": ["*.js", "*.jsx", "*.ts", "*.tsx"],
-      "env": {
-        "NODE_ENV": "production"
-      },
+      // "env": {
+      //   "NODE_ENV": "production"
+      // },
       "rules": {
         "no-unused-vars": "off"
       }
