@@ -62,9 +62,7 @@ export default function Revenue() {
         const newData = [...chartData]
         newData[10] = { ...newData[10], sales: total}
         console.log(date[1], total);
-        
       // }
-
 
     })
   }

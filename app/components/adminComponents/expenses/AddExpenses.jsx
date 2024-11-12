@@ -25,9 +25,9 @@ export default function CreateTransaction({isSubmit}) {
                                       
 
   const fetchAll = async  () =>{
-    const result = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/master/getExpensesCategory`);
+    const result = await axios.get('https://demprints-backend.vercel.app/api/master/getExpensesCategory');
     setCategory(result.data); 
-    const responseID = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/collection/getIDExpenses`)
+    const responseID = await axios.get(`https://demprints-backend.vercel.app/api/collection/getIDExpenses`)
     if(responseID.data.length > 0){
       setIdGenerated(responseID.data)
       console.log(responseID.data)
@@ -71,8 +71,8 @@ export default function CreateTransaction({isSubmit}) {
     }
     console.log(newData)
     try{
-      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/collection/createExpenses`, newData)
-      const updateId = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/collection/updateIDExpenses`, {id: idGenerated[0]._id, count: newId})
+      const response = await axios.post(`https://demprints-backend.vercel.app/api/collection/createExpenses`, newData)
+      const updateId = await axios.post(`https://demprints-backend.vercel.app/api/collection/updateIDExpenses`, {id: idGenerated[0]._id, count: newId})
       console.log(response.data.message)
       console.log(updateId.data)
       fetchAll()

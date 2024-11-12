@@ -42,7 +42,7 @@ export default function Delete({ id, type, done, collection }) {
 
     }
     if(collection === 'customerType'){
-      const response = await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/master/deleteCustomerType/${id}`)
+      const response = await axios.delete(`https://demprints-backend.vercel.app/api/master/deleteCustomerType/${id}`)
       console.log(response.data);
       onDeleted(response.data)
       done(response.data)

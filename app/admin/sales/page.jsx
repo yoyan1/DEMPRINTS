@@ -4,6 +4,7 @@ import TransactionTable from '@/app/components/adminComponents/sales/Transaction
 import {useSalesStore} from '@/app/stores/transactionStore'
 import AdminLayout from '../layout/layout'
 import { getDateAndTime } from '@/app/composables/dateAndTime'
+import { formatDate } from '@/app/composables/formateDateAndTime';
 import { BiLineChart, BiLineChartDown } from "react-icons/bi";
 
 export default function Sales() {
@@ -53,7 +54,7 @@ export default function Sales() {
                 <span className="text-sm text-slate-400">{"Let's"} see the current statistic performance</span>
               </div>
               <div>
-                <span className="text-sm py-1 px-2 border rounded-full">October 16, 2024</span>
+                <span className="text-sm py-1 px-2 border rounded-full">{formatDate(date)}</span>
               </div>
             </div>
             <div className='flex justify-start py-2'>
@@ -65,7 +66,7 @@ export default function Sales() {
                 { totalSales > totalYesterday? (
                   <BiLineChart className='text-green-400 h-8 w-8'/>
                 ): (
-                  <BiLineChartDown className='text-red-600 h-8 w-8 '/>
+                  <BiLineChartDown className='text-red-400 h-8 w-8 '/>
                 )}
               </div>
             </div>
