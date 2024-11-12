@@ -16,8 +16,8 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/app/components/ui/chart"
-import { useSalesStore } from '@/app/stores/transactionStore'
-import { useEffect, useState } from "react"
+// import { useSalesStore } from '@/app/stores/transactionStore'
+// import { useEffect, useState } from "react"
 
 export const description = "A stacked area chart"
 
@@ -34,8 +34,8 @@ const chartConfig = {
 } satisfies ChartConfig
 
 export default function Revenue() {
-  const {transactions, loading, fetchTransactions } = useSalesStore()
-  const [chartData, setChartData] = useState([
+  // const {transactions, loading, fetchTransactions } = useSalesStore()
+  const chartData = [
     { month: "January", sales: 0, expenses: 0 },
     { month: "February", sales: 0, expenses: 0 },
     { month: "March", sales: 0, expenses: 0 },
@@ -48,27 +48,27 @@ export default function Revenue() {
     { month: "October", sales: 0, expenses: 0 },
     { month: "November", sales: 0, expenses: 0 },
     { month: "December", sales: 0, expenses: 0 },
-  ])
+  ]
 
-  useEffect(()=>{
-    fetchTransactions()
-  }, [fetchTransactions])
+  // useEffect(()=>{
+  //   fetchTransactions()
+  // }, [fetchTransactions])
 
-  const getData = () =>{
-    transactions.map((item) =>{
-      const date = item.date.split('-')
-      // if(date[1].toString() === '11'){
-        const total = chartData[10].sales + item.total
-        const newData = [...chartData]
-        newData[10] = { ...newData[10], sales: total}
-        console.log(date[1], total);
-      // }
+  // const getData = () =>{
+  //   transactions.map((item) =>{
+  //     const date = item.date.split('-')
+  //     // if(date[1].toString() === '11'){
+  //       const total = chartData[10].sales + item.total
+  //       const newData = [...chartData]
+  //       newData[10] = { ...newData[10], sales: total}
+  //       console.log(date[1], total);
+  //     // }
 
-    })
-  }
-  useEffect(()=>{
-    getData()
-  }, [])
+  //   })
+  // }
+  // useEffect(()=>{
+  //   getData()
+  // }, [])
   return (
     <Card>
       <CardHeader>
