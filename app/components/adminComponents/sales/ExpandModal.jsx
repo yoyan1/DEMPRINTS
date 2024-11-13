@@ -19,6 +19,7 @@ export default function ExpandTransaction(props) {
               size="full"
               isOpen={isOpen} 
               onClose={onClose} 
+              scrollBehavior="inside"
           >
               <ModalContent>
               {() => (

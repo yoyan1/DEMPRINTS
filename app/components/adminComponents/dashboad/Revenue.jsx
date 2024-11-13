@@ -16,59 +16,76 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/app/components/ui/chart"
-// import { useSalesStore } from '@/app/stores/transactionStore'
-// import { useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 
 export const description = "A stacked area chart"
 
 
 const chartConfig = {
   sales: {
-    label: "Expenses",
+    label: "Sales",
     color: "hsl(var(--chart-1))",
   },
   expenses: {
-    label: "Sales",
+    label: "Expenses",
     color: "hsl(var(--chart-2))",
   },
-} satisfies ChartConfig
+} 
 
-export default function Revenue() {
-  // const {transactions, loading, fetchTransactions } = useSalesStore()
-  const chartData = [
-    { month: "January", sales: 2000, expenses: 2000 },
-    { month: "February", sales: 1500, expenses: 3000 },
-    { month: "March", sales: 1200, expenses: 1500 },
-    { month: "April", sales: 5000, expenses: 1000 },
-    { month: "May", sales: 4000, expenses: 500 },
-    { month: "June", sales: 2400, expenses: 1100 },
-    { month: "July", sales: 800, expenses: 200 },
-    { month: "August", sales: 8000, expenses: 4000 },
-    { month: "September", sales: 10000, expenses: 5000 },
-    { month: "October", sales: 7000, expenses: 2000 },
-    { month: "November", sales: 9000, expenses: 5500 },
-    { month: "December", sales: 2000, expenses: 2300 },
-  ]
+export default function Revenue(props) {
+  const [chartData, setChartData] = useState([
+    { month: "January", sales: 0, expenses: 0 },
+    { month: "February", sales: 0, expenses: 0 },
+    { month: "March", sales: 0, expenses: 0 },
+    { month: "April", sales: 0, expenses: 0 },
+    { month: "May", sales: 0, expenses: 0 },
+    { month: "June", sales: 0, expenses: 0 },
+    { month: "July", sales: 0, expenses: 0 },
+    { month: "August", sales: 0, expenses: 0 },
+    { month: "September", sales: 0, expenses: 0 },
+    { month: "October", sales: 0, expenses: 0 },
+    { month: "November", sales: 0, expenses: 0 },
+    { month: "December", sales: 0, expenses: 0 },
+  ])
 
-  // useEffect(()=>{
-  //   fetchTransactions()
-  // }, [fetchTransactions])
 
-  // const getData = () =>{
-  //   transactions.map((item) =>{
-  //     const date = item.date.split('-')
-  //     // if(date[1].toString() === '11'){
-  //       const total = chartData[10].sales + item.total
-  //       const newData = [...chartData]
-  //       newData[10] = { ...newData[10], sales: total}
-  //       console.log(date[1], total);
-  //     // }
+  const getData = () => {
+    // Initialize sales and expenses for each month
+    const monthlySales = Array(12).fill(0);
+    const monthlyExpenses = Array(12).fill(0);
+  
+    // Loop over transactions and calculate total sales for each month
+    props.transactions.forEach(item => {
+      const [year, month] = item.date.split('-'); // Destructure the date string
+      const monthIndex = parseInt(month, 10) - 1; // Convert to zero-based index
+      monthlySales[monthIndex] += item.total; // Add to the correct month's sales
+    });
+  
+    // Loop over expenses and calculate total expenses for each month
+    props.expenses.forEach(item => {
+      const [year, month] = item.date.split('-');
+      const monthIndex = parseInt(month, 10) - 1; // Convert to zero-based index
+      monthlyExpenses[monthIndex] += item.total; // Add to the correct month's expenses
+    });
+  
+    // Create a new array for the chart data
+    const newChartData = monthlySales.map((sales, index) => ({
+      month: new Date(0, index).toLocaleString('en-US', { month: 'long' }), // Convert index to month name
+      sales,
+      expenses: monthlyExpenses[index],
+    }));
+  
+    // If there's any data for November, update the chartData state
+    if (newChartData[10].sales > 0 || newChartData[10].expenses > 0) {
+      setChartData(newChartData);
+    }
+  };
+  
 
-  //   })
-  // }
-  // useEffect(()=>{
-  //   getData()
-  // }, [])
+
+  useEffect( ()=>{
+    getData()
+  }, [])
   return (
     <Card className="dark:bg-gray-900">
       <CardHeader>
@@ -97,7 +114,7 @@ export default function Revenue() {
               content={<ChartTooltipContent indicator="dot" />}
             />
             <Area
-              dataKey="expenses"
+              dataKey="sales"
               type="natural"
               fill="var(--color-expenses)"
               fillOpacity={0.4}
@@ -105,7 +122,7 @@ export default function Revenue() {
               stackId="a"
             />
             <Area
-              dataKey="sales"
+              dataKey="expenses"
               type="natural"
               fill="var(--color-sales)"
               fillOpacity={0.4}

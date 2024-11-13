@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from "react";
 
-
 import {
   // Checkbox,
   // Link,
@@ -40,6 +39,7 @@ export default function Addtransaction() {
 
   const [payment, setPaymentt] = useState([]);
   const [paymentTypes, setPaymenttype] = useState([]);
+  const [costumerType, setCostumertype] = useState([]);
   const [products, setProduct] = useState([]);
   const [unit, setUnit] = useState([]);
   const [setTransaction] = useState([]);
@@ -49,12 +49,24 @@ export default function Addtransaction() {
 
   useEffect(() => {
     fetchPayment();
+    fetchCostumerType();
     fetchProduct();
     fetchTransactions();
     fetchPaymentType();
     fetchID();
   }, []);
 
+  const fetchCostumerType = async () => {
+    try {
+      const response = await axios.get(
+        `https://demprints-backend.vercel.app/api/master/getCustomerType`
+      );
+      setCostumertype(response.data);
+      console.log(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   const fetchPayment = async () => {
     try {
       const response = await axios.get(
@@ -133,24 +145,32 @@ export default function Addtransaction() {
       const formattedDate = currentDate.toISOString().split("T")[0]; // Format date as YYYY-MM-DD
       const formattedTime = currentDate.toTimeString().split(" ")[0];
 
-      
+      const responseID = await axios.get(
+        `https://demprints-backend.vercel.app/api/collection/getId`
+      );
 
-      const newId = idGenerated[0].count + 1; // Ensure `idGenerated` is correctly set
+      const generatedID =
+        responseID.data.length > 0 ? responseID.data : [{ _id: "", count: 0 }];
+      const newId = generatedID[0].count + 1; // Ensure `idGenerated` is correctly set
       const transaction_no = `000${newId}`;
 
       // Retrieve the selected product and its price
       const selectedProduct = products.find((item) => item.name === item_name);
       const finalUnitCost = selectedProduct ? selectedProduct.price : unit_cost; // Use the product's price from the DB
-      const totalAmount = amount - discount; // Ensure correct total calculation
+      // const totalAmount = amount - discount; // Ensure correct total calculation
       // const finalTotal = amount - discount - paid_amount;
       // Send the transaction data
+      const updateId = await axios.post(
+        "https://demprints-backend.vercel.app/api/collection/updateID",
+        { id: idGenerated[0]._id, count: newId }
+      );
       const response = await axios.post(
         `https://demprints-backend.vercel.app/api/collection/addtransaction`,
         {
           date: formattedDate,
           time: formattedTime,
-          transaction_no,
-          item_no: "0000",
+          transaction_no: transaction_no,
+          item_no,
           item_name,
           unit_cost: finalUnitCost,
           quantity,
@@ -165,7 +185,7 @@ export default function Addtransaction() {
           remarks: remarks, //calculate the balance
         }
       );
-
+      console.log(updateId.data);
       setSuccessMessage("Transaction added successfully!");
       console.log(response.data);
     } catch (error) {
@@ -177,54 +197,53 @@ export default function Addtransaction() {
     const selectedProduct = products.find((item) => item.name === item_name);
     const totalItemCost = selectedProduct
       ? selectedProduct.price * newQuantity
-      : unit_cost * newQuantity; 
+      : unit_cost * newQuantity;
     setQuantity(newQuantity);
-    setAmount(totalItemCost); 
+    setAmount(totalItemCost);
     setTotal(totalItemCost - discount); // Recalculate total after discount
   };
 
   const handleDiscountChange = (newDiscount) => {
-    const discountValue = parseFloat(newDiscount) || 0; 
+    const discountValue = parseFloat(newDiscount) || 0;
     setDiscount(discountValue); // Update discount value
-  
+
     // Calculate discount amount based on percentage or direct value
-    const discountAmount = discountValue > 100 ? discountValue : (amount * discountValue) / 100;
-  
+    const discountAmount =
+      discountValue > 100
+        ? discountValue
+        : Math.round(amount * discountValue) / 100;
+
     // Calculate total after applying discount and then subtracting the paidAmount
+
     const newTotal = amount - discountAmount - paid_amount;
-    setTotal(newTotal);
+    const roundOfftotal = Math.round(newTotal * 100) / 100;
+    setTotal(roundOfftotal);
   };
-  
-  
 
   const handleUnitCostChange = (newUnitCost) => {
     const newAmount = newUnitCost * quantity;
     setUnitCost(newUnitCost);
     setAmount(newAmount);
-  
+
     // Calculate total after applying discount and subtracting paid amount
-    const discountAmount = discount > 100 ? discount : (newAmount * discount) / 100;
+    const discountAmount =
+      discount > 100 ? discount : (newAmount * discount) / 100;
     const newTotal = newAmount - discountAmount - paid_amount;
-    setTotal(newTotal);
+    const roundOfftotal = Math.round(newTotal * 100) / 100;
+    setTotal(roundOfftotal);
   };
-  
 
   const handlePaidAmount = (newPaidAmount) => {
     const parsedPaidAmount = parseFloat(newPaidAmount) || 0; // Ensure it's a number (default to 0 if invalid)
     setPaidAmount(parsedPaidAmount);
-  
+
     // Recalculate total after applying discount and paid amount
-    const discountAmount = discount > 100 ? discount : (amount * discount) / 100;
+    const discountAmount =
+      discount > 100 ? discount : (amount * discount) / 100;
     const newTotal = amount - discountAmount - parsedPaidAmount;
-    setRemarks(newTotal);
+    const roundOfftotal = Math.round(newTotal * 100) / 100;
+    setRemarks(roundOfftotal);
   };
-  
-
-  
-
-  
- 
- 
 
   const handleClose = () => {
     // FormData={
@@ -365,7 +384,7 @@ export default function Addtransaction() {
           style={{ color: "black" }}
           autoFocus
           isRequired
-          value={total}
+          value={total ? Math.round(parseFloat(total) * 100) / 100 : '00:00'}
           label="Total"
           variant="bordered"
           readOnly
@@ -383,13 +402,13 @@ export default function Addtransaction() {
           style={{ color: "black" }}
           onChange={(event) => setCostumerType(event.target.value)}
         >
-          {customer_types.map((type) => (
+          {costumerType.map((type) => (
             <SelectItem
               variant="bordered"
-              key={type.label}
+              key={type.name}
               style={{ color: "black" }}
             >
-              {type.label}
+              {type.name}
             </SelectItem>
           ))}
         </Select>
@@ -447,9 +466,9 @@ export default function Addtransaction() {
           ))}
         </Select>
       </div>
-
-      <div className="grid md:grid-cols-2 md:gap-6">
-        <Input
+      {payment_type === "Down payment" && (
+        <div className="">
+          {/* <Input
           className="text-black relative z-0 w-full mb-1"
           style={{ color: "black" }}
           autoFocus
@@ -459,22 +478,23 @@ export default function Addtransaction() {
           label="Sales Person"
           variant="bordered"
           onChange={(event) => setSalesPerson(event.target.value)}
-        />
-        <Input
-          className="text-black relative z-0 w-full mb-1"
-          style={{ color: "black" }}
-          autoFocus
-          isRequired
-          type="text"
-          value={paid_amount}
-          label="Paid Amount"
-          variant="bordered"
-          onChange={(e) => handlePaidAmount(e.target.value)}
-        />
-      </div>
+        /> */}
+          <Input
+            className="text-black relative z-0 w-full mb-1"
+            style={{ color: "black" }}
+            autoFocus
+            isRequired
+            type="text"
+            value={paid_amount}
+            label="Paid Amount"
+            variant="bordered"
+            onChange={(e) => handlePaidAmount(e.target.value)}
+          />
+        </div>
+      )}
 
       <div className="flex">
-        <p className='gap-3'>Amount: ₱{amount.toFixed(2)}</p>
+        <p className="gap-3">Amount: ₱{amount.toFixed(2)}</p>
         <p>Total : ₱{total.toFixed(2)}</p>
       </div>
 
