@@ -109,12 +109,22 @@ export default function CreateTransaction({refresh}) {
     const responseID = await axios.get('https://demprints-backend.vercel.app/api/collection/getId')
     const generatedID = responseID.data.length > 0? responseID.data : [{_id: '', count: 0}]
     const newId = generatedID[0].count+1
-    const transaction_no =  `000${newId}`
+    const transaction_no = () =>{
+      if(newId >= 1000){
+        return `${newId}`
+      } else if (newId >= 100){
+        return `0${newId}`
+      } else if (newId >= 10){
+        return `00${newId}`
+      } else {
+        return `000${newId}`
+      }
+    } 
     const balance = salesData.total - salesData.amount_paid
     const newData = {
       date:date,
       time: time,
-      transaction_no: transaction_no,
+      transaction_no: transaction_no(),
       item_no: "0001",
       item_name: salesData.item_name,
       unit_cost: salesData.unit_cost,
@@ -143,7 +153,7 @@ export default function CreateTransaction({refresh}) {
       amount: 0,
       discount: 0,
       total: 0,
-      amount_paid: 0,
+      amount_paid: 0, 
       customer_type: "",
       customer_name: "",
       payment_type: "",
