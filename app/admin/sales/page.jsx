@@ -56,7 +56,7 @@ export default function Sales() {
                 </div>
                 <div className='flex items-end gap-5 border-2 p-3 shadow-sm rounded-xl border-blue-600 '>
                     <span>Today's sales: </span>
-                    <span className='text-slate-400 text-sm'>{ totalSales }</span>
+                    <span className='text-slate-400 text-sm'>{ Math.round(totalSales) }</span>
                   { totalSales > totalYesterday? (
                     <BiLineChart className='text-green-600 h-5 w-5'/>
                   ): (
