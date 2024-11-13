@@ -4,7 +4,7 @@ import {users} from "./userData";
 
 export default function SalesRepresentative() {
   return (
-    <div className="w-full border-small px-1 py-2 rounded-small border-default-200 dark:border-default-100 dark:bg-black">
+    <div className="w-full border-small px-1 py-2 rounded-small border-default-200 dark:border-default-100 dark:bg-black bg-white">
       <Listbox
         topContent={<div className="flex justify-between">
                       <div className="px-2">

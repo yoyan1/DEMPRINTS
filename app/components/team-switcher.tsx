@@ -29,10 +29,10 @@ export function TeamSwitcher({
             </Avatar>
           </div>
           <div className="grid flex-1 text-left text-sm leading-tight">
-            <span className="truncate font-semibold">
+            <span className="truncate font-semibold text-slate-50">
               {activeTeam.name}
             </span>
-            <span className="truncate text-xs">{activeTeam.plan}</span>
+            <span className="truncate text-xs text-slate-200">{activeTeam.plan}</span>
           </div>
         </SidebarMenuButton>
       </SidebarMenuItem>

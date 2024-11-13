@@ -47,30 +47,30 @@ export default function Sales() {
   return (
     <AdminLayout>
         <main className="flex flex-1 rounded-md flex-col gap-4 m-4 lg:gap-6 lg:m-6">
-          <div>
-            <div className="flex justify-between items-start">
-              <div>
-                <h1 className="font-bold text-2xl">Sales Overview</h1>
-                <span className="text-sm text-slate-400">{"Let's"} see the current statistic performance</span>
+          <div className='flex flex-col gap-2'>
+            <div className="flex justify-between items-start rounded-lg bg-white dark:bg-black p-5">
+              <div className='flex gap-2'>
+                <div>
+                  <h1 className="font-bold text-2xl">Sales Overview</h1>
+                  <span className="text-sm text-slate-400">{"Let's"} see the current statistic performance</span>
+                </div>
+                <div className='flex items-end gap-5 border p-3 shadow-sm rounded-lg border-blue-600 '>
+                  <div className='flex flex-col'>
+                    <span>Today's sales </span>
+                    <span className='text-slate-400 text-sm'>{ totalSales }</span>
+                  </div>
+                  { totalSales > totalYesterday? (
+                    <BiLineChart className='text-green-400 h-8 w-8'/>
+                  ): (
+                    <BiLineChartDown className='text-red-400 h-8 w-8 '/>
+                  )}
+                </div>
               </div>
               <div>
                 <span className="text-sm py-1 px-2 border rounded-full">{formatDate(date)}</span>
               </div>
             </div>
-            <div className='flex justify-start py-2'>
-              <div className='flex items-end gap-5 border p-3 rounded-lg shadow-sm bg-blue-800 text-white'>
-                <div className='flex flex-col'>
-                  <span>Today's sales </span>
-                  <span className='text-slate-200 text-sm'>{ totalSales }</span>
-                </div>
-                { totalSales > totalYesterday? (
-                  <BiLineChart className='text-green-400 h-8 w-8'/>
-                ): (
-                  <BiLineChartDown className='text-red-400 h-8 w-8 '/>
-                )}
-              </div>
-            </div>
-            <div>
+            <div className='bg-white dark:bg-black rounded-lg p-5'>
               <TransactionTable columns={columns} transactions={transactions} itemOptions={itemOptions} typeOptions={typeOptions} loading={loading} isMaximized={false} refresh={fetchTransactions}/>
             </div>
           </div>
