@@ -12,7 +12,7 @@ export default function CreateTransaction({isSubmit}) {
   const [products, setProducts] = useState([])
   const [options, setOptionList] = useState([])
   const [type, setTypeList] = useState([])
-  const [idGenerated, setIdGenerated] = useState([{_id: '', count: 0}])
+  const [customer_type, setCustomerType] = useState([]);
   const {date, time} = getDateAndTime()
   const [salesData, setSalesData] = useState({
                                         item_name: "",
@@ -39,11 +39,8 @@ export default function CreateTransaction({isSubmit}) {
     setOptionList(responseOptions.data)
     const responseType = await axios.get('https://demprints-backend.vercel.app/api/master/getPaymentType')
     setTypeList(responseType.data)
-    const responseID = await axios.get('https://demprints-backend.vercel.app/api/collection/getId')
-    if(responseID.data.length > 0){
-      setIdGenerated(responseID.data)
-      console.log(responseID.data)
-    }
+    const customerType = await axios.get('https://demprints-backend.vercel.app/api/master/getCustomerType')
+    setCustomerType(customerType.data)
   }
 
   useEffect(() =>{
@@ -53,7 +50,6 @@ export default function CreateTransaction({isSubmit}) {
     fetchUsers()
   }, [fetchUsers])
 
-  const customer_type = ['Walk in', 'Online'];
 
   const handleMeasurementChange = (e) =>{
     const value = e.target.value
@@ -110,8 +106,9 @@ export default function CreateTransaction({isSubmit}) {
   const [isLoading, setIsLoading] = useState(false)
   const submit = async () => {
     setIsLoading(true)
-    console.log('function called')
-    const newId = idGenerated[0].count+1
+    const responseID = await axios.get('https://demprints-backend.vercel.app/api/collection/getId')
+    const generatedID = responseID.data.length > 0? responseID.data : [{_id: '', count: 0}]
+    const newId = generatedID[0].count+1
     const transaction_no =  `000${newId}`
     const balance = salesData.total - salesData.amount_paid
     const newData = {
@@ -134,7 +131,7 @@ export default function CreateTransaction({isSubmit}) {
     }
 
     const response = await axios.post('https://demprints-backend.vercel.app/api/collection/addTransaction', newData)
-    const updateId = await axios.post('https://demprints-backend.vercel.app/api/collection/updateID', {id: idGenerated[0]._id, count: newId})
+    const updateId = await axios.post('https://demprints-backend.vercel.app/api/collection/updateID', {id: generatedID[0]._id, count: newId})
     console.log(response.data)
     console.log(updateId.data)
     setIsLoading(false)
@@ -248,8 +245,8 @@ export default function CreateTransaction({isSubmit}) {
                   onChange={(e)=>(setSalesData((prevData)=>({...prevData, customer_type: e.target.value})))}
                 >
                   {customer_type.map(item => (
-                    <SelectItem key={item} value={item}>
-                      {item}
+                    <SelectItem key={item.name}>
+                      {item.name}
                     </SelectItem>
                   ))}
                 </Select>
@@ -298,18 +295,20 @@ export default function CreateTransaction({isSubmit}) {
                     </SelectItem>
                   ))}
                 </Select>
-                <Input
-                  autoFocus
-                  label="Amount Paid"
-                  placeholder="Enter paid amount"
-                  variant="bordered"
-                  type="number"
-                  value={salesData.amount_paid}
-                  onChange={(e)=>(setSalesData((prevData)=>({...prevData, amount_paid: e.target.value})))}
-                />
+                {salesData.payment_type.toLocaleLowerCase() === 'down payment'? (
+                  <Input
+                    autoFocus
+                    label="Amount Paid"
+                    placeholder="Enter paid amount"
+                    variant="bordered"
+                    type="number"
+                    value={salesData.amount_paid}
+                    onChange={(e)=>(setSalesData((prevData)=>({...prevData, amount_paid: e.target.value})))}
+                  />
+                ): null}
                 {salesData.measurement? (
                   <div className="flex justify-between">
-                    <span>total amount: {salesData.total}</span>
+                    <span>total amount: {Math.round(salesData.total)}</span>
                     <span>Product cost: {salesData.unit_cost}</span>
                   </div>
                 ): null}

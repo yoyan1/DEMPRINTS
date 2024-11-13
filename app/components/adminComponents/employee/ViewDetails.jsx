@@ -1,6 +1,7 @@
 "use client"
 import React, { useEffect, useState } from "react";
-import {Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure, Avatar} from "@nextui-org/react";
+import {Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure} from "@nextui-org/react";
+import { Avatar, AvatarImage, AvatarFallback } from '@/app/components/ui/avatar'
 import { FaRegEye } from "react-icons/fa6";
 import { BiEditAlt } from "react-icons/bi";
 import { FaPhoneFlip } from "react-icons/fa6";
@@ -9,6 +10,7 @@ import { TbMailbox } from "react-icons/tb";
 import { FaUser } from "react-icons/fa";
 import axios from "axios";
 import ViewImage from "./Image";
+import { formatDate } from '@/app/composables/formateDateAndTime'
 
 export default function ViewDetails({data}) {
   const {isOpen, onOpen, onOpenChange} = useDisclosure();
@@ -26,11 +28,11 @@ export default function ViewDetails({data}) {
     }
 
     const loadImage = async() =>{
-        const contract = await getImage(data.contract)
+        const contract =data.contract? await getImage(data.contract) : ''
         setContractImage(contract)
-        const pre_employment = await getImage(data.pre_employment)
+        const pre_employment = data.pre_employment? await getImage(data.pre_employment) : ''
         setPreEmploymentImage(pre_employment)
-        const certificates = await getImage(data.certificates)
+        const certificates = data.certificates? await getImage(data.certificates) : ''
         setCertificatesImage(certificates)
     }
 
@@ -50,7 +52,10 @@ export default function ViewDetails({data}) {
               <ModalBody>
                 <div className="flex flex-col gap-5">
                     <div className="flex items-center gap-2 border p-4 rounded-md">
-                        <Avatar src="https://i.pravatar.cc/150?u=a04258114e29026708c" className="w-20 h-20 text-large" />
+                    <Avatar className="w-20 h-20">
+                        <AvatarImage src="https://github.com/shadcn.p" alt="@shadcn" />
+                        <AvatarFallback>{name[0][0]}{name[2][0]}</AvatarFallback>
+                    </Avatar>
                         <div className="flex-1 flex justify-between">
                             <div>
                                 <h3>{data.name}</h3>
@@ -84,11 +89,11 @@ export default function ViewDetails({data}) {
                                 </div>
                                 <div className="flex-1">
                                     <h4>Birth Date</h4>
-                                    <span className="text-default-500 text-sm">january 1, 2001</span>
+                                    <span className="text-default-500 text-sm">{formatDate(data.birth_date)}</span>
                                 </div>
                                 <div className="flex-1">
                                     <h4>Age</h4>
-                                    <span className="text-default-500 text-sm">85</span>
+                                    <span className="text-default-500 text-sm">{data.age}</span>
                                 </div>
                             </div>
                             <div className="w-full border rounded-md p-3">
@@ -166,7 +171,7 @@ export default function ViewDetails({data}) {
                             </div>
                             <div className="flex-1">
                                 <h4 className="text-sm">Hire Date</h4>
-                                <span className="text-default-500 text-sm">{data.hire_date}</span>
+                                <span className="text-default-500 text-sm">{formatDate(data.hire_date)}</span>
                             </div>
                         </div>
                     </div>

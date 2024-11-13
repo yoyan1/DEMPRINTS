@@ -149,8 +149,9 @@ export default function Addtransaction() {
         `https://demprints-backend.vercel.app/api/collection/getId`
       );
 
-      const 
-      const newId = idGenerated[0].count + 1; // Ensure `idGenerated` is correctly set
+      const generatedID =
+        responseID.data.length > 0 ? responseID.data : [{ _id: "", count: 0 }];
+      const newId = generatedID[0].count + 1; // Ensure `idGenerated` is correctly set
       const transaction_no = `000${newId}`;
 
       // Retrieve the selected product and its price
@@ -159,14 +160,17 @@ export default function Addtransaction() {
       // const totalAmount = amount - discount; // Ensure correct total calculation
       // const finalTotal = amount - discount - paid_amount;
       // Send the transaction data
-      const updateId = await axios.post('https://demprints-backend.vercel.app/api/collection/updateID', {id: idGenerated[0]._id, count: newId})
+      const updateId = await axios.post(
+        "https://demprints-backend.vercel.app/api/collection/updateID",
+        { id: idGenerated[0]._id, count: newId }
+      );
       const response = await axios.post(
         `https://demprints-backend.vercel.app/api/collection/addtransaction`,
         {
           date: formattedDate,
           time: formattedTime,
-          transaction_no:transaction_no,
-          item_no: "00001",
+          transaction_no: transaction_no,
+          item_no,
           item_name,
           unit_cost: finalUnitCost,
           quantity,
@@ -181,7 +185,7 @@ export default function Addtransaction() {
           remarks: remarks, //calculate the balance
         }
       );
-      console.log(updateId.data)
+      console.log(updateId.data);
       setSuccessMessage("Transaction added successfully!");
       console.log(response.data);
     } catch (error) {
@@ -205,11 +209,15 @@ export default function Addtransaction() {
 
     // Calculate discount amount based on percentage or direct value
     const discountAmount =
-      discountValue > 100 ? discountValue : (amount * discountValue) / 100;
+      discountValue > 100
+        ? discountValue
+        : Math.round(amount * discountValue) / 100;
 
     // Calculate total after applying discount and then subtracting the paidAmount
+
     const newTotal = amount - discountAmount - paid_amount;
-    setTotal(newTotal);
+    const roundOfftotal = Math.round(newTotal * 100) / 100;
+    setTotal(roundOfftotal);
   };
 
   const handleUnitCostChange = (newUnitCost) => {
@@ -221,7 +229,8 @@ export default function Addtransaction() {
     const discountAmount =
       discount > 100 ? discount : (newAmount * discount) / 100;
     const newTotal = newAmount - discountAmount - paid_amount;
-    setTotal(newTotal);
+    const roundOfftotal = Math.round(newTotal * 100) / 100;
+    setTotal(roundOfftotal);
   };
 
   const handlePaidAmount = (newPaidAmount) => {
@@ -232,7 +241,8 @@ export default function Addtransaction() {
     const discountAmount =
       discount > 100 ? discount : (amount * discount) / 100;
     const newTotal = amount - discountAmount - parsedPaidAmount;
-    setRemarks(newTotal);
+    const roundOfftotal = Math.round(newTotal * 100) / 100;
+    setRemarks(roundOfftotal);
   };
 
   const handleClose = () => {
@@ -374,7 +384,7 @@ export default function Addtransaction() {
           style={{ color: "black" }}
           autoFocus
           isRequired
-          value={total}
+          value={total ? Math.round(parseFloat(total) * 100) / 100 : '00:00'}
           label="Total"
           variant="bordered"
           readOnly

@@ -30,7 +30,7 @@ export function NavMain({
 }) {
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>Pages</SidebarGroupLabel>
+      <SidebarGroupLabel className="text-slate-50">Pages</SidebarGroupLabel>
       <SidebarMenu>
         {items.map((item) => (
           <Collapsible
@@ -41,7 +41,7 @@ export function NavMain({
           >
             <SidebarMenuItem>
               <CollapsibleTrigger asChild>
-                <Link href={`/admin/${item.url}`} className={item.isActive? 'w-full bg-primary text-white rounded-full' : 'w-full text-slate-600 dark:text-white'}>
+                <Link href={`/admin/${item.url}`} className={item.isActive? 'w-full bg-primary text-white rounded-full' : 'w-full text-slate-100'}>
                   <SidebarMenuButton tooltip={item.title} >
                     {item.icon && <item.icon />}
                     <span>{item.title}</span>

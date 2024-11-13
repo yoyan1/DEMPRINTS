@@ -31,8 +31,7 @@ import ViewDetails from "@/app/components/adminComponents/employee/ViewDetails";
 
 const statusColorMap = {
   active: "success",
-  paused: "danger",
-  vacation: "warning",
+  inactive: "danger",
 };
 
 const INITIAL_VISIBLE_COLUMNS = ["name", "job_title", "status", "actions"];
@@ -119,14 +118,9 @@ export default function Employee() {
                 <ViewDetails data={user} />
               </span>
             </Tooltip>
-            <Tooltip content="Edit user">
+            <Tooltip content="Edit user status">
               <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
                 <BiEditAlt />
-              </span>
-            </Tooltip>
-            <Tooltip color="danger" content="Delete user">
-              <span className="text-lg text-danger cursor-pointer active:opacity-50">
-                <RiDeleteBinLine />
               </span>
             </Tooltip>
           </div>
@@ -214,9 +208,9 @@ export default function Employee() {
               ))}
             </DropdownMenu>
           </Dropdown>
-          <Button color="primary" endContent={<FaPlus />}>
+          {/* <Button color="primary" endContent={<FaPlus />}>
             Add New
-          </Button>
+          </Button> */}
         </div>
       </div>
       <div className="flex justify-between items-center">

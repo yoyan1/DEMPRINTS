@@ -20,13 +20,13 @@ import {
 } from "@nextui-org/react";
 import { Avatar, AvatarImage, AvatarFallback } from '@/app/components/ui/avatar'
 import { BiEditAlt } from "react-icons/bi";
-import { RiDeleteBinLine } from "react-icons/ri";
 import { CiSearch } from "react-icons/ci";
 import { IoChevronDown } from "react-icons/io5";
 import { useUserStore } from "@/app/stores/userStore";
 import { capitalize } from "@/app/composables/utils";
 import ViewDetails from "@/app/components/adminComponents/employee/ViewDetails";
-import CreateUser from './CreateUser'
+import CreateUser from './CreateOrUpdate';
+import DeleteUser from './deleteUser'
 
 const statusColorMap = {
   active: "success",
@@ -94,10 +94,17 @@ export default function EmployeeAccount() {
       case "name":
         const name = user.name.split(" ")
         return (
+          <div className="flex gap-2">
             <Avatar>
                 <AvatarImage src="https://github.com/shadcn.p" alt="@shadcn" />
                 <AvatarFallback>{name[0][0]}</AvatarFallback>
             </Avatar>
+            <div>
+              <h1>{user.name}</h1>
+              <span className="text-slate-400 text-sm font-thin">{user.email}</span>
+            </div>
+          </div>
+
         );
       case "job_title":
         return (
@@ -127,7 +134,7 @@ export default function EmployeeAccount() {
             </Tooltip>
             <Tooltip color="danger" content="Delete user">
               <span className="text-lg text-danger cursor-pointer active:opacity-50">
-                <RiDeleteBinLine />
+                <DeleteUser id={user.id} refresh={fetchUsers}/>
               </span>
             </Tooltip>
           </div>
@@ -265,12 +272,9 @@ export default function EmployeeAccount() {
       bottomContent={bottomContent}
       bottomContentPlacement="outside"
       classNames={{ wrapper: "max-h-[382px]" }}
-      selectedKeys={selectedKeys}
-      selectionMode="multiple"
       sortDescriptor={sortDescriptor}
       topContent={topContent}
       topContentPlacement="outside"
-      onSelectionChange={setSelectedKeys}
       onSortChange={setSortDescriptor}
     >
       <TableHeader columns={headerColumns}>

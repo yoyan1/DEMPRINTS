@@ -36,18 +36,18 @@ const chartConfig = {
 export default function Revenue() {
   // const {transactions, loading, fetchTransactions } = useSalesStore()
   const chartData = [
-    { month: "January", sales: 0, expenses: 0 },
-    { month: "February", sales: 0, expenses: 0 },
-    { month: "March", sales: 0, expenses: 0 },
-    { month: "April", sales: 0, expenses: 0 },
-    { month: "May", sales: 0, expenses: 0 },
-    { month: "June", sales: 0, expenses: 0 },
-    { month: "July", sales: 0, expenses: 0 },
-    { month: "August", sales: 0, expenses: 0 },
-    { month: "September", sales: 0, expenses: 0 },
-    { month: "October", sales: 0, expenses: 0 },
-    { month: "November", sales: 0, expenses: 0 },
-    { month: "December", sales: 0, expenses: 0 },
+    { month: "January", sales: 2000, expenses: 2000 },
+    { month: "February", sales: 1500, expenses: 3000 },
+    { month: "March", sales: 1200, expenses: 1500 },
+    { month: "April", sales: 5000, expenses: 1000 },
+    { month: "May", sales: 4000, expenses: 500 },
+    { month: "June", sales: 2400, expenses: 1100 },
+    { month: "July", sales: 800, expenses: 200 },
+    { month: "August", sales: 8000, expenses: 4000 },
+    { month: "September", sales: 10000, expenses: 5000 },
+    { month: "October", sales: 7000, expenses: 2000 },
+    { month: "November", sales: 9000, expenses: 5500 },
+    { month: "December", sales: 2000, expenses: 2300 },
   ]
 
   // useEffect(()=>{

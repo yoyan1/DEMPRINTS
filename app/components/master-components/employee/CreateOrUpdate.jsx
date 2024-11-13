@@ -23,9 +23,11 @@ import { BsEyeSlash, BsEye } from "react-icons/bs";
 import validateEmail from "@/app/composables/validateEmail";
 import JobDetails from '../form/JobDetails'
 import { UploadImage } from '@/app/composables/uploadImage'
+import { useUserStore } from "@/app/stores/userStore";
 
 export default function CreateUser({done}) {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const {create} = useUserStore()
   const { toast } = useToast()
   const [selected, setSelected] = useState("job");
   const [step, setStep] = useState(1);
@@ -44,6 +46,7 @@ export default function CreateUser({done}) {
     pab_ibig_no: 0,
     philhealth: 0,
   });
+
   const [contactPerson, setContactPerson] = useState({
     name: "",
     address: "",
@@ -140,18 +143,22 @@ export default function CreateUser({done}) {
     }
   };
 
-  const handleButtonClick = () => {
-    if (step === 3) {
-      console.log("Done");
-    } else {
-      setStep((prevStep) => prevStep + 1);
-    }
-  };
+ 
 
 
-  const isInvalid = () => {
+  const isValidStepOne = () =>{
     const errors = {};
+    if (!credentials.email) errors.email = "Email is required.";
+    if (credentials.email && !validateEmail(credentials.email))
+      errors.email = "Email is invalid.";
+    if (!credentials.password) errors.password = "Password is required.";
+    
+    setErrorMessages(errors);
+    return errors;
+  }
 
+  const isValidStepTwo = () =>{
+    const errors = {};
     if (!credentials.firstname) errors.firstname = "First name is required.";
     if (!credentials.lastname) errors.lastname = "Last name is required.";
     if (!credentials.gender) errors.gender = "Gender is required.";
@@ -166,21 +173,40 @@ export default function CreateUser({done}) {
     if (!credentials.address) errors.address = "Address is required.";
     if (!credentials.contact_email)
       errors.contact_email = "Contact email is required.";
+    
+    setErrorMessages(errors);
+    return errors;
+  }
+
+  const isInvalidStepThree = () => {
+    const errors = {};
+
     if (!credentials.job_title) errors.job_title = "Job Title is required.";
     if (!credentials.department) errors.department = "Department is required.";
     if (!credentials.hire_date) errors.hire_date = "Hire date is required.";
     if (!credentials.wage) errors.wage = "Salary Wage is required.";
     if (!credentials.basis) errors.basis = "Basis is required.";
     if (!credentials.frequency) errors.frequency = "Frequency is required.";
-    if (!credentials.email) errors.email = "Email is required.";
-    if (credentials.email && !validateEmail(credentials.email))
-      errors.email = "Email is invalid.";
-    if (!credentials.password) errors.password = "Password is required.";
 
     // Add additional validation checks as needed
-
     setErrorMessages(errors);
     return errors;
+  };
+
+  const handleButtonClick = () => {
+    const errors = isValidStepOne();
+    const errorsStepTwo = step === 2? isValidStepTwo() : {}
+    if (Object.keys(errors).length !== 0) {
+      return;
+    } else if (Object.keys(errorsStepTwo).length !== 0 && step === 2) {
+      return;
+    } 
+    
+    if (step === 3) {
+      console.log("Done");
+    } else {
+      setStep((prevStep) => prevStep + 1);
+    }
   };
 
   const fetchJobData = async () =>{
@@ -241,10 +267,9 @@ export default function CreateUser({done}) {
 
 const [isLoading, setIsLoading] = useState(false)
 const submit = async (id, id2, id3) => {
-  // Uncomment this if you want to validate
-  const errors = isInvalid();
-  if (Object.keys(errors).length !== 0) {
-    console.log(errors);
+
+  const errorsStepThree = isInvalidStepThree()
+  if (Object.keys(errorsStepThree).length !== 0 && step === 3) {
     return;
   }
 
@@ -252,7 +277,6 @@ const submit = async (id, id2, id3) => {
   setIsLoading(true);
   
   try {
-    // Uncomment the registration logic below after uploading
     const newData = {
       email: credentials.email,
       password: credentials.password,
@@ -280,7 +304,7 @@ const submit = async (id, id2, id3) => {
       review: credentials.review,
     }
     console.log(newData)
-    const response = await axios.post('https://demprints-backend.vercel.app/api/users/register', newData);
+    const response = await create(newData);
     if (response.status === 201) {
       setSuccess('Registration successful');
       toast({
@@ -460,6 +484,7 @@ const submit = async (id, id2, id3) => {
                                           clearable
                                           initialValue={new Date()}
                                           onChange={handleBirthDateChange}
+                                          showMonthAndYearPickers
                                         />
                                       </div>
                                     </div>
@@ -648,6 +673,7 @@ const submit = async (id, id2, id3) => {
                                       clearable
                                       initialValue={new Date()}
                                       onChange={handleHireDateChange}
+                                      showMonthAndYearPickers
                                     />
                                   </div>
                                 </div>

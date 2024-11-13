@@ -1,7 +1,16 @@
 "use client"
 import {create} from 'zustand';
+import axios from 'axios';
 
 export const useUserStore = create((set) => ({
+    create: async (data) =>{
+      const response = await axios.post('https://demprints-backend.vercel.app/api/users/register', data);
+      return response
+    },
+    deleteUser: async (id) =>{
+      const response = await axios.delete(`https://demprints-backend.vercel.app/api/users/delete/${id}`)
+      return response
+    },
     columns: [
       {name: "ID", uid: "id", sortable: true},
       {name: "NAME", uid: "name", sortable: true},
@@ -15,8 +24,7 @@ export const useUserStore = create((set) => ({
 
     statusOptions: [
       {name: "Active", uid: "active"},
-      {name: "Paused", uid: "paused"},
-      {name: "Vacation", uid: "vacation"},
+      {name: "Inactive", uid: "inactive"},
     ],
     users: [],
     loading: false,
