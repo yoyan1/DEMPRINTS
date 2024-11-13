@@ -143,7 +143,7 @@ export default function CreateTransaction({refresh}) {
       amount: 0,
       discount: 0,
       total: 0,
-      amount_paid: 0,
+      amount_paid: 0, 
       customer_type: "",
       customer_name: "",
       payment_type: "",
