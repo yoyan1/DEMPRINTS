@@ -1,9 +1,13 @@
 "use client";
 
 import { Input, Textarea, Button } from "@nextui-org/react";
-import React from "react";
+import React, { useState } from "react";
 
 export default function AddLeave() {
+    const [leave_title, setLeaveTitle] = useState('')
+    const [upload, setUpload] = useState('')
+    const [description, setDescription ] = useState('')
+
   return (
     <>
       <Input className="mb-2" label="Leave Tittle" placeholder="Leave Title" variant="bordered" autoFocus />
