@@ -310,7 +310,7 @@ export default function Transaction() {
   return (
     <div>
         {topContent}
-        <div className="overflow-x-scroll dark:bg-gray-800">
+        <div className="overflow-x-scroll">
             <Table
             removeWrapper
             aria-label="Example table with custom cells, pagination and sorting"

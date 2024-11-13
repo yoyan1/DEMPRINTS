@@ -38,7 +38,7 @@ const chartConfig = {
 
 export default function ExpensesAnalysis() {
   return (
-    <Card>
+    <Card className="dark:bg-gray-900">
       <CardHeader>
         <CardTitle>Expenses - Monthly</CardTitle>
         <CardDescription>January - June 2024</CardDescription>

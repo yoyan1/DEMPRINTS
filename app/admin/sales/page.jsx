@@ -48,7 +48,7 @@ export default function Sales() {
     <AdminLayout>
         <main className="flex flex-1 rounded-md flex-col gap-4 m-4 lg:gap-6 lg:m-6">
           <div className='flex flex-col gap-2'>
-            <div className="flex justify-between items-start rounded-lg bg-white dark:bg-black p-5">
+            <div className="flex justify-between items-start rounded-lg bg-white dark:bg-gray-900 p-5">
               <div className='flex gap-2'>
                 <div>
                   <h1 className="font-bold text-2xl">Sales Overview</h1>
@@ -68,7 +68,7 @@ export default function Sales() {
                 <span className="text-sm py-1 px-2 border rounded-full">{formatDate(date)}</span>
               </div>
             </div>
-            <div className='bg-white dark:bg-black rounded-lg p-5'>
+            <div className='bg-white dark:bg-gray-900 rounded-lg p-5'>
               <TransactionTable columns={columns} transactions={transactions} itemOptions={itemOptions} typeOptions={typeOptions} loading={loading} isMaximized={false} refresh={fetchTransactions}/>
             </div>
           </div>

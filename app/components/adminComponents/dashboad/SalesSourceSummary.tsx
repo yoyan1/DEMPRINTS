@@ -51,7 +51,7 @@ const chartConfig = {
 
 export default function SalesSourceSummary() {
   return (
-    <Card className="flex flex-col">
+    <Card className="flex flex-col dark:bg-gray-900">
       <CardHeader className="items-center pb-0">
         <CardTitle>Sales Source Summary - Monthly</CardTitle>
         <CardDescription>January - June 2024</CardDescription>
