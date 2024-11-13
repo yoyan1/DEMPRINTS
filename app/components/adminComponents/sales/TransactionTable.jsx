@@ -139,6 +139,10 @@ export default function Transaction({columns, transactions, itemOptions, typeOpt
         return (
           <div>{cellValue}%</div>
         );
+        case "total":
+        return (
+          <div>{Math.round(cellValue)}</div>
+        );
         case "customer_name":
         return (
           <div className="text-left">{cellValue}</div>
@@ -149,7 +153,7 @@ export default function Transaction({columns, transactions, itemOptions, typeOpt
         );
         case "remarks":
         return (
-          <div className="text-left">{cellValue}</div>
+          <div className="text-left">{Math.round(cellValue)}</div>
         );
         default:
             return cellValue;
@@ -201,27 +205,6 @@ export default function Transaction({columns, transactions, itemOptions, typeOpt
             onValueChange={onSearchChange}
           />
           <div className="flex gap-3">
-            {/* <Dropdown>
-              <DropdownTrigger className="hidden sm:flex">
-                <Button endContent={<IoChevronDown className="text-small" />} variant="flat">
-                  type
-                </Button>
-              </DropdownTrigger>
-              <DropdownMenu
-                disallowEmptySelection
-                aria-label="Table Columns"
-                closeOnSelect={false}
-                selectedKeys={typeFilter}
-                selectionMode="multiple"
-                onSelectionChange={setTypeFilter}
-              >
-                {typeOptions.map((type) => (
-                  <DropdownItem key={type.dataKey} className="capitalize">
-                    {capitalize(type.name)}
-                  </DropdownItem>
-                ))}
-              </DropdownMenu>
-            </Dropdown> */}
             <Dropdown>
               <DropdownTrigger className="hidden sm:flex">
                 <Button endContent={<IoChevronDown className="text-small" />} variant="flat">

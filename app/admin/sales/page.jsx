@@ -54,15 +54,13 @@ export default function Sales() {
                   <h1 className="font-bold text-2xl">Sales Overview</h1>
                   <span className="text-sm text-slate-400">{"Let's"} see the current statistic performance</span>
                 </div>
-                <div className='flex items-end gap-5 border p-3 shadow-sm rounded-lg border-blue-600 '>
-                  <div className='flex flex-col'>
-                    <span>Today's sales </span>
+                <div className='flex items-end gap-5 border-2 p-3 shadow-sm rounded-xl border-blue-600 '>
+                    <span>Today's sales: </span>
                     <span className='text-slate-400 text-sm'>{ totalSales }</span>
-                  </div>
                   { totalSales > totalYesterday? (
-                    <BiLineChart className='text-green-400 h-8 w-8'/>
+                    <BiLineChart className='text-green-600 h-5 w-5'/>
                   ): (
-                    <BiLineChartDown className='text-red-400 h-8 w-8 '/>
+                    <BiLineChartDown className='text-red-600 h-5 w-5 '/>
                   )}
                 </div>
               </div>
