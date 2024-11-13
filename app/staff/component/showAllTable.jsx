@@ -34,6 +34,7 @@ import { HiMiniViewfinderCircle } from "react-icons/hi2";
 // import CreateTransaction from './AddTransaction'
 import Addtransaction from "../component/addtransaction";
 import { useSalesStore } from "@/app/stores/transactionStore";
+import { formatDate, formatTime } from "../../composables/formateDateAndTime";
 
 const itemColorMap = {
   tarpaulin: "warning",
@@ -168,6 +169,19 @@ export default function AllTransaction() {
     const cellValue = user[columnKey];
 
     switch (columnKey) {
+
+      case "date":
+        return (
+          <div className="flex flex-col">
+            <p className="text-bold text-small capitalize">{formatDate(cellValue)}</p>
+          </div>
+        );
+        case "time":
+        return (
+          <div className="flex flex-col">
+            <p className="text-bold text-small capitalize">{formatTime(cellValue)}</p>
+          </div>
+        );
       case "transaction_no":
         return (
           <div className="flex flex-col">

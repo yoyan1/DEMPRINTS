@@ -30,12 +30,14 @@ import { CiSearch } from "react-icons/ci";
 import { IoChevronDown } from "react-icons/io5";
 import { capitalize } from "@/app/composables/utils";
 import { HiMiniViewfinderCircle } from "react-icons/hi2";
+import { FaChartLine } from "react-icons/fa";
 // import ExpandTransaction from './ExpandModal'
 // import ExportToPdf from '@/app/composables/exportToPdf'
 // import CreateTransaction from './AddTransaction'
 import Addtransaction from "../component/addtransaction";
 import { useSalesStore } from "@/app/stores/transactionStore";
 import AllTransaction from "../component/showAllTable";
+// import { formatDate, formatTime } from "../../composables/formateDateAndTime";
 
 const itemColorMap = {
   tarpaulin: "warning",
@@ -256,7 +258,12 @@ export default function Transaction() {
   };
   const topContent = useMemo(() => {
     return (
-      <div className="flex flex-col gap-4 mt-3">
+      <div className="flex flex-col gap-4 m-2">
+        <div className="flex col items-center gap-3 ">
+          <FaChartLine className="text-2xl col" />
+          <span className="text-2xl">Transaction Overview</span>
+          <span>A Complete Record of Your Financial Activity</span>
+        </div>
         <div className="flex justify-between gap-3 items-end">
           <Input
             isClearable
