@@ -12,6 +12,7 @@ export default function CreateTransaction({isSubmit}) {
   const [products, setProducts] = useState([])
   const [options, setOptionList] = useState([])
   const [type, setTypeList] = useState([])
+  const [customer_type, setCustomerType] = useState([]);
   const [idGenerated, setIdGenerated] = useState([{_id: '', count: 0}])
   const {date, time} = getDateAndTime()
   const [salesData, setSalesData] = useState({
@@ -39,6 +40,8 @@ export default function CreateTransaction({isSubmit}) {
     setOptionList(responseOptions.data)
     const responseType = await axios.get('https://demprints-backend.vercel.app/api/master/getPaymentType')
     setTypeList(responseType.data)
+    const customerType = await axios.get('https://demprints-backend.vercel.app/api/master/getCustomerType')
+    setCustomerType(customerType.data)
     const responseID = await axios.get('https://demprints-backend.vercel.app/api/collection/getId')
     if(responseID.data.length > 0){
       setIdGenerated(responseID.data)
@@ -53,7 +56,6 @@ export default function CreateTransaction({isSubmit}) {
     fetchUsers()
   }, [fetchUsers])
 
-  const customer_type = ['Walk in', 'Online'];
 
   const handleMeasurementChange = (e) =>{
     const value = e.target.value
@@ -248,8 +250,8 @@ export default function CreateTransaction({isSubmit}) {
                   onChange={(e)=>(setSalesData((prevData)=>({...prevData, customer_type: e.target.value})))}
                 >
                   {customer_type.map(item => (
-                    <SelectItem key={item} value={item}>
-                      {item}
+                    <SelectItem key={item.name}>
+                      {item.name}
                     </SelectItem>
                   ))}
                 </Select>
@@ -298,15 +300,17 @@ export default function CreateTransaction({isSubmit}) {
                     </SelectItem>
                   ))}
                 </Select>
-                <Input
-                  autoFocus
-                  label="Amount Paid"
-                  placeholder="Enter paid amount"
-                  variant="bordered"
-                  type="number"
-                  value={salesData.amount_paid}
-                  onChange={(e)=>(setSalesData((prevData)=>({...prevData, amount_paid: e.target.value})))}
-                />
+                {salesData.payment_type.toLocaleLowerCase() === 'down payment'? (
+                  <Input
+                    autoFocus
+                    label="Amount Paid"
+                    placeholder="Enter paid amount"
+                    variant="bordered"
+                    type="number"
+                    value={salesData.amount_paid}
+                    onChange={(e)=>(setSalesData((prevData)=>({...prevData, amount_paid: e.target.value})))}
+                  />
+                ): null}
                 {salesData.measurement? (
                   <div className="flex justify-between">
                     <span>total amount: {salesData.total}</span>

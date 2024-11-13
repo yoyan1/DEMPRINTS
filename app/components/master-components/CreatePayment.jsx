@@ -34,7 +34,8 @@ export default function CreatePayment() {
   }, [])
 
   const [isLoading, setIsLoading] = useState(false)
-  const submitPaymentType = async () =>{
+  const submitPaymentType = async (e) =>{
+    e.preventDefault()
     setIsLoading(true)
 
     const response = await axios.post('https://demprints-backend.vercel.app/api/master/createPaymentType', {name: paymentType})
@@ -165,13 +166,12 @@ export default function CreatePayment() {
                               </ListboxItem>
                             ))}
                           </Listbox>
-                          <form className="flex flex-col gap-4">
+                          <form onSubmit={submitPaymentType} className="flex flex-col gap-4">
                             <span>Create new Payment Type</span>
                             <Input label="Type" placeholder="Enter new payment type" value={paymentType} onChange={(e)=>(setPaymentType(e.target.value))}/>
                             <div className="flex gap-2 justify-end">
                               <Button 
                               fullWidth color="primary" 
-                              onPress={submitPaymentType}
                               isLoading={isLoading}
                               spinner={
                                   <svg
