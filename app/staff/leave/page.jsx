@@ -6,7 +6,7 @@ import {
   ModalContent,
   ModalHeader,
   ModalBody,
-  ModalFooter,
+//   ModalFooter,
   useDisclosure,
 } from "@nextui-org/react";
 import React from "react";
