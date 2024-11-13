@@ -177,14 +177,14 @@ export default function Addtransaction() {
     const selectedProduct = products.find((item) => item.name === item_name);
     const totalItemCost = selectedProduct
       ? selectedProduct.price * newQuantity
-      : unit_cost * newQuantity; // Use price from DB
+      : unit_cost * newQuantity; 
     setQuantity(newQuantity);
-    setAmount(totalItemCost); // Update amount based on quantity change
+    setAmount(totalItemCost); 
     setTotal(totalItemCost - discount); // Recalculate total after discount
   };
 
   const handleDiscountChange = (newDiscount) => {
-    const discountValue = parseFloat(newDiscount) || 0; // Ensure discount is a number, default to 0
+    const discountValue = parseFloat(newDiscount) || 0; 
     setDiscount(discountValue); // Update discount value
   
     // Calculate discount amount based on percentage or direct value
@@ -220,73 +220,11 @@ export default function Addtransaction() {
   };
   
 
-  // const handleChange = (e) => {
-  //   const { name, value } = e.target;
+  
 
-  //   const selectedProduct = products.find((item) => item.name === item_name);
-  //   const unitCost = selectedProduct ? selectedProduct.price : unit_cost;
-
-  //   const newQuantity =
-  //     name === "quantity" ? Math.max(parseFloat(value), 0) : quantity;
-  //   const newDiscount = name === "discount" ? parseFloat(value) : discount;
-
-  //   // Calculate total item cost (amount)
-  //   const totalItemCost = unitCost * newQuantity;
-  //   const total = totalItemCost - newDiscount;
-
-  //   // Update state values based on changed field
-  //   if (name === "quantity") {
-  //     setQuantity(newQuantity);
-  //     setAmount(totalItemCost); // Update the amount based on unit cost and quantity
-  //     setTotal(total); // Set total after discount
-  //   } else if (name === "discount") {
-  //     setDiscount(newDiscount);
-  //     setTotal(total);
-  //   } else if (name === "amount") {
-  //     setAmount(parseFloat(value));
-  //   }
-
-  //   setUnitCost(unitCost); // Always set the unit cost
-
-  //   console.log("Updated Sales Data:", {
-  //     quantity: newQuantity,
-  //     unit_cost: unitCost,
-  //     amount: totalItemCost,
-  //     discount: newDiscount,
-  //     total,
-  //   });
-  // };
-
-  // const handleDiscountChange = (e) =>{
-  //   const { name, value } = e.target;
-  // }
-
-  // const handleDiscountChange = () => {
-  //   const { name, value } = e.target;
-
-  //   const selectedProduct = products.find((item) => item.name === item_name);
-  //   if (selectedProduct) {
-  //     const unitCost = selectedProduct.price;
-
-  //     const total = unitCost * value;
-
-  //     if (name === "quantity") {
-  //       setQuantity(value);
-  //       setUnitCost(unitCost);
-  //       setAmount(total);
-  //       setTotal(total);
-  //     } else if (name === "discount") {
-  //       setDiscount(value);
-  //     }
-
-  //     console.log("Updated Sales Data:", {
-  //       quantity: value,
-  //       unit_cost: unitCost,
-  //       amount: total,
-  //       total: total,
-  //     });
-  //   }
-  // }
+  
+ 
+ 
 
   const handleClose = () => {
     // FormData={

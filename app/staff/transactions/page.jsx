@@ -260,8 +260,9 @@ export default function Transaction() {
     return (
       <div className="flex flex-col gap-4 m-2">
         <div className="flex col items-center gap-3 ">
-          <FaChartLine className="text-2xl" />
+          <FaChartLine className="text-2xl col" />
           <span className="text-2xl">Transaction Overview</span>
+          <span>A Complete Record of Your Financial Activity</span>
         </div>
         <div className="flex justify-between gap-3 items-end">
           <Input
