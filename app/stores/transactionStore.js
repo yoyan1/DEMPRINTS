@@ -20,6 +20,7 @@ export const useSalesStore = create((set) => ({
         {name: "PAYMENT TYPE", dataKey: "payment_type", sortable: true},
         {name: "SALES PERSON", dataKey: "sales_person", sortable: true},
         {name: "REMARKS", dataKey: "remarks", sortable: true},
+        {name: "ACTIONS", dataKey: "actions", sortable: true},
     ],
     itemOptions: [
         {name: "Tarpaulin", dataKey: "tarpaulin"},

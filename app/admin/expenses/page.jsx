@@ -13,8 +13,8 @@ export default function page() {
   return (
     <AdminLayout>
       <main className="flex flex-1 rounded-md flex-col gap-4 m-4 lg:gap-6 lg:m-6">
-        <div>
-          <div className="flex justify-between items-start">
+        <div className='flex flex-col gap-2'>
+          <div className="flex justify-between items-start rounded-lg bg-white dark:bg-gray-900 p-5">
             <div>
               <h1 className="font-bold text-2xl">Expenses Overview</h1>
               <span className="text-sm text-slate-400">{"Let's"} see the current statistic performance</span>
@@ -23,7 +23,7 @@ export default function page() {
               <span className="text-sm py-1 px-2 border rounded-full">October 16, 2024</span>
             </div>
           </div>
-          <div>
+          <div className='bg-white dark:bg-gray-900 p-5 rounded-lg'>
             <ExpensesTable columns={columns} transactions={transactions} itemOptions={itemOptions} typeOptions={typeOptions} loading={loading} isMaximized={false} refresh={fetchTransactions}/>
           </div>
         </div>

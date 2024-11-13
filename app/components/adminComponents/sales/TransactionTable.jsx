@@ -15,10 +15,12 @@ import {
   DropdownItem,
   Chip,
   Pagination,
-  Spinner
+  Spinner, 
+  Tooltip
 } from "@nextui-org/react";
 import { CiSearch } from "react-icons/ci";
 import { IoChevronDown } from "react-icons/io5";
+import { MdPaid } from "react-icons/md";
 import {capitalize} from "@/app/composables/utils";
 import ExpandTransaction from './ExpandModal'
 import ExportToPdf from '@/app/composables/exportToPdf'
@@ -36,7 +38,7 @@ const typeColorMap = {
   online: "primary",
 };
 
-const INITIAL_VISIBLE_COLUMNS = ["transaction_no", "item_name", "unit_cost",  "customer_type", "customer_name", "payment_type", "sales_person"];
+const INITIAL_VISIBLE_COLUMNS = ["transaction_no", "item_name", "unit_cost",  "customer_type", "customer_name", "payment_type", "sales_person", "actions"];
 const INITIAL_VISIBLE_COLUMNS_ALL = ["date", "time", "transaction_no", "item_no", "item_name", "unit_cost", "quantity", "amount", "discount", "total", "customer_type", "customer_name", "payment_method", "sales_person", "remarks"];
 
 export default function Transaction({columns, transactions, itemOptions, typeOptions, loading, isMaximized, refresh}) {
@@ -155,6 +157,18 @@ export default function Transaction({columns, transactions, itemOptions, typeOpt
         return (
           <div className="text-left">{Math.round(cellValue)}</div>
         );
+        case "actions":
+        return (
+          <div>
+            {items.remarks > 0? (
+              <Tooltip color="success" content="Mark as paid">
+                <Button isIconOnly variant="light" color="success">
+                  <MdPaid/>
+                </Button>
+              </Tooltip>
+            ): null}
+          </div>
+        );
         default:
             return cellValue;
     }
@@ -191,6 +205,10 @@ export default function Transaction({columns, transactions, itemOptions, typeOpt
     setPage(1)
   },[])
 
+  const fetch = (data)=>{
+    refresh(data)
+  }
+
   const topContent = useMemo(() => {
     return (
       <div className="flex flex-col gap-4 ">
@@ -226,7 +244,7 @@ export default function Transaction({columns, transactions, itemOptions, typeOpt
                 ))}
               </DropdownMenu>
             </Dropdown>
-            <CreateTransaction isSubmit={(data)=>(refresh(data))}/>
+            <CreateTransaction refresh={fetch}/>
             <ExportToPdf rows={sortedItems}/>
             {!isMaximized? (
                 <ExpandTransaction columns={columns} transactions={transactions} itemOptions={itemOptions} typeOptions={typeOptions} />
@@ -291,7 +309,7 @@ export default function Transaction({columns, transactions, itemOptions, typeOpt
   return (
     <div>
         {topContent}
-        <div className="overflow-x-scroll dark:bg-gray-800">
+        <div className="overflow-x-scroll">
             <Table
             removeWrapper
             aria-label="Example table with custom cells, pagination and sorting"

@@ -61,7 +61,7 @@ export default function ExpensesSummary() {
   }, [])
 
   return (
-    <Card className="flex flex-col">
+    <Card className="flex flex-col dark:bg-gray-900">
       <CardHeader className="items-center pb-0">
         <CardTitle>Expenses Summary - Monthly</CardTitle>
         <CardDescription>January - June 2024</CardDescription>

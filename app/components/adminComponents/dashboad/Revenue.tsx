@@ -70,7 +70,7 @@ export default function Revenue() {
   //   getData()
   // }, [])
   return (
-    <Card>
+    <Card className="dark:bg-gray-900">
       <CardHeader>
         <CardTitle>Revenue - Monthly</CardTitle>
         <CardDescription>

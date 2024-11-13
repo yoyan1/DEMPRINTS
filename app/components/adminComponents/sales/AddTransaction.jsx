@@ -6,7 +6,7 @@ import axios from "axios";
 import {getDateAndTime} from '@/app/composables/dateAndTime'
 import {useUserStore} from '@/app/stores/userStore'
 
-export default function CreateTransaction({isSubmit}) {
+export default function CreateTransaction({refresh}) {
   const {users, fetchUsers} = useUserStore()
   const {isOpen, onOpen, onClose} = useDisclosure();
   const [products, setProducts] = useState([])
@@ -135,7 +135,7 @@ export default function CreateTransaction({isSubmit}) {
     console.log(response.data)
     console.log(updateId.data)
     setIsLoading(false)
-    isSubmit(response.data)
+    refresh(response.data)
     setSalesData({
       item_name: "",
       unit_cost: 0,

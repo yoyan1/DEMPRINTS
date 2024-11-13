@@ -14,7 +14,7 @@ import { Button } from '@/app/components/ui/button'
 export default function Header (){
     const { setTheme } = useTheme()
     return(
-      <div className='flex justify-between px-5 py-2 bg-white'>
+      <div className='flex justify-between px-5 py-2 bg-white dark:bg-gray-900'>
         <SidebarTrigger className="-ml-1" />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
