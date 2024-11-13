@@ -18,8 +18,8 @@ import axios from "axios";
 // import { formatDate } from "../../composables/formateDateAndTime";
 
 export default function Addtransaction() {
-  const [customer_name, setCostumerName] = useState("");
-  const [customer_type, setCostumerType] = useState("");
+  const [customer_name, setCostumerName] = useState(" ");
+  const [customer_type, setCostumerType] = useState(" ");
   const [item_name, setItemName] = useState("");
 
   const [transaction_no] = useState(0);
@@ -31,18 +31,18 @@ export default function Addtransaction() {
   const [amount, setAmount] = useState(0);
   const [total, setTotal] = useState(0);
   const [remarks, setRemarks] = useState(0);
-  const [payment_options, setPaymentMethod] = useState("");
-  const [sales_person, setSalesPerson] = useState("");
-  const [success_message, setSuccessMessage] = useState("");
-  const [payment_type, setPaymentType] = useState("");
+  const [payment_options, setPaymentMethod] = useState(" ");
+  const [sales_person, setSalesPerson] = useState(" ");
+  const [success_message, setSuccessMessage] = useState(" ");
+  const [payment_type, setPaymentType] = useState(" ");
   // ----------------------
 
-  const [payment, setPaymentt] = useState([]);
-  const [paymentTypes, setPaymenttype] = useState([]);
-  const [costumerType, setCostumertype] = useState([]);
-  const [products, setProduct] = useState([]);
-  const [unit, setUnit] = useState([]);
-  const [setTransaction] = useState([]);
+  const [payment, setPaymentt] = useState(['']);
+  const [paymentTypes, setPaymenttype] = useState(['']);
+  const [costumerType, setCostumertype] = useState(['']);
+  const [products, setProduct] = useState(['']);
+  const [unit, setUnit] = useState(['']);
+  const [setTransaction] = useState(['']);
   // ----------------------
   const [idGenerated, setIdGenerated] = useState([{ _id: "", count: 0 }]);
   // ----------------------
@@ -187,6 +187,19 @@ export default function Addtransaction() {
       );
       console.log(updateId.data);
       setSuccessMessage("Transaction added successfully!");
+      setItemName("");
+      setQuantity("");
+      setDiscount("");
+      setPaidAmount("");
+      setAmount("");
+      setTotal("");
+      setUnitCost(0);
+      setCostumerType("");
+      setCostumerName("");
+      setPaymentMethod("");
+      setPaymentType("");
+      setSalesPerson("");
+      setRemarks("");
       console.log(response.data);
     } catch (error) {
       console.log("Failed", error);
@@ -302,6 +315,7 @@ export default function Addtransaction() {
         >
           {products.map((product) => (
             <SelectItem
+              
               key={product.name}
               variant="bordered"
               style={{ color: "black" }}
@@ -384,7 +398,7 @@ export default function Addtransaction() {
           style={{ color: "black" }}
           autoFocus
           isRequired
-          value={total ? Math.round(parseFloat(total) * 100) / 100 : '00:00'}
+          value={total ? Math.round(parseFloat(total) * 100) / 100 : "00:00"}
           label="Total"
           variant="bordered"
           readOnly
@@ -494,8 +508,8 @@ export default function Addtransaction() {
       )}
 
       <div className="flex">
-        <p className="gap-3">Amount: ₱{amount.toFixed(2)}</p>
-        <p>Total : ₱{total.toFixed(2)}</p>
+        <p className="gap-3">Amount: ₱{Math.round(amount)}</p>
+        <p>Total : ₱{Math.round(total)}</p>
       </div>
 
       <div className="relative z-0 w-full mb-3 group">

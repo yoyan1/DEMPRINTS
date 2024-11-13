@@ -169,17 +169,20 @@ export default function AllTransaction() {
     const cellValue = user[columnKey];
 
     switch (columnKey) {
-
       case "date":
         return (
           <div className="flex flex-col">
-            <p className="text-bold text-small capitalize">{formatDate(cellValue)}</p>
+            <p className="text-bold text-small capitalize">
+              {formatDate(cellValue)}
+            </p>
           </div>
         );
-        case "time":
+      case "time":
         return (
           <div className="flex flex-col">
-            <p className="text-bold text-small capitalize">{formatTime(cellValue)}</p>
+            <p className="text-bold text-small capitalize">
+              {formatTime(cellValue)}
+            </p>
           </div>
         );
       case "transaction_no":
@@ -205,6 +208,13 @@ export default function AllTransaction() {
             {cellValue}
           </Chip>
         );
+      case "discount":
+        return (
+          <div className="flex flex-col">
+            <p className="text-bold text-small capitalize">{cellValue}%</p>
+          </div>
+        );
+
       case "customer_type":
         return (
           <Chip
