@@ -21,16 +21,16 @@ import {
 export const description = "A bar chart with a label"
 
 const chartData = [
-  { month: "January", desktop: 186 },
-  { month: "February", desktop: 305 },
-  { month: "March", desktop: 237 },
-  { month: "April", desktop: 73 },
-  { month: "May", desktop: 209 },
-  { month: "June", desktop: 214 },
+  { month: "January", expenses: 186 },
+  { month: "February", expenses: 305 },
+  { month: "March", expenses: 237 },
+  { month: "April", expenses: 73 },
+  { month: "May", expenses: 209 },
+  { month: "June", expenses: 214 },
 ]
 
 const chartConfig = {
-  desktop: {
+  expenses: {
     label: "Expenses",
     color: "hsl(var(--chart-1))",
   },

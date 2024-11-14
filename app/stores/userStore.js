@@ -2,13 +2,41 @@
 import {create} from 'zustand';
 import axios from 'axios';
 
+const token = localStorage.getItem("token")
 export const useUserStore = create((set) => ({
+    user: null,
+    isAuthenticate: false,
+    loading: false,
+    error: null,
     create: async (data) =>{
+      set({ loading: true });
       const response = await axios.post('https://demprints-backend.vercel.app/api/users/register', data);
+      set({ loading: false });
       return response
     },
+    login: async (data) =>{
+      set({ loading: true });
+      const response = await axios.post('http://localhost:5000/api/users/login', data);
+      set({ loading: false });
+      return response
+    },
+    getAuthenticateUser: async () =>{
+      set({ loading: true });
+      if(token){
+        const response = await axios.get('http://localhost:5000/api/users/user', {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          }
+        });
+        set({user: response.data ,loading: false, isAuthenticate: true });
+      } else{
+        set({loading: false, isAuthenticate: false})
+      }
+    },
     deleteUser: async (id) =>{
+      set({ loading: true });
       const response = await axios.delete(`https://demprints-backend.vercel.app/api/users/delete/${id}`)
+      set({ loading: false });
       return response
     },
     columns: [
@@ -27,8 +55,6 @@ export const useUserStore = create((set) => ({
       {name: "Inactive", uid: "inactive"},
     ],
     users: [],
-    loading: false,
-    error: null,
     fetchUsers: async () => {
         set({ loading: true });
         try {
