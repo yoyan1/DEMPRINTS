@@ -206,7 +206,7 @@ export default function Addtransaction() {
        
         
       );
-      console.log(user);
+      console.log('user ID added',user._id);
       console.log(updateId.data);
       setSuccessMessage("Transaction added successfully!");
       setItemName("");
