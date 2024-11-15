@@ -39,6 +39,7 @@ export default function Addtransaction() {
   const [sales_person, setSalesPerson] = useState(" ");
   const [success_message, setSuccessMessage] = useState(" ");
   const [payment_type, setPaymentType] = useState(" ");
+  const [employee_id] = useState('')
   // ----------------------
 
   const [payment, setPaymentt] = useState([""]);
@@ -196,8 +197,10 @@ export default function Addtransaction() {
           customer_name,
           payment_type,
           payment_options,
-          sales_person: user.name,
           remarks: remarks, //calculate the balance
+          sales_person: user.name,
+          employee_id: user.id,
+
         }
       );
       console.log(updateId.data);
