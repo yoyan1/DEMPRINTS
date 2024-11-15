@@ -11,7 +11,7 @@ import {
   DropdownItem,
 } from "@nextui-org/react";
 import { useUserStore } from "../../stores/userStore";
-import { useRouter } from 'next/router';
+import { useRouter } from "next/navigation";
 
 export default function Heading() {
   const { user, loading, getAuthenticateUser } = useUserStore();
