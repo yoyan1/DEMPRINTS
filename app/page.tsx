@@ -9,6 +9,7 @@ export default function Home() {
         <Link href="/admin" className="w-36 text-center rounded-sm py-1 bg-primary text-white">Admin</Link>
         <Link href="/staff/transactions" className="w-36 text-center rounded-sm py-1 bg-primary text-white">Staff</Link>
         <Link href="/login" className="w-36 text-center rounded-sm py-1 bg-primary text-white">Log in</Link>
+        
       </main>
     </div>
   );

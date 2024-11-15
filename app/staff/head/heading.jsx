@@ -1,8 +1,9 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
+import { Spinner } from "@nextui-org/react";
 import { Image } from "@nextui-org/image";
-import DarkMode from "@/app/components/public-component/darkMode.jsx";
+// import DarkMode from "@/app/components/public-component/darkMode.jsx";
 import {
   Dropdown,
   DropdownTrigger,
@@ -10,10 +11,22 @@ import {
   DropdownMenu,
   DropdownItem,
 } from "@nextui-org/react";
-// import { TbLogout2 } from "react-icons/tb";
-// import { IoPersonCircle } from "react-icons/io5";
+import {useUserStore} from '@/app/stores/userStore'
 
 export default function Heading() {
+  const {user, loading , getAuthenticateUser} = useUserStore;
+
+  useEffect(() =>{
+    getAuthenticateUser()
+  },[getAuthenticateUser]);
+
+
+  if(loading) {
+    return(
+      <div><Spinner label="Loading..." /></div>
+    )
+  }
+   
   return (
     <>
       {/* bg-gradient-to-tr from-blue-400 to-blue-950   */}
@@ -77,7 +90,7 @@ export default function Heading() {
               </DropdownTrigger>
               <DropdownMenu aria-label="Static Actions">
                 <DropdownItem className="" key="new">
-                  <span className="text-black">Roland Clarion</span>
+                  <span className="text-black">{user.name}</span>
                 </DropdownItem>
 
                 <DropdownItem className=" " key="edit">
