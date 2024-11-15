@@ -199,7 +199,7 @@ export default function Addtransaction() {
           payment_options,
           remarks: remarks, //calculate the balance
           sales_person: user.name,
-          employee_id: user.id,
+          // employee_id: user.id,
 
         }
       );
