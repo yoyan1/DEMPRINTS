@@ -33,7 +33,9 @@ export function LoginForm() {
     e.preventDefault()
     const response = await login(credentials)
     if(!response.data.err){
-      localStorage.setItem("token", response.data.token)
+      if (typeof window !== "undefined") { 
+        localStorage.setItem("token", response.data.token)
+      }
       // router.push('/test')
     } else{
       console.log(response.data.message)
