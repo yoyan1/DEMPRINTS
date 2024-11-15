@@ -37,12 +37,12 @@ export default function Addtransaction() {
   const [payment_type, setPaymentType] = useState(" ");
   // ----------------------
 
-  const [payment, setPaymentt] = useState(['']);
-  const [paymentTypes, setPaymenttype] = useState(['']);
-  const [costumerType, setCostumertype] = useState(['']);
-  const [products, setProduct] = useState(['']);
-  const [unit, setUnit] = useState(['']);
-  const [setTransaction] = useState(['']);
+  const [payment, setPaymentt] = useState([""]);
+  const [paymentTypes, setPaymenttype] = useState([""]);
+  const [costumerType, setCostumertype] = useState([""]);
+  const [products, setProduct] = useState([""]);
+  const [unit, setUnit] = useState([""]);
+  const [setTransaction] = useState([""]);
   // ----------------------
   const [idGenerated, setIdGenerated] = useState([{ _id: "", count: 0 }]);
   // ----------------------
@@ -152,7 +152,17 @@ export default function Addtransaction() {
       const generatedID =
         responseID.data.length > 0 ? responseID.data : [{ _id: "", count: 0 }];
       const newId = generatedID[0].count + 1; // Ensure `idGenerated` is correctly set
-      const transaction_no = `000${newId}`;
+      const transaction_no = () => {
+        if (newId >= 1000) {
+          return `${newId}`;
+        } else if (newId >= 100) {
+          return `0${newId}`;
+        } else if (newId >= 10) {
+          return `00${newId}`;
+        } else {
+          return `000${newId}`;
+        }
+      };
 
       // Retrieve the selected product and its price
       const selectedProduct = products.find((item) => item.name === item_name);
@@ -169,7 +179,7 @@ export default function Addtransaction() {
         {
           date: formattedDate,
           time: formattedTime,
-          transaction_no: transaction_no,
+          transaction_no: transaction_no(),
           item_no,
           item_name,
           unit_cost: finalUnitCost,
@@ -207,10 +217,10 @@ export default function Addtransaction() {
   };
 
   const handleQuantityChange = (newQuantity) => {
-    const selectedProduct = products.find((item) => item.name === item_name);
-    const totalItemCost = selectedProduct
+    const selectedProduct = products.find((item) => item.name === item_name && item.unit === unit_cost);
+    const totalItemCost = selectedProduct 
       ? selectedProduct.price * newQuantity
-      : unit_cost * newQuantity;
+      : 0;
     setQuantity(newQuantity);
     setAmount(totalItemCost);
     setTotal(totalItemCost - discount); // Recalculate total after discount
@@ -234,16 +244,20 @@ export default function Addtransaction() {
   };
 
   const handleUnitCostChange = (newUnitCost) => {
-    const newAmount = newUnitCost * quantity;
+    // const newAmount =  quantity;
     setUnitCost(newUnitCost);
-    setAmount(newAmount);
-
-    // Calculate total after applying discount and subtracting paid amount
-    const discountAmount =
-      discount > 100 ? discount : (newAmount * discount) / 100;
-    const newTotal = newAmount - discountAmount - paid_amount;
-    const roundOfftotal = Math.round(newTotal * 100) / 100;
-    setTotal(roundOfftotal);
+    setQuantity(0);
+    setAmount(0);
+    setTotal(0)
+    // setAmount(newAmount);
+    // console.log(newUnitCost)
+    // // Calculate total after applying discount and subtracting paid amount
+    // const discountAmount =
+    //   discount > 100 ? discount : (newAmount * discount) / 100;
+    // const newTotal = newAmount - discountAmount - paid_amount;
+    
+    // const roundOfftotal = Math.round(newTotal * 100) / 100;
+    // setTotal(roundOfftotal);
   };
 
   const handlePaidAmount = (newPaidAmount) => {
@@ -310,19 +324,34 @@ export default function Addtransaction() {
 
             setItemName(selectedProductName);
             setUnitCost(selectedProduct?.price || 0); // Set initial unit cost
-            handleQuantityChange(quantity); // Recalculate amount and total based on the updated quantity and unit cost
+            handleQuantityChange(quantity);
+            setUnitCost('')
+            setQuantity(0);
+            setAmount(0);
+            setTotal(0)
           }}
         >
-          {products.map((product) => (
-            <SelectItem
-              
-              key={product.name}
-              variant="bordered"
-              style={{ color: "black" }}
-            >
-              {product.name}
-            </SelectItem>
-          ))}
+          {products.map((product, index) =>
+            index > 0 ? (
+              product.name !== products[index - 1].name ? (
+                <SelectItem
+                  key={product.name}
+                  variant="bordered"
+                  style={{ color: "black" }}
+                >
+                  {product.name}
+                </SelectItem>
+              ) : null
+            ) : (
+              <SelectItem
+                key={product.name}
+                variant="bordered"
+                style={{ color: "black" }}
+              >
+                {product.name}
+              </SelectItem>
+            )
+          )}
         </Select>
 
         {item_name && (
@@ -333,22 +362,17 @@ export default function Addtransaction() {
             isRequired
             value={unit_cost}
             variant="bordered"
-            style={{ color: "black" }}
-            onChange={(event) => {
-              const selectedUnitCost = parseFloat(event.target.value);
-              handleUnitCostChange(selectedUnitCost); // Use handleUnitCostChange here
-            }}
+            onChange={(event) => {handleUnitCostChange(event.target.value);}}
           >
             {products
-              .filter((product) => product.name === item_name)
+              .filter((product) => product.name === item_name) // Filter by product name
               .map((product) => (
                 <SelectItem
-                  key={`${product.unit}-${product.price}`}
-                  variant="bordered"
-                  value={product.price} // Set price as the value for selection
-                  style={{ color: "black" }}
+                  key={product.unit}
+                  variant="bordered" // Set product price as the value
                 >
-                  {product.unit} - ₱{product.price}
+                  {product.unit}
+                  {/* Display unit and price */}
                 </SelectItem>
               ))}
           </Select>
