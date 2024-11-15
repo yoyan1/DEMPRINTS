@@ -74,7 +74,7 @@ export default function CreateCustomer() {
                                 <div>
                                     <form onSubmit={onSubmit} className="flex items-center">
                                         <Input onChange={(e)=>(setInputType(e.target.value))} label="Type" value={inputType} placeholder="Enter new Customer Type"/>
-                                        <Button isIconOnly type="submit" color="primary" variant="light" isLoading={isLoading}><IoIosAdd className="w-8 h-8"/></Button>
+                                        {inputType? <Button isIconOnly type="submit" color="primary" variant="light" isLoading={isLoading}><IoIosAdd className="w-8 h-8"/></Button> : null}
                                     </form>
                                     <Listbox
                                     aria-label="Listbox Variants"

@@ -9,6 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 export default function CreatePayment() {
   const {isOpen, onOpen, onClose} = useDisclosure();
   const { toast } = useToast()
+  const [ errorMessage, setErrorMessages ] = useState({})
   const [selected, setSelected] = useState("method");
   const [paymentType, setPaymentType] = useState('')
   const [paymentOptions, setPaymentOptions] = useState('')
@@ -33,9 +34,22 @@ export default function CreatePayment() {
     getPaymentMethod()
   }, [])
 
+  const typeIsValid = () => {
+    const errors = {};
+    if(!paymentType) errors.type = "This field must not be empty."
+    setErrorMessages(errors);
+    return errors;
+  }
+  
   const [isLoading, setIsLoading] = useState(false)
   const submitPaymentType = async (e) =>{
     e.preventDefault()
+    
+    const errors = typeIsValid()
+      if(Object.keys(errors).length !== 0){
+        return
+    }
+
     setIsLoading(true)
 
     const response = await axios.post('https://demprints-backend.vercel.app/api/master/createPaymentType', {name: paymentType})
@@ -50,7 +64,21 @@ export default function CreatePayment() {
     setIsLoading(false)
     getPaymentMethod()
   }
-  const submitPaymentOptions = async ()=>{
+
+  const optionIsValid = () => {
+    const errors = {};
+    if(!paymentOptions) errors.options = "This field must not be empty."
+    setErrorMessages(errors);
+    return errors;
+  }
+
+  const submitPaymentOptions = async (e) =>{
+    e.preventDefault()
+    
+    const errors = optionIsValid()
+      if(Object.keys(errors).length !== 0){
+        return
+    }
     setIsLoading(true)
     const response = await axios.post('https://demprints-backend.vercel.app/api/master/createPaymentOptions', {name: paymentOptions})
     console.log(response)
@@ -68,6 +96,7 @@ export default function CreatePayment() {
   const done = () =>{
     getPaymentMethod()
   }
+
   return (
     <>
       <div className="p-md">
@@ -111,14 +140,20 @@ export default function CreatePayment() {
                               </ListboxItem>
                             ))}
                           </Listbox>
-                          <form className="flex flex-col gap-4">
+                          <form onSubmit={submitPaymentOptions} className="flex flex-col gap-4">
                             <span>Create new Payment Options</span>
-                            <Input label="Options" placeholder="Enter new options" value={paymentOptions} onChange={(e)=>(setPaymentOptions(e.target.value))}/>
+                            <Input 
+                            label="Options" 
+                            placeholder="Enter new options" 
+                            isInvalid={errorMessage.options? true : false}
+                            color={errorMessage.options ? "danger" : ""}
+                            errorMessage={errorMessage.options}
+                            value={paymentOptions} onChange={(e)=>(setPaymentOptions(e.target.value))}/>
                             <div className="flex gap-2 justify-end">
                               <Button 
                               fullWidth 
-                              color="primary" 
-                              onPress={submitPaymentOptions}
+                              color="primary"
+                              type="submit" 
                               isLoading={isLoading}
                               spinner={
                                   <svg
@@ -168,10 +203,18 @@ export default function CreatePayment() {
                           </Listbox>
                           <form onSubmit={submitPaymentType} className="flex flex-col gap-4">
                             <span>Create new Payment Type</span>
-                            <Input label="Type" placeholder="Enter new payment type" value={paymentType} onChange={(e)=>(setPaymentType(e.target.value))}/>
+                            <Input 
+                            label="Type" 
+                            placeholder="Enter new payment type"
+                            isInvalid={errorMessage.type? true : false}
+                            color={errorMessage.type ? "danger" : ""}
+                            errorMessage={errorMessage.type} 
+                            value={paymentType} 
+                            onChange={(e)=>(setPaymentType(e.target.value))}/>
                             <div className="flex gap-2 justify-end">
                               <Button 
-                              fullWidth color="primary" 
+                              fullWidth color="primary"
+                              type="submit" 
                               isLoading={isLoading}
                               spinner={
                                   <svg

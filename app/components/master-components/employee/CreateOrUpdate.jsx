@@ -263,7 +263,9 @@ export default function CreateUser({done}) {
     fetchJobData()
   }, [])
 
+  const [isLoading, setIsLoading] = useState(false)
   const upload = async () => {
+    setIsLoading(true);
     const files = [
       { key: 'contract', value: contract },
       { key: 'pre_employment', value: preEmploment },
@@ -299,7 +301,6 @@ export default function CreateUser({done}) {
     submit(contractID, preEmploymentID, certID)
   };
 
-const [isLoading, setIsLoading] = useState(false)
 const submit = async (id, id2, id3) => {
 
   const errorsStepThree = isInvalidStepThree()
@@ -308,7 +309,6 @@ const submit = async (id, id2, id3) => {
   }
 
   setStep(4);
-  setIsLoading(true);
   
   try {
     const newData = {
