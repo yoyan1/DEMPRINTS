@@ -199,12 +199,14 @@ export default function Addtransaction() {
           payment_options,
           sales_person: user.name,
           remarks: remarks, //calculate the balance
-          employee_id: user.id,
+          employee_id: user._id,
           // employee_id: user.id,
 
         }
+       
         
       );
+      console.log(user);
       console.log(updateId.data);
       setSuccessMessage("Transaction added successfully!");
       setItemName("");
