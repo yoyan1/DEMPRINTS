@@ -11,13 +11,17 @@ import {
   Button,
 } from "@nextui-org/react";
 
-// import { MdOutlineAlternateEmail, MdOutlineLock } from "react-icons/md";
 
-import { customer_types, transactions } from "./data";
 import axios from "axios";
 // import { formatDate } from "../../composables/formateDateAndTime";
 
+import { useUserStore } from "../../stores/userStore";
+
 export default function Addtransaction() {
+  const {user , getAuthenticateUser} = useUserStore
+
+
+  // ---------------------------------------------
   const [customer_name, setCostumerName] = useState(" ");
   const [customer_type, setCostumerType] = useState(" ");
   const [item_name, setItemName] = useState("");
@@ -48,13 +52,14 @@ export default function Addtransaction() {
   // ----------------------
 
   useEffect(() => {
+    getAuthenticateUser()
     fetchPayment();
     fetchCostumerType();
     fetchProduct();
     fetchTransactions();
     fetchPaymentType();
     fetchID();
-  }, []);
+  }, [getAuthenticateUser]);
 
   const fetchCostumerType = async () => {
     try {
@@ -191,7 +196,7 @@ export default function Addtransaction() {
           customer_name,
           payment_type,
           payment_options,
-          sales_person,
+          sales_person: user.name,
           remarks: remarks, //calculate the balance
         }
       );
