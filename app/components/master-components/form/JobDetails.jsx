@@ -1,7 +1,7 @@
 "use client"
 import React, { useEffect, useState } from 'react'
 import { useToast } from '@/hooks/use-toast'
-import { Input, Button, Listbox, ListboxItem } from '@nextui-org/react'
+import { Input, Button, Listbox, ListboxItem, Tooltip } from '@nextui-org/react'
 import { MdAdd } from 'react-icons/md'
 import { MdOutlineDeleteOutline } from "react-icons/md";
 import axios from 'axios';
@@ -62,7 +62,9 @@ export default function JobDetails({fetch}) {
             setInputFrequency('')
         }
     };
+    const [isRemove, setIsRemove ] = useState(false)
     const removeItem = (index, type) => {
+        setIsRemove(true)
         if(type === 'job'){
             setJobData((prevData) => {
                 const newList = [...prevData.job_title];
@@ -134,13 +136,14 @@ export default function JobDetails({fetch}) {
   return (
     <div>
         <div className='flex flex-col gap-4'>
+            {isRemove? <span className='text-sm text-slate-500 italic'>Note: If there are any changes, please ensure to submit them before leaving.</span> : null}
             <div className='flex flex-col md:flex-row lg:flex-row justify-evenly'>
                 <div>
                     <div className='flex gap-2 items-end'>
                         <Input radius='sm' variant='bordered' labelPlacement='outside' placeholder='Enter new job title' value={inputTitle} onChange={(e)=>(setInputTitle(e.target.value))} />
                         <Button isIconOnly onPress={addItemToList} color='primary'><MdAdd/></Button>
                     </div>
-                    <div className='p-2 bg-gray-100  my-2 max-h-[11rem] overflow-y-scroll w-full max-w-[260px] border-small px-1 py-2 rounded-small border-default-200 dark:border-default-100'>
+                    <div className='p-2 bg-gray-100 dark:bg-gray-800  my-2 max-h-[11rem] overflow-y-scroll w-full max-w-[260px] border-small px-1 py-2 rounded-small border-default-200 dark:border-default-100'>
                         <Listbox
                         variant='flat'
                         aria-label="Listbox Variants"
@@ -152,9 +155,11 @@ export default function JobDetails({fetch}) {
                                 <ListboxItem key={list}>
                                     <div className="flex justify-between items-center">
                                         <span className="text-sm">{list}</span>
-                                        <Button size='sm' isIconOnly color="danger" variant="light" onPress={() => removeItem(index, 'job')}>
-                                            <MdOutlineDeleteOutline className="h-5 w-5"/>
-                                        </Button>
+                                        <Tooltip content="Delete item, Submit before leaving">
+                                            <Button size='sm' isIconOnly color="danger" variant="light" onPress={() => removeItem(index, 'job')}>
+                                                <MdOutlineDeleteOutline className="h-5 w-5"/>
+                                            </Button>
+                                        </Tooltip>
                                     </div>
                                 </ListboxItem>
 
@@ -167,7 +172,7 @@ export default function JobDetails({fetch}) {
                         <Input radius='sm' variant='bordered' labelPlacement='outside' placeholder='Enter new department' value={inputDepartment} onChange={(e)=>(setInputDepartment(e.target.value))} />
                         <Button isIconOnly onPress={addItemToList} color='primary'><MdAdd/></Button>
                     </div>
-                    <div className='p-2 bg-gray-100  my-2 max-h-[11rem] overflow-y-scroll w-full max-w-[260px] border-small px-1 py-2 rounded-small border-default-200 dark:border-default-100'>
+                    <div className='p-2 bg-gray-100 dark:bg-gray-800  my-2 max-h-[11rem] overflow-y-scroll w-full max-w-[260px] border-small px-1 py-2 rounded-small border-default-200 dark:border-default-100'>
                         <Listbox
                         variant='flat'
                         aria-label="Listbox Variants"
@@ -179,9 +184,11 @@ export default function JobDetails({fetch}) {
                                 <ListboxItem key={list}>
                                     <div className="flex justify-between items-center">
                                         <span className="text-sm">{list}</span>
-                                        <Button size='sm' isIconOnly color="danger" variant="light" onPress={() => removeItem(index, 'department')}>
-                                            <MdOutlineDeleteOutline className="h-5 w-5"/>
-                                        </Button>
+                                        <Tooltip content="Delete item, Submit before leaving">
+                                            <Button size='sm' isIconOnly color="danger" variant="light" onPress={() => removeItem(index, 'department')}>
+                                                <MdOutlineDeleteOutline className="h-5 w-5"/>
+                                            </Button>
+                                        </Tooltip>
                                     </div>
                                 </ListboxItem>
 
@@ -196,7 +203,7 @@ export default function JobDetails({fetch}) {
                         <Input radius='sm' variant='bordered' labelPlacement='outside' placeholder='Enter new compensation basis' value={inputBasis} onChange={(e)=>(setInputBasis(e.target.value))} />
                         <Button isIconOnly onPress={addItemToList} color='primary'><MdAdd/></Button>
                     </div>
-                    <div className='p-2 bg-gray-100  my-2 max-h-[11rem] overflow-y-scroll w-full max-w-[260px] border-small px-1 py-2 rounded-small border-default-200 dark:border-default-100'>
+                    <div className='p-2 bg-gray-100 dark:bg-gray-800 my-2 max-h-[11rem] overflow-y-scroll w-full max-w-[260px] border-small px-1 py-2 rounded-small border-default-200 dark:border-default-100'>
                         <Listbox
                         variant='flat'
                         aria-label="Listbox Variants"
@@ -208,9 +215,11 @@ export default function JobDetails({fetch}) {
                                 <ListboxItem key={list}>
                                     <div className="flex justify-between items-center">
                                         <span className="text-sm">{list}</span>
-                                        <Button size='sm' isIconOnly color="danger" variant="light" onPress={() => removeItem(index, 'basis')}>
-                                            <MdOutlineDeleteOutline className="h-5 w-5"/>
-                                        </Button>
+                                        <Tooltip content="Delete item, Submit before leaving">
+                                            <Button size='sm' isIconOnly color="danger" variant="light" onPress={() => removeItem(index, 'basis')}>
+                                                <MdOutlineDeleteOutline className="h-5 w-5"/>
+                                            </Button>
+                                        </Tooltip>
                                     </div>
                                 </ListboxItem>
 
@@ -223,7 +232,7 @@ export default function JobDetails({fetch}) {
                         <Input radius='sm' variant='bordered' labelPlacement='outside' placeholder='Enter new salary frequency' value={inputFrequency} onChange={(e)=>(setInputFrequency(e.target.value))} />
                         <Button isIconOnly onPress={addItemToList} color='primary'><MdAdd/></Button>
                     </div>
-                    <div className='p-2 bg-gray-100  my-2 max-h-[11rem] overflow-y-scroll w-full max-w-[260px] border-small px-1 py-2 rounded-small border-default-200 dark:border-default-100'>
+                    <div className='p-2 bg-gray-100 dark:bg-gray-800 my-2 max-h-[11rem] overflow-y-scroll w-full max-w-[260px] border-small px-1 py-2 rounded-small border-default-200 dark:border-default-100'>
                         <Listbox
                         variant='flat'
                         aria-label="Listbox Variants"
@@ -235,9 +244,11 @@ export default function JobDetails({fetch}) {
                                 <ListboxItem key={list}>
                                     <div className="flex justify-between items-center">
                                         <span className="text-sm">{list}</span>
-                                        <Button size='sm' isIconOnly color="danger" variant="light" onPress={() => removeItem(index, 'frequency')}>
-                                            <MdOutlineDeleteOutline className="h-5 w-5"/>
-                                        </Button>
+                                        <Tooltip content="Delete item, Submit before leaving">
+                                            <Button size='sm' isIconOnly color="danger" variant="light" onPress={() => removeItem(index, 'frequency')}>
+                                                <MdOutlineDeleteOutline className="h-5 w-5"/>
+                                            </Button>
+                                        </Tooltip>
                                     </div>
                                 </ListboxItem>
 

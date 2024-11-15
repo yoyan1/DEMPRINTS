@@ -1,9 +1,11 @@
 "use client"
 import React, { useEffect, useState } from 'react'
 import { useUserStore } from "../stores/userStore"
+import { useRouter } from 'next/navigation'
 
 export default function TestPage() {
   const { user, loading, getAuthenticateUser} = useUserStore()
+  const router = useRouter()
 
   useEffect(() => {
     getAuthenticateUser()
@@ -11,6 +13,10 @@ export default function TestPage() {
 
   if (loading) {
     return <div>Loading...</div>;
+  }
+
+  if(!user && !loading) {
+    router.push('/login')
   }
 
 

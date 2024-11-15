@@ -11,22 +11,23 @@ import {
   DropdownMenu,
   DropdownItem,
 } from "@nextui-org/react";
-import {useUserStore} from '@/app/stores/userStore'
+// import  {useUserStore}  from '@/app/stores/userStore'
+import { useUserStore } from "../../stores/userStore";
 
 export default function Heading() {
-  const {user, loading , getAuthenticateUser} = useUserStore;
+  const { user, loading, getAuthenticateUser } = useUserStore;
 
-  useEffect(() =>{
+  useEffect(() => {
     getAuthenticateUser()
-  },[getAuthenticateUser]);
+  }, [getAuthenticateUser]);
 
 
-  if(loading) {
-    return(
+  if (loading) {
+    return (
       <div><Spinner label="Loading..." /></div>
     )
   }
-   
+
   return (
     <>
       {/* bg-gradient-to-tr from-blue-400 to-blue-950   */}

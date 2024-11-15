@@ -12,7 +12,7 @@ import {
 import { Input } from "@/app/components/ui/input"
 import { Label } from "@/app/components/ui/label"
 import { useUserStore } from "../stores/userStore"
-// import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation'
 
 export function LoginForm() {
   const { login, loading } = useUserStore()
@@ -27,7 +27,7 @@ export function LoginForm() {
   if (!mounted) {
     return <div>Loading...</div>; 
   }
-  // const router = useRouter()
+  const router = useRouter()
 
   const submit = async (e) =>{
     e.preventDefault()
@@ -36,7 +36,7 @@ export function LoginForm() {
       if (typeof window !== "undefined") { 
         localStorage.setItem("token", response.data.token)
       }
-      // router.push('/test')
+      router.push('/test')
     } else{
       console.log(response.data.message)
     }
@@ -79,7 +79,7 @@ export function LoginForm() {
               onChange={(e)=>(setCredentials((prevData) => ({...prevData, password: e.target.value})))}
               />
             </div>
-            <Button type="submit" className="w-full" isLoading={loading}>
+            <Button type="submit" color="primary" className="w-full" isLoading={loading}>
               Login
             </Button>
             <Button variant="outline" className="w-full">
