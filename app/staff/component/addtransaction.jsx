@@ -24,7 +24,7 @@ export default function Addtransaction() {
   // ---------------------------------------------
   const [customer_name, setCostumerName] = useState(" ");
   const [customer_type, setCostumerType] = useState(" ");
-  const [item_name, setItemName] = useState("");
+  const [item_name, setItemName] = useState(" ");
 
   const [transaction_no] = useState(0);
   const [item_no] = useState(0);
