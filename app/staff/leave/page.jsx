@@ -8,7 +8,6 @@ import {
   ModalBody,
   //   ModalFooter,
   useDisclosure,
-
   Image,
 } from "@nextui-org/react";
 import React from "react";
@@ -89,7 +88,7 @@ export default function LeavePage() {
                 <Image src="../medical.png" className="w-16 md:w-32 max-w-full max-h-full" />
               </td>
               <td className="px-6 py-4">
-                <a href="#" className="font-medium text-red-600 dark:text-red-500 hover:underline">Pending</a>
+                <span className="items-center text-justify text-red">PENDING</span>
               </td>
             </tr>
 
