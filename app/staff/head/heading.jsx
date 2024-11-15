@@ -11,11 +11,11 @@ import {
   DropdownItem,
 } from "@nextui-org/react";
 import { useUserStore } from "../../stores/userStore";
-import { useRouter } from "next/navigation";
+// import { useRouter } from "next/navigation";
 
 export default function Heading() {
   const { user, loading, getAuthenticateUser } = useUserStore();
-  const router = useRouter();
+  // const router = useRouter();
 
   useEffect(() => {
     getAuthenticateUser();
