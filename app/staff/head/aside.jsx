@@ -46,7 +46,7 @@ export default function Sidebar() {
             <Link
               href="/staff/leave"
               className={`flex text-sm  items-center gap-3 rounded-lg px-3 py-2 text-white transition-all hover:text-blue-200 text-md ${
-                pathname === "/staff/" ? "bg-blue-400 text-dark" : ""
+                pathname === "/staff/leave" ? "bg-blue-400 text-dark" : ""
               }`}
             >
               <IoSettingsSharp className="flex-shrink-0 w-6 h-6 text-sm " />
