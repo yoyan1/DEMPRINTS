@@ -24,6 +24,7 @@ export default function CreateProduct() {
   const { toast } = useToast()
   const [selected, setSelected] = useState("category");
   const [key, setKey] = useState("list");
+  const [ errorMessage, setErrorMessages ] = useState({})
   const [category, setCategory] = useState([]);
   const [category_name, setCategoryName] = useState("");
   const [unit, setUnit] = useState("");
@@ -71,8 +72,24 @@ export default function CreateProduct() {
   //     [name]: value
   //   }))
   // }
+
+  const categoryIsValid = () => {
+    const errors = {};
+    if (!category_name) errors.category_name = "This field must not be empty.";
+
+    setErrorMessages(errors);
+    return errors;
+    
+  }
   const [isLoading, setIsLoading] = useState(false);
-  const submitCategory = async () => {
+  const submitCategory = async (e) => {
+    e.preventDefault()
+
+    const errors = categoryIsValid()
+    if(Object.keys(errors).length !== 0){
+      return
+    }
+
     setIsLoading(true);
     const response = await axios.post(
       `https://demprints-backend.vercel.app/api/master/createCategory`,
@@ -89,7 +106,22 @@ export default function CreateProduct() {
     fetchProductsData();
     setCategoryName("");
   };
-  const submitMeasurement = async () => {
+
+  const unitIsValid = () => {
+    const errors = {};
+    if (!unit) errors.unit = "This field must not be empty.";
+    setErrorMessages(errors);
+    return errors;
+    
+  }
+  const submitMeasurement = async (e) => {
+    e.preventDefault()
+
+    const errors = unitIsValid()
+    if(Object.keys(errors).length !== 0){
+      return
+    }
+
     setIsLoading(true);
     const response = await axios.post(
       `https://demprints-backend.vercel.app/api/master/createMeasurement`,
@@ -107,7 +139,27 @@ export default function CreateProduct() {
     setUnit("");
   };
 
-  const submitProduct = async () => {
+  const productIsValid = () => {
+
+    const errors = {};
+    if(!productData.name) errors.name = "This field must not be empty."
+    if(!productData.category) errors.category = "This field must not be empty."
+    if(!productData.unit) errors.product_unit = "This field must not be empty."
+    if(!productData.price) errors.price = "This field must not be empty."
+    if(productData.price <= 0) errors.price = "Price is invalid."
+
+    setErrorMessages(errors);
+    return errors;
+    
+  }
+  const submitProduct = async (e) => {
+    e.preventDefault()
+
+    const errors = productIsValid()
+    if(Object.keys(errors).length !== 0){
+      return
+    }
+
     setIsLoading(true);
     const response = await axios.post(
       `https://demprints-backend.vercel.app/api/master/createProduct`,
@@ -161,20 +213,21 @@ export default function CreateProduct() {
                       onSelectionChange={setSelected}
                     >
                       <Tab key="category" title="Category">
-                        <form className="flex flex-col gap-4">
+                        <form onSubmit={submitCategory} className="flex flex-col gap-4">
                           <span>Create Product Category</span>
                           <Input
                             isRequired
                             label="Category"
                             placeholder="Enter category"
-                            type="email"
+                            isInvalid={errorMessage.category_name? true : false}
+                            color={errorMessage.category_name ? "danger" : ""}
+                            errorMessage={errorMessage.category_name}
                             value={category_name}
                             onChange={(e) => setCategoryName(e.target.value)}
                           />
                           <div className="flex gap-2 justify-end">
                             <Button
                               type="submit"
-                              onPress={submitCategory}
                               fullWidth
                               color="primary"
                               isLoading={isLoading}
@@ -233,19 +286,22 @@ export default function CreateProduct() {
                         </Listbox>
                       </Tab>
                       <Tab key="unit" title="Measurement">
-                        <form className="flex flex-col gap-4">
+                        <form onSubmit={submitMeasurement} className="flex flex-col gap-4">
                           <span>Create Unit of Measurement</span>
                           <Input
                             isRequired
                             label="Unit"
                             placeholder="Unit of measurement"
+                            isInvalid={errorMessage.unit? true : false}
+                            color={errorMessage.unit ? "danger" : ""}
+                            errorMessage={errorMessage.unit}
                             value={unit}
                             onChange={(e) => setUnit(e.target.value)}
                           />
                           <div className="flex gap-2 justify-end">
                             <Button
-                              onPress={submitMeasurement}
                               fullWidth
+                              type="submit"
                               color="primary"
                               isLoading={isLoading}
                               spinner={
@@ -370,10 +426,13 @@ export default function CreateProduct() {
                             </Listbox>
                           </Tab>
                           <Tab key="new" title="Create new">
-                            <form className="flex flex-col gap-4">
+                            <form onSubmit={submitProduct} className="flex flex-col gap-4">
                               <span>Create Product</span>
                               <Select
                                 label="Select an category"
+                                isInvalid={errorMessage.category? true : false}
+                                color={errorMessage.category ? "danger" : ""}
+                                errorMessage={errorMessage.category}
                                 value={productData.category}
                                 name="category"
                                 onChange={(e) =>
@@ -393,6 +452,9 @@ export default function CreateProduct() {
                                 isRequired
                                 label="Product name"
                                 placeholder="Enter product name"
+                                isInvalid={errorMessage.name? true : false}
+                                color={errorMessage.name ? "danger" : ""}
+                                errorMessage={errorMessage.name}
                                 value={productData.name}
                                 name="name"
                                 onChange={(e) =>
@@ -404,6 +466,9 @@ export default function CreateProduct() {
                               />
                               <Select
                                 label="Select a unit"
+                                isInvalid={errorMessage.product_unit? true : false}
+                                color={errorMessage.product_unit ? "danger" : ""}
+                                errorMessage={errorMessage.product_unit}
                                 value={productData.unit}
                                 name="unit"
                                 onChange={(e) =>
@@ -424,6 +489,9 @@ export default function CreateProduct() {
                                 type="number"
                                 label="Product price"
                                 placeholder="Enter product name"
+                                isInvalid={errorMessage.price? true : false}
+                                color={errorMessage.price ? "danger" : ""}
+                                errorMessage={errorMessage.price}
                                 value={productData.price}
                                 name="price"
                                 onChange={(e) =>
@@ -435,7 +503,7 @@ export default function CreateProduct() {
                               />
                               <div className="flex gap-2 justify-end">
                                 <Button
-                                  onPress={submitProduct}
+                                  type="submit"
                                   fullWidth
                                   color="primary"
                                   isLoading={isLoading}

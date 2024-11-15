@@ -13,6 +13,7 @@ export default function CreateExpenses() {
   const {isOpen, onOpen, onClose} = useDisclosure();
   const { toast } = useToast()
   const { categoryList, fetchExpensesCategory } = useExpensesStore()
+  const [ errorMessage, setErrorMessages ] = useState({})
   const [selected, setSelected] = useState("operational");
   const [category, setCategory] = useState({name: '', list: []})
   const [inputValue, setInputValue] = useState('')
@@ -49,9 +50,22 @@ export default function CreateExpenses() {
         })
     };    
 
+    const isValid = () => {
+        const errors = {};
+        if(!category.name) errors.name = "This field must not be empty."
+    
+        setErrorMessages(errors);
+        return errors;    
+    }
 
     const [isLoading, setIsLoading] = useState(false)
     const submit = async () =>{
+
+        const errors = isValid()
+        if(Object.keys(errors).length !== 0){
+          return
+        }
+
         setIsLoading(true)
         if(inputValue.trim() !== ''){
             const newItem = inputValue;
@@ -129,7 +143,14 @@ export default function CreateExpenses() {
                                             <form>
                                                 <div className="flex flex-col gap-3">
                                                     <div className="flex gap-4 items-end pb-5">
-                                                        <Input onChange={handleNameChange} value={category.name} label="Category" placeholder="Enter new category"/>
+                                                        <Input 
+                                                        onChange={handleNameChange}
+                                                        isInvalid={errorMessage.name? true : false}
+                                                        color={errorMessage.name ? "danger" : ""}
+                                                        errorMessage={errorMessage.name} 
+                                                        value={category.name} 
+                                                        label="Category" 
+                                                        placeholder="Enter new category"/>
                                                     </div>
                                                     {category.name != ''? (
                                                         <div>
