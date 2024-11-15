@@ -119,7 +119,7 @@ export default function Addtransaction() {
   const fetchTransactions = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/collection/getTransaction`
+        `https://demprints-backend.vercel.app/api/collection/getTransaction`
       );
       setTransaction(response.data);
       console.log(response.data);
@@ -131,7 +131,7 @@ export default function Addtransaction() {
   // const handleDelete = async (id) => {
   //   try {
   //     const response = await axios.delete(
-  //       `http://localhost:5000/api/collection/deletetransaction/${id}`
+  //       `https://demprints-backend.vercel.app/api/collection/deletetransaction/${id}`
   //     );
   //     console.log(response.data);
   //   } catch (error) {
@@ -293,7 +293,7 @@ export default function Addtransaction() {
     const fetchTransactions = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:5000/api/collection/getTransaction"
+          "https://demprints-backend.vercel.app/api/collection/getTransaction"
         );
         setTransactions(response.data); // Assuming the response is an array
       } catch (error) {
