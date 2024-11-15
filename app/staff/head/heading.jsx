@@ -27,7 +27,9 @@ export default function Heading() {
       <div><Spinner label="Loading..." /></div>
     )
   }
-
+  if(!user && !loading) {
+    router.push('/login')
+  }
   return (
     <>
       {/* bg-gradient-to-tr from-blue-400 to-blue-950   */}
