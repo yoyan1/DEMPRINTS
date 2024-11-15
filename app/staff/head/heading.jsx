@@ -27,10 +27,10 @@ export default function Heading() {
     );
   }
 
-  if (!user && !loading) {
-    router.push('/login');
-    return null; 
-  }
+  // if (!user && !loading) {
+  //   router.push('/login');
+  //   return null; 
+  // }
 
   return (
     <>
