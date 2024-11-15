@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect } from "react";
-import { Spinner } from "@nextui-org/react";
+// import { Spinner } from "@nextui-org/react";
 import { Image } from "@nextui-org/image";
 import {
   Dropdown,
@@ -14,18 +14,18 @@ import { useUserStore } from "../../stores/userStore";
 // import { useRouter } from "next/navigation";
 
 export default function Heading() {
-  const { user, loading, getAuthenticateUser } = useUserStore();
+  const { user, getAuthenticateUser } = useUserStore();
   // const router = useRouter();
 
   useEffect(() => {
     getAuthenticateUser();
   }, [getAuthenticateUser]);
 
-  if (loading) {
-    return (
-      <div><Spinner label="Loading..." /></div>
-    );
-  }
+  // if (loading) {
+  //   return (
+  //     <div><Spinner label="Loading..." /></div>
+  //   );
+  // }
 
   // if (!user && !loading) {
   //   router.push('/login');
