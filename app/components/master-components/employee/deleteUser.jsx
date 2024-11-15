@@ -20,6 +20,7 @@ export default function DeleteUser({ id, refresh }) {
       description: data.message,
     })
   }
+  
   const deleteItem = async() =>{
     setIsLoading(true)
     console.log(id)

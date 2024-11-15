@@ -21,7 +21,7 @@ export default function page() {
   return (
     <main>
         <Toaster/>
-        <div className='flex justify-between items-center w-full p-3'>
+        <div className='flex justify-between items-center w-full p-3 bg-blue-950 text-slate-100'>
             <div className='flex items-center gap-2'>
                 <Avatar src="/LogoV3.jpg" size="md" />
                 <p className="font-bold text-inherit">DEMPRINTS</p>
@@ -65,11 +65,11 @@ export default function page() {
                 </Dropdown>              
             </div>
         </div>
-        <div className="bg-slate-100 dark:bg-gray-900 p-10">
+        <div className="bg-slate-300 dark:bg-gray-900 p-10">
             <div className="flex flex-col gap-10 justify-center items-center h-full">
                 <div className='flex gap-5 flex-col md:flex-row lg:flex-row'>
                     <div className="flex-1 relative flex flex-col justify-between rounded-xl bg-white dark:bg-black bg-clip-border text-gray-700 shadow-md">
-                        <div className="flex justify-center items-center relative mx-4 -mt-6 h-40 overflow-hidden rounded-xl bg-blue-gray-500 bg-clip-border text-white shadow-lg shadow-blue-gray-500/40 bg-gradient-to-r from-blue-500 to-blue-600">
+                        <div className="flex justify-center items-center relative mx-4 -mt-6 h-40 overflow-hidden rounded-xl bg-blue-gray-500 bg-clip-border text-white shadow-lg shadow-blue-gray-500/40 bg-gradient-to-r from-blue-900 to-blue-800">
                             <CgProfile className="w-32 h-32"/>
                         </div>
                         <div className="py-3 px-6">
@@ -83,7 +83,7 @@ export default function page() {
                         </div>
                     </div>
                     <div className="flex-1 relative flex flex-col justify-between rounded-xl bg-white dark:bg-black bg-clip-border text-gray-700 shadow-md">
-                        <div className="flex justify-center items-center relative mx-4 -mt-6 h-40 overflow-hidden rounded-xl bg-blue-gray-500 bg-clip-border text-white shadow-lg shadow-blue-gray-500/40 bg-gradient-to-r from-blue-500 to-blue-600">
+                        <div className="flex justify-center items-center relative mx-4 -mt-6 h-40 overflow-hidden rounded-xl bg-blue-gray-500 bg-clip-border text-white shadow-lg shadow-blue-gray-500/40 bg-gradient-to-r from-blue-900 to-blue-800">
                             <FaBoxOpen className="w-32 h-32"/>
                         </div>
                         <div className="py-3 px-6">
@@ -97,7 +97,7 @@ export default function page() {
                         </div>
                     </div>
                     <div className="flex-1 relative flex flex-col justify-between rounded-xl bg-white dark:bg-black bg-clip-border text-gray-700 shadow-md">
-                        <div className="flex justify-center items-center relative mx-4 -mt-6 h-40 overflow-hidden rounded-xl bg-blue-gray-500 bg-clip-border text-white shadow-lg shadow-blue-gray-500/40 bg-gradient-to-r from-blue-500 to-blue-600">
+                        <div className="flex justify-center items-center relative mx-4 -mt-6 h-40 overflow-hidden rounded-xl bg-blue-gray-500 bg-clip-border text-white shadow-lg shadow-blue-gray-500/40 bg-gradient-to-r from-blue-900 to-blue-800">
                             <FaUsersBetweenLines className="w-32 h-32"/>
                         </div>
                         <div className="py-3 px-6">
@@ -113,7 +113,7 @@ export default function page() {
                 </div>
                 <div className='flex gap-5 flex-col md:flex-row lg:flex-row'>
                     <div className="flex-1 relative flex flex-col justify-between rounded-xl bg-white dark:bg-black bg-clip-border text-gray-700 shadow-md">
-                        <div className="flex justify-center items-center relative mx-4 -mt-6 h-40 overflow-hidden rounded-xl bg-blue-gray-500 bg-clip-border text-white shadow-lg shadow-blue-gray-500/40 bg-gradient-to-r from-blue-500 to-blue-600">
+                        <div className="flex justify-center items-center relative mx-4 -mt-6 h-40 overflow-hidden rounded-xl bg-blue-gray-500 bg-clip-border text-white shadow-lg shadow-blue-gray-500/40 bg-gradient-to-r from-blue-900 to-blue-800">
                             <VscOrganization className="w-32 h-32"/>
                         </div>
                         <div className="py-3 px-6">
@@ -127,7 +127,7 @@ export default function page() {
                         </div>
                     </div>
                     <div className="flex-1 relative flex flex-col justify-between rounded-xl bg-white dark:bg-black bg-clip-border text-gray-700 shadow-md">
-                        <div className="flex justify-center items-center relative mx-4 -mt-6 h-40 overflow-hidden rounded-xl bg-blue-gray-500 bg-clip-border text-white shadow-lg shadow-blue-gray-500/40 bg-gradient-to-r from-blue-500 to-blue-600">
+                        <div className="flex justify-center items-center relative mx-4 -mt-6 h-40 overflow-hidden rounded-xl bg-blue-gray-500 bg-clip-border text-white shadow-lg shadow-blue-gray-500/40 bg-gradient-to-r from-blue-900 to-blue-800">
                             <FaCashRegister className="w-32 h-32"/>
                         </div>
                         <div className="py-3 px-6">
@@ -141,7 +141,7 @@ export default function page() {
                         </div>
                     </div>
                     <div className="flex-1 relative flex flex-col justify-between rounded-xl bg-white dark:bg-black bg-clip-border text-gray-700 shadow-md">
-                        <div className="flex justify-center items-center relative mx-4 -mt-6 h-40 overflow-hidden rounded-xl bg-blue-gray-500 bg-clip-border text-white shadow-lg shadow-blue-gray-500/40 bg-gradient-to-r from-blue-500 to-blue-600">
+                        <div className="flex justify-center items-center relative mx-4 -mt-6 h-40 overflow-hidden rounded-xl bg-blue-gray-500 bg-clip-border text-white shadow-lg shadow-blue-gray-500/40 bg-gradient-to-r from-blue-900 to-blue-800">
                             <TbReportMoney className="w-32 h-32"/>
                         </div>
                         <div className="py-3 px-6">

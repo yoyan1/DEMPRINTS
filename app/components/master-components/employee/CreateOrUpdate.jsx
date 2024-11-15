@@ -56,7 +56,7 @@ export default function CreateUser({done}) {
   const [credentials, setCredentials] = useState({
     email: "",
     password: "",
-    role: "staff",
+    role: "",
     firstname: "",
     middlename: "",
     lastname: "",
@@ -100,12 +100,30 @@ export default function CreateUser({done}) {
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    setCredentials((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
+    if(name === 'contact_number' && value.length < 11){
+      setCredentials((prevData) => ({
+        ...prevData,
+        [name]: value,
+      }));
+    } else if(name !== 'contact_number'){
+      setCredentials((prevData) => ({
+        ...prevData,
+        [name]: value,
+      }));
+    }
     setErrorMessages((prev) => ({ ...prev, [name]: "" }));
   };
+
+  const handleContactNumberChange = (e) =>{
+    const value = e.target.value
+
+    if(value.length < 11){
+      setContactPerson((prevData) => ({
+        ...prevData,
+        contact_number: value,
+      }));
+    }
+  }
 
   const handleChangeContact = (e) => {
     const { name, value } = e.target;
@@ -123,10 +141,17 @@ export default function CreateUser({done}) {
   const handleChangeBenefit = (e) => {
     const { name, value } = e.target;
 
-    setMandatoryBenefit((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
+    if(name === 'ss_no' && value.length < 11) {
+      setMandatoryBenefit((prevData) => ({
+        ...prevData,
+        [name]: value,
+      }));
+    } else if(name === "pab_ibig_no" && value.length < 12 || name === "philhealth" && value.length < 12){
+      setMandatoryBenefit((prevData) => ({
+        ...prevData,
+        [name]: value,
+      }));
+    }
 
     setCredentials((prevData) => ({
       ...prevData,
@@ -148,6 +173,7 @@ export default function CreateUser({done}) {
 
   const isValidStepOne = () =>{
     const errors = {};
+    if (!credentials.role) errors.role = "Role is required.";
     if (!credentials.email) errors.email = "Email is required.";
     if (credentials.email && !validateEmail(credentials.email))
       errors.email = "Email is invalid.";
@@ -164,15 +190,23 @@ export default function CreateUser({done}) {
     if (!credentials.gender) errors.gender = "Gender is required.";
     if (!credentials.birth_date) errors.birth_date = "Birth date is required.";
     if (!mandatoryBenefit.ss_no === 0) errors.ss_no = "SS number is required.";
+    if (mandatoryBenefit.ss_no.length < 10) errors.ss_no = "SS number is invalid.";
     if (!mandatoryBenefit.pab_ibig_no === 0) errors.pag_ibig_no = "Pag-ibig number is required.";
+    if (mandatoryBenefit.pab_ibig_no.length < 11) errors.pag_ibig_no = "Pag-ibig is invalid.";
     if (!mandatoryBenefit.philhealth === 0) errors.philhealth = "Philhealth number is required.";
+    if (mandatoryBenefit.philhealth.length < 11) errors.philhealth = "Philhealth number is invalid.";
     if (!contactPerson.name) errors.name = "Contact name is required.";
     if (!contactPerson.address) errors.contact_address = "Contact address is required.";
     if (!contactPerson.contact_number) errors.person_contact_number = "Person contact number is required.";
+    if (contactPerson.contact_number.length < 10) errors.person_contact_number = "Contact number is invalid.";
     if (!contactPerson.relationship) errors.relationship = "Contact person relationship is required.";
     if (!credentials.address) errors.address = "Address is required.";
+    if (!credentials.contact_number) errors.contact_number = "Contact number is required.";
+    if (credentials.contact_number.length < 10) errors.contact_number = "Contact number is Invalid.";
     if (!credentials.contact_email)
       errors.contact_email = "Contact email is required.";
+    if (credentials.contact_email && !validateEmail(credentials.contact_email))
+      errors.email = "Email is invalid.";
     
     setErrorMessages(errors);
     return errors;
@@ -280,7 +314,7 @@ const submit = async (id, id2, id3) => {
     const newData = {
       email: credentials.email,
       password: credentials.password,
-      role: "staff",
+      role: credentials.role,
       firstname: credentials.firstname,
       middlename: credentials.middlename,
       lastname: credentials.lastname,
@@ -377,6 +411,20 @@ const submit = async (id, id2, id3) => {
                             {step === 1 ? (
                               <div className="flex flex-col">
                                 <span>Credentials</span>
+                                <Select
+                                  label="System role"
+                                  className="w-36 py-2"
+                                  placeholder="Select Role"
+                                  name="role"
+                                  isInvalid={errorMessages.role? true : false}
+                                  color={errorMessages.role ? "danger" : ""}
+                                  errorMessage={errorMessages.role}
+                                  value={credentials.role}
+                                  onChange={handleChange}
+                                >
+                                  <SelectItem key="employee">Employee</SelectItem>
+                                  <SelectItem key="admin">System Admin</SelectItem>
+                                </Select>
                                 <div className="flex flex-col sm:flex-row md:flex-row lg:flex-row gap-5 pt-3">
                                   <Input radius="sm"
                                     type="email"
@@ -547,7 +595,11 @@ const submit = async (id, id2, id3) => {
                                         
                                         label="Contact #"
                                         placeholder="Enter contact number"
-                                        
+                                        startContent={
+                                          <div className="pointer-events-none flex items-center">
+                                            <span className="text-default-400 text-small">(+63)</span>
+                                          </div>
+                                        }
                                         name="contact_number"
                                         isInvalid={errorMessages.contact_number? true : false}
                                         color={errorMessages.contact_number ? "danger" : ""}
@@ -604,7 +656,7 @@ const submit = async (id, id2, id3) => {
                                           color={errorMessages.person_contact_number ? "danger" : ""}
                                           errorMessage={errorMessages.person_contact_number}
                                           value={contactPerson.contact_number}
-                                          onChange={handleChangeContact}
+                                          onChange={handleContactNumberChange}
                                         />
                                         {/* <Input radius="sm"
                                           type="email"
