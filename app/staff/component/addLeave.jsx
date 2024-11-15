@@ -1,12 +1,12 @@
 "use client";
 
 import { Input, Textarea, Button } from "@nextui-org/react";
-import React, { useState } from "react";
+// import React, { useState } from "react";
 
 export default function AddLeave() {
-    const [leave_title, setLeaveTitle] = useState('')
-    const [upload, setUpload] = useState('')
-    const [description, setDescription ] = useState('')
+    // const [leave_title, setLeaveTitle] = useState('')
+    // const [upload, setUpload] = useState('')
+    // const [description, setDescription ] = useState('')
 
   return (
     <>

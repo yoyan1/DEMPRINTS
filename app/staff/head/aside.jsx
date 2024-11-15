@@ -33,7 +33,7 @@ export default function Sidebar() {
             </Link>
 
             <Link
-              href="/staff/transaction"
+              href="/staff/transactions"
               className={`flex text-sm  items-center gap-3 rounded-lg px-3 py-2 text-white transition-all hover:text-blue-200 text-md ${
                 pathname === "/staff/transaction" ? "bg-blue-400 text-dark" : ""
               }`}
@@ -43,6 +43,17 @@ export default function Sidebar() {
                 Transaction
               </span>
             </Link>
+            <Link
+              href="/staff/leave"
+              className={`flex text-sm  items-center gap-3 rounded-lg px-3 py-2 text-white transition-all hover:text-blue-200 text-md ${
+                pathname === "/staff/" ? "bg-blue-400 text-dark" : ""
+              }`}
+            >
+              <IoSettingsSharp className="flex-shrink-0 w-6 h-6 text-sm " />
+              <span className="flex-1 ml-3 text-left whitespace-nowrap">
+                Leave
+              </span>
+              </Link>
             <Link
               href="/staff/transaction"
               className={`flex text-sm  items-center gap-3 rounded-lg px-3 py-2 text-white transition-all hover:text-blue-200 text-md ${
