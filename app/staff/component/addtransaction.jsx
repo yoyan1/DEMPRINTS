@@ -218,7 +218,7 @@ export default function Addtransaction() {
 
   const handleQuantityChange = (newQuantity) => {
     const selectedProduct = products.find((item) => item.name === item_name && item.unit === unit_cost);
-    const totalItemCost = selectedProduct 
+    const totalItemCost = selectedProduct
       ? selectedProduct.price * newQuantity
       : 0;
     setQuantity(newQuantity);
@@ -249,15 +249,7 @@ export default function Addtransaction() {
     setQuantity(0);
     setAmount(0);
     setTotal(0)
-    // setAmount(newAmount);
-    // console.log(newUnitCost)
-    // // Calculate total after applying discount and subtracting paid amount
-    // const discountAmount =
-    //   discount > 100 ? discount : (newAmount * discount) / 100;
-    // const newTotal = newAmount - discountAmount - paid_amount;
-    
-    // const roundOfftotal = Math.round(newTotal * 100) / 100;
-    // setTotal(roundOfftotal);
+
   };
 
   const handlePaidAmount = (newPaidAmount) => {
@@ -273,18 +265,7 @@ export default function Addtransaction() {
   };
 
   const handleClose = () => {
-    // FormData={
-    //   costumer_name:'',
-    //       customer_type :"",
-    //       item_name:'',
-    //       quantity:'',
-    //       unit_cost:'',
-    //       discount: '',
-    //       amount:'',
-    //       total:'',
-    //        payment_options,:'',
-    //       sales_person:'',
-    // }
+
     setSuccessMessage("");
   };
   // ----------------------------------
@@ -362,7 +343,7 @@ export default function Addtransaction() {
             isRequired
             value={unit_cost}
             variant="bordered"
-            onChange={(event) => {handleUnitCostChange(event.target.value);}}
+            onChange={(event) => { handleUnitCostChange(event.target.value); }}
           >
             {products
               .filter((product) => product.name === item_name) // Filter by product name
