@@ -18,7 +18,7 @@ import axios from "axios";
 import { useUserStore } from "../../stores/userStore";
 
 export default function Addtransaction() {
-  const {user , getAuthenticateUser} = useUserStore
+  const {user , getAuthenticateUser} = useUserStore();
 
 
   // ---------------------------------------------
