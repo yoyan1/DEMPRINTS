@@ -544,7 +544,7 @@ export default function Addtransaction() {
           isDisabled={isSubmiting}
           
         >
-          {isSubmiting ? 'Submiting...' : 'Submit'}
+          Submit
         </Button>
       </div>
 
