@@ -228,6 +228,8 @@ export default function Addtransaction() {
       setisSubmmiting(true)
     } catch (error) {
       console.log("Failed", error);
+    }finally{
+      setisSubmmiting(false)
     }
   };
 
