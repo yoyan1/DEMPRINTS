@@ -540,7 +540,8 @@ export default function Addtransaction() {
           style={{ width: "4rem" }}
           onClick={handleSubmit}
           type="submit"
-          disabled={isSubmiting}
+          isDisabled={isSubmiting}
+          
         >
           {isSubmiting ? 'Submiting...' : 'Submit'}
         </Button>
