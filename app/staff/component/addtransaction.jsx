@@ -125,6 +125,7 @@ export default function Addtransaction() {
   };
 
   const fetchTransactions = async () => {
+    setIs
     try {
       const response = await axios.get(
         `https://demprints-backend.vercel.app/api/collection/getTransaction`
@@ -229,8 +230,6 @@ export default function Addtransaction() {
       
     } catch (error) {
       console.log("Failed", error);
-    }finally{
-      setisSubmmiting(false)
     }
   };
 
