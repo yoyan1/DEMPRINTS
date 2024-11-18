@@ -423,7 +423,7 @@ export default function Transaction() {
   return (
     <div>
       {topContent}
-      <div className="max-w-[82rem] overflow-x-scroll">
+      <div className=" overflow-x-scroll">
         <Modal
           size="lg"
           isOpen={isAddTransactionOpen}

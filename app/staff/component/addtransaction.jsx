@@ -18,13 +18,13 @@ import axios from "axios";
 import { useUserStore } from "../../stores/userStore";
 
 export default function Addtransaction() {
-  const {user , getAuthenticateUser} = useUserStore();
+  const { user, getAuthenticateUser } = useUserStore();
 
 
   // ---------------------------------------------
   const [customer_name, setCostumerName] = useState(" ");
   const [customer_type, setCostumerType] = useState(" ");
-  const [item_name, setItemName] = useState("");
+  const [item_name, setItemName] = useState(" ");
 
   const [transaction_no] = useState(0);
   const [item_no] = useState(0);
@@ -39,7 +39,7 @@ export default function Addtransaction() {
   const [sales_person, setSalesPerson] = useState(" ");
   const [success_message, setSuccessMessage] = useState(" ");
   const [payment_type, setPaymentType] = useState(" ");
-  const [employee_id] = useState('')
+  const [employee_id, setEmployeId] = useState('')
   // ----------------------
 
   const [payment, setPaymentt] = useState([""]);
@@ -48,6 +48,8 @@ export default function Addtransaction() {
   const [products, setProduct] = useState([""]);
   const [unit, setUnit] = useState([""]);
   const [setTransaction] = useState([""]);
+  // ------------------------
+  const [isSubmiting, setisSubmmiting] = useState(false)
   // ----------------------
   const [idGenerated, setIdGenerated] = useState([{ _id: "", count: 0 }]);
   // ----------------------
@@ -123,6 +125,7 @@ export default function Addtransaction() {
   };
 
   const fetchTransactions = async () => {
+    setIs
     try {
       const response = await axios.get(
         `https://demprints-backend.vercel.app/api/collection/getTransaction`
@@ -146,6 +149,7 @@ export default function Addtransaction() {
   // };
 
   const handleSubmit = async () => {
+    setisSubmmiting(true)
     try {
       const currentDate = new Date();
       const formattedDate = currentDate.toISOString().split("T")[0]; // Format date as YYYY-MM-DD
@@ -197,12 +201,16 @@ export default function Addtransaction() {
           customer_name,
           payment_type,
           payment_options,
-          remarks: remarks, //calculate the balance
           sales_person: user.name,
+          remarks: remarks, //calculate the balance
           employee_id: user.id,
+          // employee_id: user.id,
 
         }
+
+
       );
+      console.log('user ID added', user._id);
       console.log(updateId.data);
       setSuccessMessage("Transaction added successfully!");
       setItemName("");
@@ -219,6 +227,7 @@ export default function Addtransaction() {
       setSalesPerson("");
       setRemarks("");
       console.log(response.data);
+      
     } catch (error) {
       console.log("Failed", error);
     }
@@ -531,8 +540,10 @@ export default function Addtransaction() {
           style={{ width: "4rem" }}
           onClick={handleSubmit}
           type="submit"
+          isDisabled={isSubmiting}
+          
         >
-          Save
+          Submit
         </Button>
       </div>
 
@@ -540,29 +551,9 @@ export default function Addtransaction() {
         <div className="flex items-center w-full max-w-xs p-1" role="alert">
           <div className="text-sm font-normal text-green-900">
             {success_message}
+
           </div>
-          <button
-            type="button"
-            className="ms-auto -mx-1.5 -my-1.5 bg-black text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 p-1.5"
-            aria-label="Close"
-            onClick={() => setSuccessMessage("")}
-          >
-            <span className="sr-only">Close</span>
-            <svg
-              className="w-3 h-3"
-              aria-hidden="true"
-              fill="none"
-              viewBox="0 0 14 14"
-            >
-              <path
-                stroke="currentColor"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
-              />
-            </svg>
-          </button>
+
         </div>
       )}
     </>
