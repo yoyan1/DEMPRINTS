@@ -22,27 +22,27 @@ export default function Delete({ id, type, done, collection }) {
   const deleteItem = async() =>{
     setIsLoading(true)
     if(collection === 'products'){
-      const response = await axios.delete(`https://demprints-backend.vercel.app/api/master/products/${id}`)
+      const response = await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/master/products/${id}`)
       console.log(response.data);
       onDeleted(response.data)
       done(response.data)
     }
     if(collection === 'payments'){
-      const response = await axios.delete(`https://demprints-backend.vercel.app/api/master/deletePaymentMethod/${id}`)
+      const response = await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/master/deletePaymentMethod/${id}`)
       console.log(response.data);
       onDeleted(response.data)
       done(response.data)
     }
     
     if(collection === 'expenses'){
-      const response = await axios.delete(`https://demprints-backend.vercel.app/api/master/deleteExpensesCategory/${id}`)
+      const response = await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/master/deleteExpensesCategory/${id}`)
       console.log(response.data);
       onDeleted(response.data)
       done(response.data)
 
     }
     if(collection === 'customerType'){
-      const response = await axios.delete(`https://demprints-backend.vercel.app/api/master/deleteCustomerType/${id}`)
+      const response = await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/master/deleteCustomerType/${id}`)
       console.log(response.data);
       onDeleted(response.data)
       done(response.data)

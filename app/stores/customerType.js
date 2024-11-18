@@ -8,7 +8,7 @@ export const useCustomerType = create((set) => ({
     fetchCustomerType: async () => {
         set({ loading: true });
         try {
-        const response = await fetch(`https://demprints-backend.vercel.app/api/master/getCustomerType`); 
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/master/getCustomerType`); 
         if (!response.ok) throw new Error('Network response was not ok');
         const data = await response.json();
         set({ customerType: data, loading: false });

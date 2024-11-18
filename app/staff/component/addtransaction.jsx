@@ -67,7 +67,7 @@ export default function Addtransaction() {
   const fetchCostumerType = async () => {
     try {
       const response = await axios.get(
-        `https://demprints-backend.vercel.app/api/master/getCustomerType`
+        `${process.env.NEXT_PUBLIC_API_URL}/master/getCustomerType`
       );
       setCostumertype(response.data);
       console.log(response.data);
@@ -78,7 +78,7 @@ export default function Addtransaction() {
   const fetchPayment = async () => {
     try {
       const response = await axios.get(
-        `https://demprints-backend.vercel.app/api/master/getPaymentOptions`
+        `${process.env.NEXT_PUBLIC_API_URL}/master/getPaymentOptions`
       );
       setPaymentt(response.data);
       console.log(response.data);
@@ -89,7 +89,7 @@ export default function Addtransaction() {
   const fetchPaymentType = async () => {
     try {
       const response = await axios.get(
-        `https://demprints-backend.vercel.app/api/master/getPaymentType`
+        `${process.env.NEXT_PUBLIC_API_URL}/master/getPaymentType`
       );
       setPaymenttype(response.data);
       console.log(response.data);
@@ -101,7 +101,7 @@ export default function Addtransaction() {
   const fetchProduct = async () => {
     try {
       const response = await axios.get(
-        `https://demprints-backend.vercel.app/api/master/products`
+        `${process.env.NEXT_PUBLIC_API_URL}/master/products`
       );
       setProduct(response.data);
       console.log(response.data);
@@ -113,7 +113,7 @@ export default function Addtransaction() {
   const fetchID = async () => {
     try {
       const response = await axios.get(
-        `https://demprints-backend.vercel.app/api/collection/getId`
+        `${process.env.NEXT_PUBLIC_API_URL}/collection/getId`
       );
       if (response.data.length > 0) {
         setIdGenerated(response.data);
@@ -128,7 +128,7 @@ export default function Addtransaction() {
     setIs
     try {
       const response = await axios.get(
-        `https://demprints-backend.vercel.app/api/collection/getTransaction`
+        `${process.env.NEXT_PUBLIC_API_URL}/collection/getTransaction`
       );
       setTransaction(response.data);
       console.log(response.data);
@@ -140,7 +140,7 @@ export default function Addtransaction() {
   // const handleDelete = async (id) => {
   //   try {
   //     const response = await axios.delete(
-  //       `https://demprints-backend.vercel.app/api/collection/deletetransaction/${id}`
+  //       `${process.env.NEXT_PUBLIC_API_URL}/collection/deletetransaction/${id}`
   //     );
   //     console.log(response.data);
   //   } catch (error) {
@@ -156,7 +156,7 @@ export default function Addtransaction() {
       const formattedTime = currentDate.toTimeString().split(" ")[0];
 
       const responseID = await axios.get(
-        `https://demprints-backend.vercel.app/api/collection/getId`
+        `${process.env.NEXT_PUBLIC_API_URL}/collection/getId`
       );
 
       const generatedID =
@@ -185,7 +185,7 @@ export default function Addtransaction() {
         { id: idGenerated[0]._id, count: newId }
       );
       const response = await axios.post(
-        `https://demprints-backend.vercel.app/api/collection/addtransaction`,
+        `${process.env.NEXT_PUBLIC_API_URL}/collection/addtransaction`,
         {
           date: formattedDate,
           time: formattedTime,

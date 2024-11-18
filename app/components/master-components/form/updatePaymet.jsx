@@ -15,7 +15,7 @@ export default function UpdateProduct({ data, type, done, }) {
   const updateItem = async () =>{
     setIsLoading(true)
     try{
-      const response = await axios.post(`https://demprints-backend.vercel.app/api/master/updatePaymentMethod/${data._id}`, {name: inputValue} )
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/master/updatePaymentMethod/${data._id}`, {name: inputValue} )
       console.log(response);
       toast({
         variant: "outline",
