@@ -148,6 +148,7 @@ export default function Addtransaction() {
   // };
 
   const handleSubmit = async () => {
+    setisSubmmiting(true)
     try {
       const currentDate = new Date();
       const formattedDate = currentDate.toISOString().split("T")[0]; // Format date as YYYY-MM-DD
@@ -225,7 +226,7 @@ export default function Addtransaction() {
       setSalesPerson("");
       setRemarks("");
       console.log(response.data);
-      setisSubmmiting(true)
+      
     } catch (error) {
       console.log("Failed", error);
     }finally{
