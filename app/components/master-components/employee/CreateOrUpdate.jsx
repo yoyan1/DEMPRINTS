@@ -244,7 +244,7 @@ export default function CreateUser({done}) {
   };
 
   const fetchJobData = async () =>{
-      const result = await axios.get('https://demprints-backend.vercel.app/api/master/getJobData')
+      const result = await axios.get(process.env.NEXT_PUBLIC_API_URL+'/master/getJobData')
       if(result.data){
           const data = result.data[0]
           console.log(result.data)

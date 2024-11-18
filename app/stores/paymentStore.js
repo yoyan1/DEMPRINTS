@@ -9,8 +9,8 @@ export const paymentStore = create((set) => ({
     fetchPayment: async () => {
         try{
             set({loading: true})
-            const responseOptions = await axios.get('https://demprints-backend.vercel.app/api/master/getPaymentOptions')
-            const responseType = await axios.get('https://demprints-backend.vercel.app/api/master/getPaymentType')
+            const responseOptions = await axios.get(process.env.NEXT_PUBLIC_API_URL+'/master/getPaymentOptions')
+            const responseType = await axios.get(process.env.NEXT_PUBLIC_API_URL+'/master/getPaymentType')
             set({options: responseOptions.data, type: responseType.data, loading: false})
         } catch(e){
             set({error: e.message})

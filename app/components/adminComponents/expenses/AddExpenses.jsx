@@ -25,7 +25,7 @@ export default function CreateTransaction({isSubmit}) {
                                       
 
   const fetchAll = async  () =>{
-    const result = await axios.get('https://demprints-backend.vercel.app/api/master/getExpensesCategory');
+    const result = await axios.get(process.env.NEXT_PUBLIC_API_URL+'/master/getExpensesCategory');
     setCategory(result.data); 
     const responseID = await axios.get(`https://demprints-backend.vercel.app/api/collection/getIDExpenses`)
     if(responseID.data.length > 0){

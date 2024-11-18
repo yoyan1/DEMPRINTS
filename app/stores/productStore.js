@@ -8,7 +8,7 @@ export const productStore = create((set) => ({
     fetchProducts: async () => {
         try{
             set({loadProduct: true})
-            const result = await axios.get('https://demprints-backend.vercel.app/api/master/products');
+            const result = await axios.get(process.env.NEXT_PUBLIC_API_URL+'/master/products');
             let ascending = result.data.slice().sort();
             set({products: ascending, loadProduct: false})
         } catch(e){

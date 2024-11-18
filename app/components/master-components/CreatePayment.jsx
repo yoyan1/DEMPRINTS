@@ -21,9 +21,9 @@ export default function CreatePayment() {
 
   const getPaymentMethod = async () =>{
     try{
-      const responseOptions = await axios.get('https://demprints-backend.vercel.app/api/master/getPaymentOptions')
+      const responseOptions = await axios.get(process.env.NEXT_PUBLIC_API_URL+'/master/getPaymentOptions')
       setOptionList(responseOptions.data)
-      const responseType = await axios.get('https://demprints-backend.vercel.app/api/master/getPaymentType')
+      const responseType = await axios.get(process.env.NEXT_PUBLIC_API_URL+'/master/getPaymentType')
       setTypeList(responseType.data)
     } catch(e){
       consol.log(e)
@@ -52,7 +52,7 @@ export default function CreatePayment() {
 
     setIsLoading(true)
 
-    const response = await axios.post('https://demprints-backend.vercel.app/api/master/createPaymentType', {name: paymentType})
+    const response = await axios.post(process.env.NEXT_PUBLIC_API_URL+'/master/createPaymentType', {name: paymentType})
     console.log(response)
     toast({
       variant: "outline",
@@ -80,7 +80,7 @@ export default function CreatePayment() {
         return
     }
     setIsLoading(true)
-    const response = await axios.post('https://demprints-backend.vercel.app/api/master/createPaymentOptions', {name: paymentOptions})
+    const response = await axios.post(process.env.NEXT_PUBLIC_API_URL+'/master/createPaymentOptions', {name: paymentOptions})
     console.log(response)
     toast({
       variant: "outline",

@@ -6,7 +6,7 @@ export const useCustomerStore = create((set) => ({
     error: null,
     customer_type: [],
     fetchCustomer : async () => {
-        const customerType = await axios.get('https://demprints-backend.vercel.app/api/master/getCustomerType')
+        const customerType = await axios.get(process.env.NEXT_PUBLIC_API_URL+'/master/getCustomerType')
         set({costumerLoading: false, customer_type: customerType.data})
     }
 }))

@@ -9,13 +9,13 @@ export const useUserStore = create((set) => ({
     error: null,
     create: async (data) =>{
       set({ loading: true });
-      const response = await axios.post('https://demprints-backend.vercel.app/api/users/register', data);
+      const response = await axios.post(process.env.NEXT_PUBLIC_API_URL+'/users/register', data);
       set({ loading: false });
       return response
     },
     login: async (data) =>{
       set({ loading: true });
-      const response = await axios.post('https://demprints-backend.vercel.app/api/users/login', data);
+      const response = await axios.post(process.env.NEXT_PUBLIC_API_URL+'/users/login', data);
       set({ loading: false });
       return response
     },
@@ -24,7 +24,7 @@ export const useUserStore = create((set) => ({
          set({ loading: true });
           const token = localStorage.getItem("token")
           if(token){
-            const response = await axios.get('https://demprints-backend.vercel.app/api/users/user', {
+            const response = await axios.get(process.env.NEXT_PUBLIC_API_URL+'/users/user', {
               headers: {
                 'Authorization': `Bearer ${token}`,
               }

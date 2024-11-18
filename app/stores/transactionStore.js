@@ -4,7 +4,7 @@ import axios from 'axios';
 
 export const useSalesStore = create((set) => ({
     createTransaction: async (data) => {
-        const response = await axios.post('https://demprints-backend.vercel.app/api/collection/addTransaction', data)
+        const response = await axios.post(process.env.NEXT_PUBLIC_API_URL+'/collection/addTransaction', data)
         return response.data
     },
     columns: [
