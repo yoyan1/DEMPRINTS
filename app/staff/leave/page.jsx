@@ -54,19 +54,19 @@ export default function LeavePage() {
         <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
           <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr>
-              <th scope="col" className="px-16 py-3">
+              <th scope="col" className="px-16 py-3 text-center ">
                 <span className="sr-only">Image</span>
               </th>
-              <th scope="col" className="px-6 py-3">
+              <th scope="col" className="px-6 py-3 text-center">
                 Types of Leave
               </th>
-              <th scope="col" className="px-6 py-3">
+              <th scope="col" className="px-6 py-3 text-center ">
                 Description
               </th>
-              <th scope="col" className="px-6 py-3">
+              <th scope="col" className="px-6 py-3 text-center">
                 Proof
               </th>
-              <th scope="col" className="px-6 py-3">
+              <th scope="col" className="px-6 py-3 text-center">
                 Status
               </th>
             </tr>
@@ -87,8 +87,8 @@ export default function LeavePage() {
               <td className="px-6 py-4 font-semibold text-gray-900 dark:text-white">
                 <Image src="../medical.png" className="w-16 md:w-32 max-w-full max-h-full" />
               </td>
-              <td className="px-6 py-4">
-                <span className="items-center text-justify text-red">PENDING</span>
+              <td className="px-6 py-4 ">
+                <span className="items-center text-justify text-red-500 font-bold ">PENDING</span>
               </td>
             </tr>
 

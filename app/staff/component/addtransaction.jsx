@@ -18,7 +18,7 @@ import axios from "axios";
 import { useUserStore } from "../../stores/userStore";
 
 export default function Addtransaction() {
-  const {user , getAuthenticateUser} = useUserStore();
+  const { user, getAuthenticateUser } = useUserStore();
 
 
   // ---------------------------------------------
@@ -48,6 +48,8 @@ export default function Addtransaction() {
   const [products, setProduct] = useState([""]);
   const [unit, setUnit] = useState([""]);
   const [setTransaction] = useState([""]);
+  // ------------------------
+  const [isSubmiting, setisSubmmiting] = useState(false)
   // ----------------------
   const [idGenerated, setIdGenerated] = useState([{ _id: "", count: 0 }]);
   // ----------------------
@@ -203,10 +205,10 @@ export default function Addtransaction() {
           // employee_id: user.id,
 
         }
-       
-        
+
+
       );
-      console.log('user ID added',user._id);
+      console.log('user ID added', user._id);
       console.log(updateId.data);
       setSuccessMessage("Transaction added successfully!");
       setItemName("");
@@ -223,6 +225,7 @@ export default function Addtransaction() {
       setSalesPerson("");
       setRemarks("");
       console.log(response.data);
+      setisSubmmiting(true)
     } catch (error) {
       console.log("Failed", error);
     }
@@ -535,8 +538,9 @@ export default function Addtransaction() {
           style={{ width: "4rem" }}
           onClick={handleSubmit}
           type="submit"
+          disabled={isSubmiting}
         >
-          Save
+          {isSubmiting ? 'Submiting...' : 'Submit'}
         </Button>
       </div>
 
@@ -544,29 +548,9 @@ export default function Addtransaction() {
         <div className="flex items-center w-full max-w-xs p-1" role="alert">
           <div className="text-sm font-normal text-green-900">
             {success_message}
+
           </div>
-          <button
-            type="button"
-            className="ms-auto -mx-1.5 -my-1.5 bg-black text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 p-1.5"
-            aria-label="Close"
-            onClick={() => setSuccessMessage("")}
-          >
-            <span className="sr-only">Close</span>
-            <svg
-              className="w-3 h-3"
-              aria-hidden="true"
-              fill="none"
-              viewBox="0 0 14 14"
-            >
-              <path
-                stroke="currentColor"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
-              />
-            </svg>
-          </button>
+
         </div>
       )}
     </>
