@@ -96,7 +96,7 @@ export default function CreateTransaction({isSubmit}) {
 
   return (
     <>
-      <Button onPress={onOpen} color="primary"><MdAdd/> order</Button>
+      <Button onPress={onOpen} color="primary"><MdAdd/> Expenses</Button>
       <Modal 
         isOpen={isOpen} 
         onClose={onClose}

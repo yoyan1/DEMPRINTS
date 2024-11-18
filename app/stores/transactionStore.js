@@ -3,6 +3,10 @@ import {create} from 'zustand';
 import axios from 'axios';
 
 export const useSalesStore = create((set) => ({
+    createTransaction: async (data) => {
+        const response = await axios.post('https://demprints-backend.vercel.app/api/collection/addTransaction', data)
+        return response.data
+    },
     columns: [
         {name: "ID", dataKey: "id", sortable: true},
         {name: "TRANSACTION DATE", dataKey: "date", sortable: true},
@@ -41,7 +45,8 @@ export const useSalesStore = create((set) => ({
         const response = await axios.get(`https://demprints-backend.vercel.app/api/collection/getTransaction`); 
         // if (!response.ok) throw new Error('Network response was not ok');
         const data = await response.data;
-        set({ transactions: data, loading: false });
+        let ascending = data.sort((a, b) => a.transaction_no - b.transaction_no);
+        set({ transactions: ascending, loading: false });
         } catch (error) {
         set({ error: error.message, loading: false });
         }

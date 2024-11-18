@@ -19,7 +19,7 @@ import { TbReportMoney } from "react-icons/tb";
 
 export default function page() {
   return (
-    <main>
+    <body className='bg-slate-300 dark:bg-gray-900'>
         <Toaster/>
         <div className='flex justify-between items-center w-full p-3 bg-blue-950 text-slate-100'>
             <div className='flex items-center gap-2'>
@@ -65,7 +65,7 @@ export default function page() {
                 </Dropdown>              
             </div>
         </div>
-        <div className="bg-slate-300 dark:bg-gray-900 p-10">
+        <div className="p-10">
             <div className="flex flex-col gap-10 justify-center items-center h-full">
                 <div className='flex gap-5 flex-col md:flex-row lg:flex-row'>
                     <div className="flex-1 relative flex flex-col justify-between rounded-xl bg-white dark:bg-black bg-clip-border text-gray-700 shadow-md">
@@ -157,7 +157,7 @@ export default function page() {
                 </div>
             </div>
         </div>
-    </main>
+    </body>
   )
 }
 
