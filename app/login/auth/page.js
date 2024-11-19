@@ -1,6 +1,6 @@
 "use client"
 import React, { useEffect, useState } from 'react'
-import { useUserStore } from "../stores/userStore"
+import { useUserStore } from "@/app/stores/userStore"
 import { useRouter } from 'next/navigation'
 
 export default function TestPage() {
@@ -16,12 +16,12 @@ export default function TestPage() {
   }, [getAuthenticateUser]); 
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div className="h-[100vh] flex justify-center items-center"><Spinner /></div>;
   }
 
   if(!isAuthenticate && user) {
     if(user.role === 'super admin'){
-      router.push('/damin')
+      router.push('/admin')
     } else if(user.role === 'staff'){
       router.push('/staff')
     }
@@ -30,22 +30,6 @@ export default function TestPage() {
     router.push('/login')
   }
 
-
-  return (
-    <div>
-      {user ? (
-        <div>
-          <h1>User Info</h1>
-          <p>Role: {user.role}</p>  {/* Assuming the user has a name field */}
-          <p>Name: {user.name}</p>  {/* Assuming the user has a name field */}
-          <p>Email: {user.email}</p>  {/* Assuming the user has an email field */}
-          {/* Render more fields as necessary */}
-        </div>
-      ) : (
-        <div>No user data found</div>
-      )}
-    </div>
-  );
 }
 
 // "use client"

@@ -96,7 +96,7 @@ export default function JobDetails({fetch}) {
     };
 
     const fetchJobData = async () =>{
-        const result = await axios.get('https://demprints-backend.vercel.app/api/master/getJobData')
+        const result = await axios.get(process.env.NEXT_PUBLIC_API_URL+'/master/getJobData')
         if(result.data){
             const data = result.data[0]
             console.log(result.data)
@@ -119,7 +119,7 @@ export default function JobDetails({fetch}) {
         setIsLoading(true)
         try{
             console.log(jobData.id)
-            const response = await axios.post('https://demprints-backend.vercel.app/api/master/createJobData', jobData)
+            const response = await axios.post(process.env.NEXT_PUBLIC_API_URL+'/master/createJobData', jobData)
             console.log(response);
             toast({
                 variant: "outline",

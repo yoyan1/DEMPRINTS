@@ -27,19 +27,19 @@ export default function UpdateProduct({ data, type, category, measurement, done,
     setIsLoading(true)
     try{
       if(type.toLowerCase() === 'category'){
-        const response = await axios.post(`https://demprints-backend.vercel.app/api/master/updateProductsData/${data._id}`,{name: category_name} )
+        const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/master/updateProductsData/${data._id}`,{name: category_name} )
         console.log(response);
         onDone(true, response.data)
         done(response.data)
       }
       if(type.toLowerCase() === 'measurement'){
-        const response = await axios.post(`https://demprints-backend.vercel.app/api/master/updateProductsData/${data._id}`,{name: unit} )
+        const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/master/updateProductsData/${data._id}`,{name: unit} )
         console.log(response);
         onDone(true, response.data)
         done(response.data)
       }
       if(type.toLowerCase() === 'product'){
-        const response = await axios.post(`https://demprints-backend.vercel.app/api/master/updateProductsData/${data._id}`,{name: productData.name, category: productData.category, unit: productData.unit, price: productData.price} )
+        const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/master/updateProductsData/${data._id}`,{name: productData.name, category: productData.category, unit: productData.unit, price: productData.price} )
         console.log(response);
         onDone(response.data)
         done(response.data)

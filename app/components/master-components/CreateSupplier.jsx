@@ -49,7 +49,7 @@ export default function CreateSupplier() {
       return
     }
     setLoading(true)
-    const response = await axios.post('https://demprints-backend.vercel.app/api/master/createSupplier', supplierData)
+    const response = await axios.post(process.env.NEXT_PUBLIC_API_URL+'/master/createSupplier', supplierData)
     console.log(response)
     toast({
       variant: "outline",

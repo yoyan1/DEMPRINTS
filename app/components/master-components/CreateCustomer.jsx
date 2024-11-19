@@ -33,7 +33,7 @@ export default function CreateCustomer() {
         return
         setIsLoading(false)
     }
-    const response = await axios.post(`https://demprints-backend.vercel.app/api/master/createCustomerType`, {name: inputType})
+    const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/master/createCustomerType`, {name: inputType})
     toast({
         variant: "success",
         title: "Success!",
@@ -73,7 +73,7 @@ export default function CreateCustomer() {
                             <Tab key="type" title="Customer Type">
                                 <div>
                                     <form onSubmit={onSubmit} className="flex items-center">
-                                        <Input onChange={(e)=>(setInputType(e.target.value))} label="Type" value={inputType} placeholder="Enter new Customer Type"/>
+                                        <Input onChange={(e)=>(setInputType(e.target.value))} label="Type" value={inputType} placeholder="Enter new Customer Type" isRequired/>
                                         {inputType? <Button isIconOnly type="submit" color="primary" variant="light" isLoading={isLoading}><IoIosAdd className="w-8 h-8"/></Button> : null}
                                     </form>
                                     <Listbox

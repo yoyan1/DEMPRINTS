@@ -80,7 +80,7 @@ export default function CreateExpenses() {
         }
 
         try{
-            const response = await axios.post('https://demprints-backend.vercel.app/api/master/createExpensesCategory', category)
+            const response = await axios.post(process.env.NEXT_PUBLIC_API_URL+'/master/createExpensesCategory', category)
             setIsLoading(false)
             toast({
                 variant: "outline",

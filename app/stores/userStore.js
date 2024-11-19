@@ -9,27 +9,28 @@ export const useUserStore = create((set) => ({
     error: null,
     create: async (data) =>{
       set({ loading: true });
-      const response = await axios.post('https://demprints-backend.vercel.app/api/users/register', data);
+      const response = await axios.post(process.env.NEXT_PUBLIC_API_URL+'/users/register', data);
       set({ loading: false });
       return response
     },
     login: async (data) =>{
       set({ loading: true });
-      const response = await axios.post('https://demprints-backend.vercel.app/api/users/login', data);
+      const response = await axios.post(process.env.NEXT_PUBLIC_API_URL+'/users/login', data);
       set({ loading: false });
       return response
     },
-    getAuthenticateUser: async () =>{
+    getAuthenticateUser: async (data) =>{
       if (typeof window !== "undefined"){
          set({ loading: true });
           const token = localStorage.getItem("token")
-          if(token){
-            const response = await axios.get('https://demprints-backend.vercel.app/api/users/user', {
+          if(token || data){
+            const response = await axios.get(process.env.NEXT_PUBLIC_API_URL+'/users/user', {
               headers: {
-                'Authorization': `Bearer ${token}`,
+                'Authorization': `Bearer ${data? data : token}`,
               }
             });
-            set({user: response.data ,loading: false, isAuthenticate: true });
+
+            set({error: response.data.message, user: response.data.user ,loading: false, isAuthenticate: response.data.err });
           } else{
             set({loading: false, isAuthenticate: false})
           }
@@ -37,7 +38,7 @@ export const useUserStore = create((set) => ({
     },
     deleteUser: async (id) =>{
       set({ loading: true });
-      const response = await axios.delete(`https://demprints-backend.vercel.app/api/users/delete/${id}`)
+      const response = await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/users/delete/${id}`)
       set({ loading: false });
       return response
     },
@@ -60,7 +61,7 @@ export const useUserStore = create((set) => ({
     fetchUsers: async () => {
         set({ loading: true });
         try {
-        const response = await fetch(`https://demprints-backend.vercel.app/api/users`); 
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users`); 
         if (!response.ok) throw new Error('Network response was not ok');
         const data = await response.json();
         set({ users: data, loading: false });

@@ -21,7 +21,7 @@ export default function ViewDetails({data}) {
     const [certificatesImage, setCertificatesImage] = useState()
 
     const getImage = async (id) => {
-        const response = await axios.get(`https://demprints-backend.vercel.app/api/users/images/${id}`, {
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/users/images/${id}`, {
         responseType: 'blob',  
         });
         return URL.createObjectURL(response.data);

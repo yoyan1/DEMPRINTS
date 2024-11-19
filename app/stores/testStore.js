@@ -26,7 +26,7 @@ export const useTestStore = create((set) => ({
 
   fetchTransaction: async () => {
     try {
-      const response = await axios.get('https://demprints-backend.vercel.app/api/collection/getTransaction');
+      const response = await axios.get(process.env.NEXT_PUBLIC_API_URL+'/collection/getTransaction');
       set({ transactions: response.data });
     } catch (error) {
       console.log('Error fetching transactions:', error);

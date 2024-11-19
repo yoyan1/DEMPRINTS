@@ -9,7 +9,7 @@ export const useExpensesStore = create((set) => ({
     fetchExpensesCategory: async () => {
         set({ loading: true });
         try {
-        const response = await fetch(`https://demprints-backend.vercel.app/api/master/getExpensesCategory`); 
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/master/getExpensesCategory`); 
         if (!response.ok) throw new Error('Network response was not ok');
         const data = await response.json();
         set({ categoryList: data, loading: false });
@@ -31,7 +31,7 @@ export const useExpensesStore = create((set) => ({
     fetchExpenses: async () => {
         set({ loading: true });
         try {
-        const response = await fetch(`https://demprints-backend.vercel.app/api/collection/expenses`); 
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/collection/expenses`); 
         if (!response.ok) throw new Error('Network response was not ok');
         const data = await response.json();
         set({ expenses: data, loading: false });
