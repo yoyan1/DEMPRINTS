@@ -265,6 +265,11 @@ export default function CreateUser({done}) {
 
   const [isLoading, setIsLoading] = useState(false)
   const upload = async () => {
+    const errorsStepThree = isInvalidStepThree()
+    if (Object.keys(errorsStepThree).length !== 0 && step === 3) {
+      return;
+    }
+    
     setIsLoading(true);
     const files = [
       { key: 'contract', value: contract },
@@ -302,11 +307,6 @@ export default function CreateUser({done}) {
   };
 
 const submit = async (id, id2, id3) => {
-
-  const errorsStepThree = isInvalidStepThree()
-  if (Object.keys(errorsStepThree).length !== 0 && step === 3) {
-    return;
-  }
 
   setStep(4);
   

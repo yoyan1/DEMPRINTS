@@ -8,18 +8,23 @@ import CreateCustomer from '../components/master-components/CreateCustomer'
 import CreateSupplier from '../components/master-components/CreateSupplier'
 import CreatePayment from '../components/master-components/CreatePayment'
 import CreateExpenses from '../components/master-components/CreateExpenses'
-import {Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Avatar, User} from "@nextui-org/react";
+import {Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Avatar, User, Tabs, Tab, Card, CardBody} from "@nextui-org/react";
 import { CgProfile } from "react-icons/cg";
 import { FaBoxOpen } from "react-icons/fa6";
 import { FaUsersBetweenLines } from "react-icons/fa6";
 import { VscOrganization } from "react-icons/vsc";
 import { FaCashRegister } from "react-icons/fa6";
 import { TbReportMoney } from "react-icons/tb";
+import { FaUserPlus } from "react-icons/fa";
+import { PiUserList } from "react-icons/pi";
+import { TbListDetails } from "react-icons/tb";
 
 
 export default function page() {
+const [selected, setSelected] = React.useState("employee");
+
   return (
-    <body className='bg-slate-300 dark:bg-gray-900'>
+    <body className='bg-slate-300 dark:bg-gray-900 h-full'>
         <Toaster/>
         <div className='flex justify-between items-center w-full p-3 bg-blue-950 text-slate-100'>
             <div className='flex items-center gap-2'>
@@ -65,6 +70,53 @@ export default function page() {
                 </Dropdown>              
             </div>
         </div>
+        {/* <div >
+            <Tabs color="primary" className="bg-gray-100 dark:bg-gray-950 w-full px-5 py-3" selectedKey={selected} onSelectionChange={setSelected}>
+                <Tab key="employee" title="Employee">
+                    <div className='p-5'>
+                        <h3 className='text-lg font-bold mb-5'>Employee Master Data</h3>
+                        <div className='flex gap-5'>
+                            <Card className='flex flex-col gap-5 items-center w-44 h-44'>
+                                <CardBody>
+                                    <FaUserPlus className='h-12 w-12 text-blue-800'/>
+                                    <span className='font-bold text-slate-700'>Register User</span>
+                    
+                                </CardBody>
+                            </Card>
+                            <Card className='flex flex-col gap-5 items-center w-44 h-44'>
+                                <CardBody>
+                                    <PiUserList className='h-12 w-12 text-blue-800'/>
+                                    <span className='font-bold text-slate-700'>User List</span>
+                    
+                                </CardBody>
+                            </Card>
+                            <Card className='flex flex-col gap-5 items-center w-44 h-44'>
+                                <CardBody>
+                                    <TbListDetails className='h-12 w-12 text-blue-800'/>
+                                    <span className='font-bold text-slate-700'>Job Details</span>
+                    
+                                </CardBody>
+                            </Card>
+                        </div>
+                    </div>
+                </Tab>
+                <Tab key="product" title="Product">
+                    Product
+                </Tab>
+                <Tab key="customer" title="Customer">
+                    Customer
+                </Tab>
+                <Tab key="supplier" title="Supplier">
+                    Supplier
+                </Tab>
+                <Tab key="payment" title="Payment">
+                    Payment
+                </Tab>
+                <Tab key="Expenses" title="Expenses">
+                    Expenses
+                </Tab>
+            </Tabs>
+        </div> */}
         <div className="p-10">
             <div className="flex flex-col gap-10 justify-center items-center h-full">
                 <div className='flex gap-5 flex-col md:flex-row lg:flex-row'>

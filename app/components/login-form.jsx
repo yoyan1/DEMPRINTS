@@ -1,22 +1,13 @@
 "use client"
 import React, { useEffect, useState } from "react"
-import Link from "next/link"
-import { Button } from "@nextui-org/button"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/app/components/ui/card"
-import { Input } from "@/app/components/ui/input"
-import { Label } from "@/app/components/ui/label"
+import { Input, Button } from "@nextui-org/react"
 import { useUserStore } from "../stores/userStore"
 import { useRouter } from 'next/navigation'
 
 export function LoginForm() {
   const { login, loading } = useUserStore()
   const [ credentials, setCredentials ] = useState({email: '', password: ''})
+  const [erroMessage, setErrorMessage] = useState()
   const [mounted, setMounted] = useState(false); 
   
   useEffect(() => {
@@ -29,6 +20,11 @@ export function LoginForm() {
   }
   const router = useRouter()
 
+  const handleChange = (e) => {
+    const { name, value } = e.target
+    setCredentials((prevData) => ({...prevData, [name] : value}))
+    
+  }
   const submit = async (e) =>{
     e.preventDefault()
     const response = await login(credentials)
@@ -36,64 +32,82 @@ export function LoginForm() {
       if (typeof window !== "undefined") { 
         localStorage.setItem("token", response.data.token)
       }
-      router.push('/test')
+      setErrorMessage(response.data.message)
+      router.push('/login/auth')
     } else{
+      setErrorMessage(response.data.message)
       console.log(response.data.message)
     }
   }
 
   return (
-    <Card className="mx-auto max-w-sm">
-      <CardHeader>
-        <CardTitle className="text-2xl">Login</CardTitle>
-        <CardDescription>
-          Enter your email below to login to your account
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={submit}>
-          <div className="grid gap-4">
-            <div className="grid gap-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="m@example.com"
-                required
+    <div className="max-w-lg w-full">
+      <div
+        // style="box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);"
+        className="rounded-lg shadow-xl overflow-hidden"
+      >
+        <div className="p-8">
+          <h2 className="text-center text-3xl font-extrabold">
+            Welcome
+          </h2>
+          <p className="mt-4 text-center text-gray-400">Sign in to continue</p>
+          <form onSubmit={submit} className="mt-8 space-y-6">
+            {setErrorMessage}
+            <div className="rounded-md shadow-sm flex flex-col gap-3">
+              <div>
+                <Input 
+                size="lg" 
+                label="ID Number" 
+                labelPlacement="outside" 
+                placeholder="123456789"
+                name="email"
                 value={credentials.email}
-                onChange={(e)=>(setCredentials((prevData) => ({...prevData, email: e.target.value})))}
-              />
-            </div>
-            <div className="grid gap-2">
-              <div className="flex items-center">
-                <Label htmlFor="password">Password</Label>
-                <Link href="#" className="ml-auto inline-block text-sm underline">
-                  Forgot your password?
-                </Link>
+                onChange={handleChange}
+                />
               </div>
-              <Input 
-              id="password"
-              type="password" 
-              required 
-              value={credentials.password} 
-              onChange={(e)=>(setCredentials((prevData) => ({...prevData, password: e.target.value})))}
-              />
+              <div className="mt-4">
+                <Input 
+                size="lg" 
+                label="Password" 
+                type="password" 
+                labelPlacement="outside" 
+                placeholder="Enter your password"
+                name="password"
+                value={credentials.password}
+                onChange={handleChange}
+                />
+              </div>
             </div>
-            <Button type="submit" color="primary" className="w-full" isLoading={loading}>
-              Login
-            </Button>
-            <Button variant="outline" className="w-full">
-              Login with Google
-            </Button>
-          </div>
-        </form>
-        <div className="mt-4 text-center text-sm">
-          Don&apos;t have an account?{" "}
-          <Link href="#" className="underline">
-            Sign up
-          </Link>
+
+            <div className="flex items-center justify-between mt-4">
+              <div className="flex items-center">
+                <input
+                  className="h-4 w-4 text-indigo-500 focus:ring-indigo-400 border-gray-600 rounded"
+                  type="checkbox"
+                  name="remember-me"
+                  id="remember-me"
+                />
+                <label className="ml-2 block text-sm text-gray-400" for="remember-me"
+                  >Remember me</label
+                >
+              </div>
+
+              <div className="text-sm">
+                <a
+                  className="font-medium text-indigo-500 hover:text-indigo-400"
+                  href="#"
+                >
+                  Forgot your password?
+                </a>
+              </div>
+            </div>
+
+            <div>
+              <Button type="submit" size="lg" color="primary" className="w-full" isLoading={loading}>Sign In</Button>
+            </div>
+          </form>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   )
 }

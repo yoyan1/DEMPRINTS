@@ -19,17 +19,18 @@ export const useUserStore = create((set) => ({
       set({ loading: false });
       return response
     },
-    getAuthenticateUser: async () =>{
+    getAuthenticateUser: async (data) =>{
       if (typeof window !== "undefined"){
          set({ loading: true });
           const token = localStorage.getItem("token")
-          if(token){
+          if(token || data){
             const response = await axios.get(process.env.NEXT_PUBLIC_API_URL+'/users/user', {
               headers: {
-                'Authorization': `Bearer ${token}`,
+                'Authorization': `Bearer ${data? data : token}`,
               }
             });
-            set({user: response.data ,loading: false, isAuthenticate: true });
+
+            set({error: response.data.message, user: response.data.user ,loading: false, isAuthenticate: response.data.err });
           } else{
             set({loading: false, isAuthenticate: false})
           }
