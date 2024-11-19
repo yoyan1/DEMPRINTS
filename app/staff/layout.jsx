@@ -46,7 +46,7 @@ export default function Layout({ children }) {
               className="mr-3 h-10 rounded-full"
               alt="Logo"
             />
-            <span className="self-center text-2xl font-semibold whitespace-nowrap text-white">
+            <span className="self-center text-2xl font-semibold whitespace-nowrap ">
               DEMPRINT
             </span>
           </a>

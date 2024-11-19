@@ -425,7 +425,7 @@ export default function Transaction() {
       {topContent}
       <div className=" overflow-x-scroll">
         <Modal
-          size="lg"
+          size="5xl"
           isOpen={isAddTransactionOpen}
           onClose={closeAddTransaction}
           onValueChange="outside"

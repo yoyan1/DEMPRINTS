@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 
 import {
   // Checkbox,
@@ -9,22 +9,21 @@ import {
   Select,
   SelectItem,
   Button,
-} from "@nextui-org/react";
+  Checkbox,
+} from '@nextui-org/react';
 
-
-import axios from "axios";
+import axios from 'axios';
 // import { formatDate } from "../../composables/formateDateAndTime";
 
-import { useUserStore } from "../../stores/userStore";
+import { useUserStore } from '../../stores/userStore';
 
 export default function Addtransaction() {
   const { user, getAuthenticateUser } = useUserStore();
 
-
   // ---------------------------------------------
-  const [customer_name, setCostumerName] = useState(" ");
-  const [customer_type, setCostumerType] = useState(" ");
-  const [item_name, setItemName] = useState(" ");
+  const [customer_name, setCostumerName] = useState(' ');
+  const [customer_type, setCostumerType] = useState(' ');
+  const [item_name, setItemName] = useState(' ');
 
   const [transaction_no] = useState(0);
   const [item_no] = useState(0);
@@ -35,27 +34,30 @@ export default function Addtransaction() {
   const [amount, setAmount] = useState(0);
   const [total, setTotal] = useState(0);
   const [remarks, setRemarks] = useState(0);
-  const [payment_options, setPaymentMethod] = useState(" ");
-  const [sales_person, setSalesPerson] = useState(" ");
-  const [success_message, setSuccessMessage] = useState(" ");
-  const [payment_type, setPaymentType] = useState(" ");
-  const [employee_id, setEmployeId] = useState('')
+  const [payment_options, setPaymentMethod] = useState(' ');
+  const [sales_person, setSalesPerson] = useState(' ');
+  const [success_message, setSuccessMessage] = useState(' ');
+  const [payment_type, setPaymentType] = useState(' ');
+  // const [employee_id, setEmployeId] = useState(0)
   // ----------------------
 
-  const [payment, setPaymentt] = useState([""]);
-  const [paymentTypes, setPaymenttype] = useState([""]);
-  const [costumerType, setCostumertype] = useState([""]);
-  const [products, setProduct] = useState([""]);
-  const [unit, setUnit] = useState([""]);
-  const [setTransaction] = useState([""]);
+  const [payment, setPaymentt] = useState(['']);
+  const [paymentTypes, setPaymenttype] = useState(['']);
+  const [costumerType, setCostumertype] = useState(['']);
+  const [products, setProduct] = useState(['']);
+  const [unit, setUnit] = useState(['']);
+  const [setTransaction] = useState(['']);
   // ------------------------
-  const [isSubmiting, setisSubmmiting] = useState(false)
+  const [isSubmiting, setisSubmmiting] = useState(false);
   // ----------------------
-  const [idGenerated, setIdGenerated] = useState([{ _id: "", count: 0 }]);
+  const [idGenerated, setIdGenerated] = useState([{ _id: '', count: 0 }]);
+  // ----------------------
+  // const [selected, setSelected] = useState(false);
+  const [isPercentage, setIsPercentage] = useState(false);
   // ----------------------
 
   useEffect(() => {
-    getAuthenticateUser()
+    getAuthenticateUser();
     fetchPayment();
     fetchCostumerType();
     fetchProduct();
@@ -67,7 +69,7 @@ export default function Addtransaction() {
   const fetchCostumerType = async () => {
     try {
       const response = await axios.get(
-        `https://demprints-backend.vercel.app/api/master/getCustomerType`
+        `https://demprints-backend.vercel.app/api/master/getCustomerType`,
       );
       setCostumertype(response.data);
       console.log(response.data);
@@ -78,7 +80,7 @@ export default function Addtransaction() {
   const fetchPayment = async () => {
     try {
       const response = await axios.get(
-        `https://demprints-backend.vercel.app/api/master/getPaymentOptions`
+        `https://demprints-backend.vercel.app/api/master/getPaymentOptions`,
       );
       setPaymentt(response.data);
       console.log(response.data);
@@ -89,7 +91,7 @@ export default function Addtransaction() {
   const fetchPaymentType = async () => {
     try {
       const response = await axios.get(
-        `https://demprints-backend.vercel.app/api/master/getPaymentType`
+        `https://demprints-backend.vercel.app/api/master/getPaymentType`,
       );
       setPaymenttype(response.data);
       console.log(response.data);
@@ -101,7 +103,7 @@ export default function Addtransaction() {
   const fetchProduct = async () => {
     try {
       const response = await axios.get(
-        `https://demprints-backend.vercel.app/api/master/products`
+        `https://demprints-backend.vercel.app/api/master/products`,
       );
       setProduct(response.data);
       console.log(response.data);
@@ -113,7 +115,7 @@ export default function Addtransaction() {
   const fetchID = async () => {
     try {
       const response = await axios.get(
-        `https://demprints-backend.vercel.app/api/collection/getId`
+        `https://demprints-backend.vercel.app/api/collection/getId`,
       );
       if (response.data.length > 0) {
         setIdGenerated(response.data);
@@ -125,10 +127,10 @@ export default function Addtransaction() {
   };
 
   const fetchTransactions = async () => {
-    setIs
+    setIs;
     try {
       const response = await axios.get(
-        `https://demprints-backend.vercel.app/api/collection/getTransaction`
+        `https://demprints-backend.vercel.app/api/collection/getTransaction`,
       );
       setTransaction(response.data);
       console.log(response.data);
@@ -149,18 +151,18 @@ export default function Addtransaction() {
   // };
 
   const handleSubmit = async () => {
-    setisSubmmiting(true)
+    setisSubmmiting(true);
     try {
       const currentDate = new Date();
-      const formattedDate = currentDate.toISOString().split("T")[0]; // Format date as YYYY-MM-DD
-      const formattedTime = currentDate.toTimeString().split(" ")[0];
+      const formattedDate = currentDate.toISOString().split('T')[0]; // Format date as YYYY-MM-DD
+      const formattedTime = currentDate.toTimeString().split(' ')[0];
 
       const responseID = await axios.get(
-        `https://demprints-backend.vercel.app/api/collection/getId`
+        `https://demprints-backend.vercel.app/api/collection/getId`,
       );
 
       const generatedID =
-        responseID.data.length > 0 ? responseID.data : [{ _id: "", count: 0 }];
+        responseID.data.length > 0 ? responseID.data : [{ _id: '', count: 0 }];
       const newId = generatedID[0].count + 1; // Ensure `idGenerated` is correctly set
       const transaction_no = () => {
         if (newId >= 1000) {
@@ -181,8 +183,8 @@ export default function Addtransaction() {
       // const finalTotal = amount - discount - paid_amount;
       // Send the transaction data
       const updateId = await axios.post(
-        "https://demprints-backend.vercel.app/api/collection/updateID",
-        { id: idGenerated[0]._id, count: newId }
+        'https://demprints-backend.vercel.app/api/collection/updateID',
+        { id: idGenerated[0]._id, count: newId },
       );
       const response = await axios.post(
         `https://demprints-backend.vercel.app/api/collection/addtransaction`,
@@ -205,36 +207,34 @@ export default function Addtransaction() {
           remarks: remarks, //calculate the balance
           employee_id: user.id,
           // employee_id: user.id,
-
-        }
-
-
+        },
       );
       console.log('user ID added', user._id);
       console.log(updateId.data);
-      setSuccessMessage("Transaction added successfully!");
-      setItemName("");
-      setQuantity("");
-      setDiscount("");
-      setPaidAmount("");
-      setAmount("");
-      setTotal("");
+      setSuccessMessage('Transaction added successfully!');
+      setItemName('');
+      setQuantity('');
+      setDiscount('');
+      setPaidAmount('');
+      setAmount('');
+      setTotal('');
       setUnitCost(0);
-      setCostumerType("");
-      setCostumerName("");
-      setPaymentMethod("");
-      setPaymentType("");
-      setSalesPerson("");
-      setRemarks("");
+      setCostumerType('');
+      setCostumerName('');
+      setPaymentMethod('');
+      setPaymentType('');
+      setSalesPerson('');
+      setRemarks('');
       console.log(response.data);
-      
     } catch (error) {
-      console.log("Failed", error);
+      console.log('Failed', error);
     }
   };
 
   const handleQuantityChange = (newQuantity) => {
-    const selectedProduct = products.find((item) => item.name === item_name && item.unit === unit_cost);
+    const selectedProduct = products.find(
+      (item) => item.name === item_name && item.unit === unit_cost,
+    );
     const totalItemCost = selectedProduct
       ? selectedProduct.price * newQuantity
       : 0;
@@ -247,17 +247,27 @@ export default function Addtransaction() {
     const discountValue = parseFloat(newDiscount) || 0;
     setDiscount(discountValue); // Update discount value
 
-    // Calculate discount amount based on percentage or direct value
+    // Calculate discount amount based on whether it's a percentage or a fixed value
     const discountAmount =
-      discountValue > 100
-        ? discountValue
-        : Math.round(amount * discountValue) / 100;
+      isPercentage && discountValue <= 100
+        ? (amount * discountValue) / 100
+        : discountValue;
 
     // Calculate total after applying discount and then subtracting the paidAmount
-
     const newTotal = amount - discountAmount - paid_amount;
-    const roundOfftotal = Math.round(newTotal * 100) / 100;
-    setTotal(roundOfftotal);
+    setTotal(newTotal);
+  };
+  const handleCheckBoxChange = () => {
+    const newIsPercentage = !isPercentage; // Toggle the percentage flag
+    setIsPercentage(newIsPercentage);
+
+    // Recalculate the discount amount based on the new checkbox state
+    const discountAmount =
+      newIsPercentage && discount <= 100 ? (amount * discount) / 100 : discount;
+
+    // Recalculate total with the updated discount logic
+    const newTotal = amount - discountAmount - paid_amount;
+    setTotal(newTotal);
   };
 
   const handleUnitCostChange = (newUnitCost) => {
@@ -265,8 +275,7 @@ export default function Addtransaction() {
     setUnitCost(newUnitCost);
     setQuantity(0);
     setAmount(0);
-    setTotal(0)
-
+    setTotal(0);
   };
 
   const handlePaidAmount = (newPaidAmount) => {
@@ -282,8 +291,7 @@ export default function Addtransaction() {
   };
 
   const handleClose = () => {
-
-    setSuccessMessage("");
+    setSuccessMessage('');
   };
   // ----------------------------------
 
@@ -291,11 +299,11 @@ export default function Addtransaction() {
     const fetchTransactions = async () => {
       try {
         const response = await axios.get(
-          "https://demprints-backend.vercel.app/api/collection/getTransaction"
+          'https://demprints-backend.vercel.app/api/collection/getTransaction',
         );
         setTransactions(response.data); // Assuming the response is an array
       } catch (error) {
-        console.error("Error fetching transactions:", error);
+        console.error('Error fetching transactions:', error);
       }
     };
     fetchTransactions();
@@ -313,20 +321,20 @@ export default function Addtransaction() {
           isRequired
           value={item_name}
           variant="bordered"
-          style={{ color: "black" }}
+          style={{ color: 'black' }}
           onChange={(event) => {
             const selectedProductName = event.target.value;
             const selectedProduct = products.find(
-              (product) => product.name === selectedProductName
+              (product) => product.name === selectedProductName,
             );
 
             setItemName(selectedProductName);
             setUnitCost(selectedProduct?.price || 0); // Set initial unit cost
             handleQuantityChange(quantity);
-            setUnitCost('')
+            setUnitCost('');
             setQuantity(0);
             setAmount(0);
-            setTotal(0)
+            setTotal(0);
           }}
         >
           {products.map((product, index) =>
@@ -335,7 +343,7 @@ export default function Addtransaction() {
                 <SelectItem
                   key={product.name}
                   variant="bordered"
-                  style={{ color: "black" }}
+                  style={{ color: 'black' }}
                 >
                   {product.name}
                 </SelectItem>
@@ -344,11 +352,11 @@ export default function Addtransaction() {
               <SelectItem
                 key={product.name}
                 variant="bordered"
-                style={{ color: "black" }}
+                style={{ color: 'black' }}
               >
                 {product.name}
               </SelectItem>
-            )
+            ),
           )}
         </Select>
 
@@ -360,7 +368,9 @@ export default function Addtransaction() {
             isRequired
             value={unit_cost}
             variant="bordered"
-            onChange={(event) => { handleUnitCostChange(event.target.value); }}
+            onChange={(event) => {
+              handleUnitCostChange(event.target.value);
+            }}
           >
             {products
               .filter((product) => product.name === item_name) // Filter by product name
@@ -380,7 +390,7 @@ export default function Addtransaction() {
       <div className="grid md:grid-cols-2 md:gap-6">
         <Input
           className="text-black relative z-0 w-full mb-1"
-          style={{ color: "black" }}
+          style={{ color: 'black' }}
           autoFocus
           isRequired
           value={quantity}
@@ -390,9 +400,9 @@ export default function Addtransaction() {
           name="quantity"
           onChange={(e) => handleQuantityChange(e.target.value)}
         />
-        <Input
+        {/* <Input
           className="text-black relative z-0 w-full mb-1"
-          style={{ color: "black" }}
+          style={{ color: 'black' }}
           autoFocus
           isRequired
           value={discount}
@@ -400,13 +410,32 @@ export default function Addtransaction() {
           label="Discount (%)"
           variant="bordered"
           onChange={(e) => handleDiscountChange(e.target.value)}
-        />
+        /> */}
+        <div className="flex items-center space-x-4">
+          <Input
+            value={discount}
+            name="discount"
+            label="Discount"
+            variant="bordered"
+            autoFocus
+            placeholder="Enter your discount"
+            isRequired
+            onChange={(e) => handleDiscountChange(e.target.value)}
+          />
+          <Checkbox
+            checked={isPercentage}
+            size="sm"
+            onChange={handleCheckBoxChange}
+          >
+            %
+          </Checkbox>
+        </div>
       </div>
 
-      <div className="grid md:grid-cols-2 md:gap-6">
+      {/* <div className="grid md:grid-cols-2 md:gap-6">
         <Input
           className="text-black relative z-0 w-full mb-1"
-          style={{ color: "black" }}
+          style={{ color: 'black' }}
           autoFocus
           isRequired
           value={amount}
@@ -417,15 +446,15 @@ export default function Addtransaction() {
         />
         <Input
           className="text-black relative z-0 w-full mb-1"
-          style={{ color: "black" }}
+          style={{ color: 'black' }}
           autoFocus
           isRequired
-          value={total ? Math.round(parseFloat(total) * 100) / 100 : "00:00"}
+          value={total ? Math.round(parseFloat(total) * 100) / 100 : '00:00'}
           label="Total"
           variant="bordered"
           readOnly
         />
-      </div>
+      </div> */}
 
       <div className="grid md:grid-cols-2 md:gap-6">
         <Select
@@ -435,14 +464,14 @@ export default function Addtransaction() {
           isRequired
           variant="bordered"
           value={customer_type}
-          style={{ color: "black" }}
+          style={{ color: 'black' }}
           onChange={(event) => setCostumerType(event.target.value)}
         >
           {costumerType.map((type) => (
             <SelectItem
               variant="bordered"
               key={type.name}
-              style={{ color: "black" }}
+              style={{ color: 'black' }}
             >
               {type.name}
             </SelectItem>
@@ -450,7 +479,7 @@ export default function Addtransaction() {
         </Select>
         <Input
           className="text-black relative z-0 w-full mb-1"
-          style={{ color: "black" }}
+          style={{ color: 'black' }}
           autoFocus
           isRequired
           type="text"
@@ -469,14 +498,14 @@ export default function Addtransaction() {
           isRequired
           variant="bordered"
           value={payment_options}
-          style={{ color: "black" }}
+          style={{ color: 'black' }}
           onChange={(event) => setPaymentMethod(event.target.value)}
         >
           {payment.map((method) => (
             <SelectItem
               key={method.name}
               variant="bordered"
-              style={{ color: "black" }}
+              style={{ color: 'black' }}
             >
               {method.name}
             </SelectItem>
@@ -495,14 +524,14 @@ export default function Addtransaction() {
             <SelectItem
               key={type.name}
               variant="bordered"
-              style={{ color: "black" }}
+              style={{ color: 'black' }}
             >
               {type.name}
             </SelectItem>
           ))}
         </Select>
       </div>
-      {payment_type === "Down payment" && (
+      {payment_type === 'Down payment' && (
         <div className="">
           {/* <Input
           className="text-black relative z-0 w-full mb-1"
@@ -517,7 +546,7 @@ export default function Addtransaction() {
         /> */}
           <Input
             className="text-black relative z-0 w-full mb-1"
-            style={{ color: "black" }}
+            style={{ color: 'black' }}
             autoFocus
             isRequired
             type="text"
@@ -537,11 +566,10 @@ export default function Addtransaction() {
       <div className="relative z-0 w-full mb-3 group">
         <Button
           color="primary"
-          style={{ width: "4rem" }}
+          style={{ width: '4rem' }}
           onClick={handleSubmit}
           type="submit"
           isDisabled={isSubmiting}
-          
         >
           Submit
         </Button>
@@ -551,9 +579,7 @@ export default function Addtransaction() {
         <div className="flex items-center w-full max-w-xs p-1" role="alert">
           <div className="text-sm font-normal text-green-900">
             {success_message}
-
           </div>
-
         </div>
       )}
     </>
