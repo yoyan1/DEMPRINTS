@@ -430,12 +430,12 @@ export default function Transaction() {
           onClose={closeAddTransaction}
           onValueChange="outside"
         >
-          <ModalContent>
+          {/* <ModalContent> */}
             {/* <ModalHeader>Add Transaction</ModalHeader> */}
-            <ModalBody className="max-w-md mx-auto">
+            {/* <ModalBody className="max-w-md mx-auto"> */}
               <Addtransaction />
-            </ModalBody>
-          </ModalContent>
+            {/* </ModalBody> */}
+          {/* </ModalContent> */}
         </Modal>
 
         <Modal
@@ -445,6 +445,7 @@ export default function Transaction() {
         >
           <ModalContent>
             <ModalBody>
+
               <AllTransaction />
             </ModalBody>
             <ModalFooter>

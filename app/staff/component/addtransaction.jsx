@@ -10,6 +10,9 @@ import {
   SelectItem,
   Button,
   Checkbox,
+  ModalContent,
+  ModalBody,
+  ModalFooter,
 } from '@nextui-org/react';
 
 import axios from 'axios';
@@ -27,7 +30,7 @@ export default function Addtransaction() {
 
   const [transaction_no] = useState(0);
   const [item_no] = useState(0);
-  const [quantity, setQuantity] = useState(0);
+  const [quantity, setQuantity] = useState(1);
   const [unit_cost, setUnitCost] = useState(0);
   const [discount, setDiscount] = useState(0);
   const [paid_amount, setPaidAmount] = useState(0);
@@ -70,7 +73,7 @@ export default function Addtransaction() {
     try {
       const response = await axios.get(
         `https://demprints-backend.vercel.app/api/master/getCustomerType`,
-        `${process.env.NEXT_PUBLIC_API_URL}/master/getCustomerType`
+        `${process.env.NEXT_PUBLIC_API_URL}/master/getCustomerType`,
       );
       setCostumertype(response.data);
       console.log(response.data);
@@ -82,7 +85,7 @@ export default function Addtransaction() {
     try {
       const response = await axios.get(
         `https://demprints-backend.vercel.app/api/master/getPaymentOptions`,
-        `${process.env.NEXT_PUBLIC_API_URL}/master/getPaymentOptions`
+        `${process.env.NEXT_PUBLIC_API_URL}/master/getPaymentOptions`,
       );
       setPaymentt(response.data);
       console.log(response.data);
@@ -94,7 +97,7 @@ export default function Addtransaction() {
     try {
       const response = await axios.get(
         `https://demprints-backend.vercel.app/api/master/getPaymentType`,
-        `${process.env.NEXT_PUBLIC_API_URL}/master/getPaymentType`
+        `${process.env.NEXT_PUBLIC_API_URL}/master/getPaymentType`,
       );
       setPaymenttype(response.data);
       console.log(response.data);
@@ -107,7 +110,7 @@ export default function Addtransaction() {
     try {
       const response = await axios.get(
         `https://demprints-backend.vercel.app/api/master/products`,
-        `${process.env.NEXT_PUBLIC_API_URL}/master/products`
+        `${process.env.NEXT_PUBLIC_API_URL}/master/products`,
       );
       setProduct(response.data);
       console.log(response.data);
@@ -120,7 +123,7 @@ export default function Addtransaction() {
     try {
       const response = await axios.get(
         `https://demprints-backend.vercel.app/api/collection/getId`,
-        `${process.env.NEXT_PUBLIC_API_URL}/collection/getId`
+        `${process.env.NEXT_PUBLIC_API_URL}/collection/getId`,
       );
       if (response.data.length > 0) {
         setIdGenerated(response.data);
@@ -132,11 +135,11 @@ export default function Addtransaction() {
   };
 
   const fetchTransactions = async () => {
-    setIs;
+    // setIs;
     try {
       const response = await axios.get(
         `https://demprints-backend.vercel.app/api/collection/getTransaction`,
-        `${process.env.NEXT_PUBLIC_API_URL}/collection/getTransaction`
+        `${process.env.NEXT_PUBLIC_API_URL}/collection/getTransaction`,
       );
       setTransaction(response.data);
       console.log(response.data);
@@ -165,7 +168,7 @@ export default function Addtransaction() {
 
       const responseID = await axios.get(
         `https://demprints-backend.vercel.app/api/collection/getId`,
-        `${process.env.NEXT_PUBLIC_API_URL}/collection/getId`
+        `${process.env.NEXT_PUBLIC_API_URL}/collection/getId`,
       );
 
       const generatedID =
@@ -320,275 +323,258 @@ export default function Addtransaction() {
 
   return (
     <>
-      <div className="flex gap-3">
-        <Select
-          label="Item"
-          className="max-w-md mx-auto text-black relative z-0 w-full mb-1 mt-5"
-          autoFocus
-          isRequired
-          value={item_name}
-          variant="bordered"
-          style={{ color: 'black' }}
-          onChange={(event) => {
-            const selectedProductName = event.target.value;
-            const selectedProduct = products.find(
-              (product) => product.name === selectedProductName,
-            );
-
-            setItemName(selectedProductName);
-            setUnitCost(selectedProduct?.price || 0); // Set initial unit cost
-            handleQuantityChange(quantity);
-            setUnitCost('');
-            setQuantity(0);
-            setAmount(0);
-            setTotal(0);
-          }}
-        >
-          {products.map((product, index) =>
-            index > 0 ? (
-              product.name !== products[index - 1].name ? (
-                <SelectItem
-                  key={product.name}
-                  variant="bordered"
-                  style={{ color: 'black' }}
-                >
-                  {product.name}
-                </SelectItem>
-              ) : null
-            ) : (
-              <SelectItem
-                key={product.name}
+      <ModalContent>
+        <ModalBody className="">
+          <div className="">
+            <div className="flex gap-3">
+              <Select
+                label="Item"
+                className="max-w-md mx-auto text-black relative z-0 w-full mb-1 mt-5"
+                autoFocus
+                isRequired
+                value={item_name}
                 variant="bordered"
                 style={{ color: 'black' }}
+                onChange={(event) => {
+                  const selectedProductName = event.target.value;
+                  const selectedProduct = products.find(
+                    (product) => product.name === selectedProductName,
+                  );
+
+                  setItemName(selectedProductName);
+                  setUnitCost(selectedProduct?.price || 0); // Set initial unit cost
+                  handleQuantityChange(quantity);
+                  setUnitCost('');
+                  setQuantity(0);
+                  setAmount(0);
+                  setTotal(0);
+                }}
               >
-                {product.name}
-              </SelectItem>
-            ),
-          )}
-        </Select>
+                {products.map((product, index) =>
+                  index > 0 ? (
+                    product.name !== products[index - 1].name ? (
+                      <SelectItem
+                        key={product.name}
+                        variant="bordered"
+                        style={{ color: 'black' }}
+                      >
+                        {product.name}
+                      </SelectItem>
+                    ) : null
+                  ) : (
+                    <SelectItem
+                      key={product.name}
+                      variant="bordered"
+                      style={{ color: 'black' }}
+                    >
+                      {product.name}
+                    </SelectItem>
+                  ),
+                )}
+              </Select>
 
-        {item_name && (
-          <Select
-            label="Measurement"
-            className="max-w-md mx-auto text-black relative z-0 w-full mb-1 mt-5"
-            autoFocus
-            isRequired
-            value={unit_cost}
-            variant="bordered"
-            onChange={(event) => {
-              handleUnitCostChange(event.target.value);
-            }}
-          >
-            {products
-              .filter((product) => product.name === item_name) // Filter by product name
-              .map((product) => (
-                <SelectItem
-                  key={product.unit}
-                  variant="bordered" // Set product price as the value
+              {item_name && (
+                <Select
+                  label="Measurement"
+                  className="max-w-md mx-auto text-black relative z-0 w-full mb-1 mt-5"
+                  autoFocus
+                  isRequired
+                  value={unit_cost}
+                  variant="bordered"
+                  onChange={(event) => {
+                    handleUnitCostChange(event.target.value);
+                  }}
                 >
-                  {product.unit}
-                  {/* Display unit and price */}
-                </SelectItem>
-              ))}
-          </Select>
-        )}
-      </div>
-
-      <div className="grid md:grid-cols-2 md:gap-6">
-        <Input
-          className="text-black relative z-0 w-full mb-1"
-          style={{ color: 'black' }}
-          autoFocus
-          isRequired
-          value={quantity}
-          label="Quantity"
-          variant="bordered"
-          type="number"
-          name="quantity"
-          onChange={(e) => handleQuantityChange(e.target.value)}
-        />
-        {/* <Input
-          className="text-black relative z-0 w-full mb-1"
-          style={{ color: 'black' }}
-          autoFocus
-          isRequired
-          value={discount}
-          name="discount"
-          label="Discount (%)"
-          variant="bordered"
-          onChange={(e) => handleDiscountChange(e.target.value)}
-        /> */}
-        <div className="flex items-center space-x-4">
-          <Input
-            value={discount}
-            name="discount"
-            label="Discount"
-            variant="bordered"
-            autoFocus
-            placeholder="Enter your discount"
-            isRequired
-            onChange={(e) => handleDiscountChange(e.target.value)}
-          />
-          <Checkbox
-            checked={isPercentage}
-            size="sm"
-            onChange={handleCheckBoxChange}
-          >
-            %
-          </Checkbox>
-        </div>
-      </div>
-
-      {/* <div className="grid md:grid-cols-2 md:gap-6">
-        <Input
-          className="text-black relative z-0 w-full mb-1"
-          style={{ color: 'black' }}
-          autoFocus
-          isRequired
-          value={amount}
-          label="Amount"
-          variant="bordered"
-          name="amount"
-          readOnly
-        />
-        <Input
-          className="text-black relative z-0 w-full mb-1"
-          style={{ color: 'black' }}
-          autoFocus
-          isRequired
-          value={total ? Math.round(parseFloat(total) * 100) / 100 : '00:00'}
-          label="Total"
-          variant="bordered"
-          readOnly
-        />
-      </div> */}
-
-      <div className="grid md:grid-cols-2 md:gap-6">
-        <Select
-          label="Customer Type"
-          className="max-w-xs text-black relative z-0 w-full mb-1"
-          autoFocus
-          isRequired
-          variant="bordered"
-          value={customer_type}
-          style={{ color: 'black' }}
-          onChange={(event) => setCostumerType(event.target.value)}
-        >
-          {costumerType.map((type) => (
-            <SelectItem
-              variant="bordered"
-              key={type.name}
+                  {products
+                    .filter((product) => product.name === item_name)
+                    .map((product) => (
+                      <SelectItem key={product.unit} variant="bordered">
+                        {product.unit}
+                      </SelectItem>
+                    ))}
+                </Select>
+              )}
+            </div>{' '}
+            <div className="flex gap-3">
+              <Input
+                className="text-black max-w-md mx-auto relative z-0 w-full mb-1 mt-5"
+                style={{ color: 'black' }}
+                autoFocus
+                isRequired
+                value={quantity}
+                label="Quantity"
+                variant="bordered"
+                type="number"
+                name="quantity"
+                onChange={(e) => handleQuantityChange(e.target.value)}
+              />
+              <div className="flex max-w-md mx-auto text-black relative z-0 w-full mb-1 mt-5 items-center">
+                <Input
+                  className="flex-1"
+                  value={discount}
+                  name="discount"
+                  label="Discount"
+                  variant="bordered"
+                  autoFocus
+                  placeholder="Enter your discount"
+                  isRequired
+                  onChange={(e) => handleDiscountChange(e.target.value)}
+                />
+                <Checkbox
+                  className="flex-1 w-4 h-2 text-blue-600 m-2"
+                  checked={isPercentage}
+                  size="sm"
+                  onChange={handleCheckBoxChange}
+                >
+                  %
+                </Checkbox>
+              </div>
+            </div>
+            {/* <div className="grid md:grid-cols-2 md:gap-6">
+            <Input
+              className="text-black relative z-0 w-full mb-1"
               style={{ color: 'black' }}
-            >
-              {type.name}
-            </SelectItem>
-          ))}
-        </Select>
-        <Input
-          className="text-black relative z-0 w-full mb-1"
-          style={{ color: 'black' }}
-          autoFocus
-          isRequired
-          type="text"
-          value={customer_name}
-          label="Customer Name"
-          variant="bordered"
-          onChange={(event) => setCostumerName(event.target.value)}
-        />
-      </div>
-
-      <div className="grid md:grid-cols-2 md:gap-6">
-        <Select
-          label="Payment Option"
-          className="max-w-xs text-black relative z-0 w-full mb-1"
-          autoFocus
-          isRequired
-          variant="bordered"
-          value={payment_options}
-          style={{ color: 'black' }}
-          onChange={(event) => setPaymentMethod(event.target.value)}
-        >
-          {payment.map((method) => (
-            <SelectItem
-              key={method.name}
+              autoFocus
+              isRequired
+              value={amount}
+              label="Amount"
               variant="bordered"
+              name="amount"
+              readOnly
+            />
+            <Input
+              className="text-black relative z-0 w-full mb-1"
               style={{ color: 'black' }}
-            >
-              {method.name}
-            </SelectItem>
-          ))}
-        </Select>
-
-        <Select
-          label="Payment Type"
-          className="max-w-xs text-black relative z-0 w-full mb-1"
-          variant="bordered"
-          autoFocus
-          value={payment_type}
-          onChange={(event) => setPaymentType(event.target.value)}
-        >
-          {paymentTypes.map((type) => (
-            <SelectItem
-              key={type.name}
+              autoFocus
+              isRequired
+              value={
+                total ? Math.round(parseFloat(total) * 100) / 100 : '00:00'
+              }
+              label="Total"
               variant="bordered"
-              style={{ color: 'black' }}
-            >
-              {type.name}
-            </SelectItem>
-          ))}
-        </Select>
-      </div>
-      {payment_type === 'Down payment' && (
-        <div className="">
-          {/* <Input
-          className="text-black relative z-0 w-full mb-1"
-          style={{ color: "black" }}
-          autoFocus
-          isRequired
-          type="text"
-          value={sales_person}
-          label="Sales Person"
-          variant="bordered"
-          onChange={(event) => setSalesPerson(event.target.value)}
-        /> */}
-          <Input
-            className="text-black relative z-0 w-full mb-1"
-            style={{ color: 'black' }}
-            autoFocus
-            isRequired
-            type="text"
-            value={paid_amount}
-            label="Paid Amount"
-            variant="bordered"
-            onChange={(e) => handlePaidAmount(e.target.value)}
-          />
-        </div>
-      )}
-
-      <div className="flex">
-        <p className="gap-3">Amount: ₱{Math.round(amount)}</p>
-        <p>Total : ₱{Math.round(total)}</p>
-      </div>
-
-      <div className="relative z-0 w-full mb-3 group">
-        <Button
-          color="primary"
-          style={{ width: '4rem' }}
-          onClick={handleSubmit}
-          type="submit"
-          isDisabled={isSubmiting}
-        >
-          Submit
-        </Button>
-      </div>
-
-      {success_message && (
-        <div className="flex items-center w-full max-w-xs p-1" role="alert">
-          <div className="text-sm font-normal text-green-900">
-            {success_message}
+              readOnly
+            />
+          </div> */}
+            <div className="relative z-0 w-full mb-3 group"></div>
+            {success_message && (
+              <div
+                className="flex items-center w-full max-w-xs p-1"
+                role="alert"
+              >
+                <div className="text-sm font-normal text-green-900">
+                  {success_message}
+                </div>
+              </div>
+            )}
           </div>
-        </div>
-      )}
+          <div className="">
+            <div className="flex ">
+              <Select
+                label="Customer Type"
+                className="flex max-w-md mx-auto  relative z-0 w-full mb-1 mt-5 items-center"
+                autoFocus
+                isRequired
+                variant="bordered"
+                value={customer_type}
+                style={{ color: 'black' }}
+                onChange={(event) => setCostumerType(event.target.value)}
+              >
+                {costumerType.map((type) => (
+                  <SelectItem
+                    variant="bordered"
+                    key={type.name}
+                    style={{ color: 'black' }}
+                  >
+                    {type.name}
+                  </SelectItem>
+                ))}
+              </Select>
+              <Input
+                className="text-blackflex max-w-md mx-auto  relative z-0 w-full mb-1 mt-5 items-center"
+                style={{ color: 'black' }}
+                autoFocus
+                isRequired
+                type="text"
+                value={customer_name}
+                label="Customer Name"
+                variant="bordered"
+                onChange={(event) => setCostumerName(event.target.value)}
+              />
+            </div>
+            <div className="flex">
+              <Select
+                label="Payment Option"
+                className="flex max-w-md mx-auto text-black relative z-0 w-full mb-1 mt-5 items-center"
+                autoFocus
+                isRequired
+                variant="bordered"
+                value={payment_options}
+                style={{ color: 'black' }}
+                onChange={(event) => setPaymentMethod(event.target.value)}
+              >
+                {payment.map((method) => (
+                  <SelectItem
+                    key={method.name}
+                    variant="bordered"
+                    style={{ color: 'black' }}
+                  >
+                    {method.name}
+                  </SelectItem>
+                ))}
+              </Select>
+
+              <Select
+                label="Payment Type"
+                className="flex max-w-md mx-auto text-black relative z-0 w-full mb-1 mt-5 items-center"
+                variant="bordered"
+                autoFocus
+                value={payment_type}
+                onChange={(event) => setPaymentType(event.target.value)}
+              >
+                {paymentTypes.map((type) => (
+                  <SelectItem
+                    key={type.name}
+                    variant="bordered"
+                    style={{ color: 'black' }}
+                  >
+                    {type.name}
+                  </SelectItem>
+                ))}
+              </Select>
+            </div>
+            {payment_type === 'Down payment' && (
+              <div className="flex max-w-md mx-auto text-black relative z-0 w-full mb-1 mt-5 items-center">
+                <Input
+                  className="text-black relative z-0 w-full mb-1"
+                  style={{ color: 'black' }}
+                  autoFocus
+                  isRequired
+                  type="text"
+                  value={paid_amount}
+                  label="Paid Amount"
+                  variant="bordered"
+                  onChange={(e) => handlePaidAmount(e.target.value)}
+                />
+              </div>
+            )}
+          </div>
+        </ModalBody>
+        <ModalFooter className="flex justify-between">
+          <Button
+            color="primary"
+            style={{ width: '4rem' }}
+            onClick={handleSubmit}
+            type="submit"
+            isDisabled={isSubmiting}
+          >
+            Submit
+          </Button>
+          <div className="flex bg-gray p-2">
+            <p className="gap-3 bold mr-3">Amount: ₱{Math.round(amount)}</p>
+            <p className='bold'>Total : ₱{Math.round(total)}</p>
+          </div>
+        </ModalFooter>
+      </ModalContent>
     </>
   );
 }

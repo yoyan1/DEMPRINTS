@@ -22,7 +22,7 @@ export default function LeavePage() {
     <>
       <Modal size='sm' isOpen={isOpen} onOpenChange={onOpenChange} placement="top-center">
         <ModalContent>
-          <>
+          
             <ModalHeader classNameName="flex flex-col gap-1">File Leave</ModalHeader>
             <ModalBody>
               <AddLeave />
@@ -30,7 +30,7 @@ export default function LeavePage() {
             {/* <ModalFooter>
 
             </ModalFooter> */}
-          </>
+          
         </ModalContent>
       </Modal>
       <header>
