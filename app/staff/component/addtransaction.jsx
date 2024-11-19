@@ -50,6 +50,7 @@ export default function Addtransaction() {
   const [products, setProduct] = useState(['']);
   const [unit, setUnit] = useState(['']);
   const [setTransaction] = useState(['']);
+  const [categories, setCategory] = useState([''])
   // ------------------------
   const [isSubmiting, setisSubmmiting] = useState(false);
   // ----------------------
@@ -67,6 +68,7 @@ export default function Addtransaction() {
     fetchTransactions();
     fetchPaymentType();
     fetchID();
+    fetchCategory();
   }, [getAuthenticateUser]);
 
   const fetchCostumerType = async () => {
@@ -134,6 +136,20 @@ export default function Addtransaction() {
     }
   };
 
+  const fetchCategory = async () => {
+    try{
+      const response = await axios.get(
+        `https://demprints-backend.vercel.app/api/master/productCategory`,
+        `${process.env.NEXT_PUBLIC_API_URL}/master/products`,
+      );
+      setCategory(response.data);
+      console.log(response.data);
+      
+    }catch(error){
+      console.log(error);
+      
+    }
+  }
   const fetchTransactions = async () => {
     // setIs;
     try {
@@ -326,7 +342,53 @@ export default function Addtransaction() {
       <ModalContent>
         <ModalBody className="">
           <div className="">
+          <Select
+                label="Category"
+                className="max-w-md mx-auto text-black relative z-0 w-full mb-1 mt-5"
+                autoFocus
+                isRequired
+                // value={item_name}
+                variant="bordered"
+                style={{ color: 'black' }}
+                // onChange={(event) => {
+                //   const selectedProductName = event.target.value;
+                //   const selectedProduct = products.find(
+                //     (product) => product.name === selectedProductName,
+                //   );
+
+                //   setItemName(selectedProductName);
+                //   setUnitCost(selectedProduct?.price || 0); // Set initial unit cost
+                //   handleQuantityChange(quantity);
+                //   setUnitCost('');
+                //   setQuantity(0);
+                //   setAmount(0);
+                //   setTotal(0);
+                // }}
+              >
+                {categories.map((category, index) =>
+                  index > 0 ? (
+                    category.name !== categories[index - 1].name ? (
+                      <SelectItem
+                        key={category.name}
+                        variant="bordered"
+                        style={{ color: 'black' }}
+                      >
+                        {category.name}
+                      </SelectItem>
+                    ) : null
+                  ) : (
+                    <SelectItem
+                      key={category.name}
+                      variant="bordered"
+                      style={{ color: 'black' }}
+                    >
+                      {category.name}
+                    </SelectItem>
+                  ),
+                )}
+              </Select>
             <div className="flex gap-3">
+              
               <Select
                 label="Item"
                 className="max-w-md mx-auto text-black relative z-0 w-full mb-1 mt-5"
