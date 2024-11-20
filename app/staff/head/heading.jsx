@@ -35,7 +35,7 @@ export default function Heading() {
   return (
     <>
     {/* bg-gradient-to-tr from-blue-400 to-blue-950 */}
-      <nav className="border-b border-gray-200 px-4 py-2.5 left-0 right-0 top-0 z-50 bg-gradient-to-tr from-blue-400 to-blue-950 ">
+      <nav className="fixed border-b border-gray-200 px-4 py-2.5 left-0 right-0 top-0 z-50 bg-gradient-to-tr from-blue-400 to-blue-950 ">
         <div className="flex flex-wrap justify-between items-center">
           <div className="flex justify-start items-center">
             <button
