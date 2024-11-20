@@ -2,8 +2,8 @@
 
 import React from "react";
 import { FaClipboardList } from "react-icons/fa";
-import { BsPieChartFill } from "react-icons/bs";
-import { IoSettingsSharp } from "react-icons/io5";
+// import { BsPieChartFill } from "react-icons/bs";
+// import { IoSettingsSharp } from "react-icons/io5";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import DarkMode from '@/app/components/public-component/darkMode.jsx';
