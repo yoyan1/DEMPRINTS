@@ -425,10 +425,11 @@ export default function Transaction() {
       {topContent}
       <div className=" overflow-x-scroll">
         <Modal
-          size="5xl"
+          size="3xl"
           isOpen={isAddTransactionOpen}
           onClose={closeAddTransaction}
-          onValueChange="outside"
+          // onValueChange="outside"
+          scrollBehavior="outside"
         >
           {/* <ModalContent> */}
             {/* <ModalHeader>Add Transaction</ModalHeader> */}
