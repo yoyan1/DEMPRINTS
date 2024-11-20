@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react'
 import { useUserStore } from "@/app/stores/userStore"
 import { useRouter } from 'next/navigation'
+import { Spinner } from '@nextui-org/react'
 
 export default function TestPage() {
   const { user, loading, error, isAuthenticate, getAuthenticateUser} = useUserStore()
@@ -29,6 +30,8 @@ export default function TestPage() {
   if(isAuthenticate) {
     router.push('/login')
   }
+
+  return <div className="h-[100vh] flex justify-center items-center"><Spinner /></div>
 
 }
 

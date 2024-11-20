@@ -8,16 +8,13 @@ import CreateCustomer from '../components/master-components/CreateCustomer'
 import CreateSupplier from '../components/master-components/CreateSupplier'
 import CreatePayment from '../components/master-components/CreatePayment'
 import CreateExpenses from '../components/master-components/CreateExpenses'
-import {Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Avatar, User, Tabs, Tab, Card, CardBody} from "@nextui-org/react";
+import {Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Avatar, User,} from "@nextui-org/react";
 import { CgProfile } from "react-icons/cg";
 import { FaBoxOpen } from "react-icons/fa6";
 import { FaUsersBetweenLines } from "react-icons/fa6";
 import { VscOrganization } from "react-icons/vsc";
 import { FaCashRegister } from "react-icons/fa6";
 import { TbReportMoney } from "react-icons/tb";
-import { FaUserPlus } from "react-icons/fa";
-import { PiUserList } from "react-icons/pi";
-import { TbListDetails } from "react-icons/tb";
 
 
 export default function page() {

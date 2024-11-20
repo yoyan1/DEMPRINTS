@@ -27,6 +27,7 @@ import { CiSearch } from "react-icons/ci";
 import { IoChevronDown } from "react-icons/io5";
 import { useUserStore } from "../../stores/userStore";
 import { capitalize } from "@/app/composables/utils";
+import CreateOrUpdate from "@/app/components/adminComponents/employee/CreateOrUpdate";
 import ViewDetails from "@/app/components/adminComponents/employee/ViewDetails";
 
 const statusColorMap = {
@@ -211,6 +212,7 @@ export default function Employee() {
           {/* <Button color="primary" endContent={<FaPlus />}>
             Add New
           </Button> */}
+          <CreateOrUpdate/>
         </div>
       </div>
       <div className="flex justify-between items-center">
