@@ -20,14 +20,15 @@ export default function TestPage() {
     return <div className="h-[100vh] flex justify-center items-center"><Spinner /></div>;
   }
 
-  if(!isAuthenticate && user) {
+  if(!isAuthenticate) {
     if(user.role === 'super admin'){
       router.push('/admin')
     } else if(user.role === 'staff'){
       router.push('/staff')
     }
   }
-  if(isAuthenticate) {
+
+  if(isAuthenticate && !user) {
     router.push('/login')
   }
 

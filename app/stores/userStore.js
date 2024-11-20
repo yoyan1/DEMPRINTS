@@ -4,7 +4,7 @@ import axios from 'axios';
 
 export const useUserStore = create((set) => ({
     user: null,
-    isAuthenticate: false,
+    isAuthenticate: true,
     loading: false,
     error: null,
     create: async (data) =>{

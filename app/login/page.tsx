@@ -6,9 +6,8 @@ export default function LoginPage() {
   return (
     <div className="flex h-screen w-full items-center justify-center">
       <Image
-        className="flex-1"
-        width={700}
-        height={1000}
+        className="flex-1 h-screen"
+        radius="none"
         alt="Demprints"
         src="/DEMPRINTS-bg.jpg"
       />
