@@ -97,7 +97,7 @@ export default function AllTransaction() {
   const [visibleColumns] = useState(new Set(INITIAL_VISIBLE_COLUMNS));
   const [statusFilter, setStatusFilter] = useState("all");
   const [typeFilter] = useState("all");
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rowsPerPage, setRowsPerPage] = useState(30);
   const [sortDescriptor, setSortDescriptor] = useState({
     column: "age",
     direction: "ascending",
@@ -357,9 +357,9 @@ export default function AllTransaction() {
               className="bg-transparent outline-none text-default-400 text-small"
               onChange={onRowsPerPageChange}
             >
-              <option value="5">5</option>
-              <option value="10">10</option>
-              <option value="15">15</option>
+              <option value="30">30</option>
+              <option value="60">60</option>
+              <option value="100">100</option>
             </select>
           </label>
         </div>

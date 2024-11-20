@@ -1,6 +1,7 @@
 import React from "react";
 import Heading from "./head/heading";
 import Sidebar from "./head/aside";
+// import Heading from ''
 import { Image } from "@nextui-org/image";
 
 export default function Layout({ children }) {
@@ -54,7 +55,7 @@ export default function Layout({ children }) {
       </Heading>
       <div className="flex">
         <Sidebar
-          className="fixed top-0 left-0 z-40 w-40 h-screen pt-14 transition-transform -translate-x-full dark:bg-black dark:text-white"
+          className="absolute top-5 left-0 z-40 w-40 h-screen pt-14 transition-transform -translate-x-full dark:bg-black dark:text-white"
           aria-label="Sidenav"
           id="drawer-navigation"
         />

@@ -13,6 +13,9 @@ import {
   ModalContent,
   ModalBody,
   ModalFooter,
+  ModalHeader,
+  Textarea,
+  CheckboxGroup,
 } from '@nextui-org/react';
 
 import axios from 'axios';
@@ -38,7 +41,7 @@ export default function Addtransaction() {
   const [total, setTotal] = useState(0);
   const [remarks, setRemarks] = useState(0);
   const [payment_options, setPaymentMethod] = useState(' ');
-  const [sales_person, setSalesPerson] = useState(' ');
+  // const [sales_person, setSalesPerson] = useState(' ');
   const [success_message, setSuccessMessage] = useState(' ');
   const [payment_type, setPaymentType] = useState(' ');
   // const [employee_id, setEmployeId] = useState(0)
@@ -50,7 +53,7 @@ export default function Addtransaction() {
   const [products, setProduct] = useState(['']);
   const [unit, setUnit] = useState(['']);
   const [setTransaction] = useState(['']);
-  const [categories, setCategory] = useState([''])
+  const [categories, setCategory] = useState(['']);
   // ------------------------
   const [isSubmiting, setisSubmmiting] = useState(false);
   // ----------------------
@@ -59,9 +62,12 @@ export default function Addtransaction() {
   // const [selected, setSelected] = useState(false);
   const [isPercentage, setIsPercentage] = useState(false);
   // ----------------------
+  const [selectedCategory, setSelectedCategory] = useState([]);
+
+  // ---------------------------
 
   useEffect(() => {
-    getAuthenticateUser();
+    // getAuthenticateUser();
     fetchPayment();
     fetchCostumerType();
     fetchProduct();
@@ -69,6 +75,8 @@ export default function Addtransaction() {
     fetchPaymentType();
     fetchID();
     fetchCategory();
+    // ----------------------
+    getAuthenticateUser();
   }, [getAuthenticateUser]);
 
   const fetchCostumerType = async () => {
@@ -137,19 +145,17 @@ export default function Addtransaction() {
   };
 
   const fetchCategory = async () => {
-    try{
+    try {
       const response = await axios.get(
         `https://demprints-backend.vercel.app/api/master/productCategory`,
         `${process.env.NEXT_PUBLIC_API_URL}/master/products`,
       );
       setCategory(response.data);
       console.log(response.data);
-      
-    }catch(error){
+    } catch (error) {
       console.log(error);
-      
     }
-  }
+  };
   const fetchTransactions = async () => {
     // setIs;
     try {
@@ -208,6 +214,11 @@ export default function Addtransaction() {
       // const totalAmount = amount - discount; // Ensure correct total calculation
       // const finalTotal = amount - discount - paid_amount;
       // Send the transaction data
+
+      // const getData = await axios.get(
+      //   `https://demprints-backend.vercel.app/api/collection/getTransaction`,
+      //   `${process.env.NEXT_PUBLIC_API_URL}/collection/getTransaction`,
+      // );
       const updateId = await axios.post(
         'https://demprints-backend.vercel.app/api/collection/updateID',
         { id: idGenerated[0]._id, count: newId },
@@ -231,12 +242,14 @@ export default function Addtransaction() {
           payment_options,
           sales_person: user.name,
           remarks: remarks, //calculate the balance
-          employee_id: user.id,
+          // employee_id,
           // employee_id: user.id,
         },
       );
-      console.log('user ID added', user._id);
+      // console.log(getData.data);
+      // console.log('user ID added', user._id);
       console.log(updateId.data);
+
       setSuccessMessage('Transaction added successfully!');
       setItemName('');
       setQuantity('');
@@ -340,43 +353,24 @@ export default function Addtransaction() {
   return (
     <>
       <ModalContent>
+        <ModalHeader>Add Transaction</ModalHeader>
         <ModalBody className="">
-          <div className="">
-          <Select
+          <div className=" flex gap-6 ">
+            <div className="flex-1 max-w-4xl mx-auto">
+              {/* Category */}
+              <Select
+                size="sm"
                 label="Category"
-                className="max-w-md mx-auto text-black relative z-0 w-full mb-1 mt-5"
+                className=" mb-2"
                 autoFocus
                 isRequired
-                // value={item_name}
                 variant="bordered"
                 style={{ color: 'black' }}
-                // onChange={(event) => {
-                //   const selectedProductName = event.target.value;
-                //   const selectedProduct = products.find(
-                //     (product) => product.name === selectedProductName,
-                //   );
-
-                //   setItemName(selectedProductName);
-                //   setUnitCost(selectedProduct?.price || 0); // Set initial unit cost
-                //   handleQuantityChange(quantity);
-                //   setUnitCost('');
-                //   setQuantity(0);
-                //   setAmount(0);
-                //   setTotal(0);
-                // }}
+                onChange={(e) => setSelectedCategory(e.target.value)} // Track selected category
               >
                 {categories.map((category, index) =>
-                  index > 0 ? (
-                    category.name !== categories[index - 1].name ? (
-                      <SelectItem
-                        key={category.name}
-                        variant="bordered"
-                        style={{ color: 'black' }}
-                      >
-                        {category.name}
-                      </SelectItem>
-                    ) : null
-                  ) : (
+                  (index > 0 && category.name !== categories[index - 1].name) ||
+                  index === 0 ? (
                     <SelectItem
                       key={category.name}
                       variant="bordered"
@@ -384,244 +378,238 @@ export default function Addtransaction() {
                     >
                       {category.name}
                     </SelectItem>
-                  ),
+                  ) : null,
                 )}
               </Select>
-            <div className="flex gap-3">
-              
-              <Select
-                label="Item"
-                className="max-w-md mx-auto text-black relative z-0 w-full mb-1 mt-5"
-                autoFocus
-                isRequired
-                value={item_name}
-                variant="bordered"
-                style={{ color: 'black' }}
-                onChange={(event) => {
-                  const selectedProductName = event.target.value;
-                  const selectedProduct = products.find(
-                    (product) => product.name === selectedProductName,
-                  );
+              {selectedCategory && (
+                <div className="flex gap-3 mb-2">
+                  {/* <div className="flex gap-3"> */}
 
-                  setItemName(selectedProductName);
-                  setUnitCost(selectedProduct?.price || 0); // Set initial unit cost
-                  handleQuantityChange(quantity);
-                  setUnitCost('');
-                  setQuantity(0);
-                  setAmount(0);
-                  setTotal(0);
-                }}
-              >
-                {products.map((product, index) =>
-                  index > 0 ? (
-                    product.name !== products[index - 1].name ? (
-                      <SelectItem
-                        key={product.name}
-                        variant="bordered"
-                        style={{ color: 'black' }}
-                      >
-                        {product.name}
-                      </SelectItem>
-                    ) : null
-                  ) : (
+                  <Select
+                    label="Item"
+                    className="w-full max-w-md mx-auto text-black relative z-0 mb-2"
+                    autoFocus
+                    isRequired
+                    value={item_name}
+                    variant="bordered"
+                    style={{ color: 'black' }}
+                    onChange={(e) => {
+                      const selectedProductName = e.target.value;
+                      const selectedProduct = products.find(
+                        (product) => product.name === selectedProductName,
+                      );
+                      setItemName(selectedProductName);
+                      setUnitCost(selectedProduct?.price || 0);
+                      handleQuantityChange(quantity);
+                      setUnitCost(0);
+                      setQuantity(0);
+                      setAmount(0);
+                      setTotal(0);
+                    }}
+                  >
+                    {products
+                      .filter(
+                        (product) => product.category === selectedCategory,
+                      ) // Filter items based on selected category
+                      .map((product) => (
+                        <SelectItem
+                          key={product.name}
+                          variant="bordered"
+                          style={{ color: 'black' }}
+                        >
+                          {product.name}
+                        </SelectItem>
+                      ))}
+                  </Select>
+
+                  {item_name && (
+                    <Select
+                      label="Measurement"
+                      className="w-full max-w-md mx-auto text-black relative z-0 mb-2"
+                      autoFocus
+                      isRequired
+                      value={unit_cost}
+                      variant="bordered"
+                      onChange={(event) => {
+                        handleUnitCostChange(event.target.value);
+                      }}
+                    >
+                      {products
+                        .filter((product) => product.name === item_name)
+                        .map((product) => (
+                          <SelectItem key={product.unit} variant="bordered">
+                            {product.unit}
+                          </SelectItem>
+                        ))}
+                    </Select>
+                  )}
+                </div>
+              )}
+
+              <div className="flex gap-3 mb-2">
+                <Input
+                  className="w-full max-w-md mx-auto text-black relative z-0 mb-2"
+                  style={{ color: 'black' }}
+                  autoFocus
+                  isRequired
+                  value={quantity}
+                  label="Quantity"
+                  variant="bordered"
+                  type="number"
+                  name="quantity"
+                  onChange={(e) => handleQuantityChange(e.target.value)}
+                />
+
+                <div className="flex items-center w-full max-w-md mx-auto text-black relative z-0 mb-2">
+                  <Input
+                    className="flex-1"
+                    value={discount}
+                    name="discount"
+                    label="Discount"
+                    variant="bordered"
+                    autoFocus
+                    placeholder="Enter your discount"
+                    isRequired
+                    onChange={(e) => handleDiscountChange(e.target.value)}
+                  />
+                  <CheckboxGroup className="bg-dark">
+                    <Checkbox
+                      className="w-8 h-8 text-blue-600"
+                      checked={isPercentage}
+                      size="sm"
+                      onChange={handleCheckBoxChange}
+                    >
+                      %
+                    </Checkbox>
+                  </CheckboxGroup>
+                </div>
+              </div>
+              <div className="flex gap-3 mb-2">
+                {/* Customer Type Select */}
+                <Select
+                  label="Customer Type"
+                  className="w-full max-w-md mx-auto text-black relative z-0 mb-2"
+                  autoFocus
+                  isRequired
+                  variant="bordered"
+                  value={customer_type}
+                  style={{ color: 'black' }}
+                  onChange={(event) => setCostumerType(event.target.value)}
+                >
+                  {costumerType.map((type) => (
                     <SelectItem
-                      key={product.name}
+                      key={type.name}
                       variant="bordered"
                       style={{ color: 'black' }}
                     >
-                      {product.name}
+                      {type.name}
                     </SelectItem>
-                  ),
-                )}
-              </Select>
-
-              {item_name && (
-                <Select
-                  label="Measurement"
-                  className="max-w-md mx-auto text-black relative z-0 w-full mb-1 mt-5"
-                  autoFocus
-                  isRequired
-                  value={unit_cost}
-                  variant="bordered"
-                  onChange={(event) => {
-                    handleUnitCostChange(event.target.value);
-                  }}
-                >
-                  {products
-                    .filter((product) => product.name === item_name)
-                    .map((product) => (
-                      <SelectItem key={product.unit} variant="bordered">
-                        {product.unit}
-                      </SelectItem>
-                    ))}
+                  ))}
                 </Select>
-              )}
-            </div>{' '}
-            <div className="flex gap-3">
-              <Input
-                className="text-black max-w-md mx-auto relative z-0 w-full mb-1 mt-5"
-                style={{ color: 'black' }}
-                autoFocus
-                isRequired
-                value={quantity}
-                label="Quantity"
-                variant="bordered"
-                type="number"
-                name="quantity"
-                onChange={(e) => handleQuantityChange(e.target.value)}
-              />
-              <div className="flex max-w-md mx-auto text-black relative z-0 w-full mb-1 mt-5 items-center">
-                <Input
-                  className="flex-1"
-                  value={discount}
-                  name="discount"
-                  label="Discount"
-                  variant="bordered"
-                  autoFocus
-                  placeholder="Enter your discount"
-                  isRequired
-                  onChange={(e) => handleDiscountChange(e.target.value)}
-                />
-                <Checkbox
-                  className="flex-1 w-4 h-2 text-blue-600 m-2"
-                  checked={isPercentage}
-                  size="sm"
-                  onChange={handleCheckBoxChange}
-                >
-                  %
-                </Checkbox>
-              </div>
-            </div>
-            {/* <div className="grid md:grid-cols-2 md:gap-6">
-            <Input
-              className="text-black relative z-0 w-full mb-1"
-              style={{ color: 'black' }}
-              autoFocus
-              isRequired
-              value={amount}
-              label="Amount"
-              variant="bordered"
-              name="amount"
-              readOnly
-            />
-            <Input
-              className="text-black relative z-0 w-full mb-1"
-              style={{ color: 'black' }}
-              autoFocus
-              isRequired
-              value={
-                total ? Math.round(parseFloat(total) * 100) / 100 : '00:00'
-              }
-              label="Total"
-              variant="bordered"
-              readOnly
-            />
-          </div> */}
-            <div className="relative z-0 w-full mb-3 group"></div>
-            {success_message && (
-              <div
-                className="flex items-center w-full max-w-xs p-1"
-                role="alert"
-              >
-                <div className="text-sm font-normal text-green-900">
-                  {success_message}
-                </div>
-              </div>
-            )}
-          </div>
-          <div className="">
-            <div className="flex ">
-              <Select
-                label="Customer Type"
-                className="flex max-w-md mx-auto  relative z-0 w-full mb-1 mt-5 items-center"
-                autoFocus
-                isRequired
-                variant="bordered"
-                value={customer_type}
-                style={{ color: 'black' }}
-                onChange={(event) => setCostumerType(event.target.value)}
-              >
-                {costumerType.map((type) => (
-                  <SelectItem
-                    variant="bordered"
-                    key={type.name}
-                    style={{ color: 'black' }}
-                  >
-                    {type.name}
-                  </SelectItem>
-                ))}
-              </Select>
-              <Input
-                className="text-blackflex max-w-md mx-auto  relative z-0 w-full mb-1 mt-5 items-center"
-                style={{ color: 'black' }}
-                autoFocus
-                isRequired
-                type="text"
-                value={customer_name}
-                label="Customer Name"
-                variant="bordered"
-                onChange={(event) => setCostumerName(event.target.value)}
-              />
-            </div>
-            <div className="flex">
-              <Select
-                label="Payment Option"
-                className="flex max-w-md mx-auto text-black relative z-0 w-full mb-1 mt-5 items-center"
-                autoFocus
-                isRequired
-                variant="bordered"
-                value={payment_options}
-                style={{ color: 'black' }}
-                onChange={(event) => setPaymentMethod(event.target.value)}
-              >
-                {payment.map((method) => (
-                  <SelectItem
-                    key={method.name}
-                    variant="bordered"
-                    style={{ color: 'black' }}
-                  >
-                    {method.name}
-                  </SelectItem>
-                ))}
-              </Select>
 
-              <Select
-                label="Payment Type"
-                className="flex max-w-md mx-auto text-black relative z-0 w-full mb-1 mt-5 items-center"
-                variant="bordered"
-                autoFocus
-                value={payment_type}
-                onChange={(event) => setPaymentType(event.target.value)}
-              >
-                {paymentTypes.map((type) => (
-                  <SelectItem
-                    key={type.name}
-                    variant="bordered"
-                    style={{ color: 'black' }}
-                  >
-                    {type.name}
-                  </SelectItem>
-                ))}
-              </Select>
-            </div>
-            {payment_type === 'Down payment' && (
-              <div className="flex max-w-md mx-auto text-black relative z-0 w-full mb-1 mt-5 items-center">
+                {/* Costumer Name */}
                 <Input
-                  className="text-black relative z-0 w-full mb-1"
+                  className="w-full max-w-md mx-auto text-black relative z-0 mb-2"
                   style={{ color: 'black' }}
                   autoFocus
                   isRequired
                   type="text"
-                  value={paid_amount}
-                  label="Paid Amount"
+                  value={customer_name}
+                  label="Customer Name"
                   variant="bordered"
-                  onChange={(e) => handlePaidAmount(e.target.value)}
+                  onChange={(event) => setCostumerName(event.target.value)}
                 />
               </div>
-            )}
+              <div className="flex gap-3 mb-2">
+                {/* Payment Option Select */}
+                <Select
+                  label="Payment Option"
+                  className="w-full max-w-md mx-auto text-black relative z-0 mb-2"
+                  autoFocus
+                  isRequired
+                  variant="bordered"
+                  value={payment_options}
+                  style={{ color: 'black' }}
+                  onChange={(event) => setPaymentMethod(event.target.value)}
+                >
+                  {payment.map((method) => (
+                    <SelectItem
+                      key={method.name}
+                      variant="bordered"
+                      style={{ color: 'black' }}
+                    >
+                      {method.name}
+                    </SelectItem>
+                  ))}
+                </Select>
+
+                {/* Payment Type Select */}
+                <Select
+                  label="Payment Type"
+                  className="w-full max-w-md mx-auto text-black relative z-0 mb-2"
+                  variant="bordered"
+                  autoFocus
+                  value={payment_type}
+                  onChange={(event) => setPaymentType(event.target.value)}
+                >
+                  {paymentTypes.map((type) => (
+                    <SelectItem
+                      key={type.name}
+                      variant="bordered"
+                      style={{ color: 'black' }}
+                    >
+                      {type.name}
+                    </SelectItem>
+                  ))}
+                </Select>
+              </div>
+              {payment_type === 'Down payment' && (
+                <Textarea
+                  isRequired
+                  // label="Remarks"
+                  // labelPlacement="inside"
+
+                  placeholder="Write Remarks...."
+                  className="max-w-xs"
+                />
+              )}
+              <div className="justify-between">
+                <p></p>
+              </div>
+              {payment_type === 'Down payment' && (
+                <div className="w-full max-w-md mx-auto text-black relative z-0 mb-2">
+                  <Input
+                    className="w-full text-black relative z-0"
+                    style={{ color: 'black' }}
+                    autoFocus
+                    isRequired
+                    type="text"
+                    value={paid_amount}
+                    label="Amount Paid"
+                    variant="bordered"
+                    onChange={(e) => handlePaidAmount(e.target.value)}
+                  />
+                </div>
+              )}
+              <div className="flex justify-end bg-gray p-2">
+                <p className="gap-3 bold mr-3">Amount: ₱{Math.round(amount)}</p>
+                <p className="bold">Total : ₱{Math.round(total)}</p>
+              </div>
+            </div>
+
+            <div className="flex-1">
+              <h1>Content here</h1>
+            </div>
           </div>
+          {success_message && (
+            <div className="flex items-center w-full max-w-xs p-1 mb-3">
+              <div className="text-sm font-normal text-green-900">
+                {success_message}
+              </div>
+            </div>
+          )}
         </ModalBody>
-        <ModalFooter className="flex justify-between">
+        <ModalFooter className=" justify-between">
           <Button
             color="primary"
             style={{ width: '4rem' }}
@@ -631,10 +619,6 @@ export default function Addtransaction() {
           >
             Submit
           </Button>
-          <div className="flex bg-gray p-2">
-            <p className="gap-3 bold mr-3">Amount: ₱{Math.round(amount)}</p>
-            <p className='bold'>Total : ₱{Math.round(total)}</p>
-          </div>
         </ModalFooter>
       </ModalContent>
     </>

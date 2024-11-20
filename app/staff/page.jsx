@@ -1,16 +1,14 @@
-"use client";
-import React, { useState, useMemo, useEffect } from "react";
+'use client';
+import React, { useState, useMemo, useEffect } from 'react';
+
 import {
   Modal,
   ModalContent,
-  ModalHeader,
+  // ModalHeader,
   ModalBody,
   ModalFooter,
   Button,
   useDisclosure,
-} from "@nextui-org/react";
-
-import {
   Table,
   TableHeader,
   TableColumn,
@@ -25,39 +23,40 @@ import {
   Chip,
   Pagination,
   Spinner,
-} from "@nextui-org/react";
-import { CiSearch } from "react-icons/ci";
-import { IoChevronDown } from "react-icons/io5";
-import { capitalize } from "@/app/composables/utils";
-import { HiMiniViewfinderCircle } from "react-icons/hi2";
-import { FaChartLine } from "react-icons/fa";
+  DatePicker,
+} from '@nextui-org/react';
+import { CiSearch } from 'react-icons/ci';
+import { IoChevronDown } from 'react-icons/io5';
+import { capitalize } from '@/app/composables/utils';
+import { HiMiniViewfinderCircle } from 'react-icons/hi2';
+import { FaChartLine } from 'react-icons/fa';
 // import ExpandTransaction from './ExpandModal'
 // import ExportToPdf from '@/app/composables/exportToPdf'
 // import CreateTransaction from './AddTransaction'
-import Addtransaction from "../component/addtransaction";
-import { useSalesStore } from "@/app/stores/transactionStore";
-import AllTransaction from "../component/showAllTable";
+import Addtransaction from './component/addtransaction';
+import { useSalesStore } from '@/app/stores/transactionStore';
+import AllTransaction from './component/showAllTable';
 // import { formatDate, formatTime } from "../../composables/formateDateAndTime";
 
 const itemColorMap = {
-  tarpaulin: "warning",
-  photoprint: "primary",
-  photocopy: "success",
-  others: "danger",
+  tarpaulin: 'warning',
+  photoprint: 'primary',
+  photocopy: 'success',
+  others: 'danger',
 };
 const typeColorMap = {
-  walk_in: "success",
-  online: "primary",
+  walk_in: 'success',
+  online: 'primary',
 };
 
 const INITIAL_VISIBLE_COLUMNS = [
-  "transaction_no",
-  "item_name",
-  "unit_cost",
-  "customer_type",
-  "customer_name",
-  "payment_type",
-  "sales_person",
+  'transaction_no',
+  'item_name',
+  'unit_cost',
+  'customer_type',
+  'customer_name',
+  'payment_type',
+  'sales_person',
 ];
 // const INITIAL_VISIBLE_COLUMNS_ALL = [
 //   "date",
@@ -96,15 +95,16 @@ export default function Transaction() {
     loading,
     fetchTransactions,
   } = useSalesStore();
-  const [filterValue, setFilterValue] = useState("");
+  const [filterValue, setFilterValue] = useState('');
   const [selectedKeys, setSelectedKeys] = useState(new Set([]));
   const [visibleColumns] = useState(new Set(INITIAL_VISIBLE_COLUMNS));
-  const [statusFilter, setStatusFilter] = useState("all");
-  const [typeFilter] = useState("all");
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [typeFilter] = useState('all');
+  const [rowsPerPage, setRowsPerPage] = useState(30);
+  const [selectedDate, setSelectedDate] = useState(null);
   const [sortDescriptor, setSortDescriptor] = useState({
-    column: "age",
-    direction: "ascending",
+    column: 'age',
+    direction: 'ascending',
   });
   const [page, setPage] = useState(1);
 
@@ -115,10 +115,10 @@ export default function Transaction() {
   const hasSearchFilter = Boolean(filterValue);
 
   const headerColumns = useMemo(() => {
-    if (visibleColumns === "all") return columns;
+    if (visibleColumns === 'all') return columns;
 
     return columns.filter((column) =>
-      Array.from(visibleColumns).includes(column.dataKey)
+      Array.from(visibleColumns).includes(column.dataKey),
     );
   }, [visibleColumns]);
 
@@ -127,29 +127,41 @@ export default function Transaction() {
 
     if (hasSearchFilter) {
       filteredTransactions = filteredTransactions.filter((item) =>
-        item.item_name.toLowerCase().includes(filterValue.toLowerCase())
+        item.item_name.toLowerCase().includes(filterValue.toLowerCase()),
       );
     }
     if (
-      statusFilter !== "all" &&
+      statusFilter !== 'all' &&
       Array.from(statusFilter).length !== itemOptions.length
     ) {
       filteredTransactions = filteredTransactions.filter((user) =>
-        Array.from(statusFilter).includes(user.item_name.toLowerCase())
+        Array.from(statusFilter).includes(user.item_name.toLowerCase()),
       );
     }
     if (
-      typeFilter !== "all" &&
+      typeFilter !== 'all' &&
       Array.from(typeFilter).length !== typeOptions.length
     ) {
       filteredTransactions = filteredTransactions.filter((user) =>
-        Array.from(typeFilter).includes(user.customer_type.toLowerCase())
+        Array.from(typeFilter).includes(user.customer_type.toLowerCase()),
+      );
+    }
+    if (selectedDate) {
+      filteredTransactions = filteredTransactions.filter((transaction) =>
+        transaction.date.includes(selectedDate)
       );
     }
 
     return filteredTransactions;
-  }, [transactions, filterValue, statusFilter, typeFilter]);
+  }, [transactions, filterValue, statusFilter, typeFilter, selectedDate]);
 
+  const handleDateChange = (date) => {
+    const year = date.year ? `${date.year}-` : '';
+    const month = date.month ? `${date.month}-` : '';
+    const day = date.day ? date.day : '';
+    const fullDate = year + month + day;
+    setSelectedDate(fullDate ? fullDate : '');
+  };
   const pages = Math.ceil(filteredItems.length / rowsPerPage);
 
   const items = useMemo(() => {
@@ -159,13 +171,20 @@ export default function Transaction() {
     return filteredItems.slice(start, end);
   }, [page, filteredItems, rowsPerPage]);
 
+  // const filteredTransactions = useMemo(
+  //   () =>
+  //     transactions.filter((transaction) =>
+  //       transaction.date.includes(selectedDate),
+  //     ),
+  //   [transactions, selectedDate],
+  // );
   const sortedItems = useMemo(() => {
     return [...items].sort((a, b) => {
       const first = a[sortDescriptor.column];
       const second = b[sortDescriptor.column];
       const cmp = first < second ? -1 : first > second ? 1 : 0;
 
-      return sortDescriptor.direction === "descending" ? -cmp : cmp;
+      return sortDescriptor.direction === 'descending' ? -cmp : cmp;
     });
   }, [sortDescriptor, items]);
 
@@ -173,20 +192,20 @@ export default function Transaction() {
     const cellValue = user[columnKey];
 
     switch (columnKey) {
-      case "transaction_no":
+      case 'transaction_no':
         return (
           <div className="flex flex-col">
             <p className="text-bold text-small capitalize">{cellValue}</p>
           </div>
         );
-      case "item_name":
+      case 'item_name':
         return (
           <Chip
             className="capitalize"
             color={
               itemColorMap[
-                user.item_name.toLowerCase() === "photo print"
-                  ? "photoprint"
+                user.item_name.toLowerCase() === 'photo print'
+                  ? 'photoprint'
                   : user.item_name.toLowerCase()
               ]
             }
@@ -196,14 +215,14 @@ export default function Transaction() {
             {cellValue}
           </Chip>
         );
-      case "customer_type":
+      case 'customer_type':
         return (
           <Chip
             className="capitalize"
             color={
               typeColorMap[
-                user.customer_type.toLowerCase() === "walk in"
-                  ? "walk_in"
+                user.customer_type.toLowerCase() === 'walk in'
+                  ? 'walk_in'
                   : user.customer_type.toLowerCase()
               ]
             }
@@ -240,12 +259,12 @@ export default function Transaction() {
       setFilterValue(value);
       setPage(1);
     } else {
-      setFilterValue("");
+      setFilterValue('');
     }
   }, []);
 
   const onClear = React.useCallback(() => {
-    setFilterValue("");
+    setFilterValue('');
     setPage(1);
   }, []);
 
@@ -279,6 +298,13 @@ export default function Transaction() {
             value={filterValue}
             onClear={() => onClear()}
             onValueChange={onSearchChange}
+          />
+          <DatePicker
+            label="Search by Date"
+            className="max-w-[284px]"
+            labelPlacement='inside'
+            onChange={handleDateChange}
+
           />
           <div className="flex gap-3">
             {/* <Dropdown>
@@ -341,7 +367,7 @@ export default function Transaction() {
 
           <div className="flex items-center">
             <Button color="primary" onPress={handleOpenAddTransaction}>
-              Add{" "}
+              Add{' '}
             </Button>
             <Button variant="transparent" onPress={handleShowAllTransactions}>
               <HiMiniViewfinderCircle />
@@ -363,15 +389,16 @@ export default function Transaction() {
               className="bg-transparent outline-none text-default-400 text-small"
               onChange={onRowsPerPageChange}
             >
-              <option value="5">5</option>
-              <option value="10">10</option>
-              <option value="15">15</option>
+             <option value="30">30</option>
+              <option value="60">60</option>
+              <option value="100">100</option>
             </select>
           </label>
         </div>
       </div>
     );
   }, [
+   
     filterValue,
     statusFilter,
     visibleColumns,
@@ -385,8 +412,8 @@ export default function Transaction() {
     return (
       <div className="py-2 px-2 flex justify-between items-center">
         <span className="w-[30%] text-small text-default-400">
-          {selectedKeys === "all"
-            ? "All items selected"
+          {selectedKeys === 'all'
+            ? 'All items selected'
             : `${selectedKeys.size} of ${filteredItems.length} selected`}
         </span>
         <Pagination
@@ -425,16 +452,17 @@ export default function Transaction() {
       {topContent}
       <div className=" overflow-x-scroll">
         <Modal
-          size="5xl"
+          size="3xl"
           isOpen={isAddTransactionOpen}
           onClose={closeAddTransaction}
-          onValueChange="outside"
+          // onValueChange="outside"
+          scrollBehavior="outside"
         >
           {/* <ModalContent> */}
-            {/* <ModalHeader>Add Transaction</ModalHeader> */}
-            {/* <ModalBody className="max-w-md mx-auto"> */}
-              <Addtransaction />
-            {/* </ModalBody> */}
+          {/* <ModalHeader>Add Transaction</ModalHeader> */}
+          {/* <ModalBody className="max-w-md mx-auto"> */}
+          <Addtransaction />
+          {/* </ModalBody> */}
           {/* </ModalContent> */}
         </Modal>
 
@@ -445,7 +473,6 @@ export default function Transaction() {
         >
           <ModalContent>
             <ModalBody>
-
               <AllTransaction />
             </ModalBody>
             <ModalFooter>
@@ -465,7 +492,7 @@ export default function Transaction() {
           isHeaderSticky
           bottomContentPlacement="outside"
           classNames={{
-            wrapper: "max-h-[382px]",
+            wrapper: 'max-h-[382px]',
           }}
           selectedKeys={selectedKeys}
           selectionMode="multiple"
@@ -486,7 +513,7 @@ export default function Transaction() {
             )}
           </TableHeader>
           <TableBody
-            emptyContent={"No transaction found"}
+            emptyContent={'No transaction found'}
             items={sortedItems}
             isLoading={loading}
             loadingContent={<Spinner label="Loading..." />}
