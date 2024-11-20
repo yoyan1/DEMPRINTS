@@ -15,15 +15,16 @@ import {
   ModalFooter,
   ModalHeader,
   Textarea,
+  CheckboxGroup,
 } from '@nextui-org/react';
 
 import axios from 'axios';
 // import { formatDate } from "../../composables/formateDateAndTime";
 
-// import { useUserStore } from '../../stores/userStore';
+import { useUserStore } from '../../stores/userStore';
 
 export default function Addtransaction() {
-  // const { user, getAuthenticateUser } = useUserStore();
+  const { user, getAuthenticateUser } = useUserStore();
 
   // ---------------------------------------------
   const [customer_name, setCostumerName] = useState(' ');
@@ -74,7 +75,9 @@ export default function Addtransaction() {
     fetchPaymentType();
     fetchID();
     fetchCategory();
-  }, []);
+    // ----------------------
+    getAuthenticateUser();
+  }, [getAuthenticateUser]);
 
   const fetchCostumerType = async () => {
     try {
@@ -237,7 +240,7 @@ export default function Addtransaction() {
           customer_name,
           payment_type,
           payment_options,
-          sales_person,
+          sales_person: user.name,
           remarks: remarks, //calculate the balance
           // employee_id,
           // employee_id: user.id,
@@ -354,7 +357,7 @@ export default function Addtransaction() {
         <ModalBody className="">
           <div className=" flex gap-6 ">
             <div className="flex-1 max-w-4xl mx-auto">
-            {/* Category */}
+              {/* Category */}
               <Select
                 size="sm"
                 label="Category"
@@ -444,7 +447,6 @@ export default function Addtransaction() {
               )}
 
               <div className="flex gap-3 mb-2">
-              
                 <Input
                   className="w-full max-w-md mx-auto text-black relative z-0 mb-2"
                   style={{ color: 'black' }}
@@ -455,12 +457,9 @@ export default function Addtransaction() {
                   variant="bordered"
                   type="number"
                   name="quantity"
-                  onChange={(e) => handleQuantityChange(e.target.value)
-                   
-                  }
+                  onChange={(e) => handleQuantityChange(e.target.value)}
                 />
 
-              
                 <div className="flex items-center w-full max-w-md mx-auto text-black relative z-0 mb-2">
                   <Input
                     className="flex-1"
@@ -473,14 +472,16 @@ export default function Addtransaction() {
                     isRequired
                     onChange={(e) => handleDiscountChange(e.target.value)}
                   />
-                  <Checkbox
-                    className="w-8 h-8 text-blue-600"
-                    checked={isPercentage}
-                    size="sm"
-                    onChange={handleCheckBoxChange}
-                  >
-                    %
-                  </Checkbox>
+                  <CheckboxGroup className="bg-dark">
+                    <Checkbox
+                      className="w-8 h-8 text-blue-600"
+                      checked={isPercentage}
+                      size="sm"
+                      onChange={handleCheckBoxChange}
+                    >
+                      %
+                    </Checkbox>
+                  </CheckboxGroup>
                 </div>
               </div>
               <div className="flex gap-3 mb-2">
@@ -506,7 +507,7 @@ export default function Addtransaction() {
                   ))}
                 </Select>
 
-              
+                {/* Costumer Name */}
                 <Input
                   className="w-full max-w-md mx-auto text-black relative z-0 mb-2"
                   style={{ color: 'black' }}
@@ -590,7 +591,7 @@ export default function Addtransaction() {
                   />
                 </div>
               )}
-              <div className="flex bg-gray p-2">
+              <div className="flex justify-end bg-gray p-2">
                 <p className="gap-3 bold mr-3">Amount: ₱{Math.round(amount)}</p>
                 <p className="bold">Total : ₱{Math.round(total)}</p>
               </div>

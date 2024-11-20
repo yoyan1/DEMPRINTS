@@ -1,6 +1,7 @@
 import React from "react";
 import Heading from "./head/heading";
 import Sidebar from "./head/aside";
+// import Heading from ''
 import { Image } from "@nextui-org/image";
 
 export default function Layout({ children }) {

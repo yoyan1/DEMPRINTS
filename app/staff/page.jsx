@@ -34,10 +34,11 @@ import { FaChartLine } from "react-icons/fa";
 // import ExpandTransaction from './ExpandModal'
 // import ExportToPdf from '@/app/composables/exportToPdf'
 // import CreateTransaction from './AddTransaction'
-import Addtransaction from "../component/addtransaction";
+import Addtransaction from "./component/addtransaction";
 import { useSalesStore } from "@/app/stores/transactionStore";
-import AllTransaction from "../component/showAllTable";
+import AllTransaction from "./component/showAllTable";
 // import { formatDate, formatTime } from "../../composables/formateDateAndTime";
+
 
 const itemColorMap = {
   tarpaulin: "warning",
