@@ -425,17 +425,17 @@ export default function Transaction() {
       {topContent}
       <div className=" overflow-x-scroll">
         <Modal
-          size="lg"
+          size="5xl"
           isOpen={isAddTransactionOpen}
           onClose={closeAddTransaction}
           onValueChange="outside"
         >
-          <ModalContent>
+          {/* <ModalContent> */}
             {/* <ModalHeader>Add Transaction</ModalHeader> */}
-            <ModalBody className="max-w-md mx-auto">
+            {/* <ModalBody className="max-w-md mx-auto"> */}
               <Addtransaction />
-            </ModalBody>
-          </ModalContent>
+            {/* </ModalBody> */}
+          {/* </ModalContent> */}
         </Modal>
 
         <Modal
@@ -445,6 +445,7 @@ export default function Transaction() {
         >
           <ModalContent>
             <ModalBody>
+
               <AllTransaction />
             </ModalBody>
             <ModalFooter>
