@@ -4,7 +4,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import {
   Modal,
   ModalContent,
-  ModalHeader,
+  // ModalHeader,
   ModalBody,
   ModalFooter,
   Button,
@@ -302,7 +302,7 @@ export default function Transaction() {
           <DatePicker
             label="Search by Date"
             className="max-w-[284px]"
-            labelPlacement='outside'
+            labelPlacement='inside'
             onChange={handleDateChange}
 
           />
