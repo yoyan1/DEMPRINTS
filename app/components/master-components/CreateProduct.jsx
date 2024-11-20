@@ -31,8 +31,10 @@ export default function CreateProduct() {
   const [measurement, setMeasurement] = useState([]);
   const [products, setProducts] = useState([]);
   const [productData, setProductData] = useState({
+    item_code: "",
     name: "",
     category: "",
+    variants: "",
     unit: "",
     price: 0,
   });
@@ -142,8 +144,10 @@ export default function CreateProduct() {
   const productIsValid = () => {
 
     const errors = {};
+    if(!productData.item_code) errors.item_code = "This field must not be empty."
     if(!productData.name) errors.name = "This field must not be empty."
     if(!productData.category) errors.category = "This field must not be empty."
+    if(!productData.variants) errors.variants = "This field must not be empty."
     if(!productData.unit) errors.product_unit = "This field must not be empty."
     if(!productData.price) errors.price = "This field must not be empty."
     if(productData.price <= 0) errors.price = "Price is invalid."
@@ -285,79 +289,6 @@ export default function CreateProduct() {
                           ))}
                         </Listbox>
                       </Tab>
-                      <Tab key="unit" title="Measurement">
-                        <form onSubmit={submitMeasurement} className="flex flex-col gap-4">
-                          <span>Create Unit of Measurement</span>
-                          <Input
-                            isRequired
-                            label="Unit"
-                            placeholder="Unit of measurement"
-                            isInvalid={errorMessage.unit? true : false}
-                            color={errorMessage.unit ? "danger" : ""}
-                            errorMessage={errorMessage.unit}
-                            value={unit}
-                            onChange={(e) => setUnit(e.target.value)}
-                          />
-                          <div className="flex gap-2 justify-end">
-                            <Button
-                              fullWidth
-                              type="submit"
-                              color="primary"
-                              isLoading={isLoading}
-                              spinner={
-                                <svg
-                                  className="animate-spin h-5 w-5 text-current"
-                                  fill="none"
-                                  viewBox="0 0 24 24"
-                                  xmlns="http://www.w3.org/2000/svg"
-                                >
-                                  <circle
-                                    className="opacity-25"
-                                    cx="12"
-                                    cy="12"
-                                    r="10"
-                                    stroke="currentColor"
-                                    strokeWidth="4"
-                                  />
-                                  <path
-                                    className="opacity-75"
-                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                                    fill="currentColor"
-                                  />
-                                </svg>
-                              }
-                            >
-                              Submit
-                            </Button>
-                          </div>
-                        </form>
-                        <Listbox
-                          aria-label="Listbox Variants"
-                          color="solid"
-                          topContent={<span>List Unit of Measurements</span>}
-                        >
-                          {measurement.map((item) => (
-                            <ListboxItem showDivider key={item.name}>
-                              <div className="flex justify-between items-center">
-                                {item.name}
-                                <div>
-                                  <UpdateProduct
-                                    data={item}
-                                    type="Measurement"
-                                    done={done}
-                                  />
-                                  <Delete
-                                    id={item._id}
-                                    type="Measurement"
-                                    done={done}
-                                    collection="products"
-                                  />
-                                </div>
-                              </div>
-                            </ListboxItem>
-                          ))}
-                        </Listbox>
-                      </Tab>
                       <Tab key="create" title="Product">
                         <Tabs
                           fullWidth
@@ -400,7 +331,7 @@ export default function CreateProduct() {
                                         </span>
                                         <div className="flex gap-2 text-tiny">
                                           <span className="text-default-500">
-                                            {product.unit}
+                                            {product.variants} - {product.unit}
                                           </span>
                                         </div>
                                       </div>
@@ -428,6 +359,22 @@ export default function CreateProduct() {
                           <Tab key="new" title="Create new">
                             <form onSubmit={submitProduct} className="flex flex-col gap-4">
                               <span>Create Product</span>
+                              <Input
+                                isRequired
+                                label="Item Code"
+                                placeholder="Enter item code"
+                                isInvalid={errorMessage.item_code? true : false}
+                                color={errorMessage.item_code ? "danger" : ""}
+                                errorMessage={errorMessage.item_code}
+                                value={productData.item_code}
+                                name="name"
+                                onChange={(e) =>
+                                  setProductData((prevData) => ({
+                                    ...prevData,
+                                    item_code: e.target.value,
+                                  }))
+                                }
+                              />
                               <Select
                                 label="Select an category"
                                 isInvalid={errorMessage.category? true : false}
@@ -461,6 +408,22 @@ export default function CreateProduct() {
                                   setProductData((prevData) => ({
                                     ...prevData,
                                     name: e.target.value,
+                                  }))
+                                }
+                              />
+                              <Input
+                                isRequired
+                                label="Variants"
+                                placeholder="Enter variants"
+                                isInvalid={errorMessage.variants? true : false}
+                                color={errorMessage.variants ? "danger" : ""}
+                                errorMessage={errorMessage.variants}
+                                value={productData.variants}
+                                name="name"
+                                onChange={(e) =>
+                                  setProductData((prevData) => ({
+                                    ...prevData,
+                                    variants: e.target.value,
                                   }))
                                 }
                               />
@@ -536,6 +499,79 @@ export default function CreateProduct() {
                             </form>
                           </Tab>
                         </Tabs>
+                      </Tab>
+                      <Tab key="unit" title="Measurement">
+                        <form onSubmit={submitMeasurement} className="flex flex-col gap-4">
+                          <span>Create Unit of Measurement</span>
+                          <Input
+                            isRequired
+                            label="Unit"
+                            placeholder="Unit of measurement"
+                            isInvalid={errorMessage.unit? true : false}
+                            color={errorMessage.unit ? "danger" : ""}
+                            errorMessage={errorMessage.unit}
+                            value={unit}
+                            onChange={(e) => setUnit(e.target.value)}
+                          />
+                          <div className="flex gap-2 justify-end">
+                            <Button
+                              fullWidth
+                              type="submit"
+                              color="primary"
+                              isLoading={isLoading}
+                              spinner={
+                                <svg
+                                  className="animate-spin h-5 w-5 text-current"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                >
+                                  <circle
+                                    className="opacity-25"
+                                    cx="12"
+                                    cy="12"
+                                    r="10"
+                                    stroke="currentColor"
+                                    strokeWidth="4"
+                                  />
+                                  <path
+                                    className="opacity-75"
+                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                    fill="currentColor"
+                                  />
+                                </svg>
+                              }
+                            >
+                              Submit
+                            </Button>
+                          </div>
+                        </form>
+                        <Listbox
+                          aria-label="Listbox Variants"
+                          color="solid"
+                          topContent={<span>List Unit of Measurements</span>}
+                        >
+                          {measurement.map((item) => (
+                            <ListboxItem showDivider key={item.name}>
+                              <div className="flex justify-between items-center">
+                                {item.name}
+                                <div>
+                                  <UpdateProduct
+                                    data={item}
+                                    type="Measurement"
+                                    done={done}
+                                  />
+                                  <Delete
+                                    id={item._id}
+                                    type="Measurement"
+                                    done={done}
+                                    collection="products"
+                                  />
+                                </div>
+                              </div>
+                            </ListboxItem>
+                          ))}
+                        </Listbox>
                       </Tab>
                     </Tabs>
                   </div>

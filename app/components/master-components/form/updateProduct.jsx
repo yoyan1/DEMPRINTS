@@ -76,19 +76,26 @@ export default function UpdateProduct({ data, type, category, measurement, done,
                     <Input isRequired label="Unit" placeholder="Unit of measurement" value={unit} onChange={(e) => setUnit(e.target.value)}/>
                   </form>
                 ):(
-                    <form className="flex flex-col gap-4">
-                        <span>Create Product</span>
-                        <Select 
-                            label="Select an category" 
-                            value={productData.category}
-                            name="category"
-                            onChange={(e)=>(setProductData((prevData)=>({...prevData, category: e.target.value})))}
-                        >
-                            {category.map(item =>(
-                            <SelectItem key={item.name}>{item.name}</SelectItem>
-                            ))}
-                        </Select>
+                  <form className="flex flex-col gap-4">
+                        <span>Update Product</span>
+                        <Input isRequired label="Product name" placeholder="Enter product name" value={productData.item_code} name="name" onChange={(e)=>(setProductData((prevData)=>({...prevData, item_code: e.target.value})))}/>
+                        <div>
+                          <span className='flex-1 text-tiny mb-2'>Category: {productData.category}</span>
+                          <Select 
+                              label="Select an category" 
+                              className='flex-1'
+                              value={productData.category}
+                              name="category"
+                              onChange={(e)=>(setProductData((prevData)=>({...prevData, category: e.target.value})))}
+                          >
+                              {category.map(item =>(
+                              <SelectItem key={item.name}>{item.name}</SelectItem>
+                              ))}
+                          </Select>
+                        </div>
                         <Input isRequired label="Product name" placeholder="Enter product name" value={productData.name} name="name" onChange={(e)=>(setProductData((prevData)=>({...prevData, name: e.target.value})))}/>
+                        <Input isRequired label="Product name" placeholder="Enter product name" value={productData.variants} name="name" onChange={(e)=>(setProductData((prevData)=>({...prevData, variants: e.target.value})))}/>
+                        <span className='flex-1 text-tiny mb-2'>Unit of Measurement: {productData.unit}</span>
                         <Select 
                             label="Select a unit" 
                             value={productData.unit}

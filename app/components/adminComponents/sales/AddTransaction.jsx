@@ -16,13 +16,20 @@ export default function CreateTransaction({refresh}) {
   const {isOpen, onOpen, onClose} = useDisclosure();
   const [errorMessage, setErrorMessages ] = useState({})
   const {products, loadProduct, fetchProducts} = productStore()
+  const [filteredProducts, setFilteredProducts] = useState([])
+  const [filteredVariants, setFilteredVariants] = useState([])
+  const [filteredUnit, setFilteredUnit] = useState([])
+  const { productsCategory, fetchProductCategory } = productStore()
   const { customer_type, fetchCustomer } = useCustomerStore()
   const { options, type, fetchPayment } = paymentStore()
   const { createTransaction } = useSalesStore()
   const { fetchTransactionId, updateTransactionId } = useIdStore()
   const {date, time} = getDateAndTime()
   const [salesData, setSalesData] = useState({
+                                        category: "",
+                                        item_no: "",
                                         item_name: "",
+                                        variants: "",
                                         measurement: "",
                                         unit_cost: 0,
                                         quantity: 0,
@@ -39,6 +46,7 @@ export default function CreateTransaction({refresh}) {
              
   const fetchAll = () => {
     fetchUsers()
+    fetchProductCategory()
     fetchProducts()
     fetchCustomer()
     fetchPayment()
@@ -48,25 +56,69 @@ export default function CreateTransaction({refresh}) {
     fetchAll()
   }, [])
 
- 
+ const handleCategoryChange = (e) =>{
+    const findProduct = products.filter((row) => row.category === e.target.value)
+    setFilteredProducts(findProduct)
+    setSalesData((prevData)=>(
+      {
+        ...prevData, 
+        category: e.target.value,
+        item_name: "", 
+        measurement: '',
+        unit_cost: 0,
+        quantity: 1,
+        total: 0
+      }
+    ))
+    
+  }
   
+  const handleNameChange = (e) =>{ 
+    const findProduct = filteredProducts.filter((row) => row.name === e.target.value)
+    setFilteredVariants(findProduct)
+    setSalesData((prevData)=>(
+      {
+        ...prevData, 
+        item_name: e.target.value, 
+        measurement: '',
+        unit_cost: 0,
+        quantity: 1,
+        total: 0
+      }
+    ))
+ }
+
+ const handleVariantChange = (e) => {
+   const findProduct = filteredVariants.filter((item) => item.variants === e.target.value)
+   setFilteredUnit(findProduct)
+    setSalesData((prevData) => (
+      {
+        ...prevData,
+        variants: e.target.value,
+        measurement: "",
+        unit_cost: 0,
+        amount: 0,
+        total: 0,
+      }
+    ))
+ }
   const handleMeasurementChange = (e) =>{
     const value = e.target.value
-    products.forEach((item) => {
-      if (item.unit === value && item.name === salesData.item_name) {
-        const unitCost = item.price;
-        const total = salesData.quantity > 0? unitCost * salesData.quantity : unitCost;
-        setSalesData((prevData) => (
-          {
-            ...prevData,
-            measurement: value,
-            unit_cost: unitCost,
-            amount: total,
-            total: total,
-          }
-        ));
-      }
-    })
+    const findProduct = filteredProducts.filter((item) => item.unit === value && item.name === salesData.item_name && item.variants === salesData.variants)
+    if(findProduct.length > 0){
+      const unitCost = findProduct[0].price;
+      const total = salesData.quantity > 0? unitCost * salesData.quantity : unitCost;
+      setSalesData((prevData) => (
+        {
+          ...prevData,
+          item_no: findProduct[0].item_code,
+          measurement: value,
+          unit_cost: unitCost,
+          amount: total,
+          total: total,
+        }
+      ))
+    }
   }
 
   const handleChange = (e) =>{
@@ -92,7 +144,7 @@ export default function CreateTransaction({refresh}) {
   const discounted = (e) =>{
     const value = e.target.value
     const discount = value > 0? value / 100 : 0
-    const newTotal = discount !== 0? salesData.total * discount : 0
+    const newTotal = discount !== 0? salesData.amount * discount : 0
     const total = salesData.amount - newTotal
 
     setSalesData((prevData) => (
@@ -143,7 +195,7 @@ export default function CreateTransaction({refresh}) {
       date:date,
       time: time,
       transaction_no: transaction_no(),
-      item_no: "0001",
+      item_no: salesData.item_no,
       item_name: salesData.item_name,
       unit_cost: salesData.unit_cost,
       quantity: salesData.quantity,
@@ -165,9 +217,10 @@ export default function CreateTransaction({refresh}) {
     setIsLoading(false)
     refresh(response.data)
     setSalesData({
+      category: "",
       item_name: "",
       unit_cost: 0,
-      quantity: 0,
+      quantity: 1,
       amount: 0,
       discount: 0,
       total: 0,
@@ -190,6 +243,7 @@ export default function CreateTransaction({refresh}) {
       <Modal 
         isOpen={isOpen} 
         onClose={onClose}
+        size="2xl"
         placement="top-center"
         scrollBehavior="outside"
       >
@@ -199,41 +253,72 @@ export default function CreateTransaction({refresh}) {
               <ModalHeader className="flex flex-col gap-1">Create Order</ModalHeader>
               <ModalBody>
                 <form onSubmit={submit} className="flex flex-col gap-5">
-                  <div className="flex gap-3">
+                  <div className="flex gap-5 items-end">
                     <Select 
-                      label="Product name" 
-                      isInvalid={errorMessage.item_name? true : false}
-                      color={errorMessage.item_name ? "danger" : ""}
-                      errorMessage={errorMessage.item_name}
-                      value={salesData.item_name}
-                      onChange={(e)=> (setSalesData((prevData)=>(
-                        {
-                          ...prevData, 
-                          item_name: e.target.value, 
-                          measurement: '',
-                          unit_cost: 0,
-                          quantity: 0,
-                          total: 0
-                        }
-                      )))}
+                      label="Product Category" 
+                      labelPlacement="outside"
+                      size="md"
+                      onChange={handleCategoryChange}
                     >
-                      {products.map((item, index) => (
-                        index > 0? (
-                          item.name !== products[index-1].name? (
-                            <SelectItem key={item.name}>
-                              {item.name}
-                            </SelectItem>
-                          ): null
-                        ): (
+                      {productsCategory.map((item, index) => (
                           <SelectItem key={item.name}>
                             {item.name}
                           </SelectItem>
-                        )
                       ))}
                     </Select>
-                    {salesData.item_name? (
+                    {/* <SelectProduct products={filteredProducts} selected={(data)=> alert(data)}/> */}
+                  </div>
+                  {salesData.category? (
+                    <div className="flex">
+                      <Select 
+                        label="Product name" 
+                        labelPlacement="outside"
+                        size="md"
+                        radius="none"
+                        placeholder="Select product"
+                        isInvalid={errorMessage.item_name? true : false}
+                        color={errorMessage.item_name ? "danger" : ""}
+                        errorMessage={errorMessage.item_name}
+                        value={salesData.item_name}
+                        onChange={handleNameChange}
+                      >
+                        {filteredProducts.map((item, index) => (
+                          index > 0? (
+                            item.name !== products[index-1].name? (
+                              <SelectItem key={item.name}>
+                                {item.name}
+                              </SelectItem>
+                            ): null
+                          ): (
+                            <SelectItem key={item.name}>
+                              {item.name}
+                            </SelectItem>
+                          )
+                        ))}
+                      </Select>
+                      <Select 
+                        label="Variants" 
+                        labelPlacement="outside"
+                        size="md"
+                        radius="none"
+                        placeholder="Select variants"
+                        onChange={handleVariantChange}
+                        isDisabled={salesData.item_name? false : true}
+                      >
+                        
+                        {filteredVariants.map(item => (
+                            <SelectItem key={item.variants}>
+                              {item.variants}
+                            </SelectItem>
+                        ))}
+                      </Select>
                       <Select 
                         label="Unit of Measurement" 
+                        labelPlacement="outside"
+                        size="md"
+                        radius="none"
+                        placeholder="Select unit"
+                        isDisabled={salesData.variants? false : true}
                         isInvalid={errorMessage.measurement? true : false}
                         color={errorMessage.measurement ? "danger" : ""}
                         errorMessage={errorMessage.measurement}
@@ -241,129 +326,180 @@ export default function CreateTransaction({refresh}) {
                         onChange={handleMeasurementChange}
                       >
                         
-                        {products.map(item => (
-                          salesData.item_name == item.name? (
+                        {filteredUnit.map(item => (
                             <SelectItem key={item.unit}>
                               {item.unit}
                             </SelectItem>
-                          ) : null
                         ))}
                       </Select>
-                    ): null}
-                  </div>
-                  {salesData.measurement? (
-                    <div className="flex gap-2">
-                        <Input
-                        autoFocus
-                        type="number"
-                        label="Quantity"
-                        placeholder="Enter quantity"
-                        variant="bordered"
-                        disabled={salesData.item_name === ''? true : false}
-                        isInvalid={errorMessage.quantity? true : false}
-                        color={errorMessage.quantity ? "danger" : ""}
-                        errorMessage={errorMessage.quantity}
-                        value={salesData.quantity}
-                        name="quantity"
-                        onChange={handleChange}
-                        />
-                        <Input
-                        autoFocus
-                        label="Discount"
-                        placeholder="Enter cutomer discount"
-                        variant="bordered"
-                        value={salesData.discount}
-                        onChange={discounted}
-                        />
-                    </div>
-                  ): null}
-                  <Select 
-                    label="Customer type" 
-                    name="unit"
-                    isInvalid={errorMessage.customer_type? true : false}
-                    color={errorMessage.customer_type ? "danger" : ""}
-                    errorMessage={errorMessage.customer_type}
-                    value={salesData.customer_type}
-                    onChange={(e)=>(setSalesData((prevData)=>({...prevData, customer_type: e.target.value})))}
-                  >
-                    {customer_type.map(item => (
-                      <SelectItem key={item.name}>
-                        {item.name}
-                      </SelectItem>
-                    ))}
-                  </Select>
-                  <Input
-                    autoFocus
-                    label="Customer name"
-                    placeholder="Enter customer name"
-                    variant="bordered"
-                    isInvalid={errorMessage.customer_name? true : false}
-                    color={errorMessage.customer_name ? "danger" : ""}
-                    errorMessage={errorMessage.customer_name}
-                    value={salesData.customer_name}
-                    onChange={(e)=>(setSalesData((prevData)=>({...prevData, customer_name: e.target.value})))}
-                  />
-                  <div className="flex gap-3">
-                    <Select 
-                      label="Payment type" 
-                      name="unit"
-                      isInvalid={errorMessage.payment_type? true : false}
-                      color={errorMessage.payment_type ? "danger" : ""}
-                      errorMessage={errorMessage.payment_type}
-                      value={salesData.payment_type}
-                      onChange={(e)=>(setSalesData((prevData)=>({...prevData, payment_type: e.target.value})))}
-                    >
-                      {type.map(item => (
-                        <SelectItem key={item.name} value={item.name}>
-                          {item.name}
-                        </SelectItem>
-                      ))}
-                    </Select>
-                    <Select 
-                      label="Payment options" 
-                      name="unit"
-                      isInvalid={errorMessage.payment_options? true : false}
-                      color={errorMessage.payment_options ? "danger" : ""}
-                      errorMessage={errorMessage.payment_options}
-                      value={salesData.payment_options}
-                      onChange={(e)=>(setSalesData((prevData)=>({...prevData, payment_options: e.target.value})))}
-                    >
-                      {options.map(item => (
-                        <SelectItem key={item.name} value={item.name}>
-                          {item.name}
-                        </SelectItem>
-                      ))}
-                    </Select>
-                  </div>
-                  <Select 
-                    label="Sales Person" 
-                    placeholder="Leave blank if you are the sales person."
-                    value={salesData.sales_person}
-                    onChange={(e)=>(setSalesData((prevData)=>({...prevData, sales_person: e.target.value})))}
-                  >
-                    {users.map(item => (
-                      <SelectItem key={item.name} value={item.name}>
-                        {item.name}
-                      </SelectItem>
-                    ))}
-                  </Select>
-                  {salesData.payment_type.toLocaleLowerCase() === 'down payment'? (
-                    <Input
-                      autoFocus
-                      label="Amount Paid"
-                      placeholder="Enter paid amount"
-                      variant="bordered"
+                      <Input
                       type="number"
-                      value={salesData.amount_paid}
-                      onChange={(e)=>(setSalesData((prevData)=>({...prevData, amount_paid: e.target.value})))}
-                    />
-                  ): null}
-                  {salesData.measurement? (
-                    <div className="flex justify-between">
-                      <span>total amount: {Math.round(salesData.total)}</span>
-                      <span>Product cost: {salesData.unit_cost}</span>
+                      label="Quantity"
+                      labelPlacement="outside"
+                      size="md"
+                      radius="none"
+                      placeholder="Enter quantity"
+                      variant="bordered"
+                      disabled={salesData.item_name === ''? true : false}
+                      isInvalid={errorMessage.quantity? true : false}
+                      color={errorMessage.quantity ? "danger" : ""}
+                      errorMessage={errorMessage.quantity}
+                      value={salesData.quantity}
+                      name="quantity"
+                      onChange={handleChange}
+                      />
                     </div>
                   ): null}
+                  <div className="flex gap-5">
+                    <div className="flex-1 flex flex-col gap-2">
+                      
+                      <Select 
+                        label="Customer type" 
+                        labelPlacement="outside"
+                        size="md"
+                        radius="sm"
+                        placeholder="Select customer type"
+                        isInvalid={errorMessage.customer_type? true : false}
+                        color={errorMessage.customer_type ? "danger" : ""}
+                        errorMessage={errorMessage.customer_type}
+                        value={salesData.customer_type}
+                        onChange={(e)=>(setSalesData((prevData)=>({...prevData, customer_type: e.target.value})))}
+                      >
+                        {customer_type.map(item => (
+                          <SelectItem key={item.name}>
+                            {item.name}
+                          </SelectItem>
+                        ))}
+                      </Select>
+                      <Input
+                        label="Customer name"
+                        labelPlacement="outside"
+                        size="md"
+                        radius="sm"
+                        placeholder="Enter customer name"
+                        variant="bordered"
+                        isInvalid={errorMessage.customer_name? true : false}
+                        color={errorMessage.customer_name ? "danger" : ""}
+                        errorMessage={errorMessage.customer_name}
+                        value={salesData.customer_name}
+                        onChange={(e)=>(setSalesData((prevData)=>({...prevData, customer_name: e.target.value})))}
+                      />
+                      <div className="flex gap-2">
+                        <Select 
+                          label="Payment type" 
+                          placeholder="Select payment type"
+                          labelPlacement="outside"
+                          size="md"
+                          isInvalid={errorMessage.payment_type? true : false}
+                          color={errorMessage.payment_type ? "danger" : ""}
+                          errorMessage={errorMessage.payment_type}
+                          value={salesData.payment_type}
+                          onChange={(e)=>(setSalesData((prevData)=>({...prevData, payment_type: e.target.value})))}
+                        >
+                          {type.map(item => (
+                            <SelectItem key={item.name} value={item.name}>
+                              {item.name}
+                            </SelectItem>
+                          ))}
+                        </Select>
+                        <Select 
+                          label="Payment options" 
+                          name="unit"
+                          labelPlacement="outside"
+                          size="md"
+                          radius="sm"
+                          isInvalid={errorMessage.payment_options? true : false}
+                          color={errorMessage.payment_options ? "danger" : ""}
+                          errorMessage={errorMessage.payment_options}
+                          value={salesData.payment_options}
+                          onChange={(e)=>(setSalesData((prevData)=>({...prevData, payment_options: e.target.value})))}
+                        >
+                          {options.map(item => (
+                            <SelectItem key={item.name} value={item.name}>
+                              {item.name}
+                            </SelectItem>
+                          ))}
+                        </Select>
+                      </div>
+                      
+                      <Select 
+                        label="Sales Person" 
+                        labelPlacement="outside"
+                        size="md"
+                        radius="sm"
+                        placeholder="Leave blank if you are the sales person."
+                        value={salesData.sales_person}
+                        onChange={(e)=>(setSalesData((prevData)=>({...prevData, sales_person: e.target.value})))}
+                      >
+                        {users.map(item => (
+                          <SelectItem key={item.name} value={item.name}>
+                            {item.name}
+                          </SelectItem>
+                        ))}
+                      </Select>
+                      {salesData.payment_type.toLocaleLowerCase() === 'down payment'? (
+                        <Input
+                          autoFocus
+                          label="Partial"
+                          placeholder="Enter partial amount"
+                          variant="bordered"
+                          type="number"
+                          size="md"
+                          radius="sm"
+                          value={salesData.amount_paid}
+                          onChange={(e)=>(setSalesData((prevData)=>({...prevData, amount_paid: e.target.value})))}
+                        />
+                      ): null}
+                    </div>
+                    <div className=" flex-1 flex flex-col gap-5">
+                      <div className="flex justify-between">
+                        <span>Product cost </span>
+                        {salesData.unit_cost}
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Total Amount </span>
+                        {salesData.amount}
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span>Discount </span>
+                          {salesData.measurement? (
+                               <Input
+                                placeholder="Discount"
+                                labelPlacement="outside"
+                                className="w-44"
+                                variant="bordered"
+                                value={salesData.discount}
+                                onChange={discounted}
+                                endContent={
+                                  <div className="flex items-center">
+                                    <label className="sr-only" htmlFor="currency">
+                                      Currency
+                                    </label>
+                                    <select
+                                      className="outline-none border-0 bg-transparent text-default-400 text-small"
+                                      id="currency"
+                                      name="currency"
+                                    >
+                                      <option>%</option>
+                                      <option>₱</option>
+                                    </select>
+                                  </div>
+                                }
+                                type="number"
+                              />
+                            
+                          ): null}
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Discount Applied </span>
+                        {Math.round(salesData.amount - salesData.total)}
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Total Amount After Discount </span>
+                        {Math.round(salesData.total)}
+                      </div>
+                    </div>
+                  </div>
                   <div className="flex justify-end gap-4 py-4">
                     <Button color="danger" variant="flat" onPress={onClose}>
                       Close

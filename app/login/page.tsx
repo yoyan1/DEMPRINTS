@@ -4,15 +4,14 @@ import { Image } from "@nextui-org/react"
 
 export default function LoginPage() {
   return (
-    <div className="flex h-screen w-full items-center justify-center px-4">
-      <div className="flex-1 bg-blue-200 w-[100vh] ">
-        <Image
-        width={300}
+    <div className="flex h-screen w-full items-center justify-center">
+      <Image
+        className="flex-1 h-screen"
+        radius="none"
         alt="Demprints"
         src="/DEMPRINTS-bg.jpg"
       />
-      </div>
-      <div className="flex-1">
+      <div className="flex-1 flex justify-center">
        <LoginForm />
       </div>
     </div>

@@ -29,8 +29,8 @@ export function AppSidebar({ ...props }) {
   const path = usePathname()
   const data = {
     user: {
-      name: "Dem Columida",
-      email: "m@example.com",
+      name: props.user.name,
+      email: props.user.email,
       avatar: "/avatars/shadcn.jpg",
     },
     teams: [
