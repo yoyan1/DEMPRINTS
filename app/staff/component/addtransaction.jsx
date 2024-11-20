@@ -41,7 +41,7 @@ export default function Addtransaction() {
   const [total, setTotal] = useState(0);
   const [remarks, setRemarks] = useState(0);
   const [payment_options, setPaymentMethod] = useState(' ');
-  const [sales_person, setSalesPerson] = useState(' ');
+  // const [sales_person, setSalesPerson] = useState(' ');
   const [success_message, setSuccessMessage] = useState(' ');
   const [payment_type, setPaymentType] = useState(' ');
   // const [employee_id, setEmployeId] = useState(0)
