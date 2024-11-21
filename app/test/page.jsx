@@ -1,52 +1,3 @@
-"use client"
-import React, { useEffect, useState } from 'react'
-import { useUserStore } from "../stores/userStore"
-import { useRouter } from 'next/navigation'
-
-export default function TestPage() {
-  const { user, loading, error, isAuthenticate, getAuthenticateUser} = useUserStore()
-  const router = useRouter()
-
-  useEffect(() => {
-    const load = async() => {
-      await getAuthenticateUser()
-    }
-
-    load()
-  }, [getAuthenticateUser]); 
-
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  if(!isAuthenticate && user) {
-    if(user.role === 'super admin'){
-      router.push('/damin')
-    } else if(user.role === 'staff'){
-      router.push('/staff')
-    }
-  }
-  if(isAuthenticate) {
-    router.push('/login')
-  }
-
-
-  return (
-    <div>
-      {user ? (
-        <div>
-          <h1>User Info</h1>
-          <p>Role: {user.role}</p>  {/* Assuming the user has a name field */}
-          <p>Name: {user.name}</p>  {/* Assuming the user has a name field */}
-          <p>Email: {user.email}</p>  {/* Assuming the user has an email field */}
-          {/* Render more fields as necessary */}
-        </div>
-      ) : (
-        <div>No user data found</div>
-      )}
-    </div>
-  );
-}
 
 // "use client"
 // import { productStore } from "../stores/productStore"
@@ -72,3 +23,30 @@ export default function TestPage() {
 //     </div>
 //   )
 // }
+"use client"
+import React from 'react'
+import { Select, SelectItem } from '@nextui-org/react'
+
+const INITIAL_VISIBLE_COLUMNS = ["transaction_no", "item_name", "unit_cost",  "customer_type", "customer_name", "payment_type", "sales_person", "actions"];
+export default function page() {
+  const [filterSelection, setFilterSelection] = React.useState("")
+  return (
+    <div>
+      {filterSelection}
+      <Select 
+        label="Filter selection" 
+        className="max-w-xs" 
+        value={filterSelection}
+        onChange={(e)=> setFilterSelection(e.target.value)}
+      >
+          <SelectItem key="name">
+            name
+          </SelectItem>
+          <SelectItem key="product">
+            product
+          </SelectItem>
+      </Select>
+    </div>
+  )
+}
+

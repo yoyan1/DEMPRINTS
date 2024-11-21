@@ -3,11 +3,12 @@ import React, { useEffect, useState } from "react"
 import { Input, Button } from "@nextui-org/react"
 import { useUserStore } from "../stores/userStore"
 import { useRouter } from 'next/navigation'
+import { decodeToken } from "../utils/decodeToken"
 
 export function LoginForm() {
   const { login, loading } = useUserStore()
   const [ credentials, setCredentials ] = useState({email: '', password: ''})
-  const [erroMessage, setErrorMessage] = useState()
+  const [errorMessage, setErrorMessage] = useState()
   const [mounted, setMounted] = useState(false); 
   
   useEffect(() => {
@@ -29,11 +30,19 @@ export function LoginForm() {
     e.preventDefault()
     const response = await login(credentials)
     if(!response.data.err){
+      setErrorMessage(response.data.message)
       if (typeof window !== "undefined") { 
         localStorage.setItem("token", response.data.token)
+        const decode = await decodeToken(response.data.token)
+
+        if(['admin', 'super admin'].includes(decode.role)){
+          router.push('/admin')
+        } else if(decode.role === 'staff'){
+          router.push('/staff')
+        } else{
+          setErrorMessage("Role not found")
+        }
       }
-      setErrorMessage(response.data.message)
-      router.push('/login/auth')
     } else{
       setErrorMessage(response.data.message)
       console.log(response.data.message)
@@ -52,7 +61,7 @@ export function LoginForm() {
           </h2>
           <p className="mt-4 text-center text-gray-400">Sign in to continue</p>
           <form onSubmit={submit} className="mt-8 space-y-6">
-            {setErrorMessage}
+            <span className="w-full text-center">{errorMessage}</span>
             <div className="rounded-md shadow-sm flex flex-col gap-3">
               <div>
                 <Input 
