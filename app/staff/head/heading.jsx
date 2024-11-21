@@ -15,12 +15,12 @@ import DarkMode from '@/app/components/public-component/darkMode.jsx';
 // import { useRouter } from "next/navigation";
 
 export default function Heading() {
-  const { user, getAuthenticateUser } = useUserStore();
+  // const { user, getAuthenticateUser } = useUserStore();
   // const router = useRouter();
 
-  useEffect(() => {
-    getAuthenticateUser();
-  }, [getAuthenticateUser]);
+  // useEffect(() => {
+  //   getAuthenticateUser();
+  // }, [getAuthenticateUser]);
 
   // if (loading) {
   //   return (

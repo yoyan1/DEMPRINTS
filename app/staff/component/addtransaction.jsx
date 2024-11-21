@@ -17,15 +17,19 @@ import {
   Textarea,
   CheckboxGroup,
 } from '@nextui-org/react';
-
+import { useRouter } from 'next/navigation';
+import { decodeToken } from '@/app/utils/decodeToken';
 import axios from 'axios';
 // import { formatDate } from "../../composables/formateDateAndTime";
 
-import { useUserStore } from '../../stores/userStore';
+// import { useUserStore } from '../../stores/userStore';
 
 export default function Addtransaction() {
-  const { user, getAuthenticateUser } = useUserStore();
-
+  // ----Auth-------------------
+  const router = useRouter();
+  const [user, setUser] = useState({});
+// -----Loading-----------------
+  
   // ---------------------------------------------
   const [customer_name, setCostumerName] = useState(' ');
   const [customer_type, setCostumerType] = useState(' ');
@@ -63,7 +67,6 @@ export default function Addtransaction() {
   const [isPercentage, setIsPercentage] = useState(false);
   // ----------------------
   const [selectedCategory, setSelectedCategory] = useState([]);
-
   // ---------------------------
 
   useEffect(() => {
@@ -76,8 +79,35 @@ export default function Addtransaction() {
     fetchID();
     fetchCategory();
     // ----------------------
-    getAuthenticateUser();
-  }, [getAuthenticateUser]);
+
+    const loadUser = async () => {
+      const token = localStorage.getItem('token');
+
+      if (token) {
+        const decode = await decodeToken(token);
+        setUser(decode);
+
+        if (user) {
+          // const currentTime = Math.floor(Date.now() / 1000);
+          // if (decode.exp < currentTime) {
+          //   localStorage.removeItem("token");
+          //   router.replace("/");
+          //   return;
+          // }
+
+          if (!['staff'].includes(decode.role)) {
+            router.replace('/');
+            localStorage.removeItem('token');
+          }
+        }
+        // setLoading(false);
+      } else {
+        router.replace('/');
+      }
+    };
+
+    loadUser();
+  }, [router]);
 
   const fetchCostumerType = async () => {
     try {
@@ -242,8 +272,7 @@ export default function Addtransaction() {
           payment_options,
           sales_person: user.name,
           remarks: remarks, //calculate the balance
-          // employee_id,
-          // employee_id: user.id,
+          employee_id: user.id,
         },
       );
       // console.log(getData.data);

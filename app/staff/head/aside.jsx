@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect ,useState} from 'react';
 import { FaClipboardList } from 'react-icons/fa';
 // import { BsPieChartFill } from "react-icons/bs";
 // import { IoSettingsSharp } from "react-icons/io5";
@@ -14,17 +14,47 @@ import {
   Button,
 } from '@nextui-org/react';
 import { usePathname } from 'next/navigation';
-import DarkMode from '@/app/components/public-component/darkMode.jsx';
-import { useUserStore } from '../../stores/userStore';
+import { useRouter } from "next/navigation";
+// import DarkMode from '@/app/components/public-component/darkMode.jsx';
+import { decodeToken } from '@/app/utils/decodeToken';
 
 export default function Sidebar() {
   const pathname = usePathname();
-  const { user, getAuthenticateUser } = useUserStore();
+  const router = useRouter();
+  const [user, setUser] = useState({});
+  // const [loading, setLoading] = useState(false);
   // const router = useRouter();
 
   useEffect(() => {
-    getAuthenticateUser();
-  }, [getAuthenticateUser]);
+    // setLoading(true);
+    const loadUser = async () => {
+      const token = localStorage.getItem('token');
+
+      if (token) {
+        const decode = await decodeToken(token);
+        setUser(decode);
+
+        if (user) {
+          // const currentTime = Math.floor(Date.now() / 1000);
+          // if (decode.exp < currentTime) {
+          //   localStorage.removeItem("token");
+          //   router.replace("/");
+          //   return;
+          // }
+
+          if (!['staff'].includes(decode.role)) {
+            router.replace('/');
+            localStorage.removeItem('token');
+          }
+        }
+        // setLoading(false);
+      } else {
+        router.replace('/');
+      }
+    };
+
+    loadUser();
+  }, [router]);
   return (
     <>
       <button
@@ -77,8 +107,6 @@ export default function Sidebar() {
           </ul>
 
           <div className="justify-start lg:order-2">
-          
-            
             <Dropdown>
               <DropdownTrigger className="rounded-full">
                 <Button

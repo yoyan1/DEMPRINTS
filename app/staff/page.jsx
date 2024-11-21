@@ -36,6 +36,8 @@ import { FaChartLine } from 'react-icons/fa';
 import Addtransaction from './component/addtransaction';
 import { useSalesStore } from '@/app/stores/transactionStore';
 import AllTransaction from './component/showAllTable';
+import { parseDate, getLocalTimeZone } from '@internationalized/date';
+import { getDateAndTime } from '@/app/composables/dateAndTime';
 // import { formatDate, formatTime } from "../../composables/formateDateAndTime";
 
 const itemColorMap = {
@@ -101,7 +103,11 @@ export default function Transaction() {
   const [statusFilter, setStatusFilter] = useState('all');
   const [typeFilter] = useState('all');
   const [rowsPerPage, setRowsPerPage] = useState(30);
-  const [selectedDateRange, setSelectedDateRange] = useState([null, null]);
+  const { date } = getDateAndTime();
+  const [selectedDate, setSelectedDate] = React.useState({
+    start: parseDate(date),
+    end: parseDate(date),
+  });
   const [sortDescriptor, setSortDescriptor] = useState({
     column: 'age',
     direction: 'ascending',
@@ -146,32 +152,38 @@ export default function Transaction() {
         Array.from(typeFilter).includes(user.customer_type.toLowerCase()),
       );
     }
-    if (selectedDateRange) {
-      filteredTransactions = filteredTransactions.filter((transaction) =>
-        transaction.date.includes(selectedDateRange),
-      );
-    }
+    // if (selectedDate) {
+    //   filteredTransactions = filteredTransactions.filter((transaction) =>
+    //     transaction.date.includes(selectedDate)
+    //   );
+    // }
 
-    return filteredTransactions;
-  }, [transactions, filterValue, statusFilter, typeFilter, selectedDateRange]);
-
-  const handleDateChange = (range) => {
-    const startDate = range[0] ? range[0].format('YYYY-MM-DD') : '';
-    const endDate = range[1] ? range[1].format('YYYY-MM-DD') : '';
-    const fullDateRange = `${startDate} - ${endDate}`;
-    setSelectedDateRange(range);
-
-    // Filter transactions based on the selected date range
-    if (startDate && endDate) {
+    if (selectedDate) {
       filteredTransactions = filteredTransactions.filter((transaction) => {
         const transactionDate = new Date(transaction.date);
-        return (
-          transactionDate >= new Date(startDate) &&
-          transactionDate <= new Date(endDate)
-        );
+        const start = new Date(selectedDate.start);
+        const end = new Date(selectedDate.end);
+    
+        if (start === date) {
+          return transaction;
+        } else {
+          return transactionDate >= start && transactionDate <= end;
+        }
       });
     }
-  };
+    
+    
+
+    return filteredTransactions;
+  }, [transactions, filterValue, statusFilter, typeFilter, selectedDate]);
+
+  // const handleDateChange = (date) => {
+  //   const year = date.year ? `${date.year}-` : '';
+  //   const month = date.month ? `${date.month}-` : '';
+  //   const day = date.day ? date.day : '';
+  //   const fullDate = year + month + day;
+  //   setSelectedDate(fullDate ? fullDate : '');
+  // };
   const pages = Math.ceil(filteredItems.length / rowsPerPage);
 
   const items = useMemo(() => {
@@ -310,10 +322,10 @@ export default function Transaction() {
             onValueChange={onSearchChange}
           />
           <DateRangePicker
-            label="Search by Date Range"
+            label="Search by Date"
             className="max-w-[284px]"
             labelPlacement="inside"
-            onChange={handleDateChange}
+            onChange={setSelectedDate}
           />
           <div className="flex gap-3">
             {/* <Dropdown>
@@ -478,6 +490,7 @@ export default function Transaction() {
           size="full"
           isOpen={isAllTransactionOpen}
           onClose={closeAllTransaction}
+           scrollBehavior="outside"
         >
           <ModalContent>
             <ModalBody>
@@ -501,6 +514,7 @@ export default function Transaction() {
           bottomContentPlacement="outside"
           classNames={{
             wrapper: 'max-h-[382px]',
+
           }}
           selectedKeys={selectedKeys}
           selectionMode="multiple"
@@ -509,12 +523,13 @@ export default function Transaction() {
           onSelectionChange={setSelectedKeys}
           onSortChange={setSortDescriptor}
         >
-          <TableHeader columns={headerColumns}>
+          <TableHeader columns={headerColumns} >
             {(column) => (
               <TableColumn
                 key={column.dataKey}
                 align="center"
                 allowsSorting={column.sortable}
+                style={{backgroundColor:'#191970', color:'#ffff'}}
               >
                 {column.name}
               </TableColumn>
