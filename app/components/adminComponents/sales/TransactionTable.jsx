@@ -16,7 +16,9 @@ import {
   Chip,
   Pagination,
   Spinner, 
-  Tooltip
+  Tooltip,
+  Select,
+  SelectItem
 } from "@nextui-org/react";
 import { CiSearch } from "react-icons/ci";
 import { IoChevronDown } from "react-icons/io5";
@@ -44,10 +46,11 @@ const INITIAL_VISIBLE_COLUMNS_ALL = ["date", "time", "transaction_no", "item_no"
 export default function Transaction({columns, transactions, itemOptions, typeOptions, loading, isMaximized, refresh}) {
   const [filterValue, setFilterValue] = useState("");
   const [selectedKeys, setSelectedKeys] = useState(new Set([]));
-  const [visibleColumns] = useState(isMaximized? INITIAL_VISIBLE_COLUMNS_ALL : new Set(INITIAL_VISIBLE_COLUMNS));
+  const [visibleColumns] = useState(isMaximized? INITIAL_VISIBLE_COLUMNS_ALL : INITIAL_VISIBLE_COLUMNS);
   const [statusFilter, setStatusFilter] = useState("all");
   const [typeFilter] = useState("all");
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [filterSelection, setFilterSelection] = useState('')
+  const [rowsPerPage, setRowsPerPage] = useState(isMaximized? 20 : 5);
   const [sortDescriptor, setSortDescriptor] = useState({
     column: "age",
     direction: "ascending",
@@ -70,10 +73,12 @@ export default function Transaction({columns, transactions, itemOptions, typeOpt
         item.item_name.toLowerCase().includes(filterValue.toLowerCase()),
       );
     }
-    if (statusFilter !== "all" && Array.from(statusFilter).length !== itemOptions.length) {
-      filteredTransactions = filteredTransactions.filter((user) =>
-        Array.from(statusFilter).includes(user.item_name.toLowerCase()),
-      );
+    if ( statusFilter !== "all" &&
+        Array.from(statusFilter).length !== transactions.length
+    ) {
+        filteredTransactions = filteredTransactions.filter((user) =>
+            Array.from(statusFilter).includes(user[filterSelection])
+        );
     }
     if (typeFilter !== "all" && Array.from(typeFilter).length !== typeOptions.length) {
       filteredTransactions = filteredTransactions.filter((user) =>
@@ -209,6 +214,15 @@ export default function Transaction({columns, transactions, itemOptions, typeOpt
     refresh(data)
   }
 
+  const handleSelectionChange = React.useCallback((value)=>{
+    if(value){
+      setFilterSelection(value)
+    } else{
+      setFilterSelection("")
+    }
+    
+  }, [])
+
   const topContent = useMemo(() => {
     return (
       <div className="flex flex-col gap-4 ">
@@ -222,11 +236,46 @@ export default function Transaction({columns, transactions, itemOptions, typeOpt
             onClear={() => onClear()}
             onValueChange={onSearchChange}
           />
+          <Select 
+            label="Filter selection" 
+            className="max-w-xs" 
+            value={filterSelection}
+            onSelectionChange={handleSelectionChange}
+          >
+            {visibleColumns.map((item) => (
+              <SelectItem key={item}>
+                {item}
+              </SelectItem>
+            ))}
+          </Select>
+          {filterSelection? (
+            <Select 
+              label={filterSelection}
+              className="max-w-xs" 
+              value={statusFilter}
+              onChange={(e)=> setStatusFilter(e.target.value)}
+            >
+            {transactions.map((item, index) => (
+                    index > 0? (
+                      item[filterSelection] !== transactions[index-1][filterSelection]? (
+                        <SelectItem key={item[filterSelection]}>
+                          {item[filterSelection]}
+                        </SelectItem>
+                      ):null
+                    ): (
+                        <SelectItem key={item[filterSelection]}>
+                          {item[filterSelection]}
+                        </SelectItem>
+                    )
+              ))}
+            </Select>
+          ): null}
           <div className="flex gap-3">
+          {/* {filterSelection? (
             <Dropdown>
               <DropdownTrigger className="hidden sm:flex">
                 <Button endContent={<IoChevronDown className="text-small" />} variant="flat">
-                  Item name
+                  {filterSelection}
                 </Button>
               </DropdownTrigger>
               <DropdownMenu
@@ -237,13 +286,22 @@ export default function Transaction({columns, transactions, itemOptions, typeOpt
                 selectionMode="multiple"
                 onSelectionChange={setStatusFilter}
               >
-                {itemOptions.map((item) => (
-                  <DropdownItem key={item.dataKey} className="capitalize">
-                    {capitalize(item.name)}
-                  </DropdownItem>
+                {transactions.map((item, index) => (
+                  index > 0? (
+                    item[filterSelection] !== transactions[index-1][filterSelection]? (
+                    <DropdownItem key={item[filterSelection]} className="capitalize">
+                      {capitalize(item[filterSelection])}
+                    </DropdownItem>
+                    ):null
+                  ): (
+                    <DropdownItem key={item[filterSelection]} className="capitalize">
+                      {capitalize(item[filterSelection])}
+                    </DropdownItem>
+                  )
                 ))}
               </DropdownMenu>
             </Dropdown>
+          ): null} */}
             <CreateTransaction refresh={fetch}/>
             <ExportToPdf rows={sortedItems}/>
             {!isMaximized? (

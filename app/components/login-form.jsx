@@ -61,7 +61,7 @@ export function LoginForm() {
           </h2>
           <p className="mt-4 text-center text-gray-400">Sign in to continue</p>
           <form onSubmit={submit} className="mt-8 space-y-6">
-            {errorMessage}
+            <span className="w-full text-center">{errorMessage}</span>
             <div className="rounded-md shadow-sm flex flex-col gap-3">
               <div>
                 <Input 

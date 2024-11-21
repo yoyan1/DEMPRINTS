@@ -6,7 +6,9 @@ import AdminLayout from '../layout/layout'
 import { getDateAndTime } from '@/app/composables/dateAndTime'
 import { formatDate } from '@/app/composables/formateDateAndTime';
 import { BiLineChart, BiLineChartDown } from "react-icons/bi";
-import { DatePicker } from '@nextui-org/react';
+import { DateRangePicker } from '@nextui-org/react';
+import { IoMdCloseCircle } from "react-icons/io";
+import {parseDate, getLocalTimeZone} from "@internationalized/date";
 
 const getDateYesterday = (currentDate) => {
   let dateNow = new Date(currentDate); 
@@ -22,10 +24,9 @@ const getDateYesterday = (currentDate) => {
   return `${year}-${day}-${month}`;
 };
 
-const getTotalSalesDaily = (transactions, date, dateNow) => {
-
-  const dateYesterday = getDateYesterday(date);
-  const dateSelected = date? date : dateNow
+const getTotalSalesDaily = (transactions, dateNow) => {
+  const dateYesterday = getDateYesterday(dateNow);
+  const dateSelected = dateNow
   return transactions.reduce(
     (acc, item) => {
       if (item.date === dateSelected) {
@@ -42,29 +43,38 @@ const getTotalSalesDaily = (transactions, date, dateNow) => {
 export default function Sales() {
   const {columns, itemOptions, typeOptions, transactions, loading, fetchTransactions } = useSalesStore();
   const {date} = getDateAndTime()
-  const [selectedDate, setSelectedDate ] = useState('')
+  const [value, setValue] = React.useState({
+    start: parseDate(date),
+    end: parseDate(date),
+  });
 
   useEffect(() =>{
     fetchTransactions()
   }, [fetchTransactions])
 
   const filteredTransactions = useMemo(
-    () => transactions.filter((transaction) => transaction.date.includes(selectedDate)),
-    [transactions, selectedDate] 
+    () =>
+      transactions.filter((transaction) => {
+        const transactionDate = new Date(transaction.date);
+        const start = new Date(value.start);
+        const end = new Date(value.end);
+        if(start === date){
+          return transaction
+        } else{
+          return transactionDate >= start && transactionDate <= end;
+
+        }
+
+      }),
+    [transactions, value.start, value.end]
   );
 
   const { totalSales, totalYesterday } = useMemo(
-    () => getTotalSalesDaily(transactions, selectedDate, date),
-    [transactions, selectedDate, date] 
+    () => getTotalSalesDaily(transactions, date),
+    [transactions, date] 
   );
+  
 
-  const handleDateChange = (date) => {
-    const year = date.year? `${date.year}-` : ''
-    const month = date.month? `${date.month}-` : ''
-    const day = date.day? date.day : ''
-    const fullDate = year+month+day
-    setSelectedDate(fullDate? fullDate : '')
-  };
 
   return (
     <AdminLayout>
@@ -77,7 +87,7 @@ export default function Sales() {
                   <span className="text-sm text-slate-400">{"Let's"} see the current statistic performance</span>
                 </div>
                 <div className=' border-2 p-3 shadow-sm rounded-xl border-blue-600 '>
-                    <span className='text-sm text-slate-400'>{formatDate(selectedDate? selectedDate : date)}</span>
+                    <span className='text-sm text-slate-400'>{formatDate(date)}</span>
                     <div className='flex items-end gap-5'>
                       <span className='font-sans font-semibold'>Sales: </span>
                       <span className='text-slate-400 text-sm'>{ Math.round(totalSales) }</span>
@@ -89,16 +99,23 @@ export default function Sales() {
                     </div>
                 </div>
               </div>
-              <div className='w-48'>
-                <DatePicker
-                  label="Select date"
-                  variant="bordered"
-                  showMonthAndYearPickers
-                  clearable
-                  initialValue={new Date()}
-                  onChange={handleDateChange}
+              <div>
+                <DateRangePicker
+                  label="Date range"
+                  value={value}
+                  onChange={setValue}
+                  startContent={
+                    <div>
+                      <IoMdCloseCircle 
+                      className='cursor-pointer hover:text-red-400' 
+                      // onClick={()=>(setValue({
+                      //     start: parseDate('00/00/0000'),
+                      //     end: parseDate('00/00/0000'),
+                      //   })
+                      // )}
+                  /></div>
+                  }
                 />
-                {/* <span className="text-sm py-1 px-2 border rounded-full">{formatDate(date)}</span> */}
               </div>
             </div>
             <div className='bg-white dark:bg-gray-900 rounded-lg p-5'>
