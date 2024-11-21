@@ -23,7 +23,7 @@ import {
   Chip,
   Pagination,
   Spinner,
-  DatePicker,
+  DateRangePicker,
 } from '@nextui-org/react';
 import { CiSearch } from 'react-icons/ci';
 import { IoChevronDown } from 'react-icons/io5';
@@ -102,6 +102,7 @@ export default function Transaction() {
   const [typeFilter] = useState('all');
   const [rowsPerPage, setRowsPerPage] = useState(30);
   const [selectedDate, setSelectedDate] = useState(null);
+
   const [sortDescriptor, setSortDescriptor] = useState({
     column: 'age',
     direction: 'ascending',
@@ -147,8 +148,8 @@ export default function Transaction() {
       );
     }
     if (selectedDate) {
-      filteredTransactions = filteredTransactions.filter((transaction) =>
-        transaction.date.includes(selectedDate)
+      filteredTransactions = filteredTransactions.filter(
+        (transaction) => transaction.date.includes(selectedDate), // Make sure transaction.date is formatted as "YYYY-MM-DD"
       );
     }
 
@@ -156,11 +157,14 @@ export default function Transaction() {
   }, [transactions, filterValue, statusFilter, typeFilter, selectedDate]);
 
   const handleDateChange = (date) => {
-    const year = date.year ? `${date.year}-` : '';
-    const month = date.month ? `${date.month}-` : '';
-    const day = date.day ? date.day : '';
+    const year = date?.year ? `${date.year}-` : '';
+    const month = date?.month
+      ? `${date.month.toString().padStart(2, '0')}-`
+      : ''; // Ensure 2-digit month
+    const day = date?.day ? date.day.toString().padStart(2, '0') : ''; // Ensure 2-digit day
     const fullDate = year + month + day;
-    setSelectedDate(fullDate ? fullDate : '');
+
+    setSelectedDate(fullDate || null);
   };
   const pages = Math.ceil(filteredItems.length / rowsPerPage);
 
@@ -299,13 +303,21 @@ export default function Transaction() {
             onClear={() => onClear()}
             onValueChange={onSearchChange}
           />
-          <DatePicker
+          <DateRangePicker
             label="Search by Date"
             className="max-w-[284px]"
-            labelPlacement='inside'
+            labelPlacement="inside"
             onChange={handleDateChange}
-
           />
+          {/* <DateRangePicker
+            label="Stay duration"
+            isRequired
+            defaultValue={{
+              start: parseDate('2024-04-01'),
+              end: parseDate('2024-04-08'),
+            }}
+            className="max-w-xs"
+          /> */}
           <div className="flex gap-3">
             {/* <Dropdown>
               <DropdownTrigger className="hidden sm:flex">
@@ -389,7 +401,7 @@ export default function Transaction() {
               className="bg-transparent outline-none text-default-400 text-small"
               onChange={onRowsPerPageChange}
             >
-             <option value="30">30</option>
+              <option value="30">30</option>
               <option value="60">60</option>
               <option value="100">100</option>
             </select>
@@ -398,7 +410,6 @@ export default function Transaction() {
       </div>
     );
   }, [
-   
     filterValue,
     statusFilter,
     visibleColumns,

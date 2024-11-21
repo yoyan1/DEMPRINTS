@@ -1,16 +1,17 @@
-"use client";
+'use client';
 
-import React, { useEffect } from "react";
+import React, { useEffect } from 'react';
 // import { Spinner } from "@nextui-org/react";
-import { Image } from "@nextui-org/image";
+import { Image } from '@nextui-org/image';
 import {
   Dropdown,
   DropdownTrigger,
   Button,
   DropdownMenu,
   DropdownItem,
-} from "@nextui-org/react";
-import { useUserStore } from "../../stores/userStore";
+} from '@nextui-org/react';
+import { useUserStore } from '../../stores/userStore';
+import DarkMode from '@/app/components/public-component/darkMode.jsx';
 // import { useRouter } from "next/navigation";
 
 export default function Heading() {
@@ -29,13 +30,14 @@ export default function Heading() {
 
   // if (!user && !loading) {
   //   router.push('/login');
-  //   return null; 
+  //   return null;
   // }
 
   return (
     <>
-    {/* bg-gradient-to-tr from-blue-400 to-blue-950 */}
-      <nav className="fixed border-b border-gray-200 px-4 py-2.5 left-0 right-0 top-0 z-50 bg-gradient-to-tr from-blue-400 to-blue-950 ">
+      {/* bg-gradient-to-tr from-blue-400 to-blue-950 */}
+
+      <nav className=" border-b border-gray-200 px-4 py-2.5 left-0 right-0 top-0 z-50  ">
         <div className="flex flex-wrap justify-between items-center">
           <div className="flex justify-start items-center">
             <button
@@ -70,36 +72,17 @@ export default function Heading() {
                 ></path>
               </svg>
             </button>
-            <a href="" className="flex items-center justify-between mr-4">
-              <Image src="/LogoV3.jpg" className="mr-3 h-10 rounded-full" />
-              <span className="self-center text-2xl font-semibold whitespace-nowrap text-white">
-                DEMPRINT
-              </span>
-            </a>
           </div>
           <div className="flex justify-start items-center"></div>
           <div className="flex items-center lg:order-2">
-            <Dropdown>
-              <DropdownTrigger className="rounded-full">
-                <Button className="bg-transparent w-11 h-11 rounded-full" aria-label="Open user menu">
-                  <Image
-                    className="bordered rounded-full w-11 h-11"
-                    src="/image.png"
-                  />
-                </Button>
-              </DropdownTrigger>
-              <DropdownMenu aria-label="User Menu">
-                <DropdownItem key="username">
-                  <span className="text-black">{user?.name}</span>
-                </DropdownItem>
-                <DropdownItem key="logout">
-                  <span className="text-black">Logout</span>
-                </DropdownItem>
-              </DropdownMenu>
-            </Dropdown>
+           <DarkMode/>
           </div>
         </div>
       </nav>
+      {/* 
+      <nav class="bg-white border-gray-200 dark:bg-gray-900">
+      <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4"></div>
+      </nav> */}
     </>
   );
 }
