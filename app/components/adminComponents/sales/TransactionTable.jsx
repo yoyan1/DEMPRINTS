@@ -213,10 +213,12 @@ export default function Transaction({columns, transactions, itemOptions, typeOpt
   const fetch = (data)=>{
     refresh(data)
   }
-
+  const [transactionFilterRow, setTransactionFilterRow] = useState([])
   const handleSelectionChange = React.useCallback((value)=>{
     if(value){
       setFilterSelection(value)
+      const sortRow = transactions.sort((a, b) => b[value] - a[value])
+      setTransactionFilterRow(sortRow)
     } else{
       setFilterSelection("")
     }
@@ -255,18 +257,18 @@ export default function Transaction({columns, transactions, itemOptions, typeOpt
               value={statusFilter}
               onChange={(e)=> setStatusFilter(e.target.value)}
             >
-            {transactions.map((item, index) => (
-                    index > 0? (
-                      item[filterSelection] !== transactions[index-1][filterSelection]? (
+            {transactionFilterRow.map((item) => (
+                    // index > 0? (
+                    //   item[filterSelection] !== transactions[index-1][filterSelection]? (
+                    //     <SelectItem key={item[filterSelection]}>
+                    //       {item[filterSelection]}
+                    //     </SelectItem>
+                    //   ):null
+                    // ): (
+                    // )
                         <SelectItem key={item[filterSelection]}>
                           {item[filterSelection]}
                         </SelectItem>
-                      ):null
-                    ): (
-                        <SelectItem key={item[filterSelection]}>
-                          {item[filterSelection]}
-                        </SelectItem>
-                    )
               ))}
             </Select>
           ): null}
@@ -328,9 +330,11 @@ export default function Transaction({columns, transactions, itemOptions, typeOpt
   }, [
     filterValue,
     statusFilter,
+    filterSelection,
     visibleColumns,
     onRowsPerPageChange,
     transactions.length,
+    transactionFilterRow,
     onSearchChange,
     hasSearchFilter,
   ]);
