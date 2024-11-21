@@ -101,8 +101,7 @@ export default function Transaction() {
   const [statusFilter, setStatusFilter] = useState('all');
   const [typeFilter] = useState('all');
   const [rowsPerPage, setRowsPerPage] = useState(30);
-  const [selectedDate, setSelectedDate] = useState(null);
-
+  const [selectedDateRange, setSelectedDateRange] = useState([null, null]);
   const [sortDescriptor, setSortDescriptor] = useState({
     column: 'age',
     direction: 'ascending',
@@ -147,24 +146,31 @@ export default function Transaction() {
         Array.from(typeFilter).includes(user.customer_type.toLowerCase()),
       );
     }
-    if (selectedDate) {
-      filteredTransactions = filteredTransactions.filter(
-        (transaction) => transaction.date.includes(selectedDate), // Make sure transaction.date is formatted as "YYYY-MM-DD"
+    if (selectedDateRange) {
+      filteredTransactions = filteredTransactions.filter((transaction) =>
+        transaction.date.includes(selectedDateRange),
       );
     }
 
     return filteredTransactions;
-  }, [transactions, filterValue, statusFilter, typeFilter, selectedDate]);
+  }, [transactions, filterValue, statusFilter, typeFilter, selectedDateRange]);
 
-  const handleDateChange = (date) => {
-    const year = date?.year ? `${date.year}-` : '';
-    const month = date?.month
-      ? `${date.month.toString().padStart(2, '0')}-`
-      : ''; // Ensure 2-digit month
-    const day = date?.day ? date.day.toString().padStart(2, '0') : ''; // Ensure 2-digit day
-    const fullDate = year + month + day;
+  const handleDateChange = (range) => {
+    const startDate = range[0] ? range[0].format('YYYY-MM-DD') : '';
+    const endDate = range[1] ? range[1].format('YYYY-MM-DD') : '';
+    const fullDateRange = `${startDate} - ${endDate}`;
+    setSelectedDateRange(range);
 
-    setSelectedDate(fullDate || null);
+    // Filter transactions based on the selected date range
+    if (startDate && endDate) {
+      filteredTransactions = filteredTransactions.filter((transaction) => {
+        const transactionDate = new Date(transaction.date);
+        return (
+          transactionDate >= new Date(startDate) &&
+          transactionDate <= new Date(endDate)
+        );
+      });
+    }
   };
   const pages = Math.ceil(filteredItems.length / rowsPerPage);
 
@@ -304,20 +310,11 @@ export default function Transaction() {
             onValueChange={onSearchChange}
           />
           <DateRangePicker
-            label="Search by Date"
+            label="Search by Date Range"
             className="max-w-[284px]"
             labelPlacement="inside"
             onChange={handleDateChange}
           />
-          {/* <DateRangePicker
-            label="Stay duration"
-            isRequired
-            defaultValue={{
-              start: parseDate('2024-04-01'),
-              end: parseDate('2024-04-08'),
-            }}
-            className="max-w-xs"
-          /> */}
           <div className="flex gap-3">
             {/* <Dropdown>
               <DropdownTrigger className="hidden sm:flex">
