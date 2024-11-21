@@ -8,71 +8,77 @@ import { formatDate } from '@/app/composables/formateDateAndTime';
 import { BiLineChart, BiLineChartDown } from "react-icons/bi";
 import { DateRangePicker } from '@nextui-org/react';
 import { IoMdCloseCircle } from "react-icons/io";
-import {parseDate, getLocalTimeZone} from "@internationalized/date";
+import {parseDate} from "@internationalized/date";
+import { decodeToken } from '@/app/utils/decodeToken'
+import { paymentStore } from '../../stores/paymentStore';
 
-const getDateYesterday = (currentDate) => {
-  let dateNow = new Date(currentDate); 
-  dateNow.setDate(dateNow.getDate() - 1); 
-
-  let month = dateNow.getMonth() + 1;  
-  let day = dateNow.getDate();
-  let year = dateNow.getFullYear();
-
-  month = month < 10 ? '0' + month : month;
-  day = day < 10 ? '0' + day : day;
-
-  return `${year}-${day}-${month}`;
-};
-
-const getTotalSalesDaily = (transactions, dateNow) => {
-  const dateYesterday = getDateYesterday(dateNow);
-  const dateSelected = dateNow
-  return transactions.reduce(
-    (acc, item) => {
-      if (item.date === dateSelected) {
-        acc.totalSales += item.total;
-      } else if (item.date === dateYesterday) {
-        acc.totalYesterday += item.total;
-      }
-      return acc;
-    },
-    { totalSales: 0, totalYesterday: 0 } 
-  );
-};
 
 export default function Sales() {
   const {columns, itemOptions, typeOptions, transactions, loading, fetchTransactions } = useSalesStore();
+  const {options, fetchPayment} = paymentStore()
   const {date} = getDateAndTime()
+  const [user, setUser] = useState({})
   const [value, setValue] = React.useState({
     start: parseDate(date),
     end: parseDate(date),
   });
 
   useEffect(() =>{
+    fetchPayment()
     fetchTransactions()
+    const loadUser = async () =>{
+
+      const token = localStorage.getItem("token");
+  
+      if (token) {
+        const decode = await decodeToken(token)
+        setUser(decode);
+      }
+    }
+    loadUser()
   }, [fetchTransactions])
 
-  const filteredTransactions = useMemo(
-    () =>
-      transactions.filter((transaction) => {
-        const transactionDate = new Date(transaction.date);
-        const start = new Date(value.start);
-        const end = new Date(value.end);
-        if(start === date){
-          return transaction
-        } else{
-          return transactionDate >= start && transactionDate <= end;
-
+  const isDateInRange = (date, startDate, endDate) => {
+    return date >= startDate && date <= endDate;
+  };
+  
+  const getTotalSalesInRange = (transactions, startDate, endDate, options) => {
+    return transactions.reduce(
+      (acc, item) => {
+        const itemDate = new Date(item.date); 
+        if (isDateInRange(itemDate, startDate, endDate)) {
+          acc.totalSales += item.total;
+          options.forEach((row) => {
+            if(row.name === item.payment_options)
+            acc[row.name] = (acc[row.name] || 0) + item.total;
+          });
         }
+        return acc;
+      },
+      { totalSales: 0 }
+    );
+  };
+  
+  
 
-      }),
-    [transactions, value.start, value.end]
-  );
+  const filteredTransactions = useMemo(() => {
+    const start = new Date(value.start);
+    const end = new Date(value.end);
+  
+    return transactions.filter((transaction) => {
+      const transactionDate = new Date(transaction.date);
+      return transactionDate >= start && transactionDate <= end;
+    });
+  }, [transactions, value.start, value.end]);
+  
 
-  const { totalSales, totalYesterday } = useMemo(
-    () => getTotalSalesDaily(transactions, date),
-    [transactions, date] 
-  );
+  const totals = useMemo(() => {
+    const start = new Date(value.start);
+    const end = new Date(value.end);
+    return getTotalSalesInRange(transactions, start, end, options);
+  }, [transactions, value.start, value.end, options]);
+  
+  const { totalSales, ...salesByOptions } = totals;
   
 
 
@@ -80,46 +86,54 @@ export default function Sales() {
     <AdminLayout>
         <main className="flex flex-1 rounded-md flex-col gap-4 m-4 lg:gap-6 lg:m-6">
           <div className='flex flex-col gap-2'>
-            <div className="flex justify-between items-start rounded-lg bg-white dark:bg-gray-900 p-5">
-              <div className='flex gap-5'>
+            <div className="flex justify-between items-start rounded-xl bg-white dark:bg-gray-900 p-5">
+              <div className='flex flex-col gap-5'>
                 <div>
-                  <h1 className="font-bold text-2xl">Sales Overview</h1>
+                  <h1 className="font-bold text-2xl text-blue-950 dark:text-blue-600">Sales Overview</h1>
                   <span className="text-sm text-slate-400">{"Let's"} see the current statistic performance</span>
                 </div>
-                <div className=' border-2 p-3 shadow-sm rounded-xl border-blue-600 '>
-                    <span className='text-sm text-slate-400'>{formatDate(date)}</span>
-                    <div className='flex items-end gap-5'>
-                      <span className='font-sans font-semibold'>Sales: </span>
-                      <span className='text-slate-400 text-sm'>{ Math.round(totalSales) }</span>
-                      { totalSales > totalYesterday? (
-                        <BiLineChart className='text-green-600 h-5 w-5'/>
-                      ): (
-                        <BiLineChartDown className='text-red-600 h-5 w-5 '/>
-                      )}
-                    </div>
+                <div className='flex gap-5'>
+                  <div className='p-3 shadow-sm rounded-xl bg-blue-800 flex flex-col gap-2'>
+                    <span className='text-sm text-blue-900 rounded-xl bg-white p-2'>{formatDate(value.start)} - {formatDate(value.end)}</span>
+                      <div className='flex items-end gap-5'>
+                        <span className='font-sans font-semibold text-slate-100'>Sales: </span>
+                        <span className='text-slate-200 text-md font-bold'>{ Math.round(totalSales) }</span>
+                      </div>
+                  </div>
+                  <div className='flex flex-col gap-2'>
+                    {options.length > 0? (
+                      options.map((transactionOptions) => (
+                        <div className='bg-blue-800 rounded-xl text-white p-2'>
+                          {transactionOptions.name}: {salesByOptions[transactionOptions.name] ? salesByOptions[transactionOptions.name] : 0}
+                        </div>
+                      ))
+                    ): null}
+                  </div>
+
                 </div>
               </div>
               <div>
                 <DateRangePicker
-                  label="Date range"
                   value={value}
                   onChange={setValue}
+                  variant='bordered'
+                  color='primary'
                   startContent={
                     <div>
                       <IoMdCloseCircle 
                       className='cursor-pointer hover:text-red-400' 
-                      // onClick={()=>(setValue({
-                      //     start: parseDate('00/00/0000'),
-                      //     end: parseDate('00/00/0000'),
-                      //   })
-                      // )}
+                      onClick={()=>(setValue({
+                          start: parseDate(date),
+                          end: parseDate(date),
+                        })
+                      )}
                   /></div>
                   }
                 />
               </div>
             </div>
             <div className='bg-white dark:bg-gray-900 rounded-lg p-5'>
-              <TransactionTable columns={columns} transactions={filteredTransactions} itemOptions={itemOptions} typeOptions={typeOptions} loading={loading} isMaximized={false} refresh={fetchTransactions}/>
+              <TransactionTable columns={columns} transactions={filteredTransactions} itemOptions={itemOptions} typeOptions={typeOptions} loading={loading} isMaximized={false} user={user} refresh={fetchTransactions}/>
             </div>
           </div>
         </main>

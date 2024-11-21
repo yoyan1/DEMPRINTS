@@ -40,10 +40,11 @@ const typeColorMap = {
   online: "primary",
 };
 
-const INITIAL_VISIBLE_COLUMNS = ["transaction_no", "item_name", "unit_cost",  "customer_type", "customer_name", "payment_type", "sales_person", "actions"];
-const INITIAL_VISIBLE_COLUMNS_ALL = ["date", "time", "transaction_no", "item_no", "item_name", "unit_cost", "quantity", "amount", "discount", "total", "customer_type", "customer_name", "payment_method", "sales_person", "remarks"];
+const INITIAL_VISIBLE_COLUMNS = ["transaction_no", "item_name", "unit_cost",  "customer_type", "customer_name", "payment_options", "sales_person"];
+const INITIAL_VISIBLE_COLUMNS_ALL = ["date", "time", "transaction_no", "item_no", "item_name", "unit_cost", "quantity", "amount", "discount", "total", "customer_type", "customer_name","payment_options", "payment_method", "sales_person", "remarks"];
+const SEARCH_SELECTION = ["item_name", "customer_type", "customer_name", "payment_options", "sales_person"]
 
-export default function Transaction({columns, transactions, itemOptions, typeOptions, loading, isMaximized, refresh}) {
+export default function Transaction({columns, transactions, itemOptions, typeOptions, loading, isMaximized, user, refresh}) {
   const [filterValue, setFilterValue] = useState("");
   const [selectedKeys, setSelectedKeys] = useState(new Set([]));
   const [visibleColumns] = useState(isMaximized? INITIAL_VISIBLE_COLUMNS_ALL : INITIAL_VISIBLE_COLUMNS);
@@ -213,98 +214,97 @@ export default function Transaction({columns, transactions, itemOptions, typeOpt
   const fetch = (data)=>{
     refresh(data)
   }
-  const [transactionFilterRow, setTransactionFilterRow] = useState([])
-  const handleSelectionChange = React.useCallback((value)=>{
-    if(value){
-      setFilterSelection(value)
-      const sortRow = transactions.sort((a, b) => b[value] - a[value])
-      setTransactionFilterRow(sortRow)
-    } else{
-      setFilterSelection("")
-    }
-    
+
+  const handleSelectionChange = React.useCallback((e)=>{
+      setFilterSelection(e.target.value)
+      transactions.sort((a, b) => b[e.target.value] - a[e.target.value]);
+      setStatusFilter('all')
   }, [])
 
   const topContent = useMemo(() => {
     return (
       <div className="flex flex-col gap-4 ">
-        <div className="flex justify-between gap-3 items-end">
+        <div className="flex justify-end gap-3 items-end">
           <Input
             isClearable
             className="w-full sm:max-w-[44%]"
             placeholder="Search by name..."
+            variant="bordered"
             startContent={<CiSearch />}
             value={filterValue}
             onClear={() => onClear()}
             onValueChange={onSearchChange}
           />
           <Select 
-            label="Filter selection" 
+            placeholder="Filter selection" 
             className="max-w-xs" 
             value={filterSelection}
-            onSelectionChange={handleSelectionChange}
+            onChange={handleSelectionChange}
+            size="md"
           >
-            {visibleColumns.map((item) => (
+            {SEARCH_SELECTION.map((item) => (
               <SelectItem key={item}>
                 {item}
               </SelectItem>
             ))}
           </Select>
+          <div className="flex gap-3">
           {filterSelection? (
             <Select 
-              label={filterSelection}
-              className="max-w-xs" 
-              value={statusFilter}
-              onChange={(e)=> setStatusFilter(e.target.value)}
-            >
-            {transactionFilterRow.map((item) => (
-                    // index > 0? (
-                    //   item[filterSelection] !== transactions[index-1][filterSelection]? (
-                    //     <SelectItem key={item[filterSelection]}>
-                    //       {item[filterSelection]}
-                    //     </SelectItem>
-                    //   ):null
-                    // ): (
-                    // )
-                        <SelectItem key={item[filterSelection]}>
-                          {item[filterSelection]}
-                        </SelectItem>
-              ))}
-            </Select>
+            label={statusFilter !== 'all'? "" : `select ${filterSelection}`}
+            placeholder={filterSelection}
+            className="w-44" 
+            value={statusFilter}
+            selectionMode="multiple"
+            onSelectionChange={setStatusFilter}
+            size="md"
+          >
+            {(() => {
+              const seen = new Set();
+              return transactions.map((item) => {
+                const value = item[filterSelection];
+                if (seen.has(value)) return null; 
+                seen.add(value);
+                return (
+                  <DropdownItem key={value} className="capitalize">
+                    {capitalize(value)}
+                  </DropdownItem>
+                );
+              });
+            })()}
+          </Select>
+            // <Dropdown>
+            //   <DropdownTrigger className="hidden sm:flex">
+            //     <Button endContent={<IoChevronDown className="text-small" />} variant="flat">
+            //       {filterSelection}
+            //     </Button>
+            //   </DropdownTrigger>
+            //   <DropdownMenu
+            //     disallowEmptySelection
+            //     aria-label="Table Columns"
+            //     closeOnSelect={false}
+            //     selectedKeys={statusFilter}
+            //     selectionMode="multiple"
+            //     onSelectionChange={setStatusFilter}
+            //   >
+            //     {(() => {
+            //       const seen = new Set();
+            //       return transactions.map((item) => {
+            //         const value = item[filterSelection];
+            //         if (seen.has(value)) return null; 
+            //         seen.add(value);
+            //         return (
+            //           <DropdownItem key={value} className="capitalize">
+            //             {capitalize(value)}
+            //           </DropdownItem>
+            //         );
+            //       });
+            //     })()}
+            //   </DropdownMenu>
+
+            // </Dropdown>
           ): null}
-          <div className="flex gap-3">
-          {/* {filterSelection? (
-            <Dropdown>
-              <DropdownTrigger className="hidden sm:flex">
-                <Button endContent={<IoChevronDown className="text-small" />} variant="flat">
-                  {filterSelection}
-                </Button>
-              </DropdownTrigger>
-              <DropdownMenu
-                disallowEmptySelection
-                aria-label="Table Columns"
-                closeOnSelect={false}
-                selectedKeys={statusFilter}
-                selectionMode="multiple"
-                onSelectionChange={setStatusFilter}
-              >
-                {transactions.map((item, index) => (
-                  index > 0? (
-                    item[filterSelection] !== transactions[index-1][filterSelection]? (
-                    <DropdownItem key={item[filterSelection]} className="capitalize">
-                      {capitalize(item[filterSelection])}
-                    </DropdownItem>
-                    ):null
-                  ): (
-                    <DropdownItem key={item[filterSelection]} className="capitalize">
-                      {capitalize(item[filterSelection])}
-                    </DropdownItem>
-                  )
-                ))}
-              </DropdownMenu>
-            </Dropdown>
-          ): null} */}
-            <CreateTransaction refresh={fetch}/>
+            <CreateTransaction user={user} refresh={fetch}/>
             <ExportToPdf rows={sortedItems}/>
             {!isMaximized? (
                 <ExpandTransaction columns={columns} transactions={transactions} itemOptions={itemOptions} typeOptions={typeOptions} />
@@ -322,6 +322,7 @@ export default function Transaction({columns, transactions, itemOptions, typeOpt
               <option value="5">5</option>
               <option value="10">10</option>
               <option value="15">15</option>
+              <option value="50">50</option>
             </select>
           </label>
         </div>
@@ -333,8 +334,8 @@ export default function Transaction({columns, transactions, itemOptions, typeOpt
     filterSelection,
     visibleColumns,
     onRowsPerPageChange,
+    transactions,
     transactions.length,
-    transactionFilterRow,
     onSearchChange,
     hasSearchFilter,
   ]);
@@ -379,6 +380,7 @@ export default function Transaction({columns, transactions, itemOptions, typeOpt
             bottomContentPlacement="outside"
             classNames={{
                 wrapper: "max-h-[382px]",
+                th: "bg-blue-900 text-slate-200"
             }}
             sortDescriptor={sortDescriptor}
             topContentPlacement="outside"

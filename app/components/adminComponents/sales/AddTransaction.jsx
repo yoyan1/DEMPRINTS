@@ -1,5 +1,5 @@
 "use client"
-import {Modal, ModalContent, ModalHeader, ModalBody,  Button, useDisclosure, Select, SelectItem, Input} from "@nextui-org/react";
+import {Modal, ModalContent, ModalHeader, ModalBody,  Button, useDisclosure, Select, SelectItem, Input, Textarea} from "@nextui-org/react";
 import { useEffect, useState } from "react";
 import { MdAdd } from "react-icons/md";
 import axios from "axios";
@@ -11,7 +11,7 @@ import { useCustomerStore } from "@/app//stores/customerStore";
 import { useSalesStore } from "@/app/stores/transactionStore";
 import { useIdStore } from "@/app/stores/idStore";
 
-export default function CreateTransaction({refresh}) {
+export default function CreateTransaction({user, refresh}) {
   const {users, fetchUsers} = useUserStore()
   const {isOpen, onOpen, onClose} = useDisclosure();
   const [errorMessage, setErrorMessages ] = useState({})
@@ -19,6 +19,7 @@ export default function CreateTransaction({refresh}) {
   const [filteredProducts, setFilteredProducts] = useState([])
   const [filteredVariants, setFilteredVariants] = useState([])
   const [filteredUnit, setFilteredUnit] = useState([])
+  const [isPercent, setIsPercent] = useState(true)
   const { productsCategory, fetchProductCategory } = productStore()
   const { customer_type, fetchCustomer } = useCustomerStore()
   const { options, type, fetchPayment } = paymentStore()
@@ -36,6 +37,7 @@ export default function CreateTransaction({refresh}) {
                                         amount: 0,
                                         discount: 0,
                                         total: 0,
+                                        amount_paid: 0,
                                         customer_type: "",
                                         customer_name: "",
                                         payment_type: "",
@@ -50,6 +52,7 @@ export default function CreateTransaction({refresh}) {
     fetchProducts()
     fetchCustomer()
     fetchPayment()
+    
   }
                                       
   useEffect(() =>{
@@ -141,27 +144,41 @@ export default function CreateTransaction({refresh}) {
     });
   }
   
-  const discounted = (e) =>{
-    const value = e.target.value
-    const discount = value > 0? value / 100 : 0
-    const newTotal = discount !== 0? salesData.amount * discount : 0
-    const total = salesData.amount - newTotal
+  const discounted = (value, isPercent) =>{
+    if(isPercent) {
+      const discount = value > 0? value / 100 : 0
+      const newTotal = discount !== 0? salesData.amount * discount : 0
+      const total = salesData.amount - newTotal
+      setSalesData((prevData) => (
+        {...prevData, discount: value, total: total}
+      ))
+    } else{
+      const total = salesData.amount - value
 
-    setSalesData((prevData) => (
-      {...prevData, discount: value, total: total}
-    ))
+      setSalesData((prevData) => (
+        {...prevData, discount: value, total: total}
+      ))
+    }
 
   }
+  
 
   const isValid = () => {
     const errors = {};
     if(!salesData.item_name) errors.item_name = "Please select product."
     if(!salesData.measurement) errors.measurement = "Please select measurement."
     if(!salesData.quantity) errors.quantity = "This field must not be empty."
+    if(salesData.discount) {
+      if(isPercent && salesData.discount > 100){
+        errors.discount = "Invalid discount."
+        
+      } 
+    }
     if(!salesData.customer_name) errors.customer_name = "This field must not be empty."
     if(!salesData.customer_type) errors.customer_type = "Please select customer type."
     if(!salesData.payment_type) errors.payment_type = "Please select payment type."
     if(!salesData.payment_options) errors.payment_options = "Please select payment options."
+    if(salesData.amount_paid > salesData.total) errors.amount_paid = "Too much"
     setErrorMessages(errors);
     return errors;
   }
@@ -191,6 +208,8 @@ export default function CreateTransaction({refresh}) {
       }
     } 
     const balance = salesData.total - salesData.amount_paid
+
+    const findUser = salesData.sales_person? users.filter((row) => salesData.sales_person === row.name) : []
     const newData = {
       date:date,
       time: time,
@@ -201,13 +220,15 @@ export default function CreateTransaction({refresh}) {
       quantity: salesData.quantity,
       amount: salesData.amount,
       discount: salesData.discount,
+      discount_type: isPercent? "%" : "₱",
       total: salesData.total,
       customer_type: salesData.customer_type,
       customer_name: salesData.customer_name,
       payment_type: salesData.payment_type,
       payment_options: salesData.payment_options,
-      sales_person: salesData.sales_person,
-      remarks: balance > 0? balance : 0
+      sales_person: salesData.sales_person? salesData.sales_person : user.name,
+      remarks: balance > 0? balance : 0,
+      employee_id: findUser.length > 0 ? findUser[0].id : user.id
     }
 
     const response = await createTransaction(newData)
@@ -239,7 +260,7 @@ export default function CreateTransaction({refresh}) {
 
   return (
     <>
-      <Button onPress={onOpen} color="primary"><MdAdd/> order</Button>
+      <Button onPress={onOpen} className="bg-blue-900 text-slate-200"><MdAdd/> order</Button>
       <Modal 
         isOpen={isOpen} 
         onClose={onClose}
@@ -394,7 +415,7 @@ export default function CreateTransaction({refresh}) {
                           color={errorMessage.payment_type ? "danger" : ""}
                           errorMessage={errorMessage.payment_type}
                           value={salesData.payment_type}
-                          onChange={(e)=>(setSalesData((prevData)=>({...prevData, payment_type: e.target.value})))}
+                          onChange={(e)=>(setSalesData((prevData)=>({...prevData, payment_type: e.target.value, amount_paid: 0})))}
                         >
                           {type.map(item => (
                             <SelectItem key={item.name} value={item.name}>
@@ -451,7 +472,7 @@ export default function CreateTransaction({refresh}) {
                         />
                       ): null}
                     </div>
-                    <div className=" flex-1 flex flex-col gap-5">
+                    <div className=" flex-1 flex flex-col gap-5 border rounded-md p-3">
                       <div className="flex justify-between">
                         <span>Product cost </span>
                         {salesData.unit_cost}
@@ -468,8 +489,11 @@ export default function CreateTransaction({refresh}) {
                                 labelPlacement="outside"
                                 className="w-44"
                                 variant="bordered"
+                                isInvalid={errorMessage.discount? true : false}
+                                color={errorMessage.discount ? "danger" : ""}
+                                errorMessage={errorMessage.discount}
                                 value={salesData.discount}
-                                onChange={discounted}
+                                onChange={(e) => discounted(e.target.value, isPercent)}
                                 endContent={
                                   <div className="flex items-center">
                                     <label className="sr-only" htmlFor="currency">
@@ -479,9 +503,14 @@ export default function CreateTransaction({refresh}) {
                                       className="outline-none border-0 bg-transparent text-default-400 text-small"
                                       id="currency"
                                       name="currency"
+                                      onChange={(e) => {
+                                        const defineIfPercent = e.target.value === "percent"? true : false
+                                        setIsPercent(defineIfPercent)
+                                        discounted(salesData.discount, defineIfPercent)
+                                      }}
                                     >
-                                      <option>%</option>
-                                      <option>₱</option>
+                                      <option value="percent">%</option>
+                                      <option value="peso">₱</option>
                                     </select>
                                   </div>
                                 }
@@ -493,13 +522,28 @@ export default function CreateTransaction({refresh}) {
                       <div className="flex justify-between">
                         <span>Discount Applied </span>
                         {Math.round(salesData.amount - salesData.total)}
+                        {isPercent? "%" : "₱"}
                       </div>
                       <div className="flex justify-between">
                         <span>Total Amount After Discount </span>
                         {Math.round(salesData.total)}
                       </div>
+                      {salesData.amount_paid? (
+                        <div className="flex justify-between">
+                          <span>Balance </span>
+                          {Math.round(salesData.total-salesData.amount_paid)}
+                        </div>
+                      ): null}
                     </div>
                   </div>
+                    <Textarea
+                    label="Remarks"
+                    placeholder="Enter remarks"
+                    className="max-w-full"
+                    variant="bordered"
+                    value={salesData.remarks}
+                    onChange={(e) => setSalesData((prevData)=> ({...prevData, remarks: e.target.value}))}
+                    />
                   <div className="flex justify-end gap-4 py-4">
                     <Button color="danger" variant="flat" onPress={onClose}>
                       Close
