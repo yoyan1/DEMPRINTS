@@ -26,12 +26,12 @@ export default function AdminLayout({ children }) {
         setUser(decode);
   
         if(user){
-          const currentTime = Math.floor(Date.now() / 1000);
-          if (decode.exp < currentTime) {
-            localStorage.removeItem("token");
-            router.replace("/"); 
-            return;
-          }
+          // const currentTime = Math.floor(Date.now() / 1000);
+          // if (decode.exp < currentTime) {
+          //   localStorage.removeItem("token");
+          //   router.replace("/"); 
+          //   return;
+          // }
     
           if(!['admin', 'super admin'].includes(decode.role)){
             router.replace('/')
