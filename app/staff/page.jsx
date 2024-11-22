@@ -491,6 +491,7 @@ export default function Transaction() {
   return (
     <div>
       {topContent}
+      
       <div className=" overflow-x-scroll">
         <Modal
           size="4xl"
@@ -529,13 +530,12 @@ export default function Transaction() {
           </ModalContent>
         </Modal>
         <Table
+          class
           removeWrapper
           aria-label="Example table with custom cells, pagination and sorting"
           isHeaderSticky
           bottomContentPlacement="outside"
-          classNames={{
-            wrapper: 'max-h-[382px]',
-          }}
+          classNames=''
           // selectedKeys={selectedKeys}
           // selectionMode="multiple"
           // sortDescriptor={sortDescriptor}

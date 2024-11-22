@@ -7,7 +7,7 @@ const columns = [
     {name: "ITEM NAME", dataKey: "item_name"},
     {name: "UNIT COST", dataKey: "unit_cost", sortable: true},
     {name: "QUANTITY", dataKey: "quantity", sortable: true},
-    {name: "AMOUNT", dataKey: "amount", sortable: true},
+    {name: "SUB TOTAL", dataKey: "", sortable: true},
     {name: "DISCOUNT", dataKey: "discount", sortable: true},
     {name: "TOTAL", dataKey: "total", sortable: true},
     {name: "CUSTOMER TYPE", dataKey: "customer_type", sortable: true},

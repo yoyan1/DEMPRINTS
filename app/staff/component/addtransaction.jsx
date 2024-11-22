@@ -265,13 +265,14 @@ export default function Addtransaction() {
           quantity,
           amount,
           discount,
-          total: total, // Send the calculated total
+          discount_type: isPercentage? "%" : "₱",
+          total: total, 
           customer_type,
           customer_name,
           payment_type,
           payment_options,
           sales_person: user.name,
-          remarks: remarks, //calculate the balance
+          remarks: remarks, 
           employee_id: user.id,
         },
       );
@@ -631,10 +632,16 @@ export default function Addtransaction() {
               )}
             </div>
 
-            <div className="flex-1 ">
+            <div className="flex-1 border border-gray-300 p-3 ">
+
+              <div className="flex justify-between">
+                <span>Produt Cost</span>
+                <span>{unit_cost}</span>
+              </div>
               <div className="flex justify-between mb-5">
                 <span>Discount</span>
-                <span>{isPercentage? "%" : "₱"} {Math.round(discount)}</span>
+
+                <span>{Math.round(discount)}{isPercentage? "%" : "₱"} </span>
               </div>
               <div className="flex justify-between mb-5">
                 <span>Discount Applied</span>

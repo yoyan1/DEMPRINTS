@@ -58,14 +58,14 @@ export default function Revenue(props) {
     props.transactions.forEach(item => {
       const [year, month] = item.date.split('-'); // Destructure the date string
       const monthIndex = parseInt(month, 10) - 1; // Convert to zero-based index
-      monthlySales[monthIndex] += item.total; // Add to the correct month's sales
+      monthlySales[monthIndex] += item.total_amount; // Add to the correct month's sales
     });
   
-    // Loop over expenses and calculate total expenses for each month
+    // Loop over expenses and calculate total_amount expenses for each month
     props.expenses.forEach(item => {
       const [year, month] = item.date.split('-');
       const monthIndex = parseInt(month, 10) - 1; // Convert to zero-based index
-      monthlyExpenses[monthIndex] += item.total; // Add to the correct month's expenses
+      monthlyExpenses[monthIndex] += item.total_amount; // Add to the correct month's expenses
     });
   
     // Create a new array for the chart data

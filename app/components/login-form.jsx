@@ -7,7 +7,7 @@ import { decodeToken } from "../utils/decodeToken"
 
 export function LoginForm() {
   const { login, loading } = useUserStore()
-  const [ credentials, setCredentials ] = useState({email: '', password: ''})
+  const [ credentials, setCredentials ] = useState({id_number: '', password: ''})
   const [errorMessage, setErrorMessage] = useState()
   const [mounted, setMounted] = useState(false); 
   
@@ -67,8 +67,8 @@ export function LoginForm() {
                 label="ID Number" 
                 labelPlacement="outside" 
                 placeholder="123456789"
-                name="email"
-                value={credentials.email}
+                name="id_number"
+                value={credentials.id_number}
                 onChange={handleChange}
                 />
               </div>
