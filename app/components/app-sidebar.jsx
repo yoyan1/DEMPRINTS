@@ -30,6 +30,7 @@ export function AppSidebar({ ...props }) {
   const data = {
     user: {
       name: props.user.name? props.user.name : '',
+      role:  props.user.role,
       id_number: props.user.id_number? props.user.id_number : '',
       avatar: "/avatars/shadcn.jpg",
     },

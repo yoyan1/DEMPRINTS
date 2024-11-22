@@ -24,6 +24,13 @@ import {
   Pagination,
   Spinner,
   DateRangePicker,
+  Card,
+  CardHeader,
+  CardBody,
+  CardFooter,
+  Divider,
+  Link,
+  Image,
 } from '@nextui-org/react';
 import { CiSearch } from 'react-icons/ci';
 import { IoChevronDown } from 'react-icons/io5';
@@ -35,10 +42,12 @@ import { FaChartLine } from 'react-icons/fa';
 // import CreateTransaction from './AddTransaction'
 import Addtransaction from './component/addtransaction';
 import { useSalesStore } from '@/app/stores/transactionStore';
+import { paymentStore } from '@/app/stores/paymentStore';
 import AllTransaction from './component/showAllTable';
 import { parseDate, getLocalTimeZone } from '@internationalized/date';
 import { getDateAndTime } from '@/app/composables/dateAndTime';
 import { FaRegCircleXmark } from 'react-icons/fa6';
+import { formatDate } from '../composables/formateDateAndTime';
 
 // import { formatDate, formatTime } from "../../composables/formateDateAndTime";
 
@@ -106,6 +115,7 @@ export default function Transaction() {
   const [typeFilter] = useState('all');
   const [rowsPerPage, setRowsPerPage] = useState(30);
   const { date } = getDateAndTime();
+  const { options, fetchPayment } = paymentStore();
   const [selectedDate, setSelectedDate] = React.useState({
     start: parseDate(date),
     end: parseDate(date),
@@ -118,6 +128,7 @@ export default function Transaction() {
 
   useEffect(() => {
     fetchTransactions();
+    fetchPayment();
   }, [fetchTransactions]);
 
   const hasSearchFilter = Boolean(filterValue);
@@ -176,6 +187,51 @@ export default function Transaction() {
 
     return filteredTransactions;
   }, [transactions, filterValue, statusFilter, typeFilter, selectedDate]);
+
+  const isDateInRange = (date, startDate, endDate) => {
+    return date >= startDate && date <= endDate;
+  };
+
+  const getTotalSalesInRange = (transactions, startDate, endDate, options) => {
+    return transactions.reduce(
+      (acc, item) => {
+        const itemDate = new Date(item.date);
+        if (isDateInRange(itemDate, startDate, endDate)) {
+          acc.totalSales += item.total_amount;
+
+          options.forEach((row) => {
+            if (row.name === item.payment_options) {
+              acc[row.name] = (acc[row.name] || 0) + item.total_amount;
+            }
+          });
+        }
+        return acc;
+      },
+      { totalSales: 0 },
+    );
+  };
+
+  const getDateRange = (start, end) => {
+    return {
+      startDate: new Date(start),
+      endDate: new Date(end),
+    };
+  };
+
+  const totals = useMemo(() => {
+    // Check if selectedDate is defined and has start and end properties
+    if (!selectedDate || !selectedDate.start || !selectedDate.end) {
+      return { totalSales: 0 }; // Return a default value if selectedDate is not valid
+    }
+
+    const { startDate, endDate } = getDateRange(
+      selectedDate.start,
+      selectedDate.end,
+    );
+    return getTotalSalesInRange(transactions, startDate, endDate, options);
+  }, [transactions, selectedDate, options]);
+
+  const { totalSales, ...salesByOptions } = totals;
 
   // const handleClearChange = (event) => {
   //   event.preventDefault();
@@ -303,7 +359,7 @@ export default function Transaction() {
   };
   const topContent = useMemo(() => {
     return (
-      <div className="flex flex-col gap-4 m-2 mt-3">
+      <>
         <div className="flex col items-center gap-3 ">
           <span className="flex flex-col  text-2xl">
             <div className="flex items-center gap-2">
@@ -315,38 +371,65 @@ export default function Transaction() {
             </small>
           </span>
         </div>
-        <div className="flex justify-between gap-3 items-end">
-          <Input
-            isClearable
-            className="w-full sm:max-w-[44%]"
-            placeholder="Search by name..."
-            startContent={<CiSearch />}
-            value={filterValue}
-            onClear={() => onClear()}
-            onValueChange={onSearchChange}
-          />
-          <DateRangePicker
-            isClearable
-            className="max-w-[284px]"
-            labelPlacement="inside"
-            // value={selectedDate}
-            onChange={() => setSelectedDate()}
-            startContent={
-              <div
-                className="text-red cursor-pointer"
-                onClick={
-                  () => setSelectedDate({
-                    start: parseDate(date),
-                    end:parseDate(date),
-                  })
-                }
-              >
-                <FaRegCircleXmark />
+        <div className="flex justify-end">
+          <Card className="max-w-[400px] border border-gray-700 shadow-none">
+            <CardHeader className="flex gap-3">
+              <span>{formatDate(selectedDate.start, selectedDate.end)}</span>
+            </CardHeader>
+            <Divider />
+            <CardBody>
+              <span>Sales: {Math.round(totalSales)}</span>
+              {/* Optionally, display the breakdown by payment options */}
+              <div>
+                {Object.entries(salesByOptions).map(
+                  ([paymentOption, amount]) =>
+                    paymentOption !== 'totalSales' && (
+                      <div key={paymentOption}>
+                        <span>
+                          {paymentOption}: {Math.round(amount)}
+                        </span>
+                      </div>
+                    ),
+                )}
               </div>
-            }
-          />
-          <div className="flex gap-3">
-            {/* <Dropdown>
+            </CardBody>
+            <Divider />
+            <CardFooter></CardFooter>
+          </Card>
+        </div>
+        <div className="flex flex-col gap-4 m-2 mt-3">
+          <div className="flex justify-between gap-3 items-end">
+            <Input
+              isClearable
+              className="w-full sm:max-w-[44%]"
+              placeholder="Search by name..."
+              startContent={<CiSearch />}
+              value={filterValue}
+              onClear={() => onClear()}
+              onValueChange={onSearchChange}
+            />
+            <DateRangePicker
+              isClearable
+              className="max-w-[284px]"
+              labelPlacement="inside"
+              value={selectedDate}
+              onChange={() => setSelectedDate()}
+              startContent={
+                <div
+                  className="text-red cursor-pointer"
+                  onClick={() =>
+                    setSelectedDate({
+                      start: parseDate(date),
+                      end: parseDate(date),
+                    })
+                  }
+                >
+                  <FaRegCircleXmark />
+                </div>
+              }
+            />
+            <div className="flex gap-3">
+              {/* <Dropdown>
               <DropdownTrigger className="hidden sm:flex">
                 <Button endContent={<IoChevronDown className="text-small" />} variant="flat">
                   type
@@ -367,77 +450,79 @@ export default function Transaction() {
                 ))}
               </DropdownMenu>
             </Dropdown> */}
-            <Dropdown>
-              <DropdownTrigger className="hidden sm:flex">
-                <Button
-                  endContent={<IoChevronDown className="text-small" />}
-                  variant="flat"
+              <Dropdown>
+                <DropdownTrigger className="hidden sm:flex">
+                  <Button
+                    endContent={<IoChevronDown className="text-small" />}
+                    variant="flat"
+                  >
+                    Item name
+                  </Button>
+                </DropdownTrigger>
+                <DropdownMenu
+                  disallowEmptySelection
+                  aria-label="Table Columns"
+                  closeOnSelect={false}
+                  selectedKeys={statusFilter}
+                  selectionMode="multiple"
+                  onSelectionChange={setStatusFilter}
                 >
-                  Item name
-                </Button>
-              </DropdownTrigger>
-              <DropdownMenu
-                disallowEmptySelection
-                aria-label="Table Columns"
-                closeOnSelect={false}
-                selectedKeys={statusFilter}
-                selectionMode="multiple"
-                onSelectionChange={setStatusFilter}
-              >
-                {itemOptions.map((item) => (
-                  <DropdownItem key={item.dataKey} className="capitalize">
-                    {capitalize(item.name)}
-                  </DropdownItem>
-                ))}
-              </DropdownMenu>
-            </Dropdown>
+                  {itemOptions.map((item) => (
+                    <DropdownItem key={item.dataKey} className="capitalize">
+                      {capitalize(item.name)}
+                    </DropdownItem>
+                  ))}
+                </DropdownMenu>
+              </Dropdown>
 
-            {/* <CreateTransaction isSubmit={(data)=>(refresh(data))}/> */}
-            {/* <ExportToPdf rows={sortedItems}/> */}
-            {/* {!isMaximized? (
+              {/* <CreateTransaction isSubmit={(data)=>(refresh(data))}/> */}
+              {/* <ExportToPdf rows={sortedItems}/> */}
+              {/* {!isMaximized? (
                 <ExpandTransaction columns={columns} transactions={transactions} itemOptions={itemOptions} typeOptions={typeOptions} />
             ): null} */}
-          </div>
-          {/* <div className="flex gap-3">
+            </div>
+            {/* <div className="flex gap-3">
             <Button color="primary" onPress={handleOpenAddTransaction}>
               Add{" "}
             </Button>
           </div> */}
 
-          <div className="flex items-center">
-            <Button className='text-white'
-              onPress={handleOpenAddTransaction}
-              style={{ backgroundColor: '#191970' }}
-            >
-              Add{' '}
-            </Button>
-            <Button variant="transparent" onPress={handleShowAllTransactions}>
-              <HiMiniViewfinderCircle />
-            </Button>
-          </div>
-          {/* <div className="flex gap-3">
+            <div className="flex items-center">
+              <Button
+                className="text-white"
+                onPress={handleOpenAddTransaction}
+                style={{ backgroundColor: '#191970' }}
+              >
+                Add{' '}
+              </Button>
+              <Button variant="transparent" onPress={handleShowAllTransactions}>
+                <HiMiniViewfinderCircle />
+              </Button>
+            </div>
+            {/* <div className="flex gap-3">
             <Button variant="transparent" onPress={handleShowAllTransactions}>
               <HiMiniViewfinderCircle />
             </Button>
           </div> */}
+          </div>
+          <div className="flex justify-between items-center">
+            <span className="text-default-400 text-small">
+              Total {transactions.length} transactions
+            </span>
+            <label className="flex items-center text-default-400 text-small">
+              Rows per page:
+              <select
+                className="bg-transparent outline-none text-default-400 text-small"
+                onChange={onRowsPerPageChange}
+              >
+                <option value="30">30</option>
+                <option value="60">60</option>
+                <option value="100">100</option>
+              </select>
+            </label>
+          </div>
         </div>
-        <div className="flex justify-between items-center">
-          <span className="text-default-400 text-small">
-            Total {transactions.length} transactions
-          </span>
-          <label className="flex items-center text-default-400 text-small">
-            Rows per page:
-            <select
-              className="bg-transparent outline-none text-default-400 text-small"
-              onChange={onRowsPerPageChange}
-            >
-              <option value="30">30</option>
-              <option value="60">60</option>
-              <option value="100">100</option>
-            </select>
-          </label>
-        </div>
-      </div>
+      </>
     );
   }, [
     filterValue,
@@ -491,7 +576,7 @@ export default function Transaction() {
   return (
     <div>
       {topContent}
-      
+
       <div className=" overflow-x-scroll">
         <Modal
           size="4xl"
@@ -535,7 +620,7 @@ export default function Transaction() {
           aria-label="Example table with custom cells, pagination and sorting"
           isHeaderSticky
           bottomContentPlacement="outside"
-          classNames=''
+          classNames=""
           // selectedKeys={selectedKeys}
           // selectionMode="multiple"
           // sortDescriptor={sortDescriptor}

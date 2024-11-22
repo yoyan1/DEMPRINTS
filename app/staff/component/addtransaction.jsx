@@ -244,7 +244,9 @@ export default function Addtransaction() {
       // const totalAmount = amount - discount; // Ensure correct total calculation
       // const finalTotal = amount - discount - paid_amount;
       // Send the transaction data
-
+      const findUser = salesData.sales_person
+        ? users.filter((row) => salesData.sales_person === row.name)
+        : [];
       // const getData = await axios.get(
       //   `https://demprints-backend.vercel.app/api/collection/getTransaction`,
       //   `${process.env.NEXT_PUBLIC_API_URL}/collection/getTransaction`,
@@ -265,15 +267,15 @@ export default function Addtransaction() {
           quantity,
           amount,
           discount,
-          discount_type: isPercentage? "%" : "₱",
-          total: total, 
+          discount_type: isPercentage ? '%' : '₱',
+          total: total,
           customer_type,
           customer_name,
           payment_type,
           payment_options,
           sales_person: user.name,
-          remarks: remarks, 
-          employee_id: user.id,
+          remarks: remarks,
+          employee_id: findUser.length > 0 ? findUser[0].id : user.id,
         },
       );
       // console.log(getData.data);
@@ -506,7 +508,7 @@ export default function Addtransaction() {
                     isRequired
                     onChange={(e) => handleDiscountChange(e.target.value)}
                   />
-                  <CheckboxGroup className="bg-dark">
+                  <CheckboxGroup className="bg-dark p-5 border border-gray-400">
                     <Checkbox
                       className="w-8 h-8 text-blue-600"
                       checked={isPercentage}
@@ -601,16 +603,7 @@ export default function Addtransaction() {
                   ))}
                 </Select>
               </div>
-              {payment_type === 'Down payment' && (
-                <Textarea
-                  isRequired
-                  // label="Remarks"
-                  // labelPlacement="inside"
 
-                  placeholder="Write Remarks...."
-                  className="max-w-xs"
-                />
-              )}
               <div className="justify-between">
                 <p></p>
               </div>
@@ -633,30 +626,41 @@ export default function Addtransaction() {
             </div>
 
             <div className="flex-1 border border-gray-300 p-3 ">
-
-              <div className="flex justify-between">
+              <div className="flex justify-between mb-5">
                 <span>Produt Cost</span>
                 <span>{unit_cost}</span>
               </div>
               <div className="flex justify-between mb-5">
+                <span>Total Amount: </span>
+                <span>{Math.round(amount)}</span>
+              </div>
+
+              <div className="flex justify-between mb-5">
                 <span>Discount</span>
 
-                <span>{Math.round(discount)}{isPercentage? "%" : "₱"} </span>
+                <span>
+                  {Math.round(discount)}
+                  {isPercentage ? '%' : '₱'}{' '}
+                </span>
               </div>
               <div className="flex justify-between mb-5">
                 <span>Discount Applied</span>
-                <span>₱ {Math.round(amount - total)}</span>
+                <span>{Math.round(amount - total)}</span>
               </div>
               <div className="flex justify-between mb-5">
-                <span>Amount: </span>
-                <span>₱ {Math.round(amount)}</span>
-              </div>
-              <div className="flex justify-between mb-5">
-                <span className="bold">Total :</span>
-                <span>₱ {Math.round(total)}</span>
+                <span className="bold">Total Amout after Discount :</span>
+                <span>{Math.round(total)}</span>
               </div>
             </div>
           </div>
+          <Textarea
+            isRequired
+            // label="Remarks"
+            // labelPlacement="inside"
+
+            placeholder="Write Remarks...."
+            className="w-full"
+          />
           {success_message && (
             <div className="flex items-center w-full max-w-xs p-1 mb-3">
               <div className="text-sm font-normal text-green-900">
@@ -665,7 +669,7 @@ export default function Addtransaction() {
             </div>
           )}
         </ModalBody>
-        <ModalFooter className=" justify-between">
+        <ModalFooter className=" justify-end">
           <Button
             color="primary"
             style={{ width: '4rem' }}
