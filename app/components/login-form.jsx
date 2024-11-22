@@ -51,9 +51,7 @@ export function LoginForm() {
 
   return (
     <div className="max-w-lg w-full">
-      <div
-        // style="box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);"
-        className="rounded-lg shadow-xl overflow-hidden"
+      <div className="overflow-hidden"
       >
         <div className="p-8">
           <h2 className="text-center text-3xl font-extrabold">
