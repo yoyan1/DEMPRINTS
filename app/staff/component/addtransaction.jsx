@@ -508,7 +508,7 @@ export default function Addtransaction() {
                     isRequired
                     onChange={(e) => handleDiscountChange(e.target.value)}
                   />
-                  <CheckboxGroup className="bg-dark p-5 border border-gray-400">
+                  <CheckboxGroup className="bg-dark p-2 border border-gray-400">
                     <Checkbox
                       className="w-8 h-8 text-blue-600"
                       checked={isPercentage}
