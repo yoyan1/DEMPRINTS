@@ -28,7 +28,7 @@ const chartConfig = {
   },
   expenses: {
     label: "Expenses",
-    color: "hsl(var(--chart-2))",
+    color: "hsl(var(--chart-3))",
   },
 } 
 
@@ -50,32 +50,27 @@ export default function Revenue(props) {
 
 
   const getData = () => {
-    // Initialize sales and expenses for each month
     const monthlySales = Array(12).fill(0);
     const monthlyExpenses = Array(12).fill(0);
   
-    // Loop over transactions and calculate total sales for each month
     props.transactions.forEach(item => {
-      const [year, month] = item.date.split('-'); // Destructure the date string
-      const monthIndex = parseInt(month, 10) - 1; // Convert to zero-based index
-      monthlySales[monthIndex] += item.total_amount; // Add to the correct month's sales
+      const [year, month] = item.date.split('-'); 
+      const monthIndex = parseInt(month, 10) - 1; 
+      monthlySales[monthIndex] += item.total_amount; 
     });
-  
-    // Loop over expenses and calculate total_amount expenses for each month
+
     props.expenses.forEach(item => {
       const [year, month] = item.date.split('-');
-      const monthIndex = parseInt(month, 10) - 1; // Convert to zero-based index
-      monthlyExpenses[monthIndex] += item.total_amount; // Add to the correct month's expenses
+      const monthIndex = parseInt(month, 10) - 1; 
+      monthlyExpenses[monthIndex] += item.total; 
     });
-  
-    // Create a new array for the chart data
+
     const newChartData = monthlySales.map((sales, index) => ({
-      month: new Date(0, index).toLocaleString('en-US', { month: 'long' }), // Convert index to month name
+      month: new Date(0, index).toLocaleString('en-US', { month: 'long' }), 
       sales,
       expenses: monthlyExpenses[index],
     }));
   
-    // If there's any data for November, update the chartData state
     if (newChartData[10].sales > 0 || newChartData[10].expenses > 0) {
       setChartData(newChartData);
     }
@@ -91,7 +86,7 @@ export default function Revenue(props) {
       <CardHeader>
         <CardTitle>Revenue - Monthly</CardTitle>
         <CardDescription>
-          Showing total visitors for the last 6 months
+          Showing total sales and expenses for this 12 months
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -135,11 +130,8 @@ export default function Revenue(props) {
       <CardFooter>
         <div className="flex w-full items-start gap-2 text-sm">
           <div className="grid gap-2">
-            <div className="flex items-center gap-2 font-medium leading-none">
-              Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
-            </div>
             <div className="flex items-center gap-2 leading-none text-muted-foreground">
-              January - June 2024
+              January - December 2024
             </div>
           </div>
         </div>

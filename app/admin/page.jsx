@@ -8,11 +8,12 @@ import SalesSourceSummary from '@/app/components/adminComponents/dashboad/SalesS
 import SalesRepresentative from '@/app/components/adminComponents/dashboad/SalesRepresentative';
 import { useSalesStore } from '@/app/stores/transactionStore'
 import { useExpensesStore } from '@/app/stores/ExpensesStore'
+import { Spinner } from '@nextui-org/react'
 
 
 export default function Dashboard() {
   const {transactions,fetchTransactions } = useSalesStore()
-  const {expenses, fetchExpenses } = useExpensesStore()
+  const {expenses, categoryList, fetchExpenses, fetchExpensesCategory } = useExpensesStore()
 
   const [loading, setLoading] = useState(false)
   useEffect(()=>{
@@ -20,6 +21,7 @@ export default function Dashboard() {
     const load = async () =>{
       await fetchTransactions()
       await fetchExpenses()
+      await fetchExpensesCategory()
       setLoading(false)
     }  
     load()
@@ -40,7 +42,7 @@ export default function Dashboard() {
                   <Revenue transactions={transactions} expenses={expenses}/>
                 </div>
                 <div className='flex-1'>
-                  <ExpensesAnalysis/>
+                  <ExpensesAnalysis expenses={expenses}/>
                 </div>
               </div>
               <div>
@@ -48,11 +50,13 @@ export default function Dashboard() {
               </div>
             </div>
             <div className='flex flex-col gap-5'>
-                <ExpensesSummary/>
+                <ExpensesSummary expenses={expenses} categories={categoryList}/>
                 <SalesSourceSummary/>
             </div>
           </div>
-        ): null}
+        ): (
+          <div className="h-screen flex justify-between items-center"><Spinner/></div>
+        )}
       </main>
     </AdminLayout>
   )

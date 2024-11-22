@@ -1,8 +1,8 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { TrendingUp } from "lucide-react"
-import { Label, Pie, PieChart } from "recharts"
+import * as React from "react";
+import { TrendingUp } from "lucide-react";
+import { Label, Pie, PieChart } from "recharts";
 
 import {
   Card,
@@ -11,60 +11,74 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/app/components/ui/card"
+} from "@/app/components/ui/card";
 import {
-  ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-} from "@/app/components/ui/chart"
-
-export const description = "A donut chart with text"
-
-const chartData = [
-  { browser: "chrome", visitors: 275, fill: "var(--color-chrome)" },
-  { browser: "safari", visitors: 200, fill: "var(--color-safari)" },
-  { browser: "firefox", visitors: 287, fill: "var(--color-firefox)" },
-  { browser: "edge", visitors: 173, fill: "var(--color-edge)" },
-  { browser: "other", visitors: 190, fill: "var(--color-other)" },
-]
+} from "@/app/components/ui/chart";
 
 const chartConfig = {
-  visitors: {
-    label: "Visitors",
-  },
-  chrome: {
-    label: "Chrome",
+  operational: {
+    label: "Operational",
     color: "hsl(var(--chart-1))",
   },
-  safari: {
-    label: "Safari",
+  manpower: {
+    label: "Manpower",
     color: "hsl(var(--chart-2))",
   },
-  firefox: {
-    label: "Firefox",
+  marketing: {
+    label: "Marketing",
     color: "hsl(var(--chart-3))",
   },
-  edge: {
-    label: "Edge",
+  stakeholder: {
+    label: "Stakeholder",
     color: "hsl(var(--chart-4))",
+  },
+  production: {
+    label: "Production",
+    color: "hsl(var(--chart-5))",
   },
   other: {
     label: "Other",
-    color: "hsl(var(--chart-5))",
+    color: "hsl(var(--chart-2))", 
   },
-} satisfies ChartConfig
+};
 
-export default function ExpensesSummary() {
-  const totalVisitors = React.useMemo(() => {
-    return chartData.reduce((acc, curr) => acc + curr.visitors, 0)
-  }, [])
+export default function ExpensesSummary(props) {
+  const date = new Date()
+  const months = [
+    "January", "February", "March", "April", "May", "June", 
+    "July", "August", "September", "October", "November", "December"
+  ];
+  const year = date.getFullYear()
+  const month = months[date.getMonth()]
+  const groupedExpenses = props.expenses.reduce((acc, expense) => {
+    if (!acc[expense.category]) {
+      acc[expense.category] = 0;
+    }
+    acc[expense.category] += expense.total;
+    return acc;
+  }, {});
+  
+
+  const newChartData = props.categories.map((cat) => {
+    const configKey = cat.name.toLowerCase().replace(/\s+/g, "_");
+    const config = chartConfig[configKey] || chartConfig.other;
+    return {
+      category: config.label,
+      expenses: groupedExpenses[cat.name] || 0,
+      fill: config.color,
+    };
+  });
+
+  const totalExpenses = newChartData.reduce((sum, item) => sum + item.expenses, 0);
 
   return (
     <Card className="flex flex-col dark:bg-gray-900">
       <CardHeader className="items-center pb-0">
         <CardTitle>Expenses Summary - Monthly</CardTitle>
-        <CardDescription>January - June 2024</CardDescription>
+        <CardDescription>{month} - {year}</CardDescription>
       </CardHeader>
       <CardContent className="flex-1 pb-0">
         <ChartContainer
@@ -77,10 +91,11 @@ export default function ExpensesSummary() {
               content={<ChartTooltipContent hideLabel />}
             />
             <Pie
-              data={chartData}
-              dataKey="visitors"
-              nameKey="browser"
+              data={newChartData}
+              dataKey="expenses"
+              nameKey="category"
               innerRadius={60}
+              outerRadius={80}
               strokeWidth={5}
             >
               <Label
@@ -98,17 +113,17 @@ export default function ExpensesSummary() {
                           y={viewBox.cy}
                           className="fill-foreground text-3xl font-bold"
                         >
-                          {totalVisitors.toLocaleString()}
+                          {totalExpenses.toLocaleString()}
                         </tspan>
                         <tspan
                           x={viewBox.cx}
                           y={(viewBox.cy || 0) + 24}
                           className="fill-muted-foreground"
                         >
-                          Visitors
+                          expenses
                         </tspan>
                       </text>
-                    )
+                    );
                   }
                 }}
               />
@@ -117,13 +132,10 @@ export default function ExpensesSummary() {
         </ChartContainer>
       </CardContent>
       <CardFooter className="flex-col gap-2 text-sm">
-        <div className="flex items-center gap-2 font-medium leading-none">
-          Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
-        </div>
         <div className="leading-none text-muted-foreground">
-          Showing total visitors for the last 6 months
+          Showing total expenses for this month 
         </div>
       </CardFooter>
     </Card>
-  )
+  );
 }

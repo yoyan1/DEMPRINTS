@@ -1,40 +1,39 @@
-import React from "react";
-import {Listbox, ListboxItem, Avatar, Button} from "@nextui-org/react";
-import {users} from "./userData";
+import React, { useEffect } from "react";
+import {Listbox, ListboxItem, Avatar, Button, Table,  TableHeader,  TableBody,  TableColumn,  TableRow,  TableCell, User} from "@nextui-org/react";
+import { useUserStore } from '@/app/stores/userStore'
 
 export default function SalesRepresentative() {
+  const { users, loading, fetchUsers } = useUserStore()
+
+  useEffect(()=>{
+    fetchUsers()
+  }, [fetchUsers])
+
+
   return (
-    <div className="w-full border-small px-1 py-2 rounded-small border-default-200 dark:border-default-100 dark:bg-gray-900 bg-white">
-      <Listbox
-        topContent={<div className="flex justify-between">
-                      <div className="px-2">
-                        <h1>Daily Transaction</h1>
-                        <span className="text-sm text-default-400">Data from today</span>
-                      </div>
-                      <Button size="sm" variant="bordered">View Report</Button>
-                    </div>
-                    }
-        classNames={{
-          list: "max-h-[320px] overflow-scroll",
-        }}
-        defaultSelectedKeys={["1"]}
-        items={users}
-        label="Assigned to"
-        variant="flat"
-      >
-        {(item) => (
-          <ListboxItem key={item.id} textValue={item.name}>
-            <div className="flex gap-2 items-center">
-              <Avatar alt={item.name} className="flex-shrink-0" size="sm" src={item.avatar} />
-              <div className="flex flex-col">
-                <span className="text-small">{item.name}</span>
-                <span className="text-tiny text-default-400">{item.email}</span>
-              </div>
-              <span className="w-full text-right">+30%</span>
-            </div>
-          </ListboxItem>
-        )}
-      </Listbox>
-    </div>
+    <Table aria-label="Example static collection table">
+      <TableHeader>
+        <TableColumn>NAME</TableColumn>
+        <TableColumn>ROLE</TableColumn>
+        <TableColumn key="name" allowsSorting>SALES</TableColumn>
+      </TableHeader>    
+      <TableBody>
+        {users.map((user, index) => (
+          <TableRow key="1">
+              <TableCell>
+                <User
+                  avatarProps={{radius: "lg", src: ""}}
+                  description={user.id_number}
+                  name={user.name}
+                >
+                  {user.id_number}
+                </User>
+              </TableCell>
+              <TableCell>{user.job_title}</TableCell>
+              <TableCell>{100 * index}</TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
   );
 }
