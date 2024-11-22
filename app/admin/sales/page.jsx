@@ -47,10 +47,10 @@ export default function Sales() {
       (acc, item) => {
         const itemDate = new Date(item.date); 
         if (isDateInRange(itemDate, startDate, endDate)) {
-          acc.totalSales += item.total;
+          acc.totalSales += item.total_amount;
           options.forEach((row) => {
             if(row.name === item.payment_options)
-            acc[row.name] = (acc[row.name] || 0) + item.total;
+            acc[row.name] = (acc[row.name] || 0) + item.total_amount;
           });
         }
         return acc;

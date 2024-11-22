@@ -34,9 +34,9 @@ export default function CreateTransaction({user, refresh}) {
                                         measurement: "",
                                         unit_cost: 0,
                                         quantity: 0,
-                                        amount: 0,
+                                        sub_total: 0,
                                         discount: 0,
-                                        total: 0,
+                                        total_amount: 0,
                                         amount_paid: 0,
                                         customer_type: "",
                                         customer_name: "",
@@ -70,7 +70,7 @@ export default function CreateTransaction({user, refresh}) {
         measurement: '',
         unit_cost: 0,
         quantity: 1,
-        total: 0
+        total_amount: 0
       }
     ))
     
@@ -86,7 +86,7 @@ export default function CreateTransaction({user, refresh}) {
         measurement: '',
         unit_cost: 0,
         quantity: 1,
-        total: 0
+        total_amount: 0
       }
     ))
  }
@@ -100,8 +100,8 @@ export default function CreateTransaction({user, refresh}) {
         variants: e.target.value,
         measurement: "",
         unit_cost: 0,
-        amount: 0,
-        total: 0,
+        sub_total: 0,
+        total_amount: 0,
       }
     ))
  }
@@ -117,8 +117,8 @@ export default function CreateTransaction({user, refresh}) {
           item_no: findProduct[0].item_code,
           measurement: value,
           unit_cost: unitCost,
-          amount: total,
-          total: total,
+          sub_total: total,
+          total_amount: total,
         }
       ))
     }
@@ -135,8 +135,8 @@ export default function CreateTransaction({user, refresh}) {
             ...prevData,
             [name]: value,
             unit_cost: unitCost,
-            amount: total,
-            total: total,
+            sub_total: total,
+            total_amount: total,
           }
           return newData; 
         });
@@ -147,16 +147,16 @@ export default function CreateTransaction({user, refresh}) {
   const discounted = (value, isPercent) =>{
     if(isPercent) {
       const discount = value > 0? value / 100 : 0
-      const newTotal = discount !== 0? salesData.amount * discount : 0
-      const total = salesData.amount - newTotal
+      const newTotal = discount !== 0? salesData.sub_total * discount : 0
+      const total = salesData.sub_total - newTotal
       setSalesData((prevData) => (
-        {...prevData, discount: value, total: total}
+        {...prevData, discount: value, total_amount: total}
       ))
     } else{
-      const total = salesData.amount - value
+      const total = salesData.sub_total - value
 
       setSalesData((prevData) => (
-        {...prevData, discount: value, total: total}
+        {...prevData, discount: value, total_amount: total}
       ))
     }
 
@@ -178,7 +178,7 @@ export default function CreateTransaction({user, refresh}) {
     if(!salesData.customer_type) errors.customer_type = "Please select customer type."
     if(!salesData.payment_type) errors.payment_type = "Please select payment type."
     if(!salesData.payment_options) errors.payment_options = "Please select payment options."
-    if(salesData.amount_paid > salesData.total) errors.amount_paid = "Too much"
+    if(salesData.amount_paid > salesData.total_amount) errors.amount_paid = "Too much"
     setErrorMessages(errors);
     return errors;
   }
@@ -207,7 +207,7 @@ export default function CreateTransaction({user, refresh}) {
         return `000${newId}`
       }
     } 
-    const balance = salesData.total - salesData.amount_paid
+    const balance = salesData.total_amount - salesData.amount_paid
 
     const findUser = salesData.sales_person? users.filter((row) => salesData.sales_person === row.name) : []
     const newData = {
@@ -218,10 +218,10 @@ export default function CreateTransaction({user, refresh}) {
       item_name: salesData.item_name,
       unit_cost: salesData.unit_cost,
       quantity: salesData.quantity,
-      amount: salesData.amount,
+      sub_total: salesData.sub_total,
       discount: salesData.discount,
       discount_type: isPercent? "%" : "₱",
-      total: salesData.total,
+      total_amount: salesData.total_amount,
       customer_type: salesData.customer_type,
       customer_name: salesData.customer_name,
       payment_type: salesData.payment_type,
@@ -242,9 +242,9 @@ export default function CreateTransaction({user, refresh}) {
       item_name: "",
       unit_cost: 0,
       quantity: 1,
-      amount: 0,
+      sub_total: 0,
       discount: 0,
-      total: 0,
+      total_amount: 0,
       amount_paid: 0, 
       customer_type: "",
       customer_name: "",
@@ -479,7 +479,7 @@ export default function CreateTransaction({user, refresh}) {
                       </div>
                       <div className="flex justify-between">
                         <span>Total Amount </span>
-                        {salesData.amount}
+                        {salesData.sub_total}
                       </div>
                       <div className="flex justify-between items-center">
                         <span>Discount </span>
@@ -521,17 +521,17 @@ export default function CreateTransaction({user, refresh}) {
                       </div>
                       <div className="flex justify-between">
                         <span>Discount Applied </span>
-                        {Math.round(salesData.amount - salesData.total)}
+                        {Math.round(salesData.sub_total - salesData.total_amount)}
                         {isPercent? "%" : "₱"}
                       </div>
                       <div className="flex justify-between">
                         <span>Total Amount After Discount </span>
-                        {Math.round(salesData.total)}
+                        {Math.round(salesData.total_amount)}
                       </div>
                       {salesData.amount_paid? (
                         <div className="flex justify-between">
                           <span>Balance </span>
-                          {Math.round(salesData.total-salesData.amount_paid)}
+                          {Math.round(salesData.total_amount-salesData.amount_paid)}
                         </div>
                       ): null}
                     </div>
