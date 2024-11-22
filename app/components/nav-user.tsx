@@ -29,13 +29,16 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "./ui/sidebar"
+import { GoArrowSwitch } from "react-icons/go";
 import { useRouter } from "next/navigation"
+import { Link } from "@nextui-org/react"
 
 export function NavUser({
   user,
 }: {
   user: {
-    name: string
+    name: string,
+    role: string,
     id_number: string
     avatar: string
   }
@@ -87,12 +90,22 @@ export function NavUser({
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <BadgeCheck />
-                Account
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
+            {user.role === 'super admin'? (
+              <DropdownMenuGroup >
+                <DropdownMenuItem>
+                  <Link href="/master">
+                    <GoArrowSwitch/>
+                    <span className="ml-2">Switch to master</span>
+                  </Link>
+                </DropdownMenuItem>
+              </DropdownMenuGroup>
+            ) : null}
+              <DropdownMenuGroup >
+                <DropdownMenuItem>
+                  <BadgeCheck/>
+                    Account
+                </DropdownMenuItem>
+              </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={logout}>
               <LogOut />

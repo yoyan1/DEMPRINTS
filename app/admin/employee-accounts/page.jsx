@@ -29,6 +29,7 @@ import { useUserStore } from "../../stores/userStore";
 import { capitalize } from "@/app/composables/utils";
 import CreateOrUpdate from "@/app/components/adminComponents/employee/CreateOrUpdate";
 import ViewDetails from "@/app/components/adminComponents/employee/ViewDetails";
+import DeleteUser from "@/app/components/adminComponents/employee/deleteUser"
 
 const statusColorMap = {
   active: "success",
@@ -124,6 +125,7 @@ export default function Employee() {
                 <BiEditAlt />
               </span>
             </Tooltip>
+            <DeleteUser id={user.id} refresh={fetchUsers}/>
           </div>
         );
       default:
