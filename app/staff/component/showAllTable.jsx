@@ -24,6 +24,7 @@ import {
   Chip,
   Pagination,
   Spinner,
+  DateRangePicker
 } from "@nextui-org/react";
 import { CiSearch } from "react-icons/ci";
 import { IoChevronDown } from "react-icons/io5";
@@ -35,6 +36,8 @@ import { HiMiniViewfinderCircle } from "react-icons/hi2";
 import Addtransaction from "../component/addtransaction";
 import { useSalesStore } from "@/app/stores/transactionStore";
 import { formatDate, formatTime } from "../../composables/formateDateAndTime";
+import { parseDate, getLocalTimeZone } from '@internationalized/date';
+import { getDateAndTime } from '@/app/composables/dateAndTime';
 
 const itemColorMap = {
   tarpaulin: "warning",
@@ -97,7 +100,12 @@ export default function AllTransaction() {
   const [visibleColumns] = useState(new Set(INITIAL_VISIBLE_COLUMNS));
   const [statusFilter, setStatusFilter] = useState("all");
   const [typeFilter] = useState("all");
+  const { date } = getDateAndTime();
   const [rowsPerPage, setRowsPerPage] = useState(30);
+  const [selectedDate, setSelectedDate] = React.useState({
+    start: parseDate(date),
+    end: parseDate(date),
+  });
   const [sortDescriptor, setSortDescriptor] = useState({
     column: "age",
     direction: "ascending",
@@ -142,9 +150,22 @@ export default function AllTransaction() {
         Array.from(typeFilter).includes(user.customer_type.toLowerCase())
       );
     }
+    if (selectedDate) {
+      filteredTransactions = filteredTransactions.filter((transaction) => {
+        const transactionDate = new Date(transaction.date);
+        const start = new Date(selectedDate.start);
+        const end = new Date(selectedDate.end);
+
+        if (start === date) {
+          return transaction;
+        } else {
+          return transactionDate >= start && transactionDate <= end;
+        }
+      });
+    }
 
     return filteredTransactions;
-  }, [transactions, filterValue, statusFilter, typeFilter]);
+  }, [transactions, filterValue, statusFilter, typeFilter, selectedDate]);
 
   const pages = Math.ceil(filteredItems.length / rowsPerPage);
 
@@ -284,6 +305,12 @@ export default function AllTransaction() {
             value={filterValue}
             onClear={() => onClear()}
             onValueChange={onSearchChange}
+          />
+          <DateRangePicker
+            label="Search by Date"
+            className="max-w-[284px]"
+            labelPlacement="inside"
+            onChange={setSelectedDate}
           />
           <div className="flex gap-3">
             {/* <Dropdown>

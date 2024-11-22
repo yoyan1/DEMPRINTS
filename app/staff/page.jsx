@@ -38,6 +38,8 @@ import { useSalesStore } from '@/app/stores/transactionStore';
 import AllTransaction from './component/showAllTable';
 import { parseDate, getLocalTimeZone } from '@internationalized/date';
 import { getDateAndTime } from '@/app/composables/dateAndTime';
+import { FaRegCircleXmark } from 'react-icons/fa6';
+
 // import { formatDate, formatTime } from "../../composables/formateDateAndTime";
 
 const itemColorMap = {
@@ -163,7 +165,7 @@ export default function Transaction() {
         const transactionDate = new Date(transaction.date);
         const start = new Date(selectedDate.start);
         const end = new Date(selectedDate.end);
-    
+
         if (start === date) {
           return transaction;
         } else {
@@ -171,12 +173,14 @@ export default function Transaction() {
         }
       });
     }
-    
-    
 
     return filteredTransactions;
   }, [transactions, filterValue, statusFilter, typeFilter, selectedDate]);
 
+  // const handleClearChange = (event) => {
+  //   event.preventDefault();
+  //   setSelectedDate(' ');
+  // };
   // const handleDateChange = (date) => {
   //   const year = date.year ? `${date.year}-` : '';
   //   const month = date.month ? `${date.month}-` : '';
@@ -322,10 +326,24 @@ export default function Transaction() {
             onValueChange={onSearchChange}
           />
           <DateRangePicker
-            label="Search by Date"
+            isClearable
             className="max-w-[284px]"
             labelPlacement="inside"
-            onChange={setSelectedDate}
+            // value={selectedDate}
+            onChange={() => setSelectedDate()}
+            startContent={
+              <div
+                className="text-red cursor-pointer"
+                onClick={
+                  () => setSelectedDate({
+                    start: parseDate(date),
+                    end:parseDate(date),
+                  })
+                }
+              >
+                <FaRegCircleXmark />
+              </div>
+            }
           />
           <div className="flex gap-3">
             {/* <Dropdown>
@@ -387,7 +405,10 @@ export default function Transaction() {
           </div> */}
 
           <div className="flex items-center">
-            <Button color="primary" onPress={handleOpenAddTransaction}>
+            <Button className='text-white'
+              onPress={handleOpenAddTransaction}
+              style={{ backgroundColor: '#191970' }}
+            >
               Add{' '}
             </Button>
             <Button variant="transparent" onPress={handleShowAllTransactions}>
@@ -472,7 +493,7 @@ export default function Transaction() {
       {topContent}
       <div className=" overflow-x-scroll">
         <Modal
-          size="3xl"
+          size="4xl"
           isOpen={isAddTransactionOpen}
           onClose={closeAddTransaction}
           // onValueChange="outside"
@@ -490,7 +511,7 @@ export default function Transaction() {
           size="full"
           isOpen={isAllTransactionOpen}
           onClose={closeAllTransaction}
-           scrollBehavior="outside"
+          scrollBehavior="outside"
         >
           <ModalContent>
             <ModalBody>
@@ -514,22 +535,21 @@ export default function Transaction() {
           bottomContentPlacement="outside"
           classNames={{
             wrapper: 'max-h-[382px]',
-
           }}
-          selectedKeys={selectedKeys}
-          selectionMode="multiple"
-          sortDescriptor={sortDescriptor}
+          // selectedKeys={selectedKeys}
+          // selectionMode="multiple"
+          // sortDescriptor={sortDescriptor}
           topContentPlacement="outside"
-          onSelectionChange={setSelectedKeys}
+          // onSelectionChange={setSelectedKeys}
           onSortChange={setSortDescriptor}
         >
-          <TableHeader columns={headerColumns} >
+          <TableHeader columns={headerColumns}>
             {(column) => (
               <TableColumn
                 key={column.dataKey}
                 align="center"
                 allowsSorting={column.sortable}
-                style={{backgroundColor:'#191970', color:'#ffff'}}
+                style={{ backgroundColor: '#191970', color: '#ffff' }}
               >
                 {column.name}
               </TableColumn>

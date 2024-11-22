@@ -28,8 +28,8 @@ export default function Addtransaction() {
   // ----Auth-------------------
   const router = useRouter();
   const [user, setUser] = useState({});
-// -----Loading-----------------
-  
+  // -----Loading-----------------
+
   // ---------------------------------------------
   const [customer_name, setCostumerName] = useState(' ');
   const [customer_type, setCostumerType] = useState(' ');
@@ -415,6 +415,7 @@ export default function Addtransaction() {
                   {/* <div className="flex gap-3"> */}
 
                   <Select
+                    size="sm"
                     label="Item"
                     className="w-full max-w-md mx-auto text-black relative z-0 mb-2"
                     autoFocus
@@ -431,7 +432,7 @@ export default function Addtransaction() {
                       setUnitCost(selectedProduct?.price || 0);
                       handleQuantityChange(quantity);
                       setUnitCost(0);
-                      setQuantity(0);
+                      setQuantity(1);
                       setAmount(0);
                       setTotal(0);
                     }}
@@ -453,6 +454,7 @@ export default function Addtransaction() {
 
                   {item_name && (
                     <Select
+                      size="sm"
                       label="Measurement"
                       className="w-full max-w-md mx-auto text-black relative z-0 mb-2"
                       autoFocus
@@ -477,6 +479,7 @@ export default function Addtransaction() {
 
               <div className="flex gap-3 mb-2">
                 <Input
+                  size="sm"
                   className="w-full max-w-md mx-auto text-black relative z-0 mb-2"
                   style={{ color: 'black' }}
                   autoFocus
@@ -491,6 +494,7 @@ export default function Addtransaction() {
 
                 <div className="flex items-center w-full max-w-md mx-auto text-black relative z-0 mb-2">
                   <Input
+                    size="sm"
                     className="flex-1"
                     value={discount}
                     name="discount"
@@ -516,6 +520,7 @@ export default function Addtransaction() {
               <div className="flex gap-3 mb-2">
                 {/* Customer Type Select */}
                 <Select
+                  size="sm"
                   label="Customer Type"
                   className="w-full max-w-md mx-auto text-black relative z-0 mb-2"
                   autoFocus
@@ -538,6 +543,7 @@ export default function Addtransaction() {
 
                 {/* Costumer Name */}
                 <Input
+                  size="sm"
                   className="w-full max-w-md mx-auto text-black relative z-0 mb-2"
                   style={{ color: 'black' }}
                   autoFocus
@@ -552,6 +558,7 @@ export default function Addtransaction() {
               <div className="flex gap-3 mb-2">
                 {/* Payment Option Select */}
                 <Select
+                  size="sm"
                   label="Payment Option"
                   className="w-full max-w-md mx-auto text-black relative z-0 mb-2"
                   autoFocus
@@ -574,6 +581,7 @@ export default function Addtransaction() {
 
                 {/* Payment Type Select */}
                 <Select
+                  size="sm"
                   label="Payment Type"
                   className="w-full max-w-md mx-auto text-black relative z-0 mb-2"
                   variant="bordered"
@@ -608,6 +616,7 @@ export default function Addtransaction() {
               {payment_type === 'Down payment' && (
                 <div className="w-full max-w-md mx-auto text-black relative z-0 mb-2">
                   <Input
+                    size="sm"
                     className="w-full text-black relative z-0"
                     style={{ color: 'black' }}
                     autoFocus
@@ -620,14 +629,25 @@ export default function Addtransaction() {
                   />
                 </div>
               )}
-              <div className="flex justify-end bg-gray p-2">
-                <p className="gap-3 bold mr-3">Amount: ₱{Math.round(amount)}</p>
-                <p className="bold">Total : ₱{Math.round(total)}</p>
-              </div>
             </div>
 
-            <div className="flex-1">
-              <h1>Content here</h1>
+            <div className="flex-1 ">
+              <div className="flex justify-between mb-5">
+                <span>Discount</span>
+                <span>{isPercentage? "%" : "₱"} {Math.round(discount)}</span>
+              </div>
+              <div className="flex justify-between mb-5">
+                <span>Discount Applied</span>
+                <span>₱ {Math.round(amount - total)}</span>
+              </div>
+              <div className="flex justify-between mb-5">
+                <span>Amount: </span>
+                <span>₱ {Math.round(amount)}</span>
+              </div>
+              <div className="flex justify-between mb-5">
+                <span className="bold">Total :</span>
+                <span>₱ {Math.round(total)}</span>
+              </div>
             </div>
           </div>
           {success_message && (
