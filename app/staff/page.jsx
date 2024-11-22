@@ -41,12 +41,13 @@ import { FaChartLine } from 'react-icons/fa';
 // import ExportToPdf from '@/app/composables/exportToPdf'
 // import CreateTransaction from './AddTransaction'
 import Addtransaction from './component/addtransaction';
-import { useSalesStore} from '@/app/stores/transactionStore';
-import { paymentStore} from '@/app/stores/paymentStore';
+import { useSalesStore } from '@/app/stores/transactionStore';
+import { paymentStore } from '@/app/stores/paymentStore';
 import AllTransaction from './component/showAllTable';
 import { parseDate, getLocalTimeZone } from '@internationalized/date';
 import { getDateAndTime } from '@/app/composables/dateAndTime';
 import { FaRegCircleXmark } from 'react-icons/fa6';
+import { IoMdCloseCircle } from 'react-icons/io';
 import { formatDate } from '../composables/formateDateAndTime';
 
 // import { formatDate, formatTime } from "../../composables/formateDateAndTime";
@@ -171,17 +172,26 @@ export default function Transaction() {
     //   );
     // }
 
+    // if (selectedDate) {
+    //   filteredTransactions = filteredTransactions.filter((transaction) => {
+    //     const transactionDate = new Date(transaction.date);
+    //     const start = new Date(selectedDate.start);
+    //     const end = new Date(selectedDate.end);
+
+    //     if (start === date) {
+    //       return transaction;
+    //     } else {
+    //       return transactionDate >= start && transactionDate <= end;
+    //     }
+    //   });
+    // }
+
     if (selectedDate) {
       filteredTransactions = filteredTransactions.filter((transaction) => {
         const transactionDate = new Date(transaction.date);
         const start = new Date(selectedDate.start);
         const end = new Date(selectedDate.end);
-        
-        if (start === date) {
-          return transaction;
-        } else {
-          return transactionDate >= start && transactionDate <= end;
-        }
+        return transactionDate >= start && transactionDate <= end;
       });
     }
     // if (selectedDate) {
@@ -189,7 +199,7 @@ export default function Transaction() {
     //     const transactionDate = new Date(transaction.date);
     //     const start = new Date(selectedDate.start);
     //     const end = new Date(selectedDate.end);
-    
+
     //     // Compare timestamps for equality (using getTime)
     //     if (start.getTime() === transactionDate.getTime()) {
     //       return transaction;
@@ -198,26 +208,23 @@ export default function Transaction() {
     //     }
     //   });
     // }
-    
 
     return filteredTransactions;
   }, [transactions, filterValue, statusFilter, typeFilter, selectedDate]);
 
-  const isDateInRange = (date, startDate, endDate) => {
-    return date >= startDate && date <= endDate;
+  const isDateInRange = (date, start, end) => {
+    return date >= start && date <= end;
   };
 
-  const getTotalSalesInRange = (transactions, startDate, endDate, options) => {
+  const getTotalSalesInRange = (transactions, start, end, options) => {
     return transactions.reduce(
       (acc, item) => {
         const itemDate = new Date(item.date);
-        if (isDateInRange(itemDate, startDate, endDate)) {
+        if (isDateInRange(itemDate, start, end)) {
           acc.totalSales += item.total_amount;
-
           options.forEach((row) => {
-            if (row.name === item.payment_options) {
+            if (row.name === item.payment_options)
               acc[row.name] = (acc[row.name] || 0) + item.total_amount;
-            }
           });
         }
         return acc;
@@ -226,12 +233,12 @@ export default function Transaction() {
     );
   };
 
-  const getDateRange = (start, end) => {
-    return {
-      startDate: new Date(start),
-      endDate: new Date(end),
-    };
-  };
+  // const getDateRange = (start, end) => {
+  //   return {
+  //     start: new Date(start),
+  //     end: new Date(end),
+  //   };
+  // };
 
   const totals = useMemo(() => {
     const start = new Date(selectedDate.start);
@@ -239,9 +246,17 @@ export default function Transaction() {
     return getTotalSalesInRange(transactions, start, end, options);
   }, [transactions, selectedDate.start, selectedDate.end, options]);
   
-
+  // Use `totals` instead of calling `getTotalSalesInRange` again
   const { totalSales, ...salesByOptions } = totals;
 
+  // const handleDateChange = ({ start, end }) => {
+  //   if (start && endDate) {
+  //     setSelectedDate({
+  //       start: startDate,
+  //       end: endDate,
+  //     });
+  //   }
+  // };
   // const handleClearChange = (event) => {
   //   event.preventDefault();
   //   setSelectedDate(' ');
@@ -383,25 +398,25 @@ export default function Transaction() {
         <div className="flex justify-end">
           <Card className="max-w-[400px] border border-gray-700 shadow-none">
             <CardHeader className="flex gap-3">
-              <span>
-                {formatDate(selectedDate.start, selectedDate.end)}
-              </span>
+              <span>{formatDate(selectedDate.start, selectedDate.end)}</span>
             </CardHeader>
             <Divider />
             <CardBody>
-              <span className='text-lg'>Sales: {Math.round(totalSales)}</span>
-              {/* Optionally, display the breakdown by payment options */}
-              <div>
-                {Object.entries(salesByOptions).map(
-                  ([paymentOption, amount]) =>
-                    paymentOption !== 'totalSales' && (
-                      <div key={paymentOption}>
-                        <span>
-                          {paymentOption}: {Math.round(amount)}
-                        </span>
+              <span className="text-lg">Sales: {Math.round(totalSales)}</span>
+
+              {/* Breakdown by payment options */}
+              <div className="flex flex-col gap-2">
+                {options.length > 0
+                  ? options.map((transactionOptions) => (
+                      <div
+                        key={transactionOptions.name}
+                        className="rounded-xl text-white p-2"
+                      >
+                        {transactionOptions.name}:{' '}
+                        {salesByOptions[transactionOptions.name] || 0}
                       </div>
-                    ),
-                )}
+                    ))
+                  : null}
               </div>
             </CardBody>
             <Divider />
@@ -412,6 +427,8 @@ export default function Transaction() {
           <div className="flex justify-between gap-3 items-end">
             <Input
               isClearable
+              variant="bordered"
+              color="primary"
               className="w-full sm:max-w-[44%]"
               placeholder="Search by name..."
               startContent={<CiSearch />}
@@ -420,22 +437,21 @@ export default function Transaction() {
               onValueChange={onSearchChange}
             />
             <DateRangePicker
-              isClearable
-              className="max-w-[284px]"
-              labelPlacement="inside"
-              value={selectedDate}
-              onChange={() => setSelectedDate()}
+              // value={selectedDate}
+              onChange={setSelectedDate}
+              variant="bordered"
+              color="primary"
               startContent={
-                <div
-                  className="text-red cursor-pointer"
-                  onClick={() =>
-                    setSelectedDate({
-                      start: parseDate(date),
-                      end: parseDate(date),
-                    })
-                  }
-                >
-                  <FaRegCircleXmark />
+                <div>
+                  <IoMdCloseCircle
+                    className="cursor-pointer hover:text-red-400"
+                    onClick={() =>
+                      setSelectedDate({
+                        start: parseDate(date),
+                        end: parseDate(date),
+                      })
+                    }
+                  />
                 </div>
               }
             />
