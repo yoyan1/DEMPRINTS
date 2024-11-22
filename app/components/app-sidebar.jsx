@@ -30,7 +30,7 @@ export function AppSidebar({ ...props }) {
   const data = {
     user: {
       name: props.user.name? props.user.name : '',
-      email: props.user.email? props.user.email : '',
+      id_number: props.user.id_number? props.user.id_number : '',
       avatar: "/avatars/shadcn.jpg",
     },
     teams: [

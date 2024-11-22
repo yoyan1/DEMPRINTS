@@ -94,8 +94,8 @@ export default function Employee() {
     switch (columnKey) {
       case "name":
         return (
-          <User avatarProps={{ radius: "lg", src: user.avatar }} description={user.email} name={user.name}>
-            {user.email}
+          <User avatarProps={{ radius: "lg", src: user.avatar }} description={user.id_number} name={user.name}>
+            {user.id_number}
           </User>
         );
       case "job_title":

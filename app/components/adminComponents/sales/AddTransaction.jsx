@@ -227,7 +227,7 @@ export default function CreateTransaction({user, refresh}) {
       payment_type: salesData.payment_type,
       payment_options: salesData.payment_options,
       sales_person: salesData.sales_person? salesData.sales_person : user.name,
-      remarks: balance > 0? balance : 0,
+      remarks: salesData.remarks,
       employee_id: findUser.length > 0 ? findUser[0].id : user.id
     }
 
@@ -271,7 +271,7 @@ export default function CreateTransaction({user, refresh}) {
         <ModalContent>
           {() => (
             <>
-              <ModalHeader className="flex flex-col gap-1">Create Order</ModalHeader>
+              <ModalHeader className="flex flex-col gap-1 bg-blue-900 text-white">Create Order</ModalHeader>
               <ModalBody>
                 <form onSubmit={submit} className="flex flex-col gap-5">
                   <div className="flex gap-5 items-end">
@@ -542,7 +542,7 @@ export default function CreateTransaction({user, refresh}) {
                     className="max-w-full"
                     variant="bordered"
                     value={salesData.remarks}
-                    onChange={(e) => setSalesData((prevData)=> ({...prevData, remarks: e.target.value}))}
+                    onValueChange={(value) => setSalesData((prevData)=> ({...prevData, remarks: value}))}
                     />
                   <div className="flex justify-end gap-4 py-4">
                     <Button color="danger" variant="flat" onPress={onClose}>

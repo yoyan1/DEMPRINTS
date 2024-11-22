@@ -9,8 +9,8 @@ import { MdEmail } from "react-icons/md";
 import { TbMailbox } from "react-icons/tb";
 import { FaUser } from "react-icons/fa";
 import axios from "axios";
-import ViewImage from "./Image";
 import { formatDate } from '@/app/composables/formateDateAndTime'
+import ViewImage from "./Image";
 
 export default function ViewDetails({data}) {
   const {isOpen, onOpen, onOpenChange} = useDisclosure();
@@ -71,15 +71,15 @@ export default function ViewDetails({data}) {
                             <div className="flex  justify-between w-full">
                                 <div className="flex-1">
                                     <h4>First name</h4>
-                                    <span className="text-default-500 text-sm">{name[0]}</span>
+                                    <span className="text-default-500 text-sm">{data.firstname}</span>
                                 </div>
                                 <div className="flex-1">
                                     <h4>Middle name</h4>
-                                    <span className="text-default-500 text-sm">{name[1]}</span>
+                                    <span className="text-default-500 text-sm">{data.middlename}</span>
                                 </div>
                                 <div className="flex-1">
                                     <h4>Last name</h4>
-                                    <span className="text-default-500 text-sm">{name[2]}</span>
+                                    <span className="text-default-500 text-sm">{data.lastname}</span>
                                 </div>
                             </div>
                             <div className="flex justify-between w-full">
@@ -139,17 +139,23 @@ export default function ViewDetails({data}) {
                                 <div className="flex justify-between">
                                     <h3 className="flex-1 flex items-center text-sm">
                                         SS No.:
-                                        <span className="text-sm text-default-500 pl-2">{data.mandatory_benefit.ss_no}</span>
+                                        {data.mandatory_benefit.ss_no? (
+                                            <span className="text-sm text-default-500 pl-2">{data.mandatory_benefit.ss_no.slice(0,2)}-{data.mandatory_benefit.ss_no.slice(2,9)}-{data.mandatory_benefit.ss_no.slice(9,10)}</span>
+                                        ) : null}
                                     </h3>
                                     <h3 className="flex-1 flex items-center text-sm">
                                         Pag-ibig No.:
-                                        <span className="text-sm text-default-500 pl-2">{data.mandatory_benefit.pab_ibig_no}</span>
+                                        {data.mandatory_benefit.pab_ibig_no? (
+                                            <span className="text-sm text-default-500 pl-2">{data.mandatory_benefit.pab_ibig_no.slice(0,4)}-{data.mandatory_benefit.pab_ibig_no.slice(4,8)}-{data.mandatory_benefit.pab_ibig_no.slice(8,12)}</span>
+                                        ) :null }
                                     </h3>
                                 </div>
                                 <div>
                                     <h3 className="flex-1 flex items-center text-sm">
                                         Philhealth:
-                                        <span className="text-sm text-default-500 pl-2">{data.mandatory_benefit.philhealt}</span>
+                                        {data.mandatory_benefit.philhealth? (
+                                            <span className="text-sm text-default-500 pl-2">{data.mandatory_benefit.philhealth.slice(0,2)}-{data.mandatory_benefit.philhealth.slice(2,10)}-{data.mandatory_benefit.philhealth.slice(10,11)}</span>
+                                        ): null}
                                     </h3>
                                 </div>
                             </div>

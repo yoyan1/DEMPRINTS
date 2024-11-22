@@ -51,7 +51,7 @@ export default function CreateOrUpdate({done}) {
     relationship: "",
   });
   const [credentials, setCredentials] = useState({
-    email: "",
+    id_number: "",
     password: "",
     role: "",
     firstname: "",
@@ -143,7 +143,7 @@ export default function CreateOrUpdate({done}) {
         ...prevData,
         [name]: value,
       }));
-    } else if(name === "pab_ibig_no" && value.length < 12 || name === "philhealth" && value.length < 12){
+    } else if(name === "pab_ibig_no" && value.length < 13 || name === "philhealth" && value.length < 13){
       setMandatoryBenefit((prevData) => ({
         ...prevData,
         [name]: value,
@@ -171,8 +171,9 @@ export default function CreateOrUpdate({done}) {
   const isValidStepOne = () =>{
     const errors = {};
     if (!credentials.role) errors.role = "Role is required.";
-    if (!credentials.email) errors.email = "ID Number is required.";
-    if (!credentials.password) errors.password = "Password is required.";
+    if (!credentials.id_number) errors.id_number = "ID Number is required.";
+    if (!credentials.password) errors.password = "Password is required. Please enter your password.";
+    if (credentials.password.length < 8) errors.password = "Password must be at least 8 characters long.";
     
     setErrorMessages(errors);
     return errors;
@@ -201,7 +202,7 @@ export default function CreateOrUpdate({done}) {
     if (!credentials.contact_email)
       errors.contact_email = "Contact email is required.";
     if (credentials.contact_email && !validateEmail(credentials.contact_email))
-      errors.email = "Email is invalid.";
+      errors.contact_email = "Email is invalid.";
     
     setErrorMessages(errors);
     return errors;
@@ -307,7 +308,7 @@ const submit = async (id, id2, id3) => {
   
   try {
     const newData = {
-      email: credentials.email,
+      id_number: credentials.id_number,
       password: credentials.password,
       role: credentials.role,
       firstname: credentials.firstname,
@@ -344,7 +345,7 @@ const submit = async (id, id2, id3) => {
       })
       done('')
       setCredentials({
-        email: "",
+        id_number: "",
         password: "",
         role: "",
         firstname: "",
@@ -408,6 +409,7 @@ const submit = async (id, id2, id3) => {
     })
   } finally {
     setIsLoading(false);
+    onClose()
     setStep(1)
   }
 
@@ -454,17 +456,16 @@ const submit = async (id, id2, id3) => {
                         </Select>
                         <div className="flex flex-col sm:flex-row md:flex-row lg:flex-row gap-5 pt-3">
                             <Input radius="sm"
-                            type="number"
                             label="ID Number"
                             placeholder="Enter Employee ID"
                             labelPlacement="outside"
                             variant="bordered"
                             className="max-w-xs"
-                            name="email"
-                            isInvalid={errorMessages.email ? true : false}
-                            color={errorMessages.email ? "danger" : ""}
-                            errorMessage={errorMessages.email}
-                            value={credentials.email}
+                            name="id_number"
+                            isInvalid={errorMessages.id_number ? true : false}
+                            color={errorMessages.id_number ? "danger" : ""}
+                            errorMessage={errorMessages.id_number}
+                            value={credentials.id_number}
                             onChange={handleChange}
                             />
                             <Input radius="sm"

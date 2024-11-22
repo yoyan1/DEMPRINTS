@@ -101,7 +101,7 @@ export default function EmployeeAccount() {
             </Avatar>
             <div>
               <h1>{user.name}</h1>
-              <span className="text-slate-400 text-sm font-thin">{user.email}</span>
+              <span className="text-slate-400 text-sm font-thin">{user.id_number}</span>
             </div>
           </div>
 
