@@ -161,7 +161,7 @@ export default function Transaction({columns, transactions, itemOptions, typeOpt
         );
         case "remarks":
         return (
-          <div className="text-left">{Math.round(cellValue)}</div>
+          <div className="text-left">{cellValue}</div>
         );
         case "actions":
         return (

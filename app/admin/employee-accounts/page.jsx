@@ -212,7 +212,7 @@ export default function Employee() {
           {/* <Button color="primary" endContent={<FaPlus />}>
             Add New
           </Button> */}
-          <CreateOrUpdate/>
+          <CreateOrUpdate done={fetchUsers}/>
         </div>
       </div>
       <div className="flex justify-between items-center">
