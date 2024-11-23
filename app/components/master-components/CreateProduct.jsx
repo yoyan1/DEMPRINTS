@@ -171,12 +171,6 @@ export default function CreateProduct() {
     setKey("list");
   };
 
-  // const update = (data) =>{
-  //   setKey('new')
-  //   setProductData(data)
-  //   console.log(data)
-  // }
-
   const done = (data) => {
     console.log(data);
     fetchProductsData();
@@ -211,21 +205,24 @@ export default function CreateProduct() {
     }))
   }
 
-
-  const filteredProducts = useMemo(()=>{
-    let newFilteredProducts = [...products];
-
-    if(filtered.category){
-      newFilteredProducts = products.filter((item) =>
-        item.category.includes(filtered.category) && 
-        item.name.includes(filtered.name) && 
-        item.variants.includes(filtered.variants),
-      );
-    }
-
-    return newFilteredProducts
-  }, [filtered, products])
-
+  const filteredProducts = useMemo(() => {
+    return products.filter((item) => {
+      const matchesCategory = filtered.category
+        ? item.category.includes(filtered.category)
+        : true;
+  
+      const matchesName = filtered.name
+        ? item.name.toLowerCase().includes(filtered.name.toLowerCase())
+        : true;
+  
+      const matchesVariants = filtered.variants
+        ? item.variants.includes(filtered.variants)
+        : true;
+  
+      return matchesCategory && matchesName && matchesVariants;
+    });
+  }, [filtered.category, filtered.name, filtered.variants, products]);
+  
   return (
     <>
       <div className="p-md">
@@ -365,26 +362,7 @@ export default function CreateProduct() {
                                       </Select>
                                       <div className="flex gap-5">
                                         { filtered.category? (
-                                          <Select
-                                            label="Select item name"
-                                            size="sm"
-                                            value={filtered.name}
-                                            onChange={itemNameChange}
-                                          >
-                                            {(() => {
-                                              const seen = new Set();
-                                              return filteredProducts.map((item) => {
-                                                const value = item.name;
-                                                if (seen.has(value)) return null; 
-                                                seen.add(value);
-                                                return (
-                                                  <SelectItem key={value}>
-                                                    {value}
-                                                  </SelectItem>
-                                              );
-                                            });
-                                          })()}
-                                          </Select>
+                                          <Input placeholder="Search Item name" value={filtered.name} onChange={itemNameChange}/>
                                         ) : null}
                                         { filtered.name? (
 
