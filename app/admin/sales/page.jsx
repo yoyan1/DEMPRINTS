@@ -100,14 +100,20 @@ export default function Sales() {
                         <span className='text-slate-200 text-md font-bold'>{ Math.round(totalSales) }</span>
                       </div>
                   </div>
-                  <div className='flex flex-col gap-2'>
-                    {options.length > 0? (
-                      options.map((transactionOptions) => (
-                        <div className='bg-blue-800 rounded-xl text-white p-2'>
-                          {transactionOptions.name}: {salesByOptions[transactionOptions.name] ? salesByOptions[transactionOptions.name] : 0}
-                        </div>
-                      ))
-                    ): null}
+                  <div className='border border-blue-600 p-3 rounded-md'>
+                    <span>Payment Method Breakdown</span>
+                    <div className='flex items-start gap-2'>
+                      {options.length > 0? (
+                        options.map((transactionOptions, index) => (
+                          salesByOptions[transactionOptions.name] > 0? (
+                            <div className='flex gap-1 items-center'>
+                              <div className={`w-2 h-2 bg-blue-${100 * (index + 1)} rounded-full`}></div>
+                              <span className='font-sans text-slate-700 dark:text-slate-200 text-sm'> {transactionOptions.name}: {salesByOptions[transactionOptions.name] ? salesByOptions[transactionOptions.name] : 0}</span>                 
+                            </div>
+                          ) : null
+                        ))
+                      ): null}
+                    </div>
                   </div>
 
                 </div>
