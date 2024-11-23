@@ -68,7 +68,7 @@ export default function Component(props) {
     getData()
   }, [getData])
   return (
-    <Card>
+    <Card className="dark:bg-gray-900">
       <CardHeader>
         <CardTitle>Expenses - Monthly</CardTitle>
         <CardDescription>January - December {yearNow}</CardDescription>

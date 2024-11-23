@@ -56,7 +56,7 @@ export default function AdminLayout({ children }) {
     <SidebarProvider>
       <AppSidebar user={user} />
       <SidebarInset>
-        <div className="dark:bg-gray-800 bg-slate-100 h-full">
+        <div className="dark:bg-gray-800 bg-slate-200 h-full">
           <Header />
           {/* Passing user to children if needed */}
           {React.cloneElement(children, { user })}
