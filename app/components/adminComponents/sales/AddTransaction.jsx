@@ -521,8 +521,7 @@ export default function CreateTransaction({user, refresh}) {
                       </div>
                       <div className="flex justify-between">
                         <span>Discount Applied </span>
-                        {Math.round(salesData.sub_total - salesData.total_amount)}
-                        {isPercent? "%" : "₱"}
+                        ₱ {Math.round(salesData.sub_total - salesData.total_amount)}
                       </div>
                       <div className="flex justify-between">
                         <span>Total Amount After Discount </span>

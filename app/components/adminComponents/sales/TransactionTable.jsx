@@ -273,36 +273,7 @@ export default function Transaction({columns, transactions, itemOptions, typeOpt
               });
             })()}
           </Select>
-            // <Dropdown>
-            //   <DropdownTrigger className="hidden sm:flex">
-            //     <Button endContent={<IoChevronDown className="text-small" />} variant="flat">
-            //       {filterSelection}
-            //     </Button>
-            //   </DropdownTrigger>
-            //   <DropdownMenu
-            //     disallowEmptySelection
-            //     aria-label="Table Columns"
-            //     closeOnSelect={false}
-            //     selectedKeys={statusFilter}
-            //     selectionMode="multiple"
-            //     onSelectionChange={setStatusFilter}
-            //   >
-            //     {(() => {
-            //       const seen = new Set();
-            //       return transactions.map((item) => {
-            //         const value = item[filterSelection];
-            //         if (seen.has(value)) return null; 
-            //         seen.add(value);
-            //         return (
-            //           <DropdownItem key={value} className="capitalize">
-            //             {capitalize(value)}
-            //           </DropdownItem>
-            //         );
-            //       });
-            //     })()}
-            //   </DropdownMenu>
-
-            // </Dropdown>
+           
           ): null}
             <CreateTransaction user={user} refresh={fetch}/>
             <ExportToPdf rows={sortedItems}/>
@@ -380,7 +351,7 @@ export default function Transaction({columns, transactions, itemOptions, typeOpt
             bottomContentPlacement="outside"
             classNames={{
                 wrapper: "max-h-[382px]",
-                th: "bg-blue-900 text-slate-200"
+                th: "bg-blue-300 text-dark"
             }}
             sortDescriptor={sortDescriptor}
             topContentPlacement="outside"

@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useToast } from "@/hooks/use-toast";
 import {
   Modal,
@@ -30,6 +30,7 @@ export default function CreateProduct() {
   const [unit, setUnit] = useState("");
   const [measurement, setMeasurement] = useState([]);
   const [products, setProducts] = useState([]);
+  // const [filteredproducts, setFilteredProducts] = useState([])
   const [productData, setProductData] = useState({
     item_code: "",
     name: "",
@@ -53,6 +54,7 @@ export default function CreateProduct() {
         `${process.env.NEXT_PUBLIC_API_URL}/master/products`
       );
       setProducts(result.data);
+      // setFilteredProducts(result.data)
     } catch (error) {
       console.error("Error fetching categories:", error);
     }
@@ -66,14 +68,6 @@ export default function CreateProduct() {
     onOpen();
   };
 
-  // const handleProductDataChange = (e) =>{
-  //   const [name, value] = e.target
-
-  //   setProductData((prevData) => ({
-  //     ...prevData,
-  //     [name]: value
-  //   }))
-  // }
 
   const categoryIsValid = () => {
     const errors = {};
@@ -187,6 +181,51 @@ export default function CreateProduct() {
     console.log(data);
     fetchProductsData();
   };
+
+  const [filtered, setFiltered] = useState({
+    category: "",
+    name: "",
+    variants: ""
+  })
+
+  const categoryChange = (e) => {
+    setFiltered({
+      category: e.target.value,
+      name: "",
+      variants: ""
+    })
+  }
+  
+  const itemNameChange = (e) => {
+    setFiltered((prevData) => ({
+      ...prevData,
+      name: e.target.value,
+      variants: ""
+    }))
+  }
+  
+  const variantChange = (e) => {
+    setFiltered((prevData) => ({
+      ...prevData,
+      variants: e.target.value
+    }))
+  }
+
+
+  const filteredProducts = useMemo(()=>{
+    let newFilteredProducts = [...products];
+
+    if(filtered.category){
+      newFilteredProducts = products.filter((item) =>
+        item.category.includes(filtered.category) && 
+        item.name.includes(filtered.name) && 
+        item.variants.includes(filtered.variants),
+      );
+    }
+
+    return newFilteredProducts
+  }, [filtered, products])
+
   return (
     <>
       <div className="p-md">
@@ -303,9 +342,79 @@ export default function CreateProduct() {
                             <Listbox
                               aria-label="Listbox Variants"
                               color="solid"
-                              topContent={<span>All Products</span>}
+                              classNames={
+                                {
+                                  list: "max-h-[300px] overflow-scroll"
+                                }
+                              }
+                              topContent={
+                                <div>
+                                  <span>All Products</span>
+                                  <div className="flex flex-col gap-5">
+                                      <Select
+                                        label="Select an category"
+                                        size="sm"
+                                        value={filtered.category}
+                                        onChange={categoryChange}
+                                      >
+                                        {category.map((item) => (
+                                          <SelectItem key={item.name}>
+                                            {item.name}
+                                          </SelectItem>
+                                        ))}
+                                      </Select>
+                                      <div className="flex gap-5">
+                                        { filtered.category? (
+                                          <Select
+                                            label="Select item name"
+                                            size="sm"
+                                            value={filtered.name}
+                                            onChange={itemNameChange}
+                                          >
+                                            {(() => {
+                                              const seen = new Set();
+                                              return filteredProducts.map((item) => {
+                                                const value = item.name;
+                                                if (seen.has(value)) return null; 
+                                                seen.add(value);
+                                                return (
+                                                  <SelectItem key={value}>
+                                                    {value}
+                                                  </SelectItem>
+                                              );
+                                            });
+                                          })()}
+                                          </Select>
+                                        ) : null}
+                                        { filtered.name? (
+
+                                          <Select
+                                            label="Select variance"
+                                            size="sm"
+                                            value={filtered.variants}
+                                            onChange={variantChange}
+                                          >
+                                            {(() => {
+                                              const seen = new Set();
+                                              return filteredProducts.map((item) => {
+                                                const value = item.variants;
+                                                if (seen.has(value)) return null; 
+                                                seen.add(value);
+                                                return (
+                                                  <SelectItem key={value}>
+                                                    {value}
+                                                  </SelectItem>
+                                              );
+                                            });
+                                          })()}
+                                          </Select>
+                                        ) : null }
+                                      </div>
+                                    </div>
+                                </div>
+                            }
                             >
-                              {products.map((product) => (
+                              {filteredProducts.map((product) => (
                                 <ListboxItem
                                   key={product.name}
                                   showDivider
