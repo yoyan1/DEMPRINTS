@@ -19,6 +19,7 @@ import {
 } from '@nextui-org/react';
 import { useRouter } from 'next/navigation';
 import { decodeToken } from '@/app/utils/decodeToken';
+import { useUserStore } from '@/app/stores/userStore';
 import axios from 'axios';
 // import { formatDate } from "../../composables/formateDateAndTime";
 
@@ -40,24 +41,30 @@ export default function Addtransaction() {
   const [quantity, setQuantity] = useState(1);
   const [unit_cost, setUnitCost] = useState(0);
   const [discount, setDiscount] = useState(0);
-  const [paid_amount, setPaidAmount] = useState(0);
+  const [amount_paid, setPaidAmount] = useState(0);
   const [amount, setAmount] = useState(0);
-  const [total, setTotal] = useState(0);
+  const [total_amount, setTotal] = useState(0);
   const [remarks, setRemarks] = useState(0);
   const [payment_options, setPaymentMethod] = useState(' ');
-  // const [sales_person, setSalesPerson] = useState(' ');
+  const [sales_person, setSalesPerson] = useState(' ');
   const [success_message, setSuccessMessage] = useState(' ');
   const [payment_type, setPaymentType] = useState(' ');
   // const [employee_id, setEmployeId] = useState(0)
+  // ----------------------
+  const { users, fetchUsers } = useUserStore();
   // ----------------------
 
   const [payment, setPaymentt] = useState(['']);
   const [paymentTypes, setPaymenttype] = useState(['']);
   const [costumerType, setCostumertype] = useState(['']);
   const [products, setProduct] = useState(['']);
-  const [unit, setUnit] = useState(['']);
+  // const [unit, setUnit] = useState(['']);
   const [setTransaction] = useState(['']);
   const [categories, setCategory] = useState(['']);
+  const [sub_total] = useState(0);
+  const [variant, setVariant] = useState(['']);
+  // ------------------------
+  const [filteredVariants, setFilteredVariants] = useState([]);
   // ------------------------
   const [isSubmiting, setisSubmmiting] = useState(false);
   // ----------------------
@@ -71,6 +78,7 @@ export default function Addtransaction() {
 
   useEffect(() => {
     // getAuthenticateUser();
+    fetchUsers();
     fetchPayment();
     fetchCostumerType();
     fetchProduct();
@@ -242,10 +250,10 @@ export default function Addtransaction() {
       const selectedProduct = products.find((item) => item.name === item_name);
       const finalUnitCost = selectedProduct ? selectedProduct.price : unit_cost; // Use the product's price from the DB
       // const totalAmount = amount - discount; // Ensure correct total calculation
-      // const finalTotal = amount - discount - paid_amount;
+      // const finalTotal = amount - discount - amount_paid;
       // Send the transaction data
-      const findUser = salesData.sales_person
-        ? users.filter((row) => salesData.sales_person === row.name)
+      const findUser = sales_person
+        ? users.filter((row) => sales_person === row.name)
         : [];
       // const getData = await axios.get(
       //   `https://demprints-backend.vercel.app/api/collection/getTransaction`,
@@ -265,10 +273,10 @@ export default function Addtransaction() {
           item_name,
           unit_cost: finalUnitCost,
           quantity,
-          amount,
+          sub_total,
           discount,
           discount_type: isPercentage ? '%' : '₱',
-          total: total,
+          total_amount: total_amount,
           customer_type,
           customer_name,
           payment_type,
@@ -284,7 +292,7 @@ export default function Addtransaction() {
 
       setSuccessMessage('Transaction added successfully!');
       setItemName('');
-      setQuantity('');
+      setQuantity();
       setDiscount('');
       setPaidAmount('');
       setAmount('');
@@ -325,7 +333,7 @@ export default function Addtransaction() {
         : discountValue;
 
     // Calculate total after applying discount and then subtracting the paidAmount
-    const newTotal = amount - discountAmount - paid_amount;
+    const newTotal = amount - discountAmount - amount_paid;
     setTotal(newTotal);
   };
   const handleCheckBoxChange = () => {
@@ -337,7 +345,7 @@ export default function Addtransaction() {
       newIsPercentage && discount <= 100 ? (amount * discount) / 100 : discount;
 
     // Recalculate total with the updated discount logic
-    const newTotal = amount - discountAmount - paid_amount;
+    const newTotal = amount - discountAmount - amount_paid;
     setTotal(newTotal);
   };
 
@@ -413,10 +421,10 @@ export default function Addtransaction() {
                   ) : null,
                 )}
               </Select>
+
               {selectedCategory && (
                 <div className="flex gap-3 mb-2">
-                  {/* <div className="flex gap-3"> */}
-
+                  {/* Product Selection */}
                   <Select
                     size="sm"
                     label="Item"
@@ -431,9 +439,11 @@ export default function Addtransaction() {
                       const selectedProduct = products.find(
                         (product) => product.name === selectedProductName,
                       );
+
+                      // Update state for selected product details
                       setItemName(selectedProductName);
                       setUnitCost(selectedProduct?.price || 0);
-                      handleQuantityChange(quantity);
+                      setFilteredVariants(selectedProduct?.variants || []); // Update variants dynamically
                       setUnitCost(0);
                       setQuantity(1);
                       setAmount(0);
@@ -443,10 +453,18 @@ export default function Addtransaction() {
                     {products
                       .filter(
                         (product) => product.category === selectedCategory,
-                      ) // Filter items based on selected category
+                      )
+                      .reduce((uniqueProducts, product) => {
+                        if (
+                          !uniqueProducts.find((p) => p.name === product.name)
+                        ) {
+                          uniqueProducts.push(product);
+                        }
+                        return uniqueProducts;
+                      }, [])
                       .map((product) => (
                         <SelectItem
-                          key={product.name}
+                          key={product.id || product.name}
                           variant="bordered"
                           style={{ color: 'black' }}
                         >
@@ -454,6 +472,25 @@ export default function Addtransaction() {
                         </SelectItem>
                       ))}
                   </Select>
+
+                  {/* Variant Selection */}
+                  {item_name && (
+                    <Select
+                      variant="bordered"
+                      label="Variants"
+                      // labelPlacement="inside"
+                      size="sm"
+                      className="w-full max-w-md mx-auto"
+                      placeholder="Select variants"
+                      isDisabled={filteredVariants.length === 0}
+                    >
+                      {products.map((product, variantIndex) => (
+                        <SelectItem key={`${variantIndex}${product.variants}`}>
+                          {product.variants} {/* Display each variant */}
+                        </SelectItem>
+                      ))}
+                    </Select>
+                  )}
 
                   {item_name && (
                     <Select
@@ -469,10 +506,15 @@ export default function Addtransaction() {
                       }}
                     >
                       {products
-                        .filter((product) => product.name === item_name)
-                        .map((product) => (
-                          <SelectItem key={product.unit} variant="bordered">
-                            {product.unit}
+                        .find((product) => product.name === item_name)
+                        ?.unit.split(',')
+                        .map((unit, index) => (
+                          <SelectItem
+                            key={index}
+                            variant="bordered"
+                            style={{ color: 'black' }}
+                          >
+                            {unit}
                           </SelectItem>
                         ))}
                     </Select>
@@ -616,7 +658,7 @@ export default function Addtransaction() {
                     autoFocus
                     isRequired
                     type="text"
-                    value={paid_amount}
+                    value={amount_paid}
                     label="Amount Paid"
                     variant="bordered"
                     onChange={(e) => handlePaidAmount(e.target.value)}
@@ -632,7 +674,7 @@ export default function Addtransaction() {
               </div>
               <div className="flex justify-between mb-5">
                 <span>Total Amount: </span>
-                <span>{Math.round(amount)}</span>
+                <span>{Math.round(sub_total)}</span>
               </div>
 
               <div className="flex justify-between mb-5">
@@ -645,12 +687,18 @@ export default function Addtransaction() {
               </div>
               <div className="flex justify-between mb-5">
                 <span>Discount Applied</span>
-                <span>{Math.round(amount - total)}</span>
+                <span>{Math.round(amount - sub_total)}</span>
               </div>
               <div className="flex justify-between mb-5">
                 <span className="bold">Total Amout after Discount :</span>
-                <span>{Math.round(total)}</span>
+                <span>{Math.round(total_amount)}</span>
               </div>
+              {amount_paid ? (
+                <div className="flex justify-between">
+                  <span>Balance </span>
+                  {Math.round(total_amount - amount_paid)}
+                </div>
+              ) : null}
             </div>
           </div>
           <Textarea
