@@ -517,7 +517,7 @@ export default function Addtransaction() {
                       label="Measurement"
                       className="w-full max-w-md mx-auto text-black relative z-0 mb-2"
                       placeholder="Select unit"
-                      isDisabled={variants.length === 0} // Disable if no units
+                      isDisabled={filteredVariants.length === 0}
                       value={measurement}
                       onChange={(e) => {
                         const selectedUnit = e.target.value;
@@ -525,11 +525,11 @@ export default function Addtransaction() {
                         const selectedUnitProduct = filteredVariants.find(
                           (product) => product.unit === selectedUnit,
                         );
-                        setUnitCost(selectedUnitProduct?.price || 0); // Update price based on unit
+                        setUnitCost(selectedUnitProduct?.price || 0);
                       }}
                     >
                       {filteredVariants.map((product) => (
-                        <SelectItem key={product.unit} value={product.unit}>
+                        <SelectItem key={product.unit}>
                           {product.unit}
                         </SelectItem>
                       ))}
