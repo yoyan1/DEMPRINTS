@@ -62,9 +62,15 @@ export default function Addtransaction() {
   const [setTransaction] = useState(['']);
   const [categories, setCategory] = useState(['']);
   const [sub_total] = useState(0);
-  const [variant, setVariant] = useState(['']);
+  const [selectedVariant, setSelectedVariant] = useState('');
+  const [selectedMeasurement, setSelectedMeasurement] = useState([]);
+
+  const [variants, setVariant] = useState('');
+  const [measurement] = useState('');
   // ------------------------
   const [filteredVariants, setFilteredVariants] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [filteredMeasurements, setFilteredMeasurements] = useState([]);
   // ------------------------
   const [isSubmiting, setisSubmmiting] = useState(false);
   // ----------------------
@@ -319,20 +325,18 @@ export default function Addtransaction() {
       : 0;
     setQuantity(newQuantity);
     setAmount(totalItemCost);
-    setTotal(totalItemCost - discount); // Recalculate total after discount
+    setTotal(totalItemCost - discount);
   };
 
   const handleDiscountChange = (newDiscount) => {
     const discountValue = parseFloat(newDiscount) || 0;
-    setDiscount(discountValue); // Update discount value
+    setDiscount(discountValue);
 
-    // Calculate discount amount based on whether it's a percentage or a fixed value
     const discountAmount =
       isPercentage && discountValue <= 100
         ? (amount * discountValue) / 100
         : discountValue;
 
-    // Calculate total after applying discount and then subtracting the paidAmount
     const newTotal = amount - discountAmount - amount_paid;
     setTotal(newTotal);
   };
@@ -443,7 +447,10 @@ export default function Addtransaction() {
                       // Update state for selected product details
                       setItemName(selectedProductName);
                       setUnitCost(selectedProduct?.price || 0);
-                      setFilteredVariants(selectedProduct?.variants || []); // Update variants dynamically
+                      const findProduct = filteredProducts.filter(
+                        (row) => row.name === e.target.value,
+                      );
+                      setFilteredVariants(findProduct);
                       setUnitCost(0);
                       setQuantity(1);
                       setAmount(0);
@@ -465,6 +472,7 @@ export default function Addtransaction() {
                       .map((product) => (
                         <SelectItem
                           key={product.id || product.name}
+                          value={product.name}
                           variant="bordered"
                           style={{ color: 'black' }}
                         >
@@ -474,49 +482,37 @@ export default function Addtransaction() {
                   </Select>
 
                   {/* Variant Selection */}
+
                   {item_name && (
                     <Select
-                      variant="bordered"
-                      label="Variants"
-                      // labelPlacement="inside"
                       size="sm"
+                      label="Variants"
                       className="w-full max-w-md mx-auto"
                       placeholder="Select variants"
-                      // isDisabled={filteredVariants.length === 0}
+                      isDisabled={item_name.length === 0} // Corrected condition
                     >
-                      {products.map((product, variantIndex) => (
-                        <SelectItem key={`${variantIndex}${product.variants}`}>
-                          {product.variants} {/* Display each variant */}
+                      {products.map((product) => (
+                        <SelectItem key={product.variants}>
+                          {product.variants}
                         </SelectItem>
                       ))}
                     </Select>
                   )}
 
-                  {item_name && (
+                  {variants && (
                     <Select
                       size="sm"
                       label="Measurement"
                       className="w-full max-w-md mx-auto text-black relative z-0 mb-2"
-                      autoFocus
-                      isRequired
-                      value={unit_cost}
-                      variant="bordered"
-                      onChange={(event) => {
-                        handleUnitCostChange(event.target.value);
-                      }}
+                      placeholder="Select unit"
+                      isDisabled={variants.length === 0} // Disable if no units
+                      value={measurement}
+                      
+                      onChange={handleMeasurementChange}
                     >
-                      {products
-                        .find((product) => product.name === item_name)
-                        ?.unit.split(',')
-                        .map((unit, index) => (
-                          <SelectItem
-                            key={index}
-                            variant="bordered"
-                            style={{ color: 'black' }}
-                          >
-                            {unit}
-                          </SelectItem>
-                        ))}
+                      {products.map((item) => (
+                        <SelectItem key={item.unit}>{item.unit}</SelectItem>
+                      ))}
                     </Select>
                   )}
                 </div>
