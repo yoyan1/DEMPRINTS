@@ -66,7 +66,7 @@ export default function Addtransaction() {
   const [selectedMeasurement, setSelectedMeasurement] = useState([]);
 
   const [variants, setVariant] = useState('');
-  const [measurement] = useState('');
+  const [measurement, setMeasurement] = useState('');
   // ------------------------
   const [filteredVariants, setFilteredVariants] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
