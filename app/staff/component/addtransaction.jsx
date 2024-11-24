@@ -511,7 +511,7 @@ export default function Addtransaction() {
                   )}
 
                   {/* Unit Selection */}
-                  {variantS && (
+                  {variants && (
                     <Select
                       size="sm"
                       label="Measurement"
