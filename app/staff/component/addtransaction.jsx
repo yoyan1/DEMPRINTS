@@ -528,9 +528,13 @@ export default function Addtransaction() {
                         setUnitCost(selectedUnitProduct?.price || 0);
                       }}
                     >
-                      {filteredVariants.map((product) => (
-                        <SelectItem key={product.unit}>
-                          {product.unit}
+                      {[
+                        ...new Set(
+                          filteredVariants.map((product) => product.unit),
+                        ),
+                      ].map((unit) => (
+                        <SelectItem key={unit} value={unit}>
+                          {unit}
                         </SelectItem>
                       ))}
                     </Select>
