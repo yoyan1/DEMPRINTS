@@ -405,7 +405,7 @@ export default function Addtransaction() {
               <Select
                 size="sm"
                 label="Category"
-                className=" mb-2"
+                className="mb-2"
                 autoFocus
                 isRequired
                 variant="bordered"
@@ -447,12 +447,13 @@ export default function Addtransaction() {
                       // Update state for selected product details
                       setItemName(selectedProductName);
                       setUnitCost(selectedProduct?.price || 0);
-                      const findProduct = filteredProducts.filter(
-                        (row) => row.name === e.target.value,
+                      const filteredVariants = products.filter(
+                        (product) =>
+                          product.name === selectedProductName &&
+                          product.category === selectedCategory,
                       );
-                      setFilteredVariants(findProduct);
-                      setUnitCost(0);
-                      setQuantity(1);
+                      setFilteredVariants(filteredVariants);
+                      setMeasurement(''); // Reset measurement when item changes
                       setAmount(0);
                       setTotal(0);
                     }}
@@ -482,36 +483,55 @@ export default function Addtransaction() {
                   </Select>
 
                   {/* Variant Selection */}
-
-                  {item_name && (
+                  {item_name && filteredVariants.length > 0 && (
                     <Select
                       size="sm"
                       label="Variants"
                       className="w-full max-w-md mx-auto"
                       placeholder="Select variants"
-                      isDisabled={item_name.length === 0} // Corrected condition
+                      isDisabled={filteredVariants.length === 0} // Corrected condition
+                      onChange={(e) => {
+                        const selectedVariant = e.target.value;
+                        setVariant(selectedVariant);
+                        const selectedVariantProduct = filteredVariants.find(
+                          (product) => product.variants === selectedVariant,
+                        );
+                        setUnitCost(selectedVariantProduct?.price || 0);
+                      }}
                     >
-                      {products.map((product) => (
-                        <SelectItem key={product.variants}>
+                      {filteredVariants.map((product) => (
+                        <SelectItem
+                          key={product.variants}
+                          value={product.variants}
+                        >
                           {product.variants}
                         </SelectItem>
                       ))}
                     </Select>
                   )}
 
-                  {variants && (
+                  {/* Unit Selection */}
+                  {variantS && (
                     <Select
                       size="sm"
                       label="Measurement"
                       className="w-full max-w-md mx-auto text-black relative z-0 mb-2"
                       placeholder="Select unit"
-                      isDisabled={variants.length === 0} // Disable if no units
+                      isDisabled={variant.length === 0} // Disable if no units
                       value={measurement}
-                      
-                      onChange={handleMeasurementChange}
+                      onChange={(e) => {
+                        const selectedUnit = e.target.value;
+                        setMeasurement(selectedUnit);
+                        const selectedUnitProduct = filteredVariants.find(
+                          (product) => product.unit === selectedUnit,
+                        );
+                        setUnitCost(selectedUnitProduct?.price || 0); // Update price based on unit
+                      }}
                     >
-                      {products.map((item) => (
-                        <SelectItem key={item.unit}>{item.unit}</SelectItem>
+                      {filteredVariants.map((product) => (
+                        <SelectItem key={product.unit} value={product.unit}>
+                          {product.unit}
+                        </SelectItem>
                       ))}
                     </Select>
                   )}
