@@ -482,7 +482,7 @@ export default function Addtransaction() {
                       size="sm"
                       className="w-full max-w-md mx-auto"
                       placeholder="Select variants"
-                      isDisabled={filteredVariants.length === 0}
+                      // isDisabled={filteredVariants.length === 0}
                     >
                       {products.map((product, variantIndex) => (
                         <SelectItem key={`${variantIndex}${product.variants}`}>
