@@ -517,7 +517,7 @@ export default function Addtransaction() {
                       label="Measurement"
                       className="w-full max-w-md mx-auto text-black relative z-0 mb-2"
                       placeholder="Select unit"
-                      isDisabled={variant.length === 0} // Disable if no units
+                      isDisabled={variants.length === 0} // Disable if no units
                       value={measurement}
                       onChange={(e) => {
                         const selectedUnit = e.target.value;
