@@ -352,6 +352,7 @@ export default function CreateProduct() {
                                         label="Select an category"
                                         size="sm"
                                         value={filtered.category}
+                                        defaultSelectedKeys={[filtered.category]}
                                         onChange={categoryChange}
                                       >
                                         {category.map((item) => (
@@ -369,6 +370,7 @@ export default function CreateProduct() {
                                           <Select
                                             label="Select variance"
                                             size="sm"
+                                            defaultSelectedKeys={[filtered.variants]}
                                             value={filtered.variants}
                                             onChange={variantChange}
                                           >
@@ -464,6 +466,7 @@ export default function CreateProduct() {
                               />
                               <Select
                                 label="Select an category"
+                                defaultSelectedKeys={[productData.category]}
                                 isInvalid={errorMessage.category? true : false}
                                 color={errorMessage.category ? "danger" : ""}
                                 errorMessage={errorMessage.category}
@@ -516,6 +519,7 @@ export default function CreateProduct() {
                               />
                               <Select
                                 label="Select a unit"
+                                defaultSelectedKeys={[productData.unit]}
                                 isInvalid={errorMessage.product_unit? true : false}
                                 color={errorMessage.product_unit ? "danger" : ""}
                                 errorMessage={errorMessage.product_unit}
@@ -538,7 +542,7 @@ export default function CreateProduct() {
                               <Input
                                 type="number"
                                 label="Product price"
-                                placeholder="Enter product name"
+                                placeholder="Enter product price"
                                 isInvalid={errorMessage.price? true : false}
                                 color={errorMessage.price ? "danger" : ""}
                                 errorMessage={errorMessage.price}

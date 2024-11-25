@@ -24,7 +24,7 @@ import { useUserStore } from "@/app/stores/userStore";
 
 export default function CreateOrUpdate({done}) {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const {create} = useUserStore()
+  const {create, findIfExist, loading} = useUserStore()
   const { toast } = useToast()
   const [selected, setSelected] = useState("job");
   const [step, setStep] = useState(1);
@@ -120,6 +120,8 @@ export default function CreateOrUpdate({done}) {
         contact_number: value,
       }));
     }
+
+    setErrorMessages((prev) => ({ ...prev, contact_number: "" }));
   }
 
   const handleChangeContact = (e) => {
@@ -134,6 +136,7 @@ export default function CreateOrUpdate({done}) {
       ...prevData,
       contact_person: contactPerson,
     }));
+    setErrorMessages((prev) => ({ ...prev, [name]: "" }));
   };
   const handleChangeBenefit = (e) => {
     const { name, value } = e.target;
@@ -154,6 +157,7 @@ export default function CreateOrUpdate({done}) {
       ...prevData,
       mandatory_benefit: mandatoryBenefit,
     }));
+    setErrorMessages((prev) => ({ ...prev, name: "" }));
   };
   const toggleVisibility = () => setIsVisible(!isVisible);
 
@@ -168,8 +172,13 @@ export default function CreateOrUpdate({done}) {
  
 
 
-  const isValidStepOne = () =>{
+  const isValidStepOne = async () =>{
     const errors = {};
+    if(credentials.id_number){
+      const result = await findIfExist({id_number: credentials.id_number})
+      if (result.data.err) errors.id_number = result.data.message;
+    }
+
     if (!credentials.role) errors.role = "Role is required.";
     if (!credentials.id_number) errors.id_number = "ID Number is required.";
     if (!credentials.password) errors.password = "Password is required. Please enter your password.";
@@ -223,8 +232,8 @@ export default function CreateOrUpdate({done}) {
     return errors;
   };
 
-  const handleButtonClick = () => {
-    const errors = isValidStepOne();
+  const handleButtonClick = async () => {
+    const errors = await isValidStepOne();
     const errorsStepTwo = step === 2? isValidStepTwo() : {}
     if (Object.keys(errors).length !== 0) {
       return;
@@ -444,6 +453,7 @@ const submit = async (id, id2, id3) => {
                             className="w-36 py-2"
                             placeholder="Select Role"
                             name="role"
+                            defaultSelectedKeys={[credentials.role]}
                             isInvalid={errorMessages.role? true : false}
                             color={errorMessages.role ? "danger" : ""}
                             errorMessage={errorMessages.role}
@@ -467,6 +477,7 @@ const submit = async (id, id2, id3) => {
                             errorMessage={errorMessages.id_number}
                             value={credentials.id_number}
                             onChange={handleChange}
+                            
                             />
                             <Input radius="sm"
                             label="Password"
@@ -474,6 +485,7 @@ const submit = async (id, id2, id3) => {
                             variant="bordered"
                             placeholder="Enter password"
                             name="password"
+                            value={credentials.password}
                             isInvalid={errorMessages.password ? true : false}
                             color={errorMessages.password ? "danger" : ""}
                             errorMessage={errorMessages.password}
@@ -543,6 +555,7 @@ const submit = async (id, id2, id3) => {
                                     label="Gender"
                                     placeholder="Select gender"
                                     name="gender"
+                                    defaultSelectedKeys={[credentials.gender]}
                                     isInvalid={errorMessages.gender? true : false}
                                     color={errorMessages.gender ? "danger" : ""}
                                     errorMessage={errorMessages.gender}
@@ -725,6 +738,7 @@ const submit = async (id, id2, id3) => {
                                 label="Select Job Title"
                                 className="max-w-"
                                 name="job_title"
+                                defaultSelectedKeys={[credentials.job_title]}
                                 isInvalid={errorMessages.job_title? true : false}
                                 color={errorMessages.job_title ? "danger" : ""}
                                 errorMessage={errorMessages.job_title}
@@ -739,6 +753,7 @@ const submit = async (id, id2, id3) => {
                                 label="Select Department"
                                 className="max-w-"
                                 name="department"
+                                defaultSelectedKeys={[credentials.department]}
                                 isInvalid={errorMessages.department? true : false}
                                 color={errorMessages.department ? "danger" : ""}
                                 errorMessage={errorMessages.department}
@@ -786,6 +801,7 @@ const submit = async (id, id2, id3) => {
                             <Select
                                 label="Compensation Basis"
                                 name="basis"
+                                defaultSelectedKeys={[credentials.basis]}
                                 isInvalid={errorMessages.basis? true : false}
                                 color={errorMessages.basis ? "danger" : ""}
                                 errorMessage={errorMessages.basis}
@@ -799,6 +815,7 @@ const submit = async (id, id2, id3) => {
                             <Select
                                 label="Frequency"
                                 name="frequency"
+                                defaultSelectedKeys={[credentials.frequency]}
                                 isInvalid={errorMessages.frequency? true : false}
                                 color={errorMessages.frequency ? "danger" : ""}
                                 errorMessage={errorMessages.frequency}
@@ -840,7 +857,7 @@ const submit = async (id, id2, id3) => {
                         variant="light"
                         onPress={handleClose}
                         >
-                        {step === 1 || step === 4 ? "close" : "prev"}
+                        {step === 1 || step === 4 ? "close" : "back"}
                         </Button>
                         {step === 3 ? (
                         <Button 
@@ -876,7 +893,7 @@ const submit = async (id, id2, id3) => {
                         ) :step === 4 ?(
                         <div></div>
                         ): (
-                        <Button color="primary" onPress={handleButtonClick}>
+                        <Button color="primary" onPress={handleButtonClick} isLoading={loading}>
                             next
                         </Button>
                         )}
