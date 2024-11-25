@@ -61,9 +61,11 @@ export default function Addtransaction() {
   // const [unit, setUnit] = useState(['']);
   const [setTransaction] = useState(['']);
   const [categories, setCategory] = useState(['']);
-  const [sub_total] = useState(0);
-  const [selectedVariant, setSelectedVariant] = useState('');
-  const [selectedMeasurement, setSelectedMeasurement] = useState([]);
+  const [sub_total, setSubTotal] = useState(0);
+
+  const [selectedProductName, setSelectedProductName] = useState('');
+  // const [selectedVariant, setSelectedVariant] = useState('');
+  // const [selectedMeasurement, setSelectedMeasurement] = useState([]);
 
   const [variants, setVariant] = useState('');
   const [measurement, setMeasurement] = useState('');
@@ -279,8 +281,8 @@ export default function Addtransaction() {
           item_name,
           unit_cost: finalUnitCost,
           quantity,
-          sub_total,
-          discount,
+          sub_total: sub_total,
+          discount: discount,
           discount_type: isPercentage ? '%' : '₱',
           total_amount: total_amount,
           customer_type,
@@ -292,8 +294,7 @@ export default function Addtransaction() {
           employee_id: findUser.length > 0 ? findUser[0].id : user.id,
         },
       );
-      // console.log(getData.data);
-      // console.log('user ID added', user._id);
+
       console.log(updateId.data);
 
       setSuccessMessage('Transaction added successfully!');
@@ -317,39 +318,41 @@ export default function Addtransaction() {
   };
 
   const handleQuantityChange = (newQuantity) => {
-    const selectedProduct = products.find(
-      (item) => item.name === item_name && item.unit === unit_cost,
-    );
-    const totalItemCost = selectedProduct
-      ? selectedProduct.price * newQuantity
-      : 0;
-    setQuantity(newQuantity);
-    setAmount(totalItemCost);
-    setTotal(totalItemCost - discount);
+    const parsedQuantity = parseFloat(newQuantity) || 0;
+    const totalItemCost = unit_cost * parsedQuantity;
+
+    setQuantity(parsedQuantity);
+    setSubTotal(totalItemCost);
+
+    const discountAmount = isPercentage
+      ? (totalItemCost * discount) / 100
+      : discount;
+
+    const newTotal = totalItemCost - discountAmount;
+    setTotal(newTotal);
   };
 
   const handleDiscountChange = (newDiscount) => {
     const discountValue = parseFloat(newDiscount) || 0;
     setDiscount(discountValue);
 
-    const discountAmount =
-      isPercentage && discountValue <= 100
-        ? (amount * discountValue) / 100
-        : discountValue;
+    const discountAmount = isPercentage
+      ? (sub_total * discountValue) / 100
+      : discountValue;
 
-    const newTotal = amount - discountAmount - amount_paid;
+    const newTotal = sub_total - discountAmount;
     setTotal(newTotal);
   };
+
   const handleCheckBoxChange = () => {
-    const newIsPercentage = !isPercentage; // Toggle the percentage flag
+    const newIsPercentage = !isPercentage;
     setIsPercentage(newIsPercentage);
 
-    // Recalculate the discount amount based on the new checkbox state
-    const discountAmount =
-      newIsPercentage && discount <= 100 ? (amount * discount) / 100 : discount;
+    const discountAmount = newIsPercentage
+      ? (sub_total * discount) / 100
+      : discount;
 
-    // Recalculate total with the updated discount logic
-    const newTotal = amount - discountAmount - amount_paid;
+    const newTotal = sub_total - discountAmount;
     setTotal(newTotal);
   };
 
@@ -362,15 +365,17 @@ export default function Addtransaction() {
   };
 
   const handlePaidAmount = (newPaidAmount) => {
-    const parsedPaidAmount = parseFloat(newPaidAmount) || 0; // Ensure it's a number (default to 0 if invalid)
+    const parsedPaidAmount = parseFloat(newPaidAmount) || 0;
     setPaidAmount(parsedPaidAmount);
 
-    // Recalculate total after applying discount and paid amount
-    const discountAmount =
-      discount > 100 ? discount : (amount * discount) / 100;
-    const newTotal = amount - discountAmount - parsedPaidAmount;
-    const roundOfftotal = Math.round(newTotal * 100) / 100;
-    setRemarks(roundOfftotal);
+    const discountAmount = isPercentage
+      ? (sub_total * discount) / 100
+      : discount;
+
+    const newTotal = sub_total - discountAmount - parsedPaidAmount;
+    const roundOffTotal = Math.round(newTotal * 100) / 100;
+
+    setRemarks(roundOffTotal);
   };
 
   const handleClose = () => {
@@ -428,7 +433,6 @@ export default function Addtransaction() {
 
               {selectedCategory && (
                 <div className="flex gap-3 mb-2">
-                  {/* Product Selection */}
                   <Select
                     size="sm"
                     label="Item"
@@ -447,15 +451,18 @@ export default function Addtransaction() {
                       // Update state for selected product details
                       setItemName(selectedProductName);
                       setUnitCost(selectedProduct?.price || 0);
+
                       const filteredVariants = products.filter(
                         (product) =>
                           product.name === selectedProductName &&
                           product.category === selectedCategory,
                       );
+
                       setFilteredVariants(filteredVariants);
                       setMeasurement(''); // Reset measurement when item changes
                       setAmount(0);
                       setTotal(0);
+                      setSelectedProductName(selectedProductName); // Track selected product name
                     }}
                   >
                     {products
@@ -482,35 +489,65 @@ export default function Addtransaction() {
                       ))}
                   </Select>
 
-                  {/* Variant Selection */}
-                  {item_name && filteredVariants.length > 0 && (
+                  {item_name && (
                     <Select
                       size="sm"
-                      label="Variants"
-                      className="w-full max-w-md mx-auto"
-                      placeholder="Select variants"
-                      isDisabled={filteredVariants.length === 0} // Corrected condition
+                      label="Select Variants"
+                      className="w-full max-w-md mx-auto text-black relative z-0 mb-2"
+                      autoFocus
+                      isRequired
+                      value={variants}
+                      variant="bordered"
+                      style={{ color: 'black' }}
                       onChange={(e) => {
-                        const selectedVariant = e.target.value;
-                        setVariant(selectedVariant);
-                        const selectedVariantProduct = filteredVariants.find(
-                          (product) => product.variants === selectedVariant,
+                        const selectedProductVariants = e.target.value;
+                        const selectedProduct = products.find(
+                          (product) =>
+                            product.variants === selectedProductVariants &&
+                            product.name === selectedProductName,
                         );
-                        setUnitCost(selectedVariantProduct?.price || 0);
+
+                        if (!selectedProduct) return;
+
+                        setItemName(selectedProductVariants);
+
+                        const filteredVariants = products.filter(
+                          (product) =>
+                            product.variants === selectedProductVariants &&
+                            product.name === selectedProductName,
+                        );
+
+                        setFilteredVariants(filteredVariants);
+                        setVariant(selectedProduct);
                       }}
                     >
-                      {filteredVariants.map((product) => (
-                        <SelectItem
-                          key={product.variants}
-                          value={product.variants}
-                        >
-                          {product.variants}
-                        </SelectItem>
-                      ))}
+                      {products
+                        .filter(
+                          (product) => product.name === selectedProductName,
+                        )
+                        .reduce((uniqueVariants, product) => {
+                          if (
+                            !uniqueVariants.find(
+                              (p) => p.variants === product.variants,
+                            )
+                          ) {
+                            uniqueVariants.push(product);
+                          }
+                          return uniqueVariants;
+                        }, [])
+                        .map((product) => (
+                          <SelectItem
+                            key={product.variants}
+                            value={product.variants}
+                            variant="bordered"
+                            style={{ color: 'black' }}
+                          >
+                            {product.variants}
+                          </SelectItem>
+                        ))}
                     </Select>
                   )}
 
-                  {/* Unit Selection */}
                   {variants && (
                     <Select
                       size="sm"
@@ -522,9 +559,11 @@ export default function Addtransaction() {
                       onChange={(e) => {
                         const selectedUnit = e.target.value;
                         setMeasurement(selectedUnit);
+
                         const selectedUnitProduct = filteredVariants.find(
                           (product) => product.unit === selectedUnit,
                         );
+
                         setUnitCost(selectedUnitProduct?.price || 0);
                       }}
                     >
@@ -687,47 +726,56 @@ export default function Addtransaction() {
               )}
             </div>
 
-            <div className="flex-1 border border-gray-300 p-3 ">
+            <div className="flex-1 border border-gray-300 p-3">
               <div className="flex justify-between mb-5">
-                <span>Produt Cost</span>
-                <span>{unit_cost}</span>
-              </div>
-              <div className="flex justify-between mb-5">
-                <span>Total Amount: </span>
-                <span>{Math.round(sub_total)}</span>
+                <span>Product Cost:</span>
+                <span>₱{Number(unit_cost).toFixed(2)}</span>
               </div>
 
               <div className="flex justify-between mb-5">
-                <span>Discount</span>
+                <span>Total Amount (Pre-Discount):</span>
+                <span>₱{Number(sub_total).toFixed(2)}</span>
+              </div>
 
+              <div className="flex justify-between mb-5">
+                <span>Discount:</span>
                 <span>
-                  {Math.round(discount)}
-                  {isPercentage ? '%' : '₱'}{' '}
+                  {Number(discount)} {isPercentage ? '%' : '₱'}
                 </span>
               </div>
+
               <div className="flex justify-between mb-5">
-                <span>Discount Applied</span>
-                <span>{Math.round(amount - sub_total)}</span>
+                <span>Discount Applied:</span>
+                <span>
+                  {isPercentage
+                    ? `₱${(
+                        (Number(sub_total) * Number(discount)) /
+                        100
+                      ).toFixed(2)}`
+                    : `₱${Number(discount).toFixed(2)}`}
+                </span>
               </div>
+
               <div className="flex justify-between mb-5">
-                <span className="bold">Total Amout after Discount :</span>
-                <span>{Math.round(total_amount)}</span>
+                <span className="bold">Total Amount after Discount:</span>
+                <span>₱{Number(total_amount).toFixed(2)}</span>
               </div>
-              {amount_paid ? (
+
+              {amount_paid > 0 && (
                 <div className="flex justify-between">
-                  <span>Balance </span>
-                  {Math.round(total_amount - amount_paid)}
+                  <span>Balance:</span>
+                  <span>
+                    ₱{(Number(total_amount) - Number(amount_paid)).toFixed(2)}
+                  </span>
                 </div>
-              ) : null}
+              )}
             </div>
           </div>
           <Textarea
             isRequired
-            // label="Remarks"
-            // labelPlacement="inside"
-
             placeholder="Write Remarks...."
             className="w-full"
+            onChange={(e) => setRemarks(e.target.value)}
           />
           {success_message && (
             <div className="flex items-center w-full max-w-xs p-1 mb-3">
