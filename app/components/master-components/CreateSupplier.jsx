@@ -88,7 +88,8 @@ export default function CreateSupplier() {
                             <span>Supplier Information</span>
                             <div className="flex flex-col gap-4">
                                 <Select 
-                                label="type" 
+                                label="type"
+                                defaultSelectedKeys={[supplierData.type]} 
                                 isInvalid={errorMessage.type? true : false}
                                 color={errorMessage.type ? "danger" : ""}
                                 errorMessage={errorMessage.type}

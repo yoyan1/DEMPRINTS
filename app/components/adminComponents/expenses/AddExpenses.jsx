@@ -109,6 +109,7 @@ export default function CreateTransaction({isSubmit}) {
               <ModalBody>
                 <Select 
                   label="Category" 
+                  defaultSelectedKeys={[expensesData.category]}
                   value={expensesData.category}
                   onChange={(e) =>(setExpensesData((prevData)=>({...prevData, category: e.target.value, type: ""})))}
                   isLoading={loading}
@@ -120,6 +121,7 @@ export default function CreateTransaction({isSubmit}) {
                 {expensesData.category? (
                   <Select 
                     label="Type" 
+                    defaultSelectedKeys={[expensesData.type]}
                     value={expensesData.type}
                     onChange={(e) =>(setExpensesData((prevData)=>({...prevData, type: e.target.value})))}
                   >

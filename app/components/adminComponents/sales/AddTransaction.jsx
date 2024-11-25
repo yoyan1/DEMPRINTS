@@ -32,6 +32,7 @@ export default function CreateTransaction({user, refresh}) {
                                         item_name: "",
                                         variants: "",
                                         measurement: "",
+                                        price_type: "fixed",
                                         unit_cost: 0,
                                         quantity: 0,
                                         sub_total: 0,
@@ -162,6 +163,12 @@ export default function CreateTransaction({user, refresh}) {
 
   }
   
+  const priceChange = (e) => {
+    const newTotal = salesData.quantity * e.target.value
+    setSalesData((prevData) => (
+      {...prevData, unit_cost: e.target.value, total_amount: newTotal, sub_total: newTotal, discount: 0}
+    ))
+  }
 
   const isValid = () => {
     const errors = {};
@@ -279,6 +286,7 @@ export default function CreateTransaction({user, refresh}) {
                       label="Product Category" 
                       labelPlacement="outside"
                       size="md"
+                      defaultSelectedKeys={[salesData.category]}
                       onChange={handleCategoryChange}
                     >
                       {productsCategory.map((item, index) => (
@@ -297,6 +305,7 @@ export default function CreateTransaction({user, refresh}) {
                         size="md"
                         radius="none"
                         placeholder="Select product"
+                        defaultSelectedKeys={[salesData.item_name]}
                         isInvalid={errorMessage.item_name? true : false}
                         color={errorMessage.item_name ? "danger" : ""}
                         errorMessage={errorMessage.item_name}
@@ -323,6 +332,7 @@ export default function CreateTransaction({user, refresh}) {
                         size="md"
                         radius="none"
                         placeholder="Select variants"
+                        defaultSelectedKeys={[salesData.variants]}
                         onChange={handleVariantChange}
                         isDisabled={salesData.item_name? false : true}
                       >
@@ -339,6 +349,7 @@ export default function CreateTransaction({user, refresh}) {
                         size="md"
                         radius="none"
                         placeholder="Select unit"
+                        defaultSelectedKeys={[salesData.measurement]}
                         isDisabled={salesData.variants? false : true}
                         isInvalid={errorMessage.measurement? true : false}
                         color={errorMessage.measurement ? "danger" : ""}
@@ -380,6 +391,7 @@ export default function CreateTransaction({user, refresh}) {
                         size="md"
                         radius="sm"
                         placeholder="Select customer type"
+                        defaultSelectedKeys={[salesData.customer_type]}
                         isInvalid={errorMessage.customer_type? true : false}
                         color={errorMessage.customer_type ? "danger" : ""}
                         errorMessage={errorMessage.customer_type}
@@ -411,6 +423,7 @@ export default function CreateTransaction({user, refresh}) {
                           placeholder="Select payment type"
                           labelPlacement="outside"
                           size="md"
+                          defaultSelectedKeys={[salesData.payment_type]}
                           isInvalid={errorMessage.payment_type? true : false}
                           color={errorMessage.payment_type ? "danger" : ""}
                           errorMessage={errorMessage.payment_type}
@@ -429,6 +442,7 @@ export default function CreateTransaction({user, refresh}) {
                           labelPlacement="outside"
                           size="md"
                           radius="sm"
+                          defaultSelectedKeys={[salesData.payment_options]}
                           isInvalid={errorMessage.payment_options? true : false}
                           color={errorMessage.payment_options ? "danger" : ""}
                           errorMessage={errorMessage.payment_options}
@@ -449,6 +463,7 @@ export default function CreateTransaction({user, refresh}) {
                         size="md"
                         radius="sm"
                         placeholder="Leave blank if you are the sales person."
+                        defaultSelectedKeys={[salesData.sales_person]}
                         value={salesData.sales_person}
                         onChange={(e)=>(setSalesData((prevData)=>({...prevData, sales_person: e.target.value})))}
                       >
@@ -473,9 +488,40 @@ export default function CreateTransaction({user, refresh}) {
                       ): null}
                     </div>
                     <div className=" flex-1 flex flex-col gap-5 border rounded-md p-3">
-                      <div className="flex justify-between">
+                      <div className="flex flex-col gap-2">
                         <span>Product cost </span>
-                        {salesData.unit_cost}
+                        {salesData.measurement? (
+                          <div className="flex justify-between items-end">
+                            <Select 
+                              label="Price type" 
+                              labelPlacement="outside"
+                              size="sm"
+                              radius="sm"
+                              className="w-44"
+                              defaultSelectedKeys={[salesData.price_type]}
+                              value={salesData.price_type}
+                              onChange={(e)=>(setSalesData((prevData)=>({...prevData, price_type: e.target.value})))}
+                            >
+                                <SelectItem key='fixed'>
+                                  Fixed
+                                </SelectItem>
+                                <SelectItem key='custome'>
+                                  Custom
+                                </SelectItem>
+                            </Select>
+                            {salesData.price_type === 'custome'? (
+                              <Input
+                              placeholder="custom price"
+                              variant="bordered"
+                              value={salesData.unit_cost}
+                              onChange={priceChange}
+                              />
+                            ): (
+                              <span>{salesData.unit_cost}</span>
+                            )}
+                          </div>
+
+                        ): null}
                       </div>
                       <div className="flex justify-between">
                         <span>Total Amount </span>
@@ -497,7 +543,7 @@ export default function CreateTransaction({user, refresh}) {
                                 endContent={
                                   <div className="flex items-center">
                                     <label className="sr-only" htmlFor="currency">
-                                      Currency
+                                      Discount
                                     </label>
                                     <select
                                       className="outline-none border-0 bg-transparent text-default-400 text-small"

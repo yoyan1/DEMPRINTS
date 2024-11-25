@@ -84,6 +84,7 @@ export default function UpdateProduct({ data, type, category, measurement, done,
                           <Select 
                               label="Select an category" 
                               className='flex-1'
+                              defaultSelectedKeys={[productData.category]}
                               value={productData.category}
                               name="category"
                               onChange={(e)=>(setProductData((prevData)=>({...prevData, category: e.target.value})))}
@@ -100,6 +101,7 @@ export default function UpdateProduct({ data, type, category, measurement, done,
                             label="Select a unit" 
                             value={productData.unit}
                             name="unit"
+                            defaultSelectedKeys={[productData.unit]}
                             onChange={(e) => 
                             setProductData((prevData) => ({
                                 ...prevData, 
@@ -113,7 +115,7 @@ export default function UpdateProduct({ data, type, category, measurement, done,
                             </SelectItem>
                             ))}
                         </Select>
-                        <Input type="number" label="Product price" placeholder="Enter product name" value={productData.price} name="price" onChange={(e)=>(setProductData((prevData)=>({...prevData, price: e.target.value})))}/>
+                        <Input type="number" label="Product price" placeholder="Enter product price" value={productData.price} name="price" onChange={(e)=>(setProductData((prevData)=>({...prevData, price: e.target.value})))}/>
                     </form>    
                 )} 
               </ModalBody>

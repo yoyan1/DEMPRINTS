@@ -7,6 +7,12 @@ export const useUserStore = create((set) => ({
     isAuthenticate: true,
     loading: false,
     error: null,
+    findIfExist: async (data) =>{
+      set({ loading: true });
+      const response = await axios.post(process.env.NEXT_PUBLIC_API_URL+'/users/findIDNumber', data);
+      set({ loading: false });
+      return response
+    },
     create: async (data) =>{
       set({ loading: true });
       const response = await axios.post(process.env.NEXT_PUBLIC_API_URL+'/users/register', data);
