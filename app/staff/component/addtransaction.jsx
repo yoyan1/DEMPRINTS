@@ -254,19 +254,14 @@ export default function Addtransaction() {
         }
       };
 
-      // Retrieve the selected product and its price
+      
       const selectedProduct = products.find((item) => item.name === item_name);
       const finalUnitCost = selectedProduct ? selectedProduct.price : unit_cost; // Use the product's price from the DB
-      // const totalAmount = amount - discount; // Ensure correct total calculation
-      // const finalTotal = amount - discount - amount_paid;
-      // Send the transaction data
+      
       const findUser = sales_person
         ? users.filter((row) => sales_person === row.name)
         : [];
-      // const getData = await axios.get(
-      //   `https://demprints-backend.vercel.app/api/collection/getTransaction`,
-      //   `${process.env.NEXT_PUBLIC_API_URL}/collection/getTransaction`,
-      // );
+      
       const updateId = await axios.post(
         'https://demprints-backend.vercel.app/api/collection/updateID',
         { id: idGenerated[0]._id, count: newId },
@@ -389,7 +384,7 @@ export default function Addtransaction() {
         const response = await axios.get(
           'https://demprints-backend.vercel.app/api/collection/getTransaction',
         );
-        setTransactions(response.data); // Assuming the response is an array
+        setTransactions(response.data);
       } catch (error) {
         console.error('Error fetching transactions:', error);
       }
@@ -406,14 +401,15 @@ export default function Addtransaction() {
         <ModalBody className="">
           <div className=" flex gap-6 ">
             <div className="flex-1 max-w-4xl mx-auto">
-              {/* Category */}
+            
               <Select
                 size="sm"
-                label="Category"
+                label={<span className='text-black'>Select Category</span>}
                 className="mb-2"
                 autoFocus
                 isRequired
                 variant="bordered"
+                color='primary'
                 style={{ color: 'black' }}
                 onChange={(e) => setSelectedCategory(e.target.value)} // Track selected category
               >
@@ -435,12 +431,13 @@ export default function Addtransaction() {
                 <div className="flex gap-3 mb-2">
                   <Select
                     size="sm"
-                    label="Item"
+                    label={<span className='text-black'>Select Item</span>}
                     className="w-full max-w-md mx-auto text-black relative z-0 mb-2"
                     autoFocus
                     isRequired
                     value={item_name}
                     variant="bordered"
+                    color='primary'
                     style={{ color: 'black' }}
                     onChange={(e) => {
                       const selectedProductName = e.target.value;
@@ -492,12 +489,13 @@ export default function Addtransaction() {
                   {item_name && (
                     <Select
                       size="sm"
-                      label="Select Variants"
+                      label={<span className='text-black'>Select Variant</span>}
                       className="w-full max-w-md mx-auto text-black relative z-0 mb-2"
                       autoFocus
                       isRequired
                       value={variants}
                       variant="bordered"
+                      color='primary'
                       style={{ color: 'black' }}
                       onChange={(e) => {
                         const selectedProductVariants = e.target.value;
@@ -551,9 +549,11 @@ export default function Addtransaction() {
                   {variants && (
                     <Select
                       size="sm"
-                      label="Measurement"
+                      label={<span className='text-black'>Unit of Measurement</span>}
                       className="w-full max-w-md mx-auto text-black relative z-0 mb-2"
                       placeholder="Select unit"
+                      variant='bordered'
+                      color='primary'
                       isDisabled={filteredVariants.length === 0}
                       value={measurement}
                       onChange={(e) => {
@@ -589,8 +589,9 @@ export default function Addtransaction() {
                   autoFocus
                   isRequired
                   value={quantity}
-                  label="Quantity"
+                  label={<span className='text-black'>Quantity</span>}
                   variant="bordered"
+                  color='primary'
                   type="number"
                   name="quantity"
                   onChange={(e) => handleQuantityChange(e.target.value)}
@@ -602,14 +603,15 @@ export default function Addtransaction() {
                     className="flex-1"
                     value={discount}
                     name="discount"
-                    label="Discount"
+                    label={<span className='text-black'>Discount</span>}
                     variant="bordered"
+                    color='primary'
                     autoFocus
                     placeholder="Enter your discount"
                     isRequired
                     onChange={(e) => handleDiscountChange(e.target.value)}
                   />
-                  <CheckboxGroup className="bg-dark p-2 border border-gray-400">
+                  <CheckboxGroup className="bg-dark pl-5 ">
                     <Checkbox
                       className="w-8 h-8 text-blue-600"
                       checked={isPercentage}
@@ -625,11 +627,12 @@ export default function Addtransaction() {
                 {/* Customer Type Select */}
                 <Select
                   size="sm"
-                  label="Customer Type"
+                  label={<span className='text-black'>Costumer Type</span>}
                   className="w-full max-w-md mx-auto text-black relative z-0 mb-2"
                   autoFocus
                   isRequired
                   variant="bordered"
+                  color='primary'
                   value={customer_type}
                   style={{ color: 'black' }}
                   onChange={(event) => setCostumerType(event.target.value)}
@@ -638,6 +641,7 @@ export default function Addtransaction() {
                     <SelectItem
                       key={type.name}
                       variant="bordered"
+
                       style={{ color: 'black' }}
                     >
                       {type.name}
@@ -654,20 +658,22 @@ export default function Addtransaction() {
                   isRequired
                   type="text"
                   value={customer_name}
-                  label="Customer Name"
+                  label={<span className='text-black'>Costumer Name</span>}
                   variant="bordered"
+                  color='primary'
                   onChange={(event) => setCostumerName(event.target.value)}
                 />
               </div>
               <div className="flex gap-3 mb-2">
-                {/* Payment Option Select */}
+               
                 <Select
                   size="sm"
-                  label="Payment Option"
+                  label={<span className='text-black'>Payment Option</span>}
                   className="w-full max-w-md mx-auto text-black relative z-0 mb-2"
                   autoFocus
                   isRequired
                   variant="bordered"
+                  color='primary'
                   value={payment_options}
                   style={{ color: 'black' }}
                   onChange={(event) => setPaymentMethod(event.target.value)}
@@ -683,12 +689,13 @@ export default function Addtransaction() {
                   ))}
                 </Select>
 
-                {/* Payment Type Select */}
+               
                 <Select
                   size="sm"
-                  label="Payment Type"
+                  label={<span className='text-black'>Payment Type</span>}
                   className="w-full max-w-md mx-auto text-black relative z-0 mb-2"
                   variant="bordered"
+                  color='primary'
                   autoFocus
                   value={payment_type}
                   onChange={(event) => setPaymentType(event.target.value)}
@@ -712,14 +719,16 @@ export default function Addtransaction() {
                 <div className="w-full max-w-md mx-auto text-black relative z-0 mb-2">
                   <Input
                     size="sm"
+                    variant='bordered'
+                    color='primary'
                     className="w-full text-black relative z-0"
                     style={{ color: 'black' }}
                     autoFocus
                     isRequired
                     type="text"
                     value={amount_paid}
-                    label="Amount Paid"
-                    variant="bordered"
+                    label={<span>Amount paid</span>}
+                    
                     onChange={(e) => handlePaidAmount(e.target.value)}
                   />
                 </div>
@@ -773,6 +782,9 @@ export default function Addtransaction() {
           </div>
           <Textarea
             isRequired
+            autoFocus
+            variant='bordered'
+            color='primary'
             placeholder="Write Remarks...."
             className="w-full"
             onChange={(e) => setRemarks(e.target.value)}

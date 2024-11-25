@@ -1,5 +1,5 @@
-"use client";
-import React, { useState, useMemo, useEffect } from "react";
+'use client';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   Modal,
   ModalContent,
@@ -7,7 +7,7 @@ import {
   ModalBody,
   Button,
   useDisclosure,
-} from "@nextui-org/react";
+} from '@nextui-org/react';
 
 import {
   Table,
@@ -24,48 +24,49 @@ import {
   Chip,
   Pagination,
   Spinner,
-  DateRangePicker
-} from "@nextui-org/react";
-import { CiSearch } from "react-icons/ci";
-import { IoChevronDown } from "react-icons/io5";
-import { capitalize } from "@/app/composables/utils";
-import { HiMiniViewfinderCircle } from "react-icons/hi2";
+  DateRangePicker,
+} from '@nextui-org/react';
+import { CiSearch } from 'react-icons/ci';
+import { IoChevronDown } from 'react-icons/io5';
+import { capitalize } from '@/app/composables/utils';
+import { HiMiniViewfinderCircle } from 'react-icons/hi2';
 // import ExpandTransaction from './ExpandModal'
 // import ExportToPdf from '@/app/composables/exportToPdf'
 // import CreateTransaction from './AddTransaction'
-import Addtransaction from "../component/addtransaction";
-import { useSalesStore } from "@/app/stores/transactionStore";
-import { formatDate, formatTime } from "../../composables/formateDateAndTime";
+import Addtransaction from '../component/addtransaction';
+import { useSalesStore } from '@/app/stores/transactionStore';
+import { formatDate, formatTime } from '../../composables/formateDateAndTime';
 import { parseDate, getLocalTimeZone } from '@internationalized/date';
 import { getDateAndTime } from '@/app/composables/dateAndTime';
 
 const itemColorMap = {
-  tarpaulin: "warning",
-  photoprint: "primary",
-  photocopy: "success",
-  others: "danger",
+  tarpaulin: 'warning',
+  photoprint: 'primary',
+  photocopy: 'success',
+  others: 'danger',
 };
 const typeColorMap = {
-  walk_in: "success",
-  online: "primary",
+  walk_in: 'success',
+  online: 'primary',
 };
 
 const INITIAL_VISIBLE_COLUMNS = [
-  "date",
-  "time",
-  "transaction_no",
-  "item_no",
-  "item_name",
-  "unit_cost",
-  "quantity",
-  "amount",
-  "discount",
-  "total",
-  "customer_type",
-  "customer_name",
-  "payment_method",
-  "sales_person",
-  "remarks",
+  'date',
+  'time',
+  'transaction_no',
+  'item_no',
+  'item_name',
+  'unit_cost',
+  'quantity',
+  'sub_total',
+  'discount',
+  'total_amount',
+  'customer_type',
+  'customer_name',
+  'payment_options',
+  'payment_method',
+  'sales_person',
+  'remarks',
 ];
 // const INITIAL_VISIBLE_COLUMNS_ALL = [
 //   "date",
@@ -95,11 +96,11 @@ export default function AllTransaction() {
     loading,
     fetchTransactions,
   } = useSalesStore();
-  const [filterValue, setFilterValue] = useState("");
+  const [filterValue, setFilterValue] = useState('');
   const [selectedKeys, setSelectedKeys] = useState(new Set([]));
   const [visibleColumns] = useState(new Set(INITIAL_VISIBLE_COLUMNS));
-  const [statusFilter, setStatusFilter] = useState("all");
-  const [typeFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [typeFilter] = useState('all');
   const { date } = getDateAndTime();
   const [rowsPerPage, setRowsPerPage] = useState(30);
   const [selectedDate, setSelectedDate] = React.useState({
@@ -107,8 +108,8 @@ export default function AllTransaction() {
     end: parseDate(date),
   });
   const [sortDescriptor, setSortDescriptor] = useState({
-    column: "age",
-    direction: "ascending",
+    column: 'age',
+    direction: 'ascending',
   });
   const [page, setPage] = useState(1);
 
@@ -119,10 +120,10 @@ export default function AllTransaction() {
   const hasSearchFilter = Boolean(filterValue);
 
   const headerColumns = useMemo(() => {
-    if (visibleColumns === "all") return columns;
+    if (visibleColumns === 'all') return columns;
 
     return columns.filter((column) =>
-      Array.from(visibleColumns).includes(column.dataKey)
+      Array.from(visibleColumns).includes(column.dataKey),
     );
   }, [visibleColumns]);
 
@@ -131,23 +132,23 @@ export default function AllTransaction() {
 
     if (hasSearchFilter) {
       filteredTransactions = filteredTransactions.filter((item) =>
-        item.item_name.toLowerCase().includes(filterValue.toLowerCase())
+        item.item_name.toLowerCase().includes(filterValue.toLowerCase()),
       );
     }
     if (
-      statusFilter !== "all" &&
+      statusFilter !== 'all' &&
       Array.from(statusFilter).length !== itemOptions.length
     ) {
       filteredTransactions = filteredTransactions.filter((user) =>
-        Array.from(statusFilter).includes(user.item_name.toLowerCase())
+        Array.from(statusFilter).includes(user.item_name.toLowerCase()),
       );
     }
     if (
-      typeFilter !== "all" &&
+      typeFilter !== 'all' &&
       Array.from(typeFilter).length !== typeOptions.length
     ) {
       filteredTransactions = filteredTransactions.filter((user) =>
-        Array.from(typeFilter).includes(user.customer_type.toLowerCase())
+        Array.from(typeFilter).includes(user.customer_type.toLowerCase()),
       );
     }
     if (selectedDate) {
@@ -182,7 +183,7 @@ export default function AllTransaction() {
       const second = b[sortDescriptor.column];
       const cmp = first < second ? -1 : first > second ? 1 : 0;
 
-      return sortDescriptor.direction === "descending" ? -cmp : cmp;
+      return sortDescriptor.direction === 'descending' ? -cmp : cmp;
     });
   }, [sortDescriptor, items]);
 
@@ -190,7 +191,7 @@ export default function AllTransaction() {
     const cellValue = user[columnKey];
 
     switch (columnKey) {
-      case "date":
+      case 'date':
         return (
           <div className="flex flex-col">
             <p className="text-bold text-small capitalize">
@@ -198,7 +199,7 @@ export default function AllTransaction() {
             </p>
           </div>
         );
-      case "time":
+      case 'time':
         return (
           <div className="flex flex-col">
             <p className="text-bold text-small capitalize">
@@ -206,20 +207,20 @@ export default function AllTransaction() {
             </p>
           </div>
         );
-      case "transaction_no":
+      case 'transaction_no':
         return (
           <div className="flex flex-col">
             <p className="text-bold text-small capitalize">{cellValue}</p>
           </div>
         );
-      case "item_name":
+      case 'item_name':
         return (
           <Chip
             className="capitalize"
             color={
               itemColorMap[
-                user.item_name.toLowerCase() === "photo print"
-                  ? "photoprint"
+                user.item_name.toLowerCase() === 'photo print'
+                  ? 'photoprint'
                   : user.item_name.toLowerCase()
               ]
             }
@@ -229,21 +230,21 @@ export default function AllTransaction() {
             {cellValue}
           </Chip>
         );
-      case "discount":
+      case 'discount':
         return (
           <div className="flex flex-col">
             <p className="text-bold text-small capitalize">{cellValue}%</p>
           </div>
         );
 
-      case "customer_type":
+      case 'customer_type':
         return (
           <Chip
             className="capitalize"
             color={
               typeColorMap[
-                user.customer_type.toLowerCase() === "walk in"
-                  ? "walk_in"
+                user.customer_type.toLowerCase() === 'walk in'
+                  ? 'walk_in'
                   : user.customer_type.toLowerCase()
               ]
             }
@@ -280,12 +281,12 @@ export default function AllTransaction() {
       setFilterValue(value);
       setPage(1);
     } else {
-      setFilterValue("");
+      setFilterValue('');
     }
   }, []);
 
   const onClear = React.useCallback(() => {
-    setFilterValue("");
+    setFilterValue('');
     setPage(1);
   }, []);
 
@@ -359,7 +360,7 @@ export default function AllTransaction() {
               </DropdownMenu>
             </Dropdown>
             <Button color="primary" onPress={() => handleOpen()}>
-              Add{" "}
+              Add{' '}
             </Button>
 
             {/* <CreateTransaction isSubmit={(data)=>(refresh(data))}/> */}
@@ -406,8 +407,8 @@ export default function AllTransaction() {
     return (
       <div className="py-2 px-2 flex justify-between items-center">
         <span className="w-[30%] text-small text-default-400">
-          {selectedKeys === "all"
-            ? "All items selected"
+          {selectedKeys === 'all'
+            ? 'All items selected'
             : `${selectedKeys.size} of ${filteredItems.length} selected`}
         </span>
         <Pagination
@@ -459,7 +460,7 @@ export default function AllTransaction() {
           isHeaderSticky
           bottomContentPlacement="outside"
           classNames={{
-            wrapper: "max-h-[382px]",
+            wrapper: 'max-h-[382px]',
           }}
           selectedKeys={selectedKeys}
           selectionMode="multiple"
@@ -480,7 +481,7 @@ export default function AllTransaction() {
             )}
           </TableHeader>
           <TableBody
-            emptyContent={"No transaction found"}
+            emptyContent={'No transaction found'}
             items={sortedItems}
             isLoading={loading}
             loadingContent={<Spinner label="Loading..." />}

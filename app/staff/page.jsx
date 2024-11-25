@@ -166,25 +166,6 @@ export default function Transaction() {
         Array.from(typeFilter).includes(user.customer_type.toLowerCase()),
       );
     }
-    // if (selectedDate) {
-    //   filteredTransactions = filteredTransactions.filter((transaction) =>
-    //     transaction.date.includes(selectedDate)
-    //   );
-    // }
-
-    // if (selectedDate) {
-    //   filteredTransactions = filteredTransactions.filter((transaction) => {
-    //     const transactionDate = new Date(transaction.date);
-    //     const start = new Date(selectedDate.start);
-    //     const end = new Date(selectedDate.end);
-
-    //     if (start === date) {
-    //       return transaction;
-    //     } else {
-    //       return transactionDate >= start && transactionDate <= end;
-    //     }
-    //   });
-    // }
 
     if (selectedDate) {
       filteredTransactions = filteredTransactions.filter((transaction) => {
@@ -194,20 +175,6 @@ export default function Transaction() {
         return transactionDate >= start && transactionDate <= end;
       });
     }
-    // if (selectedDate) {
-    //   filteredTransactions = filteredTransactions.filter((transaction) => {
-    //     const transactionDate = new Date(transaction.date);
-    //     const start = new Date(selectedDate.start);
-    //     const end = new Date(selectedDate.end);
-
-    //     // Compare timestamps for equality (using getTime)
-    //     if (start.getTime() === transactionDate.getTime()) {
-    //       return transaction;
-    //     } else {
-    //       return transactionDate >= start && transactionDate <= end;
-    //     }
-    //   });
-    // }
 
     return filteredTransactions;
   }, [transactions, filterValue, statusFilter, typeFilter, selectedDate]);
@@ -233,41 +200,14 @@ export default function Transaction() {
     );
   };
 
-  // const getDateRange = (start, end) => {
-  //   return {
-  //     start: new Date(start),
-  //     end: new Date(end),
-  //   };
-  // };
-
   const totals = useMemo(() => {
     const start = new Date(selectedDate.start);
     const end = new Date(selectedDate.end);
     return getTotalSalesInRange(transactions, start, end, options);
   }, [transactions, selectedDate.start, selectedDate.end, options]);
-  
-  // Use `totals` instead of calling `getTotalSalesInRange` again
+
   const { totalSales, ...salesByOptions } = totals;
 
-  // const handleDateChange = ({ start, end }) => {
-  //   if (start && endDate) {
-  //     setSelectedDate({
-  //       start: startDate,
-  //       end: endDate,
-  //     });
-  //   }
-  // };
-  // const handleClearChange = (event) => {
-  //   event.preventDefault();
-  //   setSelectedDate(' ');
-  // };
-  // const handleDateChange = (date) => {
-  //   const year = date.year ? `${date.year}-` : '';
-  //   const month = date.month ? `${date.month}-` : '';
-  //   const day = date.day ? date.day : '';
-  //   const fullDate = year + month + day;
-  //   setSelectedDate(fullDate ? fullDate : '');
-  // };
   const pages = Math.ceil(filteredItems.length / rowsPerPage);
 
   const items = useMemo(() => {
@@ -277,13 +217,6 @@ export default function Transaction() {
     return filteredItems.slice(start, end);
   }, [page, filteredItems, rowsPerPage]);
 
-  // const filteredTransactions = useMemo(
-  //   () =>
-  //     transactions.filter((transaction) =>
-  //       transaction.date.includes(selectedDate),
-  //     ),
-  //   [transactions, selectedDate],
-  // );
   const sortedItems = useMemo(() => {
     return [...items].sort((a, b) => {
       const first = a[sortDescriptor.column];
@@ -396,32 +329,31 @@ export default function Transaction() {
           </span>
         </div>
         <div className="flex justify-end">
-          <Card className="max-w-[400px] border border-gray-700 shadow-none">
-            <CardHeader className="flex gap-3">
-              <span>{formatDate(selectedDate.start, selectedDate.end)}</span>
-            </CardHeader>
+          <div className="max-w-[400px] border border-gray-700 shadow-none">
+            <div className="flex gap-3">
+              <span>
+                {formatDate(selectedDate.start)} -{' '}
+                {formatDate(selectedDate.end)}
+              </span>
+            </div>
             <Divider />
-            <CardBody>
+            <div>
               <span className="text-lg">Sales: {Math.round(totalSales)}</span>
 
-              {/* Breakdown by payment options */}
-              <div className="flex flex-col gap-2">
-                {options.length > 0
-                  ? options.map((transactionOptions) => (
-                      <div
-                        key={transactionOptions.name}
-                        className="rounded-xl text-white p-2"
-                      >
-                        {transactionOptions.name}:{' '}
-                        {salesByOptions[transactionOptions.name] || 0}
-                      </div>
-                    ))
-                  : null}
+              <div className="flex  gap-2">
+                {options.map((transactionOptions) => (
+                  <div
+                    key={transactionOptions.name}
+                    className="flex text-black p-2"
+                  >
+                    {transactionOptions.name}:{' '}
+                    {salesByOptions?.[transactionOptions.name] || 0}
+                  </div>
+                ))}
               </div>
-            </CardBody>
+            </div>
             <Divider />
-            <CardFooter></CardFooter>
-          </Card>
+          </div>
         </div>
         <div className="flex flex-col gap-4 m-2 mt-3">
           <div className="flex justify-between gap-3 items-end">
@@ -624,7 +556,7 @@ export default function Transaction() {
           size="full"
           isOpen={isAllTransactionOpen}
           onClose={closeAllTransaction}
-          scrollBehavior="outside"
+          scrollBehavior="inside"
         >
           <ModalContent>
             <ModalBody>

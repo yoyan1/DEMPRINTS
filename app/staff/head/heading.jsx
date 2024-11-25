@@ -2,36 +2,20 @@
 
 import React, { useEffect } from 'react';
 // import { Spinner } from "@nextui-org/react";
-import { Image } from '@nextui-org/image';
-import {
-  Dropdown,
-  DropdownTrigger,
-  Button,
-  DropdownMenu,
-  DropdownItem,
-} from '@nextui-org/react';
-import { useUserStore } from '../../stores/userStore';
+// import { Image } from '@nextui-org/image';
+// import {
+//   Dropdown,
+//   DropdownTrigger,
+//   Button,
+//   DropdownMenu,
+//   DropdownItem,
+// } from '@nextui-org/react';
+// import { useUserStore } from '../../stores/userStore';
 import DarkMode from '@/app/components/public-component/darkMode.jsx';
 // import { useRouter } from "next/navigation";
 
 export default function Heading() {
-  // const { user, getAuthenticateUser } = useUserStore();
-  // const router = useRouter();
-
-  // useEffect(() => {
-  //   getAuthenticateUser();
-  // }, [getAuthenticateUser]);
-
-  // if (loading) {
-  //   return (
-  //     <div><Spinner label="Loading..." /></div>
-  //   );
-  // }
-
-  // if (!user && !loading) {
-  //   router.push('/login');
-  //   return null;
-  // }
+  
 
   return (
     <>
@@ -40,7 +24,7 @@ export default function Heading() {
       <nav className=" border-b border-gray-200 px-4 py-2.5 left-0 right-0 top-0 z-50  ">
         <div className="flex flex-wrap justify-between items-center">
           <div className="flex justify-start items-center">
-            <button
+            {/* <button
               data-drawer-target="drawer-navigation"
               data-drawer-toggle="drawer-navigation"
               aria-controls="drawer-navigation"
@@ -71,7 +55,7 @@ export default function Heading() {
                   clipRule="evenodd"
                 ></path>
               </svg>
-            </button>
+            </button> */}
           </div>
           <div className="flex justify-start items-center"></div>
           <div className="flex items-center lg:order-2">
