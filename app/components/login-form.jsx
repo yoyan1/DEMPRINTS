@@ -4,12 +4,19 @@ import { Input, Button } from "@nextui-org/react"
 import { useUserStore } from "../stores/userStore"
 import { useRouter } from 'next/navigation'
 import { decodeToken } from "../utils/decodeToken"
+import { IoEye } from "react-icons/io5";
+import { IoIosEyeOff } from "react-icons/io";
+
 
 export function LoginForm() {
   const { login, loading } = useUserStore()
   const [ credentials, setCredentials ] = useState({id_number: '', password: ''})
   const [errorMessage, setErrorMessage] = useState()
   const [mounted, setMounted] = useState(false); 
+  const [isVisible, setIsVisible] = useState(false);
+
+  const toggleVisibility = () => setIsVisible(!isVisible);
+
   
   useEffect(() => {
     setMounted(true)
@@ -76,10 +83,19 @@ export function LoginForm() {
                 <Input 
                 size="lg" 
                 label="Password" 
-                type="password" 
+                type={isVisible ? "text" : "password"}
                 labelPlacement="outside" 
                 placeholder="Enter your password"
                 name="password"
+                endContent={
+                  <button className="focus:outline-none" type="button" onClick={toggleVisibility} aria-label="toggle password visibility">
+                    {isVisible ? (
+                      <IoIosEyeOff className="text-2xl text-default-400 pointer-events-none" />
+                    ) : (
+                      <IoEye className="text-2xl text-default-400 pointer-events-none" />
+                    )}
+                  </button>
+                }          
                 value={credentials.password}
                 onChange={handleChange}
                 />

@@ -51,21 +51,28 @@ export default function ViewDetails({data}) {
               <ModalHeader className="flex flex-col gap-1">Employee profile</ModalHeader>
               <ModalBody>
                 <div className="flex flex-col gap-5">
-                    <div className="flex items-center gap-2 border p-4 rounded-md">
-                    <Avatar className="w-20 h-20">
-                        <AvatarImage src="https://github.com/shadcn.p" alt="@shadcn" />
-                        <AvatarFallback>{name[0][0]}{name[2][0]}</AvatarFallback>
-                    </Avatar>
+                    <div className="flex items-center gap-2 border p-4 rounded-xl">
+                    {data.image? (
+                        <Avatar className="w-20 h-20">
+                            <AvatarImage src={data.image} alt="@shadcn" />
+                            <AvatarFallback>{data.firstname[0]}{data.lastname[0]}</AvatarFallback>
+                        </Avatar>
+                    ) : (
+                        <Avatar className="w-20 h-20">
+                            <AvatarImage src={data.gender === 'female'? '/female-avatar.png' : '/male-avatar.png'} alt="@shadcn" />
+                            <AvatarFallback>{data.firstname[0]}{data.lastname[0]}</AvatarFallback>
+                        </Avatar>
+                    )}
                         <div className="flex-1 flex justify-between">
                             <div>
                                 <h3>{data.name}</h3>
                                 <h5 className="text-default-400 text-sm">{data.job_title}</h5>
                                 <h5 className="text-default-400 text-sm">{data.department}</h5>
                             </div>
-                            <Button isIconOnly variant="faded"><BiEditAlt className="h-5 w-5 text-default-400"/></Button>
+                            {/* <Button isIconOnly variant="faded"><BiEditAlt className="h-5 w-5 text-default-400"/></Button> */}
                         </div>
                     </div>
-                    <div className="border p-4 rounded-md">
+                    <div className="border p-4 rounded-xl">
                         <h3 className="pb-4 text-lg">Personal Information</h3>
                         <div className="flex flex-col items-center gap-3">
                             <div className="flex  justify-between w-full">
@@ -96,7 +103,7 @@ export default function ViewDetails({data}) {
                                     <span className="text-default-500 text-sm">{data.age}</span>
                                 </div>
                             </div>
-                            <div className="w-full border rounded-md p-3">
+                            <div className="w-full border rounded-xl p-3">
                                 <h3 className="text-md pb-2">Contact details</h3>
                                 <div className="flex justify-between">
                                     <h3 className="flex-1 flex items-center text-sm">
@@ -115,7 +122,7 @@ export default function ViewDetails({data}) {
                                     </h3>
                                 </div>
                             </div>
-                            <div className="w-full border rounded-md p-3">
+                            <div className="w-full border rounded-xl p-3">
                                 <h3 className="text-md pb-2">Contact Person <span className="text-default-500 text-sm">( father)</span></h3>
                                 <div className="flex justify-between">
                                     <h3 className="flex-1 flex items-center text-sm">
@@ -161,7 +168,7 @@ export default function ViewDetails({data}) {
                             </div>
                         </div>
                     </div>
-                    <div className="border p-4 rounded-md">
+                    <div className="border p-4 rounded-xl">
                         <div className="flex justify-between items-center">
                             <h3 className="text-lg">Employment Details</h3>
                             <Button isIconOnly variant="light"><BiEditAlt className="h-5 w-5 text-default-400"/></Button>
@@ -182,7 +189,7 @@ export default function ViewDetails({data}) {
                         </div>
                     </div>
                     {contractImage || preEmploymentImage || certificatesImage?(
-                        <div className="border p-4 rounded-md">
+                        <div className="border p-4 rounded-xl">
                             <span className="mb-2">Compliance and Audit</span>
                             {contractImage? <ViewImage imageUrl={contractImage}/> : null}
                             {preEmploymentImage? <ViewImage imageUrl={preEmploymentImage}/> : null }
