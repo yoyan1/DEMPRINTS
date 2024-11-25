@@ -317,7 +317,7 @@ export default function Transaction() {
   const topContent = useMemo(() => {
     return (
       <>
-        <div className="flex col items-center gap-3 ">
+        <div className="flex col items-center gap-3">
           <span className="flex flex-col  text-2xl">
             <div className="flex items-center gap-2">
               <FaChartLine className="text-2xl" />
@@ -329,7 +329,7 @@ export default function Transaction() {
           </span>
         </div>
         <div className="flex justify-end">
-          <div className="max-w-[400px] border border-gray-700 shadow-none">
+          <div className="max-w-[400px] border border-gray-700 shadow-none p-5">
             <div className="flex gap-3">
               <span>
                 {formatDate(selectedDate.start)} -{' '}
@@ -344,7 +344,7 @@ export default function Transaction() {
                 {options.map((transactionOptions) => (
                   <div
                     key={transactionOptions.name}
-                    className="flex text-black p-2"
+                    className="flex text-black dark:text-black p-2"
                   >
                     {transactionOptions.name}:{' '}
                     {salesByOptions?.[transactionOptions.name] || 0}
