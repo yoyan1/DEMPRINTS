@@ -27,9 +27,10 @@ import { CiSearch } from "react-icons/ci";
 import { IoChevronDown } from "react-icons/io5";
 import { useUserStore } from "../../stores/userStore";
 import { capitalize } from "@/app/composables/utils";
-import CreateOrUpdate from "@/app/components/adminComponents/employee/CreateOrUpdate";
+import CreateUser from "@/app/components/adminComponents/employee/CreateUser";
 import ViewDetails from "@/app/components/adminComponents/employee/ViewDetails";
 import DeleteUser from "@/app/components/adminComponents/employee/deleteUser"
+import UpdateUser from "../../components/adminComponents/employee/UpdateUser";
 
 const statusColorMap = {
   active: "success",
@@ -95,9 +96,18 @@ export default function Employee() {
     switch (columnKey) {
       case "name":
         return (
-          <User avatarProps={{ radius: "lg", src: user.avatar }} description={user.id_number} name={user.name}>
-            {user.id_number}
-          </User>
+          <div>
+            {user.image? (
+              <User avatarProps={{ radius: "lg", src: user.image }} description={user.id_number} name={user.name}>
+                {user.id_number}
+              </User>
+            ) : (
+              <User avatarProps={{ radius: "lg", src: user.gender === 'female'? '/female-avatar.png' : '/male-avatar.png'}} description={user.id_number} name={user.name}>
+                {user.id_number}
+              </User>
+            )}
+          </div>
+
         );
       case "job_title":
         return (
@@ -122,7 +132,7 @@ export default function Employee() {
             </Tooltip>
             <Tooltip content="Edit user status">
               <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
-                <BiEditAlt />
+                <UpdateUser />
               </span>
             </Tooltip>
             <DeleteUser id={user.id} refresh={fetchUsers}/>
@@ -214,7 +224,7 @@ export default function Employee() {
           {/* <Button color="primary" endContent={<FaPlus />}>
             Add New
           </Button> */}
-          <CreateOrUpdate done={fetchUsers}/>
+          <CreateUser done={fetchUsers}/>
         </div>
       </div>
       <div className="flex justify-between items-center">
@@ -264,7 +274,7 @@ export default function Employee() {
           isHeaderSticky
           bottomContent={bottomContent}
           bottomContentPlacement="outside"
-          classNames={{ wrapper: "max-h-[382px]" }}
+          classNames={{ wrapper: "max-h-[382px]", th: "bg-blue-900 text-slate-300"}}
           selectedKeys={selectedKeys}
           selectionMode="multiple"
           sortDescriptor={sortDescriptor}

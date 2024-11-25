@@ -159,6 +159,22 @@ export default function CreateOrUpdate({done}) {
     }));
     setErrorMessages((prev) => ({ ...prev, name: "" }));
   };
+
+  const handleFileChange = (e) => {
+    const {name, value} = e.target
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setCredentials((prevData)=> ({
+          ...prevData,
+          [name]: reader.result
+        }))
+      };
+      reader.readAsDataURL(file); 
+    }
+  }
+
   const toggleVisibility = () => setIsVisible(!isVisible);
 
   const handleClose = () => {
@@ -730,114 +746,230 @@ const submit = async (id, id2, id3) => {
                         </div>
                         </div>
                     ) : step === 3 ? (
-                        <div className="flex flex-col gap-5 max-h-[20rem] overflow-y-scroll">
-                        <div>
-                            <span>Employment Details</span>
-                            <div className="flex flex-col md:flex-row lg:flex-row gap-5 pt-3">
-                            <Select
-                                label="Select Job Title"
-                                className="max-w-"
-                                name="job_title"
-                                defaultSelectedKeys={[credentials.job_title]}
-                                isInvalid={errorMessages.job_title? true : false}
-                                color={errorMessages.job_title ? "danger" : ""}
-                                errorMessage={errorMessages.job_title}
-                                value={credentials.job_title}
-                                onChange={handleChange}
-                            >
-                                {jobData.job_title.map((job) => (
-                                <SelectItem key={job}>{job}</SelectItem>
-                                ))}
-                            </Select>
-                            <Select
-                                label="Select Department"
-                                className="max-w-"
-                                name="department"
-                                defaultSelectedKeys={[credentials.department]}
-                                isInvalid={errorMessages.department? true : false}
-                                color={errorMessages.department ? "danger" : ""}
-                                errorMessage={errorMessages.department}
-                                value={credentials.department}
-                                onChange={handleChange}
-                            >
-                                {jobData.department.map((dep) => (
-                                <SelectItem key={dep}>{dep}</SelectItem>
-                                ))}
-                            </Select>
-                            <DatePicker
-                                label="Hired date"
-                                className="max-w-[284px]"
-                                isInvalid={errorMessages.hire_date? true : false}
-                                color={errorMessages.hire_date ? "danger" : ""}
-                                errorMessage={errorMessages.hire_date}
-                                clearable
-                                initialValue={new Date()}
-                                onChange={handleHireDateChange}
-                                showMonthAndYearPickers
-                            />
-                            </div>
-                        </div>
-                        <div>
-                            <span>Compensation and Benefits</span>
-                            <div className="flex flex-col md:flex-row lg:flex-row gap-5 pt-3">
-                            <Input radius="sm"
-                                type="number"
-                                placeholder="00.00"
-                                label="Wage"
-                                name="wage"
-                                isInvalid={errorMessages.wage? true : false}
-                                color={errorMessages.wage ? "danger" : ""}
-                                errorMessage={errorMessages.wage}
-                                value={credentials.wage}
-                                onChange={handleChange}
-                                startContent={
-                                <div className="pointer-events-none flex items-center">
-                                    <span className="text-default-400 text-small">
-                                    ₱
-                                    </span>
-                                </div>
-                                }
-                            />
-                            <Select
-                                label="Compensation Basis"
-                                name="basis"
-                                defaultSelectedKeys={[credentials.basis]}
-                                isInvalid={errorMessages.basis? true : false}
-                                color={errorMessages.basis ? "danger" : ""}
-                                errorMessage={errorMessages.basis}
-                                value={credentials.basis}
-                                onChange={handleChange}
-                            >
-                                {jobData.compensation_basis.map(item => (
-                                <SelectItem key={item}>{item}</SelectItem>
-                                ))}
-                            </Select>
-                            <Select
-                                label="Frequency"
-                                name="frequency"
-                                defaultSelectedKeys={[credentials.frequency]}
-                                isInvalid={errorMessages.frequency? true : false}
-                                color={errorMessages.frequency ? "danger" : ""}
-                                errorMessage={errorMessages.frequency}
-                                value={credentials.frequency}
-                                onChange={handleChange}
-                            >
-                                {jobData.frequency.map(item => (
-                                <SelectItem key={item}>{item}</SelectItem>
-                                ))}
-                            </Select>
-                            </div>
-                        </div>
-                        <div>
+                        <div className="flex flex-col gap-5">
+                          <div>
+                              <span>Employment Details</span>
+                              <div className="flex flex-col md:flex-row lg:flex-row gap-5 pt-3">
+                              <Select
+                                  label="Select Job Title"
+                                  className="max-w-"
+                                  name="job_title"
+                                  defaultSelectedKeys={[credentials.job_title]}
+                                  isInvalid={errorMessages.job_title? true : false}
+                                  color={errorMessages.job_title ? "danger" : ""}
+                                  errorMessage={errorMessages.job_title}
+                                  value={credentials.job_title}
+                                  onChange={handleChange}
+                              >
+                                  {jobData.job_title.map((job) => (
+                                  <SelectItem key={job}>{job}</SelectItem>
+                                  ))}
+                              </Select>
+                              <Select
+                                  label="Select Department"
+                                  className="max-w-"
+                                  name="department"
+                                  defaultSelectedKeys={[credentials.department]}
+                                  isInvalid={errorMessages.department? true : false}
+                                  color={errorMessages.department ? "danger" : ""}
+                                  errorMessage={errorMessages.department}
+                                  value={credentials.department}
+                                  onChange={handleChange}
+                              >
+                                  {jobData.department.map((dep) => (
+                                  <SelectItem key={dep}>{dep}</SelectItem>
+                                  ))}
+                              </Select>
+                              <DatePicker
+                                  label="Hired date"
+                                  className="max-w-[284px]"
+                                  isInvalid={errorMessages.hire_date? true : false}
+                                  color={errorMessages.hire_date ? "danger" : ""}
+                                  errorMessage={errorMessages.hire_date}
+                                  clearable
+                                  initialValue={new Date()}
+                                  onChange={handleHireDateChange}
+                                  showMonthAndYearPickers
+                              />
+                              </div>
+                          </div>
+                          <div>
+                              <span>Compensation and Benefits</span>
+                              <div className="flex flex-col md:flex-row lg:flex-row gap-5 pt-3">
+                              <Input radius="sm"
+                                  type="number"
+                                  placeholder="00.00"
+                                  label="Wage"
+                                  name="wage"
+                                  isInvalid={errorMessages.wage? true : false}
+                                  color={errorMessages.wage ? "danger" : ""}
+                                  errorMessage={errorMessages.wage}
+                                  value={credentials.wage}
+                                  onChange={handleChange}
+                                  startContent={
+                                  <div className="pointer-events-none flex items-center">
+                                      <span className="text-default-400 text-small">
+                                      ₱
+                                      </span>
+                                  </div>
+                                  }
+                              />
+                              <Select
+                                  label="Compensation Basis"
+                                  name="basis"
+                                  defaultSelectedKeys={[credentials.basis]}
+                                  isInvalid={errorMessages.basis? true : false}
+                                  color={errorMessages.basis ? "danger" : ""}
+                                  errorMessage={errorMessages.basis}
+                                  value={credentials.basis}
+                                  onChange={handleChange}
+                              >
+                                  {jobData.compensation_basis.map(item => (
+                                  <SelectItem key={item}>{item}</SelectItem>
+                                  ))}
+                              </Select>
+                              <Select
+                                  label="Frequency"
+                                  name="frequency"
+                                  defaultSelectedKeys={[credentials.frequency]}
+                                  isInvalid={errorMessages.frequency? true : false}
+                                  color={errorMessages.frequency ? "danger" : ""}
+                                  errorMessage={errorMessages.frequency}
+                                  value={credentials.frequency}
+                                  onChange={handleChange}
+                              >
+                                  {jobData.frequency.map(item => (
+                                  <SelectItem key={item}>{item}</SelectItem>
+                                  ))}
+                              </Select>
+                              </div>
+                          </div>
+                          <div>
                             <span>Legal Compliance and Audit</span>
-                            <div className="flex flex-col md:flex-row lg:flex-row gap-5 py-2 pt-3">
-                            <Input radius="sm" type="file" label="Contract" onChange={(e)=>(setContract(e.target.files[0])) }/>
-                            <Input radius="sm"
-                                type="file"
-                                label="Pre-employment document"
-                                onChange={(e)=>(setPreEmployment(e.target.files[0])) }
-                            />
-                            <Input radius="sm" type="file" label="Training certificates" onChange={(e)=>(setcertificates(e.target.files[0])) }/>
+                            <div className="grid grid-cols-2 gap-4 py-2 pt-3">
+                              <div class="max-w-md mx-auto rounded-lg overflow-hidden md:max-w-xl">
+                                <div class="md:flex">
+                                  <div class="w-full p-3">
+                                    <div
+                                      class="relative h-48 rounded-lg border-2 border-blue-500 bg-gray-50 flex justify-center items-center shadow-lg hover:shadow-xl transition-shadow duration-300 ease-in-out"
+                                    >
+                                      <div class="absolute flex flex-col items-center">
+                                        {credentials.contract? (
+                                          <img
+                                            alt="File Icon"
+                                            class="mb-3 w-20 h-20"
+                                            src={credentials.contract}
+                                          />
+                                        ) : (
+                                          <img
+                                            alt="File Icon"
+                                            class="mb-3"
+                                            src="https://img.icons8.com/dusk/64/000000/file.png"
+                                          />
+                                        )}
+                                        <span class="block text-gray-500 font-semibold"
+                                          >Drag &amp; drop your files here</span
+                                        >
+                                        <span class="block text-gray-400 font-normal mt-1"
+                                          >or click to upload contract</span
+                                        >
+                                      </div>
+
+                                      <input
+                                        class="h-full w-full opacity-0 cursor-pointer"
+                                        type="file"
+                                        name="contract"
+                                        onChange={(e)=>{
+                                          setContract(e.target.files[0])
+                                          handleFileChange(e)
+                                        }}
+                                      />
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                              <div class="max-w-md mx-auto rounded-lg overflow-hidden md:max-w-xl">
+                                <div class="md:flex">
+                                  <div class="w-full p-3">
+                                    <div
+                                      class="relative h-48 rounded-lg border-2 border-blue-500 bg-gray-50 flex justify-center items-center shadow-lg hover:shadow-xl transition-shadow duration-300 ease-in-out"
+                                    >
+                                      <div class="absolute flex flex-col items-center">
+                                        {credentials.pre_employment? (
+                                          <img
+                                            alt="File Icon"
+                                            class="mb-3 w-20 h-20"
+                                            src={credentials.pre_employment}
+                                          />
+                                        ) : (
+                                          <img
+                                            alt="File Icon"
+                                            class="mb-3"
+                                            src="https://img.icons8.com/dusk/64/000000/file.png"
+                                          />
+                                        )}
+                                        <span class="block text-gray-500 font-semibold"
+                                          >Drag &amp; drop your files here</span
+                                        >
+                                        <span class="block text-gray-400 font-normal mt-1"
+                                          >or click to upload pre employment</span
+                                        >
+                                      </div>
+
+                                      <input
+                                        class="h-full w-full opacity-0 cursor-pointer"
+                                        type="file"
+                                        name="pre_employment"
+                                        onChange={(e)=>{
+                                          setPreEmployment(e.target.files[0])
+                                          handleFileChange(e)
+                                        }}
+                                      />
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                              <div class="max-w-md mx-auto rounded-lg overflow-hidden md:max-w-xl">
+                                <div class="md:flex">
+                                  <div class="w-full p-3">
+                                    <div
+                                      class="relative h-48 rounded-lg border-2 border-blue-500 bg-gray-50 flex justify-center items-center shadow-lg hover:shadow-xl transition-shadow duration-300 ease-in-out"
+                                    >
+                                      <div class="absolute flex flex-col items-center">
+                                        {credentials.certificates? (
+                                          <img
+                                            alt="File Icon"
+                                            class="mb-3 w-20 h-20"
+                                            src={credentials.certificates}
+                                          />
+                                        ) : (
+                                          <img
+                                            alt="File Icon"
+                                            class="mb-3"
+                                            src="https://img.icons8.com/dusk/64/000000/file.png"
+                                          />
+                                        )}
+                                        <span class="block text-gray-500 font-semibold"
+                                          >Drag &amp; drop your files here</span
+                                        >
+                                        <span class="block text-gray-400 font-normal mt-1"
+                                          >or click to upload certificates</span
+                                        >
+                                      </div>
+
+                                      <input
+                                        class="h-full w-full opacity-0 cursor-pointer"
+                                        type="file"
+                                        name="certificates"
+                                        onChange={(e)=>{
+                                          setcertificates(e.target.files[0])
+                                          handleFileChange(e)
+                                        }}
+                                      />
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
                             </div>
                         </div>
                         </div>

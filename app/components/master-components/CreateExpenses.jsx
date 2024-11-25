@@ -174,7 +174,7 @@ export default function CreateExpenses() {
                                                                 </Listbox>
                                                             </div>
                                                             <div className="flex gap-3 items-center">
-                                                                <Input value={inputValue} onChange={(e) => setInputValue(e.target.value)} label="Operational" placeholder="Enter new type"/>
+                                                                <Input value={inputValue} onChange={(e) => setInputValue(e.target.value)} label="Type" placeholder="Enter new type"/>
                                                                 <Button onPress={addItemToList} color="primary" variant="light"><IoMdAdd className="h-8 w-8"/></Button>
                                                             </div>
 

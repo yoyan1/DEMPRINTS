@@ -33,6 +33,7 @@ export default function CreateTransaction({user, refresh}) {
                                         variants: "",
                                         measurement: "",
                                         price_type: "fixed",
+                                        product_price: 0,
                                         unit_cost: 0,
                                         quantity: 0,
                                         sub_total: 0,
@@ -117,6 +118,7 @@ export default function CreateTransaction({user, refresh}) {
           ...prevData,
           item_no: findProduct[0].item_code,
           measurement: value,
+          product_price: unitCost,
           unit_cost: unitCost,
           sub_total: total,
           total_amount: total,
@@ -500,7 +502,10 @@ export default function CreateTransaction({user, refresh}) {
                               className="w-44"
                               defaultSelectedKeys={[salesData.price_type]}
                               value={salesData.price_type}
-                              onChange={(e)=>(setSalesData((prevData)=>({...prevData, price_type: e.target.value})))}
+                              onChange={(e)=>{
+                                setSalesData((prevData)=>({...prevData, price_type: e.target.value}))
+                                e.target.value === 'fixed'? setSalesData((prevData) => ({...prevData, unit_cost: salesData.product_price})) : null
+                              }}
                             >
                                 <SelectItem key='fixed'>
                                   Fixed
