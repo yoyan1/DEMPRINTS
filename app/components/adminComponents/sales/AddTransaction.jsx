@@ -312,19 +312,19 @@ export default function CreateTransaction({user, refresh}) {
                         value={salesData.item_name}
                         onChange={handleNameChange}
                       >
-                        {filteredProducts.map((item, index) => (
-                          index > 0? (
-                            item.name !== products[index-1].name? (
-                              <SelectItem key={item.name}>
-                                {item.name}
+                        {(() => {
+                          const seen = new Set();
+                          return filteredProducts.map((item) => {
+                            const value = item.name;
+                            if (seen.has(value)) return null; 
+                            seen.add(value);
+                            return (
+                              <SelectItem key={value}>
+                                {value}
                               </SelectItem>
-                            ): null
-                          ): (
-                            <SelectItem key={item.name}>
-                              {item.name}
-                            </SelectItem>
-                          )
-                        ))}
+                            );
+                          });
+                        })()}
                       </Select>
                       <Select 
                         label="Variants" 
