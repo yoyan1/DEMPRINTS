@@ -19,6 +19,7 @@ import {
 } from '@nextui-org/react';
 import { useRouter } from 'next/navigation';
 import { decodeToken } from '@/app/utils/decodeToken';
+import { useUserStore } from '@/app/stores/userStore';
 import axios from 'axios';
 // import { formatDate } from "../../composables/formateDateAndTime";
 
@@ -40,24 +41,36 @@ export default function Addtransaction() {
   const [quantity, setQuantity] = useState(1);
   const [unit_cost, setUnitCost] = useState(0);
   const [discount, setDiscount] = useState(0);
-  const [paid_amount, setPaidAmount] = useState(0);
+  const [amount_paid, setPaidAmount] = useState(0);
   const [amount, setAmount] = useState(0);
-  const [total, setTotal] = useState(0);
+  const [total_amount, setTotal] = useState(0);
   const [remarks, setRemarks] = useState(0);
   const [payment_options, setPaymentMethod] = useState(' ');
-  // const [sales_person, setSalesPerson] = useState(' ');
+  const [sales_person, setSalesPerson] = useState(' ');
   const [success_message, setSuccessMessage] = useState(' ');
   const [payment_type, setPaymentType] = useState(' ');
   // const [employee_id, setEmployeId] = useState(0)
+  // ----------------------
+  const { users, fetchUsers } = useUserStore();
   // ----------------------
 
   const [payment, setPaymentt] = useState(['']);
   const [paymentTypes, setPaymenttype] = useState(['']);
   const [costumerType, setCostumertype] = useState(['']);
   const [products, setProduct] = useState(['']);
-  const [unit, setUnit] = useState(['']);
+  // const [unit, setUnit] = useState(['']);
   const [setTransaction] = useState(['']);
   const [categories, setCategory] = useState(['']);
+  const [sub_total] = useState(0);
+  const [selectedVariant, setSelectedVariant] = useState('');
+  const [selectedMeasurement, setSelectedMeasurement] = useState([]);
+
+  const [variants, setVariant] = useState('');
+  const [measurement, setMeasurement] = useState('');
+  // ------------------------
+  const [filteredVariants, setFilteredVariants] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [filteredMeasurements, setFilteredMeasurements] = useState([]);
   // ------------------------
   const [isSubmiting, setisSubmmiting] = useState(false);
   // ----------------------
@@ -71,6 +84,7 @@ export default function Addtransaction() {
 
   useEffect(() => {
     // getAuthenticateUser();
+    fetchUsers();
     fetchPayment();
     fetchCostumerType();
     fetchProduct();
@@ -242,10 +256,10 @@ export default function Addtransaction() {
       const selectedProduct = products.find((item) => item.name === item_name);
       const finalUnitCost = selectedProduct ? selectedProduct.price : unit_cost; // Use the product's price from the DB
       // const totalAmount = amount - discount; // Ensure correct total calculation
-      // const finalTotal = amount - discount - paid_amount;
+      // const finalTotal = amount - discount - amount_paid;
       // Send the transaction data
-      const findUser = salesData.sales_person
-        ? users.filter((row) => salesData.sales_person === row.name)
+      const findUser = sales_person
+        ? users.filter((row) => sales_person === row.name)
         : [];
       // const getData = await axios.get(
       //   `https://demprints-backend.vercel.app/api/collection/getTransaction`,
@@ -265,10 +279,10 @@ export default function Addtransaction() {
           item_name,
           unit_cost: finalUnitCost,
           quantity,
-          amount,
+          sub_total,
           discount,
           discount_type: isPercentage ? '%' : '₱',
-          total: total,
+          total_amount: total_amount,
           customer_type,
           customer_name,
           payment_type,
@@ -284,7 +298,7 @@ export default function Addtransaction() {
 
       setSuccessMessage('Transaction added successfully!');
       setItemName('');
-      setQuantity('');
+      setQuantity();
       setDiscount('');
       setPaidAmount('');
       setAmount('');
@@ -311,21 +325,19 @@ export default function Addtransaction() {
       : 0;
     setQuantity(newQuantity);
     setAmount(totalItemCost);
-    setTotal(totalItemCost - discount); // Recalculate total after discount
+    setTotal(totalItemCost - discount);
   };
 
   const handleDiscountChange = (newDiscount) => {
     const discountValue = parseFloat(newDiscount) || 0;
-    setDiscount(discountValue); // Update discount value
+    setDiscount(discountValue);
 
-    // Calculate discount amount based on whether it's a percentage or a fixed value
     const discountAmount =
       isPercentage && discountValue <= 100
         ? (amount * discountValue) / 100
         : discountValue;
 
-    // Calculate total after applying discount and then subtracting the paidAmount
-    const newTotal = amount - discountAmount - paid_amount;
+    const newTotal = amount - discountAmount - amount_paid;
     setTotal(newTotal);
   };
   const handleCheckBoxChange = () => {
@@ -337,7 +349,7 @@ export default function Addtransaction() {
       newIsPercentage && discount <= 100 ? (amount * discount) / 100 : discount;
 
     // Recalculate total with the updated discount logic
-    const newTotal = amount - discountAmount - paid_amount;
+    const newTotal = amount - discountAmount - amount_paid;
     setTotal(newTotal);
   };
 
@@ -393,7 +405,7 @@ export default function Addtransaction() {
               <Select
                 size="sm"
                 label="Category"
-                className=" mb-2"
+                className="mb-2"
                 autoFocus
                 isRequired
                 variant="bordered"
@@ -413,10 +425,10 @@ export default function Addtransaction() {
                   ) : null,
                 )}
               </Select>
+
               {selectedCategory && (
                 <div className="flex gap-3 mb-2">
-                  {/* <div className="flex gap-3"> */}
-
+                  {/* Product Selection */}
                   <Select
                     size="sm"
                     label="Item"
@@ -431,11 +443,17 @@ export default function Addtransaction() {
                       const selectedProduct = products.find(
                         (product) => product.name === selectedProductName,
                       );
+
+                      // Update state for selected product details
                       setItemName(selectedProductName);
                       setUnitCost(selectedProduct?.price || 0);
-                      handleQuantityChange(quantity);
-                      setUnitCost(0);
-                      setQuantity(1);
+                      const filteredVariants = products.filter(
+                        (product) =>
+                          product.name === selectedProductName &&
+                          product.category === selectedCategory,
+                      );
+                      setFilteredVariants(filteredVariants);
+                      setMeasurement(''); // Reset measurement when item changes
                       setAmount(0);
                       setTotal(0);
                     }}
@@ -443,10 +461,19 @@ export default function Addtransaction() {
                     {products
                       .filter(
                         (product) => product.category === selectedCategory,
-                      ) // Filter items based on selected category
+                      )
+                      .reduce((uniqueProducts, product) => {
+                        if (
+                          !uniqueProducts.find((p) => p.name === product.name)
+                        ) {
+                          uniqueProducts.push(product);
+                        }
+                        return uniqueProducts;
+                      }, [])
                       .map((product) => (
                         <SelectItem
-                          key={product.name}
+                          key={product.id || product.name}
+                          value={product.name}
                           variant="bordered"
                           style={{ color: 'black' }}
                         >
@@ -455,26 +482,61 @@ export default function Addtransaction() {
                       ))}
                   </Select>
 
-                  {item_name && (
+                  {/* Variant Selection */}
+                  {item_name && filteredVariants.length > 0 && (
+                    <Select
+                      size="sm"
+                      label="Variants"
+                      className="w-full max-w-md mx-auto"
+                      placeholder="Select variants"
+                      isDisabled={filteredVariants.length === 0} // Corrected condition
+                      onChange={(e) => {
+                        const selectedVariant = e.target.value;
+                        setVariant(selectedVariant);
+                        const selectedVariantProduct = filteredVariants.find(
+                          (product) => product.variants === selectedVariant,
+                        );
+                        setUnitCost(selectedVariantProduct?.price || 0);
+                      }}
+                    >
+                      {filteredVariants.map((product) => (
+                        <SelectItem
+                          key={product.variants}
+                          value={product.variants}
+                        >
+                          {product.variants}
+                        </SelectItem>
+                      ))}
+                    </Select>
+                  )}
+
+                  {/* Unit Selection */}
+                  {variants && (
                     <Select
                       size="sm"
                       label="Measurement"
                       className="w-full max-w-md mx-auto text-black relative z-0 mb-2"
-                      autoFocus
-                      isRequired
-                      value={unit_cost}
-                      variant="bordered"
-                      onChange={(event) => {
-                        handleUnitCostChange(event.target.value);
+                      placeholder="Select unit"
+                      isDisabled={filteredVariants.length === 0}
+                      value={measurement}
+                      onChange={(e) => {
+                        const selectedUnit = e.target.value;
+                        setMeasurement(selectedUnit);
+                        const selectedUnitProduct = filteredVariants.find(
+                          (product) => product.unit === selectedUnit,
+                        );
+                        setUnitCost(selectedUnitProduct?.price || 0);
                       }}
                     >
-                      {products
-                        .filter((product) => product.name === item_name)
-                        .map((product) => (
-                          <SelectItem key={product.unit} variant="bordered">
-                            {product.unit}
-                          </SelectItem>
-                        ))}
+                      {[
+                        ...new Set(
+                          filteredVariants.map((product) => product.unit),
+                        ),
+                      ].map((unit) => (
+                        <SelectItem key={unit} value={unit}>
+                          {unit}
+                        </SelectItem>
+                      ))}
                     </Select>
                   )}
                 </div>
@@ -616,7 +678,7 @@ export default function Addtransaction() {
                     autoFocus
                     isRequired
                     type="text"
-                    value={paid_amount}
+                    value={amount_paid}
                     label="Amount Paid"
                     variant="bordered"
                     onChange={(e) => handlePaidAmount(e.target.value)}
@@ -632,7 +694,7 @@ export default function Addtransaction() {
               </div>
               <div className="flex justify-between mb-5">
                 <span>Total Amount: </span>
-                <span>{Math.round(amount)}</span>
+                <span>{Math.round(sub_total)}</span>
               </div>
 
               <div className="flex justify-between mb-5">
@@ -645,12 +707,18 @@ export default function Addtransaction() {
               </div>
               <div className="flex justify-between mb-5">
                 <span>Discount Applied</span>
-                <span>{Math.round(amount - total)}</span>
+                <span>{Math.round(amount - sub_total)}</span>
               </div>
               <div className="flex justify-between mb-5">
                 <span className="bold">Total Amout after Discount :</span>
-                <span>{Math.round(total)}</span>
+                <span>{Math.round(total_amount)}</span>
               </div>
+              {amount_paid ? (
+                <div className="flex justify-between">
+                  <span>Balance </span>
+                  {Math.round(total_amount - amount_paid)}
+                </div>
+              ) : null}
             </div>
           </div>
           <Textarea
