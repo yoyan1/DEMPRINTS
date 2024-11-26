@@ -62,7 +62,7 @@ export default function Addtransaction() {
   // const [unit, setUnit] = useState(['']);
   const [setTransaction] = useState(['']);
   const [categories, setCategory] = useState(['']);
-  const [sub_total, setSubTotal] = useState(0);
+  const [sub_total, setSubTotal] = useState(unit_cost * quantity);
 
   const [selectedProductName, setSelectedProductName] = useState('');
   // const [selectedVariant, setSelectedVariant] = useState('');
@@ -317,7 +317,7 @@ export default function Addtransaction() {
   const handleQuantityChange = (newQuantity) => {
     const parsedQuantity = parseFloat(newQuantity) || 0;
     const totalItemCost = unit_cost * parsedQuantity;
-
+  
     setQuantity(parsedQuantity);
     setSubTotal(totalItemCost);
 
@@ -449,7 +449,7 @@ export default function Addtransaction() {
 
                       // Update state for selected product details
                       setItemName(selectedProductName);
-                      setUnitCost(selectedProduct?.price || 0);
+                      // setUnitCost(selectedProduct?.price || 0);
 
                       const filteredVariants = products.filter(
                         (product) =>
@@ -596,7 +596,11 @@ export default function Addtransaction() {
                   color='primary'
                   type="number"
                   name="quantity"
-                  onChange={(e) => handleQuantityChange(e.target.value)}
+                  onChange={(e) => { 
+                    handleQuantityChange(e.target.value)
+                    setMeasurement()
+                   
+                  }}
                 />
 
                 <div className="flex items-center w-full max-w-md mx-auto text-black relative z-0 mb-2">

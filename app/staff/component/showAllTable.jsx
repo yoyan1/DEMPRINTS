@@ -230,13 +230,38 @@ export default function AllTransaction() {
             {cellValue}
           </Chip>
         );
+      case 'unit_cost':
+        return (
+          <div className="flex flex-col">
+            <p className="text-bold text-sm capitalize">
+              ₱ {cellValue.toFixed(2)}
+            </p>
+          </div>
+        );
+      case 'sub_total':
+        return (
+          <div className="flex flex-col">
+            <p className="text-bold text-small capitalize">
+              ₱ {cellValue.toFixed(2)}
+            </p>
+          </div>
+        );
       case 'discount':
         return (
           <div className="flex flex-col">
-            <p className="text-bold text-small capitalize">{cellValue}%</p>
+            <p className="text-bold text-small capitalize">
+              {cellValue.toFixed(2)}
+            </p>
           </div>
         );
-
+      case 'total_amount':
+        return (
+          <div className="flex flex-col">
+            <p className="text-bold text-small capitalize">
+              ₱ {cellValue.toFixed(2)}
+            </p>
+          </div>
+        );
       case 'customer_type':
         return (
           <Chip

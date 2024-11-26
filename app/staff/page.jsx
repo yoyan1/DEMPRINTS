@@ -24,13 +24,7 @@ import {
   Pagination,
   Spinner,
   DateRangePicker,
-  Card,
-  CardHeader,
-  CardBody,
-  CardFooter,
   Divider,
-  Link,
-  Image,
 } from '@nextui-org/react';
 import { CiSearch } from 'react-icons/ci';
 import { IoChevronDown } from 'react-icons/io5';
@@ -145,6 +139,8 @@ export default function Transaction() {
   const filteredItems = useMemo(() => {
     let filteredTransactions = [...transactions];
 
+    if (!selectedDate) return [];
+
     if (hasSearchFilter) {
       filteredTransactions = filteredTransactions.filter((item) =>
         item.item_name.toLowerCase().includes(filterValue.toLowerCase()),
@@ -167,11 +163,11 @@ export default function Transaction() {
       );
     }
 
-    if (selectedDate) {
-      filteredTransactions = filteredTransactions.filter((transaction) => {
+    if (selectedDate?.start && selectedDate?.end) {
+      const start = new Date(selectedDate.start);
+      const end = new Date(selectedDate.end);
+      return filteredTransactions.filter((transaction) => {
         const transactionDate = new Date(transaction.date);
-        const start = new Date(selectedDate.start);
-        const end = new Date(selectedDate.end);
         return transactionDate >= start && transactionDate <= end;
       });
     }
@@ -190,8 +186,9 @@ export default function Transaction() {
         if (isDateInRange(itemDate, start, end)) {
           acc.totalSales += item.total_amount;
           options.forEach((row) => {
-            if (row.name === item.payment_options)
+            if (row.name === item.payment_options) {
               acc[row.name] = (acc[row.name] || 0) + item.total_amount;
+            }
           });
         }
         return acc;
@@ -204,8 +201,7 @@ export default function Transaction() {
     const start = new Date(selectedDate.start);
     const end = new Date(selectedDate.end);
     return getTotalSalesInRange(transactions, start, end, options);
-  }, [transactions, selectedDate.start, selectedDate.end, options]);
-
+  }, [transactions, options]);
   const { totalSales, ...salesByOptions } = totals;
 
   const pages = Math.ceil(filteredItems.length / rowsPerPage);
@@ -252,6 +248,23 @@ export default function Transaction() {
             variant="flat"
           >
             {cellValue}
+          </Chip>
+        );
+      case 'unit_cost':
+        return (
+          <Chip
+            className="capitalize"
+            // color={
+            //   itemColorMap[
+            //     user.item_name.toLowerCase() === 'photo print'
+            //       ? 'photoprint'
+            //       : user.item_name.toLowerCase()
+            //   ]
+            // }
+            size="sm"
+            variant="flat"
+          >
+            ₱ {cellValue.toFixed(2)}
           </Chip>
         );
       case 'customer_type':
@@ -329,27 +342,32 @@ export default function Transaction() {
           </span>
         </div>
         <div className="flex justify-end">
-          <div className="max-w-[400px] border border-gray-700 shadow-none p-5">
+          <div className="max-w-[400px] border border-gray-700 shadow-none p-5 bg-[#37AFE1] rounded-lg">
             <div className="flex gap-3">
-              <span>
+              <span className="text-white dark: text-white">
                 {formatDate(selectedDate.start)} -{' '}
                 {formatDate(selectedDate.end)}
               </span>
             </div>
             <Divider />
             <div>
-              <span className="text-lg">Sales: {Math.round(totalSales)}</span>
+              <span className="text-lg text-white dark:text-white">
+                Sales: ₱ {totalSales.toFixed(2)}
+              </span>
 
-              <div className="flex  gap-2">
-                {options.map((transactionOptions) => (
-                  <div
-                    key={transactionOptions.name}
-                    className="flex text-black dark:text-black p-2"
-                  >
-                    {transactionOptions.name}:{' '}
-                    {salesByOptions?.[transactionOptions.name] || 0}
-                  </div>
-                ))}
+              <div className="flex gap-2">
+                {options.length === 0 &&
+                  options.map((transactionOptions) => (
+                    <div
+                      key={transactionOptions.name}
+                      className="flex text-white dark:text-white p-2"
+                    >
+                      <span className="text-sm">
+                        {transactionOptions.name}:
+                        {salesByOptions[transactionOptions.name] || 0}
+                      </span>
+                    </div>
+                  ))}
               </div>
             </div>
             <Divider />
@@ -369,7 +387,7 @@ export default function Transaction() {
               onValueChange={onSearchChange}
             />
             <DateRangePicker
-              // value={selectedDate}
+              value={selectedDate}
               onChange={setSelectedDate}
               variant="bordered"
               color="primary"
