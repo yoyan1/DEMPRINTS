@@ -34,7 +34,7 @@ export default function Addtransaction() {
   // ---------------------------------------------
   const [customer_name, setCostumerName] = useState(' ');
   const [customer_type, setCostumerType] = useState(' ');
-  const [item_name, setItemName] = useState(' ');
+  const [item_name, setItemName] = useState('');
 
   const [transaction_no] = useState(0);
   const [item_no] = useState(0);
@@ -44,7 +44,8 @@ export default function Addtransaction() {
   const [amount_paid, setPaidAmount] = useState(0);
   const [amount, setAmount] = useState(0);
   const [total_amount, setTotal] = useState(0);
-  const [remarks, setRemarks] = useState(0);
+  const [balance, setBalance] = useState(0)
+  const [remarks, setRemarks] = useState(' ');
   const [payment_options, setPaymentMethod] = useState(' ');
   const [sales_person, setSalesPerson] = useState(' ');
   const [success_message, setSuccessMessage] = useState(' ');
@@ -280,12 +281,13 @@ export default function Addtransaction() {
           discount: discount,
           discount_type: isPercentage ? '%' : '₱',
           total_amount: total_amount,
+          balance: balance,
           customer_type,
           customer_name,
           payment_type,
           payment_options,
           sales_person: user.name,
-          remarks: remarks,
+          remarks,
           employee_id: findUser.length > 0 ? findUser[0].id : user.id,
         },
       );
@@ -370,7 +372,7 @@ export default function Addtransaction() {
     const newTotal = sub_total - discountAmount - parsedPaidAmount;
     const roundOffTotal = Math.round(newTotal * 100) / 100;
 
-    setRemarks(roundOffTotal);
+    setBalance(roundOffTotal);
   };
 
   const handleClose = () => {
@@ -507,7 +509,7 @@ export default function Addtransaction() {
 
                         if (!selectedProduct) return;
 
-                        setItemName(selectedProductVariants);
+                        setVariant(selectedProductVariants);
 
                         const filteredVariants = products.filter(
                           (product) =>
