@@ -161,7 +161,7 @@ export default function Transaction({columns, transactions, itemOptions, typeOpt
         );
         case "discount":
         return (
-          <div>{cellValue}%</div>
+          <div>{cellValue}{item.discount_type}</div>
         );
         case "unit_cost":
         return (
@@ -204,7 +204,7 @@ export default function Transaction({columns, transactions, itemOptions, typeOpt
                   <DeleteSale id={item._id} label="" refresh={fetch}/>
                 </Button>
               </Tooltip>
-            ): (
+            ): item.balance > 0? (
               <div>
                 <Dropdown closeOnSelect={false}>
                   <DropdownTrigger>
@@ -225,7 +225,7 @@ export default function Transaction({columns, transactions, itemOptions, typeOpt
                   </DropdownMenu>
                 </Dropdown>
               </div>
-            )}
+            ): null}
           </div>
         );
         default:
