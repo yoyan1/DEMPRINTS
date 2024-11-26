@@ -41,7 +41,7 @@ const typeColorMap = {
 };
 
 const INITIAL_VISIBLE_COLUMNS = ["transaction_no", "item_name", "unit_cost",  "customer_type", "customer_name", "payment_options", "sales_person"];
-const INITIAL_VISIBLE_COLUMNS_ALL = ["date", "time", "transaction_no", "item_no", "item_name", "unit_cost", "quantity", "sub_total", "discount", "total_amount", "customer_type", "customer_name","payment_options", "payment_method", "sales_person", "remarks"];
+const INITIAL_VISIBLE_COLUMNS_ALL = ["date", "time", "transaction_no", "item_no", "item_name", "unit_cost", "quantity", "sub_total", "discount", "total_amount", "amount_paid", "customer_type", "customer_name","payment_options", "payment_method", "sales_person", "balance", "remarks"];
 const SEARCH_SELECTION = ["item_name", "customer_type", "customer_name", "payment_options", "sales_person"]
 
 export default function Transaction({columns, transactions, itemOptions, typeOptions, loading, isMaximized, user, refresh}) {
