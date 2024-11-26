@@ -225,19 +225,9 @@ export default function Transaction({columns, transactions, itemOptions, typeOpt
     return (
       <div className="flex flex-col gap-4 ">
         <div className="flex justify-end gap-3 items-end">
-          <Input
-            isClearable
-            className="w-full sm:max-w-[44%]"
-            placeholder="Search by name..."
-            variant="bordered"
-            startContent={<CiSearch />}
-            value={filterValue}
-            onClear={() => onClear()}
-            onValueChange={onSearchChange}
-          />
           <Select 
             placeholder="Filter selection" 
-            className="max-w-xs" 
+            className="w-full" 
             value={filterSelection}
             onChange={handleSelectionChange}
             size="md"
@@ -248,12 +238,11 @@ export default function Transaction({columns, transactions, itemOptions, typeOpt
               </SelectItem>
             ))}
           </Select>
-          <div className="flex gap-3">
           {filterSelection? (
             <Select 
             label={statusFilter !== 'all'? "" : `select ${filterSelection}`}
             placeholder={filterSelection}
-            className="w-44" 
+            className="w-full" 
             value={statusFilter}
             selectionMode="multiple"
             onSelectionChange={setStatusFilter}
@@ -275,6 +264,17 @@ export default function Transaction({columns, transactions, itemOptions, typeOpt
           </Select>
            
           ): null}
+          <Input
+            isClearable
+            className="w-full sm:max-w-[44%]"
+            placeholder="Search by item name..."
+            variant="bordered"
+            startContent={<CiSearch />}
+            value={filterValue}
+            onClear={() => onClear()}
+            onValueChange={onSearchChange}
+          />
+          <div className="flex gap-3">
             <CreateTransaction user={user} refresh={fetch}/>
             <ExportToPdf rows={sortedItems}/>
             {!isMaximized? (
