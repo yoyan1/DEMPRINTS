@@ -163,9 +163,25 @@ export default function Transaction({columns, transactions, itemOptions, typeOpt
         return (
           <div>{cellValue}%</div>
         );
+        case "unit_cost":
+        return (
+          <div>₱{cellValue.toFixed(2)}</div>
+        );
         case "total_amount":
         return (
-          <div>{Math.round(cellValue)}</div>
+          <div>₱{cellValue.toFixed(2)}</div>
+        );
+        case "sub_total":
+        return (
+          <div>₱{cellValue.toFixed(2)}</div>
+        );
+        case "amount_paid":
+        return (
+          <div>₱{cellValue.toFixed(2)}</div>
+        );
+        case "balance":
+        return (
+          <div>₱{cellValue.toFixed(2)}</div>
         );
         case "customer_name":
         return (
