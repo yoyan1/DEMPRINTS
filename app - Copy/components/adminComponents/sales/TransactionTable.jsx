@@ -13,25 +13,18 @@ import {
   Dropdown,
   DropdownMenu,
   DropdownItem,
-  DropdownSection,
   Chip,
   Pagination,
   Spinner, 
-  Tooltip,
-  Select,
-  SelectItem
+  Tooltip
 } from "@nextui-org/react";
 import { CiSearch } from "react-icons/ci";
 import { IoChevronDown } from "react-icons/io5";
-import { IoEllipsisVerticalOutline } from "react-icons/io5";
-import { RiDeleteBin4Line } from "react-icons/ri";
 import { MdPaid } from "react-icons/md";
 import {capitalize} from "@/app/composables/utils";
 import ExpandTransaction from './ExpandModal'
 import ExportToPdf from '@/app/composables/exportToPdf'
 import CreateTransaction from './AddTransaction'
-import DeleteSale from "./DeleteSales";
-import UpdateSale from "./PatialUpdate";
 import { formatDate, formatTime } from "@/app/composables/formateDateAndTime";
 
 const itemColorMap = {
@@ -45,25 +38,16 @@ const typeColorMap = {
   online: "primary",
 };
 
-const INITIAL_VISIBLE_COLUMNS = ["transaction_no", "item_name", "unit_cost",  "customer_type", "customer_name", "payment_options", "sales_person", "actions"];
-const INITIAL_VISIBLE_COLUMNS_ALL = ["date", "time", "transaction_no", "item_no", "item_name", "unit_cost", "quantity", "sub_total", "discount", "total_amount", "amount_paid", "customer_type", "customer_name","payment_options", "payment_method", "sales_person", "balance", "remarks"];
-const SEARCH_SELECTION = [
-  {name:"Transaction Number", key: "transaction_no", },
-  {name:"Item name", key: "item_name", },
-  {name:"Customer type", key: "customer_type", },
-  {name:"Customer name", key: "customer_name", },
-  {name:"Payment Options", key: "payment_options", },
-  {name:"Sales Person", key: "sales_person"},
-]
+const INITIAL_VISIBLE_COLUMNS = ["transaction_no", "item_name", "unit_cost",  "customer_type", "customer_name", "payment_type", "sales_person", "actions"];
+const INITIAL_VISIBLE_COLUMNS_ALL = ["date", "time", "transaction_no", "item_no", "item_name", "unit_cost", "quantity", "amount", "discount", "total", "customer_type", "customer_name", "payment_method", "sales_person", "remarks"];
 
-export default function Transaction({columns, transactions, itemOptions, typeOptions, loading, isMaximized, user, refresh}) {
+export default function Transaction({columns, transactions, itemOptions, typeOptions, loading, isMaximized, refresh}) {
   const [filterValue, setFilterValue] = useState("");
   const [selectedKeys, setSelectedKeys] = useState(new Set([]));
-  const [visibleColumns] = useState(isMaximized? INITIAL_VISIBLE_COLUMNS_ALL : INITIAL_VISIBLE_COLUMNS);
+  const [visibleColumns] = useState(isMaximized? INITIAL_VISIBLE_COLUMNS_ALL : new Set(INITIAL_VISIBLE_COLUMNS));
   const [statusFilter, setStatusFilter] = useState("all");
   const [typeFilter] = useState("all");
-  const [filterSelection, setFilterSelection] = useState('')
-  const [rowsPerPage, setRowsPerPage] = useState(isMaximized? 20 : 5);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
   const [sortDescriptor, setSortDescriptor] = useState({
     column: "age",
     direction: "ascending",
@@ -86,12 +70,10 @@ export default function Transaction({columns, transactions, itemOptions, typeOpt
         item.item_name.toLowerCase().includes(filterValue.toLowerCase()),
       );
     }
-    if ( statusFilter !== "all" &&
-        Array.from(statusFilter).length !== transactions.length
-    ) {
-        filteredTransactions = filteredTransactions.filter((user) =>
-            Array.from(statusFilter).includes(user[filterSelection])
-        );
+    if (statusFilter !== "all" && Array.from(statusFilter).length !== itemOptions.length) {
+      filteredTransactions = filteredTransactions.filter((user) =>
+        Array.from(statusFilter).includes(user.item_name.toLowerCase()),
+      );
     }
     if (typeFilter !== "all" && Array.from(typeFilter).length !== typeOptions.length) {
       filteredTransactions = filteredTransactions.filter((user) =>
@@ -121,12 +103,8 @@ export default function Transaction({columns, transactions, itemOptions, typeOpt
     });
   }, [sortDescriptor, items]);
 
-  const fetch = (data)=>{
-    refresh(data)
-  }
-
-  const renderCell = React.useCallback((item, columnKey) => {
-    const cellValue = item[columnKey];
+  const renderCell = React.useCallback((user, columnKey) => {
+    const cellValue = user[columnKey];
 
     switch (columnKey) {
         case "date":
@@ -149,13 +127,13 @@ export default function Transaction({columns, transactions, itemOptions, typeOpt
             );
         case "item_name":
         return (
-          <Chip className="capitalize" color={itemColorMap[item.item_name.toLowerCase() === 'photo print'? 'photoprint' : item.item_name.toLowerCase()]} size="sm" variant="flat">
+          <Chip className="capitalize" color={itemColorMap[user.item_name.toLowerCase() === 'photo print'? 'photoprint' : user.item_name.toLowerCase()]} size="sm" variant="flat">
             {cellValue}
           </Chip>
         );
         case "customer_type":
         return (
-          <Chip className="capitalize" color={typeColorMap[item.customer_type.toLowerCase() === 'walk in'? 'walk_in' : item.customer_type.toLowerCase()]} size="sm" variant="flat">
+          <Chip className="capitalize" color={typeColorMap[user.customer_type.toLowerCase() === 'walk in'? 'walk_in' : user.customer_type.toLowerCase()]} size="sm" variant="flat">
             {cellValue}
           </Chip>
         );
@@ -163,7 +141,7 @@ export default function Transaction({columns, transactions, itemOptions, typeOpt
         return (
           <div>{cellValue}%</div>
         );
-        case "total_amount":
+        case "total":
         return (
           <div>{Math.round(cellValue)}</div>
         );
@@ -177,39 +155,18 @@ export default function Transaction({columns, transactions, itemOptions, typeOpt
         );
         case "remarks":
         return (
-          <div className="text-left">{cellValue}</div>
+          <div className="text-left">{Math.round(cellValue)}</div>
         );
         case "actions":
         return (
           <div>
-            {item.balance === 0 && user.role === 'super admin'?(
-              <Tooltip color="danger" content="Delete">
-                <Button isIconOnly variant="light" color="danger">
-                  <DeleteSale id={item._id} label="" refresh={fetch}/>
+            {items.remarks > 0? (
+              <Tooltip color="success" content="Mark as paid">
+                <Button isIconOnly variant="light" color="success">
+                  <MdPaid/>
                 </Button>
               </Tooltip>
-            ): (
-              <div>
-                <Dropdown closeOnSelect={false}>
-                  <DropdownTrigger>
-                    <Button isIconOnly size="sm" variant="light">
-                      <IoEllipsisVerticalOutline className="h-4 w-4" />
-                    </Button>
-                  </DropdownTrigger>
-                  <DropdownMenu>
-                    <DropdownSection title="Actions">
-                      <DropdownItem color="primary"><UpdateSale data={item} isPartial={true}  refresh={fetch}/></DropdownItem>
-                      <DropdownItem color="success"><UpdateSale data={item} isPartial={false}  refresh={fetch}/></DropdownItem>
-                      </DropdownSection> 
-                    {user.role === 'super admin'? (
-                      <DropdownSection title="Danger">
-                        <DropdownItem color="danger"><DeleteSale id={item._id}  label="Delete" refresh={fetch}/></DropdownItem>
-                      </DropdownSection> 
-                    ) : null}
-                  </DropdownMenu>
-                </Dropdown>
-              </div>
-            )}
+            ): null}
           </div>
         );
         default:
@@ -248,73 +205,51 @@ export default function Transaction({columns, transactions, itemOptions, typeOpt
     setPage(1)
   },[])
 
-
-  const handleSelectionChange = React.useCallback((e)=>{
-      setFilterSelection(e.target.value)
-      transactions.sort((a, b) => b[e.target.value] - a[e.target.value]);
-      setStatusFilter('all')
-  }, [])
+  const fetch = (data)=>{
+    refresh(data)
+  }
 
   const topContent = useMemo(() => {
     return (
       <div className="flex flex-col gap-4 ">
-        <div className="flex justify-end gap-3 items-end">
-          <Select 
-            placeholder="Filter selection" 
-            className="w-full" 
-            value={filterSelection}
-            onChange={handleSelectionChange}
-            size="md"
-          >
-            {SEARCH_SELECTION.map((item) => (
-              <SelectItem key={item.key}>
-                {item.name}
-              </SelectItem>
-            ))}
-          </Select>
-          {filterSelection? (
-            <Select 
-            placeholder={filterSelection}
-            className="w-full" 
-            value={statusFilter}
-            selectionMode="multiple"
-            onSelectionChange={setStatusFilter}
-            size="md"
-          >
-            {(() => {
-              const seen = new Set();
-              return transactions.map((item) => {
-                const value = item[filterSelection];
-                if (seen.has(value)) return null; 
-                seen.add(value);
-                return (
-                  <DropdownItem key={value} className="capitalize">
-                    {capitalize(value)}
-                  </DropdownItem>
-                );
-              });
-            })()}
-          </Select>
-           
-          ): null}
+        <div className="flex justify-between gap-3 items-end">
           <Input
             isClearable
             className="w-full sm:max-w-[44%]"
-            placeholder="Search by item name..."
-            variant="bordered"
+            placeholder="Search by name..."
             startContent={<CiSearch />}
             value={filterValue}
             onClear={() => onClear()}
             onValueChange={onSearchChange}
           />
-          {!isMaximized? (
-            <div className="flex gap-3">
-              <CreateTransaction user={user} refresh={fetch}/>
-              <ExportToPdf rows={sortedItems}/>
-              {/* {!isMaximized? ( */}
-                  <ExpandTransaction columns={columns} transactions={transactions} itemOptions={itemOptions} typeOptions={typeOptions} />
-            </div>
-          ): null}
+          <div className="flex gap-3">
+            <Dropdown>
+              <DropdownTrigger className="hidden sm:flex">
+                <Button endContent={<IoChevronDown className="text-small" />} variant="flat">
+                  Item name
+                </Button>
+              </DropdownTrigger>
+              <DropdownMenu
+                disallowEmptySelection
+                aria-label="Table Columns"
+                closeOnSelect={false}
+                selectedKeys={statusFilter}
+                selectionMode="multiple"
+                onSelectionChange={setStatusFilter}
+              >
+                {itemOptions.map((item) => (
+                  <DropdownItem key={item.dataKey} className="capitalize">
+                    {capitalize(item.name)}
+                  </DropdownItem>
+                ))}
+              </DropdownMenu>
+            </Dropdown>
+            <CreateTransaction refresh={fetch}/>
+            <ExportToPdf rows={sortedItems}/>
+            {!isMaximized? (
+                <ExpandTransaction columns={columns} transactions={transactions} itemOptions={itemOptions} typeOptions={typeOptions} />
+            ): null}
+          </div>
         </div>
         <div className="flex justify-between items-center">
           <span className="text-default-400 text-small">Total {transactions.length} transactions</span>
@@ -325,9 +260,8 @@ export default function Transaction({columns, transactions, itemOptions, typeOpt
               onChange={onRowsPerPageChange}
             >
               <option value="5">5</option>
-              <option value="20">20</option>
-              <option value="50">50</option>
-              <option value="100">100</option>
+              <option value="10">10</option>
+              <option value="15">15</option>
             </select>
           </label>
         </div>
@@ -336,10 +270,8 @@ export default function Transaction({columns, transactions, itemOptions, typeOpt
   }, [
     filterValue,
     statusFilter,
-    filterSelection,
     visibleColumns,
     onRowsPerPageChange,
-    transactions,
     transactions.length,
     onSearchChange,
     hasSearchFilter,
@@ -385,7 +317,6 @@ export default function Transaction({columns, transactions, itemOptions, typeOpt
             bottomContentPlacement="outside"
             classNames={{
                 wrapper: "max-h-[382px]",
-                th: "bg-blue-300 text-dark"
             }}
             sortDescriptor={sortDescriptor}
             topContentPlacement="outside"
@@ -405,9 +336,9 @@ export default function Transaction({columns, transactions, itemOptions, typeOpt
             </TableHeader>
             <TableBody emptyContent={"No transaction found"} items={sortedItems}  isLoading={loading} loadingContent={<Spinner label="Loading..." />} >
                 {(item) => (
-                  <TableRow key={item._id}>
-                      {(columnKey) => <TableCell className={item.balance > 0? "bg-orange-200" : ''}>{renderCell(item, columnKey)}</TableCell>}
-                  </TableRow>
+                <TableRow key={item._id}>
+                    {(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}
+                </TableRow>
                 )}
             </TableBody>
             </Table>
