@@ -204,7 +204,7 @@ export default function Transaction({columns, transactions, itemOptions, typeOpt
                   <DeleteSale id={item._id} label="" refresh={fetch}/>
                 </Button>
               </Tooltip>
-            ): item.balance === 0? (
+            ): item.balance > 0? (
               <div>
                 <Dropdown closeOnSelect={false}>
                   <DropdownTrigger>
