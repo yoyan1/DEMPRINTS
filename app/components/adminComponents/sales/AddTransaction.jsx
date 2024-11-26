@@ -87,6 +87,7 @@ export default function CreateTransaction({user, refresh}) {
         ...prevData, 
         item_name: e.target.value, 
         measurement: '',
+        variants: '',
         unit_cost: 0,
         quantity: 1,
         total_amount: 0
@@ -256,6 +257,8 @@ export default function CreateTransaction({user, refresh}) {
       quantity: 1,
       sub_total: 0,
       discount: 0,
+      variants: '',
+      measurement: '',
       total_amount: 0,
       amount_paid: 0,
       balance: 0, 
@@ -273,7 +276,7 @@ export default function CreateTransaction({user, refresh}) {
 
   return (
     <>
-      <Button onPress={onOpen} className="bg-blue-900 text-slate-200"><MdAdd/> order</Button>
+      <Button onPress={onOpen} className="bg-blue-900 text-slate-200"><MdAdd/> sale</Button>
       <Modal 
         isOpen={isOpen} 
         onClose={onClose}
@@ -526,7 +529,7 @@ export default function CreateTransaction({user, refresh}) {
                               onChange={priceChange}
                               />
                             ): (
-                              <span>{salesData.unit_cost}</span>
+                              <span>₱{salesData.unit_cost.toFixed(2)}</span>
                             )}
                           </div>
 
@@ -534,7 +537,7 @@ export default function CreateTransaction({user, refresh}) {
                       </div>
                       <div className="flex justify-between">
                         <span>Total Amount </span>
-                        {salesData.sub_total}
+                        ₱{salesData.sub_total.toFixed(2)}
                       </div>
                       <div className="flex justify-between items-center">
                         <span>Discount </span>
@@ -576,16 +579,16 @@ export default function CreateTransaction({user, refresh}) {
                       </div>
                       <div className="flex justify-between">
                         <span>Discount Applied </span>
-                        ₱ {Math.round(salesData.sub_total - salesData.total_amount)}
+                        ₱{(salesData.sub_total - salesData.total_amount).toFixed(2)}
                       </div>
                       <div className="flex justify-between">
                         <span>Total Amount After Discount </span>
-                        {Math.round(salesData.total_amount)}
+                        ₱{salesData.total_amount.toFixed(2)}
                       </div>
                       {salesData.amount_paid? (
                         <div className="flex justify-between">
                           <span>Balance </span>
-                          {Math.round(salesData.total_amount-salesData.amount_paid)}
+                          ₱{(salesData.total_amount-salesData.amount_paid).toFixed(2)}
                         </div>
                       ): null}
                     </div>

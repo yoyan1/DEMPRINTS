@@ -66,6 +66,7 @@ const INITIAL_VISIBLE_COLUMNS = [
   'payment_options',
   'payment_method',
   'sales_person',
+  'balance',
   'remarks',
 ];
 // const INITIAL_VISIBLE_COLUMNS_ALL = [
@@ -471,7 +472,7 @@ export default function AllTransaction() {
     <div>
       {topContent}
       <div className="max-w-[82rem] overflow-x-scroll">
-        <Modal size="lg" isOpen={isOpen} onClose={onClose}>
+        <Modal size="4xl" isOpen={isOpen} onClose={onClose} scrollBehavior='outside'>
           <ModalHeader></ModalHeader>
           <ModalContent>
             <ModalBody className="max-w-md mx-auto">

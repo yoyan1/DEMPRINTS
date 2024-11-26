@@ -356,8 +356,7 @@ export default function Transaction() {
               </span>
 
               <div className="flex gap-2">
-                {options.length === 0 &&
-                  options.map((transactionOptions) => (
+                {options.map((transactionOptions) => (
                     <div
                       key={transactionOptions.name}
                       className="flex text-white dark:text-white p-2"
