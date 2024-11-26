@@ -629,11 +629,11 @@ export default function CreateTransaction({user, refresh}) {
                                 <SelectItem key='fixed'>
                                   Fixed
                                 </SelectItem>
-                                <SelectItem key='custome'>
+                                <SelectItem key='custom'>
                                   Custom
                                 </SelectItem>
                             </Select>
-                            {salesData.price_type === 'custome'? (
+                            {salesData.price_type === 'custom'? (
                               <Input
                               placeholder="custom price"
                               variant="bordered"
