@@ -41,7 +41,7 @@ const typeColorMap = {
 };
 
 const INITIAL_VISIBLE_COLUMNS = ["transaction_no", "item_name", "unit_cost",  "customer_type", "customer_name", "payment_options", "sales_person"];
-const INITIAL_VISIBLE_COLUMNS_ALL = ["date", "time", "transaction_no", "item_no", "item_name", "unit_cost", "quantity", "sub_total", "discount", "total_amount", "customer_type", "customer_name","payment_options", "payment_method", "sales_person", "remarks"];
+const INITIAL_VISIBLE_COLUMNS_ALL = ["date", "time", "transaction_no", "item_no", "item_name", "unit_cost", "quantity", "sub_total", "discount", "total_amount", "amount_paid", "customer_type", "customer_name","payment_options", "payment_method", "sales_person", "balance", "remarks"];
 const SEARCH_SELECTION = ["item_name", "customer_type", "customer_name", "payment_options", "sales_person"]
 
 export default function Transaction({columns, transactions, itemOptions, typeOptions, loading, isMaximized, user, refresh}) {
@@ -225,19 +225,9 @@ export default function Transaction({columns, transactions, itemOptions, typeOpt
     return (
       <div className="flex flex-col gap-4 ">
         <div className="flex justify-end gap-3 items-end">
-          <Input
-            isClearable
-            className="w-full sm:max-w-[44%]"
-            placeholder="Search by name..."
-            variant="bordered"
-            startContent={<CiSearch />}
-            value={filterValue}
-            onClear={() => onClear()}
-            onValueChange={onSearchChange}
-          />
           <Select 
             placeholder="Filter selection" 
-            className="max-w-xs" 
+            className="w-full" 
             value={filterSelection}
             onChange={handleSelectionChange}
             size="md"
@@ -248,12 +238,11 @@ export default function Transaction({columns, transactions, itemOptions, typeOpt
               </SelectItem>
             ))}
           </Select>
-          <div className="flex gap-3">
           {filterSelection? (
             <Select 
             label={statusFilter !== 'all'? "" : `select ${filterSelection}`}
             placeholder={filterSelection}
-            className="w-44" 
+            className="w-full" 
             value={statusFilter}
             selectionMode="multiple"
             onSelectionChange={setStatusFilter}
@@ -275,6 +264,17 @@ export default function Transaction({columns, transactions, itemOptions, typeOpt
           </Select>
            
           ): null}
+          <Input
+            isClearable
+            className="w-full sm:max-w-[44%]"
+            placeholder="Search by item name..."
+            variant="bordered"
+            startContent={<CiSearch />}
+            value={filterValue}
+            onClear={() => onClear()}
+            onValueChange={onSearchChange}
+          />
+          <div className="flex gap-3">
             <CreateTransaction user={user} refresh={fetch}/>
             <ExportToPdf rows={sortedItems}/>
             {!isMaximized? (

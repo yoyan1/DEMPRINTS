@@ -70,6 +70,7 @@ export default function CreateTransaction({user, refresh}) {
         category: e.target.value,
         item_name: "", 
         measurement: '',
+        variants: '',
         unit_cost: 0,
         quantity: 1,
         total_amount: 0
@@ -129,22 +130,22 @@ export default function CreateTransaction({user, refresh}) {
 
   const handleChange = (e) =>{
     const {name, value} = e.target
-    products.forEach((item) => {
-      if (item.name === salesData.item_name && item.unit === salesData.measurement) {
-        const unitCost = item.price;
-        const total = unitCost * value;
-        setSalesData((prevData) => {
-          const newData = {
-            ...prevData,
-            [name]: value,
-            unit_cost: unitCost,
-            sub_total: total,
-            total_amount: total,
-          }
-          return newData; 
-        });
-      }
-    });
+    const findProduct = products.filter((item) => item.name === salesData.item_name && item.unit === salesData.measurement)
+    if (findProduct.length > 0) {
+      const unitCost = findProduct[0].price;
+      const total = unitCost * value;
+      setSalesData((prevData) => {
+        const newData = {
+          ...prevData,
+          [name]: value,
+          unit_cost: unitCost,
+          sub_total: total,
+          total_amount: total,
+        }
+        return newData; 
+      });
+    }
+
   }
   
   const discounted = (value, isPercent) =>{
@@ -231,6 +232,8 @@ export default function CreateTransaction({user, refresh}) {
       discount: salesData.discount,
       discount_type: isPercent? "%" : "₱",
       total_amount: salesData.total_amount,
+      amount_paid: salesData.amount_paid > 0? salesData.amount_paid : salesData.total_amount,
+      balance: salesData.amount_paid > 0? balance : 0,
       customer_type: salesData.customer_type,
       customer_name: salesData.customer_name,
       payment_type: salesData.payment_type,
@@ -254,7 +257,8 @@ export default function CreateTransaction({user, refresh}) {
       sub_total: 0,
       discount: 0,
       total_amount: 0,
-      amount_paid: 0, 
+      amount_paid: 0,
+      balance: 0, 
       customer_type: "",
       customer_name: "",
       payment_type: "",
