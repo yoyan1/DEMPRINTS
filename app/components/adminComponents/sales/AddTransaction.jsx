@@ -2,6 +2,7 @@
 import {Modal, ModalContent, ModalHeader, ModalBody,  Button, useDisclosure, Select, SelectItem, Input, Textarea} from "@nextui-org/react";
 import { useEffect, useState } from "react";
 import { MdAdd } from "react-icons/md";
+import { HiSelector } from "react-icons/hi";
 import axios from "axios";
 import {getDateAndTime} from '@/app/composables/dateAndTime'
 import {useUserStore} from '@/app/stores/userStore'
@@ -26,6 +27,7 @@ export default function CreateTransaction({user, refresh}) {
   const { createTransaction } = useSalesStore()
   const { fetchTransactionId, updateTransactionId } = useIdStore()
   const {date, time} = getDateAndTime()
+  const [itemCode, setItemCode] = useState('')
   const [salesData, setSalesData] = useState({
                                         category: "",
                                         item_no: "",
@@ -61,21 +63,89 @@ export default function CreateTransaction({user, refresh}) {
     fetchAll()
   }, [])
 
+  const handleChangeItemCode = (e) => {
+    setItemCode(e.target.value)
+    const findProduct = products.filter((item) => item.item_code === e.target.value);
+    if(findProduct.length > 0){
+      const findCategory = productsCategory.filter((item) => item.name === findProduct[0].category)
+      setSalesData((prevData)=>(
+        {
+          ...prevData, 
+          price_type: 'custom',
+          category: findCategory.length > 0? findCategory[0] : '',
+          item_no: e.target.value,
+          item_name: findProduct[0].name, 
+          measurement: findProduct[0].unit,
+          variants: findProduct[0].variants,
+          unit_cost: findProduct[0].price,
+          quantity: 1,
+          sub_total: findProduct[0].price * 1,
+          total_amount: findProduct[0].price * 1,
+          amount_paid: findProduct[0].price * 1,
+        }
+      ))
+      setFilteredProducts(findProduct)
+      setFilteredVariants(findProduct)
+      setFilteredUnit(findProduct)
+    } else{
+      setSalesData((prevData)=>(
+        {
+          ...prevData, 
+          price_type: 'fixed',
+          category: "",
+          item_no: "",
+          item_name: "", 
+          measurement: "",
+          variants: "",
+          unit_cost: 0,
+          quantity: 1,
+          sub_total: 0,
+          total_amount: 0,
+          amount_paid: 0
+        }
+      ))
+    }
+  }
+
+
  const handleCategoryChange = (e) =>{
-    const findProduct = products.filter((row) => row.category === e.target.value)
-    setFilteredProducts(findProduct)
-    setSalesData((prevData)=>(
-      {
-        ...prevData, 
-        category: e.target.value,
-        item_name: "", 
-        measurement: '',
-        variants: '',
-        unit_cost: 0,
-        quantity: 1,
-        total_amount: 0
-      }
-    ))
+    if(e.target.value === "multiple"){
+      setSalesData((prevData)=>(
+        {
+          ...prevData, 
+          price_type: 'custom',
+          category: e.target.value,
+          item_name: "multiple", 
+          measurement: 'multiple',
+          variants: 'multiple',
+          unit_cost: 0,
+          quantity: 1,
+          sub_total: 0,
+          total_amount: 0,
+          amount_paid: 0
+        }
+      ))
+      // setItemCode('')
+    } else{
+      const findProduct = products.filter((row) => row.category === e.target.value)
+      setFilteredProducts(findProduct)
+      setSalesData((prevData)=>(
+        {
+          ...prevData, 
+          category: e.target.value,
+          item_name: "", 
+          measurement: '',
+          variants: '',
+          unit_cost: 0,
+          quantity: 1,
+          unit_cost: 0,
+          sub_total: 0,
+          total_amount: 0,
+          amount_paid: 0
+        }
+      ))
+    }
+    setItemCode('')
     
   }
   
@@ -126,6 +196,7 @@ export default function CreateTransaction({user, refresh}) {
           total_amount: total,
         }
       ))
+      setItemCode(findProduct[0].item_code)
     }
   }
 
@@ -269,6 +340,7 @@ export default function CreateTransaction({user, refresh}) {
       sales_person: "",
       remarks: "",
     })
+    setItemCode('')
     fetchAll()
     onClose()
     
@@ -290,23 +362,53 @@ export default function CreateTransaction({user, refresh}) {
               <ModalHeader className="flex flex-col gap-1 bg-blue-900 text-white">Create Order</ModalHeader>
               <ModalBody>
                 <form onSubmit={submit} className="flex flex-col gap-5">
-                  <div className="flex gap-5 items-end">
+                  <div>
+                    <div className="flex">
+                      <Input
+                        label="Item Code"
+                        labelPlacement="outside"
+                        size="md"
+                        radius="none"
+                        placeholder="Enter item code"
+                        variant="bordered"
+                        className="w-full"
+                        value={itemCode}
+                        onChange={handleChangeItemCode}
+                        />
+                      <Select 
+                        size="md"
+                        radius="none"
+                        color="primary"
+                        className="w-20"
+                        disableSelectorIconRotation
+                        selectorIcon={<HiSelector/>}
+                        onChange={handleChangeItemCode}
+                      >
+                        {products.map((item) => (
+                            <SelectItem key={item.item_code}>
+                              {item.item_code}
+                            </SelectItem>
+                        ))}
+                      </Select>
+                    </div>
                     <Select 
                       label="Product Category" 
                       labelPlacement="outside"
                       size="md"
                       defaultSelectedKeys={[salesData.category]}
+                      // value={salesData.category}
                       onChange={handleCategoryChange}
                     >
-                      {productsCategory.map((item, index) => (
+                      {productsCategory.map((item) => (
                           <SelectItem key={item.name}>
                             {item.name}
                           </SelectItem>
                       ))}
+                      <SelectItem key="multiple">MULTIPLE</SelectItem>
                     </Select>
                     {/* <SelectProduct products={filteredProducts} selected={(data)=> alert(data)}/> */}
                   </div>
-                  {salesData.category? (
+                  {salesData.category && salesData.category !== 'multiple'? (
                     <div className="flex">
                       <Select 
                         label="Product name" 
@@ -318,7 +420,7 @@ export default function CreateTransaction({user, refresh}) {
                         isInvalid={errorMessage.item_name? true : false}
                         color={errorMessage.item_name ? "danger" : ""}
                         errorMessage={errorMessage.item_name}
-                        value={salesData.item_name}
+                        // value={salesData.item_name}
                         onChange={handleNameChange}
                       >
                         {(() => {
@@ -334,6 +436,9 @@ export default function CreateTransaction({user, refresh}) {
                             );
                           });
                         })()}
+                        {salesData.category === 'multiple'? (
+                          <SelectItem key="multiple">MULTIPLE</SelectItem>
+                        ) : null}
                       </Select>
                       <Select 
                         label="Variants" 
@@ -342,6 +447,7 @@ export default function CreateTransaction({user, refresh}) {
                         radius="none"
                         placeholder="Select variants"
                         defaultSelectedKeys={[salesData.variants]}
+                        // value={salesData.variants}
                         onChange={handleVariantChange}
                         isDisabled={salesData.item_name? false : true}
                       >
@@ -351,6 +457,9 @@ export default function CreateTransaction({user, refresh}) {
                               {item.variants}
                             </SelectItem>
                         ))}
+                        {salesData.category === 'multiple'? (
+                          <SelectItem key="multiple">MULTIPLE</SelectItem>
+                        ) : null}
                       </Select>
                       <Select 
                         label="Unit of Measurement" 
@@ -363,7 +472,7 @@ export default function CreateTransaction({user, refresh}) {
                         isInvalid={errorMessage.measurement? true : false}
                         color={errorMessage.measurement ? "danger" : ""}
                         errorMessage={errorMessage.measurement}
-                        value={salesData.measurement}
+                        // value={salesData.measurement}
                         onChange={handleMeasurementChange}
                       >
                         
@@ -372,6 +481,9 @@ export default function CreateTransaction({user, refresh}) {
                               {item.unit}
                             </SelectItem>
                         ))}
+                        {salesData.category === 'multiple'? (
+                          <SelectItem key="multiple">MULTIPLE</SelectItem>
+                        ) : null}
                       </Select>
                       <Input
                       type="number"
@@ -499,7 +611,7 @@ export default function CreateTransaction({user, refresh}) {
                     <div className=" flex-1 flex flex-col gap-5 border rounded-md p-3">
                       <div className="flex flex-col gap-2">
                         <span>Product cost </span>
-                        {salesData.measurement? (
+                        {salesData.measurement || salesData.category === 'multiple'? (
                           <div className="flex justify-between items-end">
                             <Select 
                               label="Price type" 

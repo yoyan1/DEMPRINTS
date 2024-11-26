@@ -161,7 +161,7 @@ export default function Transaction({columns, transactions, itemOptions, typeOpt
         );
         case "discount":
         return (
-          <div>{cellValue}%</div>
+          <div>{cellValue}{item.discount_type}</div>
         );
         case "unit_cost":
         return (
