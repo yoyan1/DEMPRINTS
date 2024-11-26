@@ -13,6 +13,7 @@ import {
   Dropdown,
   DropdownMenu,
   DropdownItem,
+  DropdownSection,
   Chip,
   Pagination,
   Spinner, 
@@ -22,11 +23,14 @@ import {
 } from "@nextui-org/react";
 import { CiSearch } from "react-icons/ci";
 import { IoChevronDown } from "react-icons/io5";
+import { IoEllipsisVerticalOutline } from "react-icons/io5";
+import { RiDeleteBin4Line } from "react-icons/ri";
 import { MdPaid } from "react-icons/md";
 import {capitalize} from "@/app/composables/utils";
 import ExpandTransaction from './ExpandModal'
 import ExportToPdf from '@/app/composables/exportToPdf'
 import CreateTransaction from './AddTransaction'
+import DeleteSale from "./DeleteSales";
 import { formatDate, formatTime } from "@/app/composables/formateDateAndTime";
 
 const itemColorMap = {
@@ -40,9 +44,16 @@ const typeColorMap = {
   online: "primary",
 };
 
-const INITIAL_VISIBLE_COLUMNS = ["transaction_no", "item_name", "unit_cost",  "customer_type", "customer_name", "payment_options", "sales_person"];
+const INITIAL_VISIBLE_COLUMNS = ["transaction_no", "item_name", "unit_cost",  "customer_type", "customer_name", "payment_options", "sales_person", "actions"];
 const INITIAL_VISIBLE_COLUMNS_ALL = ["date", "time", "transaction_no", "item_no", "item_name", "unit_cost", "quantity", "sub_total", "discount", "total_amount", "amount_paid", "customer_type", "customer_name","payment_options", "payment_method", "sales_person", "balance", "remarks"];
-const SEARCH_SELECTION = ["item_name", "customer_type", "customer_name", "payment_options", "sales_person"]
+const SEARCH_SELECTION = [
+  {name:"Transaction Number", key: "transaction_no", },
+  {name:"Item name", key: "item_name", },
+  {name:"Customer type", key: "customer_type", },
+  {name:"Customer name", key: "customer_name", },
+  {name:"Payment Options", key: "payment_options", },
+  {name:"Sales Person", key: "sales_person"},
+]
 
 export default function Transaction({columns, transactions, itemOptions, typeOptions, loading, isMaximized, user, refresh}) {
   const [filterValue, setFilterValue] = useState("");
@@ -109,8 +120,12 @@ export default function Transaction({columns, transactions, itemOptions, typeOpt
     });
   }, [sortDescriptor, items]);
 
-  const renderCell = React.useCallback((user, columnKey) => {
-    const cellValue = user[columnKey];
+  const fetch = (data)=>{
+    refresh(data)
+  }
+
+  const renderCell = React.useCallback((item, columnKey) => {
+    const cellValue = item[columnKey];
 
     switch (columnKey) {
         case "date":
@@ -133,13 +148,13 @@ export default function Transaction({columns, transactions, itemOptions, typeOpt
             );
         case "item_name":
         return (
-          <Chip className="capitalize" color={itemColorMap[user.item_name.toLowerCase() === 'photo print'? 'photoprint' : user.item_name.toLowerCase()]} size="sm" variant="flat">
+          <Chip className="capitalize" color={itemColorMap[item.item_name.toLowerCase() === 'photo print'? 'photoprint' : item.item_name.toLowerCase()]} size="sm" variant="flat">
             {cellValue}
           </Chip>
         );
         case "customer_type":
         return (
-          <Chip className="capitalize" color={typeColorMap[user.customer_type.toLowerCase() === 'walk in'? 'walk_in' : user.customer_type.toLowerCase()]} size="sm" variant="flat">
+          <Chip className="capitalize" color={typeColorMap[item.customer_type.toLowerCase() === 'walk in'? 'walk_in' : item.customer_type.toLowerCase()]} size="sm" variant="flat">
             {cellValue}
           </Chip>
         );
@@ -166,13 +181,32 @@ export default function Transaction({columns, transactions, itemOptions, typeOpt
         case "actions":
         return (
           <div>
-            {items.remarks > 0? (
-              <Tooltip color="success" content="Mark as paid">
-                <Button isIconOnly variant="light" color="success">
-                  <MdPaid/>
+            {item.balance === 0? (
+              <Tooltip color="danger" content="Delete">
+                <Button isIconOnly variant="light" color="danger">
+                  <DeleteSale id={item._id} refresh={fetch}/>
                 </Button>
               </Tooltip>
-            ): null}
+            ): (
+              <div>
+                <Dropdown closeOnSelect={false}>
+                  <DropdownTrigger>
+                    <Button isIconOnly size="sm" variant="light">
+                      <IoEllipsisVerticalOutline className="h-4 w-4" />
+                    </Button>
+                  </DropdownTrigger>
+                  <DropdownMenu>
+                    <DropdownSection title="Actions">
+                      <DropdownItem color="primary">Partial</DropdownItem>
+                      <DropdownItem color="success">mark as paid</DropdownItem>
+                      </DropdownSection> 
+                    <DropdownSection title="Danger">
+                      <DropdownItem color="danger"><DeleteSale id={item._id} label="Delete" refresh={fetch}/></DropdownItem>
+                    </DropdownSection> 
+                  </DropdownMenu>
+                </Dropdown>
+              </div>
+            )}
           </div>
         );
         default:
@@ -211,9 +245,6 @@ export default function Transaction({columns, transactions, itemOptions, typeOpt
     setPage(1)
   },[])
 
-  const fetch = (data)=>{
-    refresh(data)
-  }
 
   const handleSelectionChange = React.useCallback((e)=>{
       setFilterSelection(e.target.value)
@@ -233,14 +264,13 @@ export default function Transaction({columns, transactions, itemOptions, typeOpt
             size="md"
           >
             {SEARCH_SELECTION.map((item) => (
-              <SelectItem key={item}>
-                {item}
+              <SelectItem key={item.key}>
+                {item.name}
               </SelectItem>
             ))}
           </Select>
           {filterSelection? (
             <Select 
-            label={statusFilter !== 'all'? "" : `select ${filterSelection}`}
             placeholder={filterSelection}
             className="w-full" 
             value={statusFilter}
@@ -274,13 +304,14 @@ export default function Transaction({columns, transactions, itemOptions, typeOpt
             onClear={() => onClear()}
             onValueChange={onSearchChange}
           />
-          <div className="flex gap-3">
-            <CreateTransaction user={user} refresh={fetch}/>
-            <ExportToPdf rows={sortedItems}/>
-            {!isMaximized? (
-                <ExpandTransaction columns={columns} transactions={transactions} itemOptions={itemOptions} typeOptions={typeOptions} />
-            ): null}
-          </div>
+          {!isMaximized? (
+            <div className="flex gap-3">
+              <CreateTransaction user={user} refresh={fetch}/>
+              <ExportToPdf rows={sortedItems}/>
+              {/* {!isMaximized? ( */}
+                  <ExpandTransaction columns={columns} transactions={transactions} itemOptions={itemOptions} typeOptions={typeOptions} />
+            </div>
+          ): null}
         </div>
         <div className="flex justify-between items-center">
           <span className="text-default-400 text-small">Total {transactions.length} transactions</span>
@@ -291,9 +322,9 @@ export default function Transaction({columns, transactions, itemOptions, typeOpt
               onChange={onRowsPerPageChange}
             >
               <option value="5">5</option>
-              <option value="10">10</option>
-              <option value="15">15</option>
+              <option value="20">20</option>
               <option value="50">50</option>
+              <option value="100">100</option>
             </select>
           </label>
         </div>
@@ -371,9 +402,9 @@ export default function Transaction({columns, transactions, itemOptions, typeOpt
             </TableHeader>
             <TableBody emptyContent={"No transaction found"} items={sortedItems}  isLoading={loading} loadingContent={<Spinner label="Loading..." />} >
                 {(item) => (
-                <TableRow key={item._id}>
-                    {(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}
-                </TableRow>
+                  <TableRow key={item._id}>
+                      {(columnKey) => <TableCell className={item.balance > 0? "bg-orange-200" : ''}>{renderCell(item, columnKey)}</TableCell>}
+                  </TableRow>
                 )}
             </TableBody>
             </Table>

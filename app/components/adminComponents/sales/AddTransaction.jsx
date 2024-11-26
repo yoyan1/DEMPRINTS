@@ -87,6 +87,7 @@ export default function CreateTransaction({user, refresh}) {
         ...prevData, 
         item_name: e.target.value, 
         measurement: '',
+        variants: '',
         unit_cost: 0,
         quantity: 1,
         total_amount: 0
@@ -256,6 +257,8 @@ export default function CreateTransaction({user, refresh}) {
       quantity: 1,
       sub_total: 0,
       discount: 0,
+      variants: '',
+      measurement: '',
       total_amount: 0,
       amount_paid: 0,
       balance: 0, 

@@ -7,6 +7,10 @@ export const useSalesStore = create((set) => ({
         const response = await axios.post(process.env.NEXT_PUBLIC_API_URL+'/collection/addTransaction', data)
         return response.data
     },
+    deleteTransaction: async(id) => {
+        const response = await axios.delete(process.env.NEXT_PUBLIC_API_URL+'/collection/deletetransaction/'+id)
+        return response.data
+    },
     columns: [
         {name: "ID", dataKey: "id", sortable: true},
         {name: "TRANSACTION DATE", dataKey: "date", sortable: true},
