@@ -93,8 +93,8 @@ export default function UpdateUser({user}) {
               <ModalBody>
                 <div>
                 <Avatar className="w-20 h-20" isLoading={isLoading}>
-                  {imageUrl? (
-                    <AvatarImage src={imageUrl} />
+                  {user.imageUrl? (
+                    <AvatarImage src={user.imageUrl} />
                   ) : (
                     <AvatarImage src={user.gender === 'male'? '/male-avatar.png' : '/female-avatar.png' } />
                   )}
@@ -130,8 +130,8 @@ export default function UpdateUser({user}) {
                   <Avatar className="w-20 h-20">
                     {image? (
                       <AvatarImage src={image} />
-                    ) : imageUrl? (
-                      <AvatarImage src={imageUrl} />
+                    ) : user.imageUrl? (
+                      <AvatarImage src={user.imageUrl} />
                     ): (
                       <AvatarImage src={user.gender === 'male'? '/male-avatar.png' : '/female-avatar.png' } />
                     )}
