@@ -9,18 +9,12 @@ import { useUserStore } from '../../../stores/userStore';
 import { UploadImage } from '@/app/composables/uploadImage'
 
 export default function UpdateUser({user}) {
-  const {isOpen, onOpen, onOpenChange} = useDisclosure();
+  const {isOpen, onOpen, onClose} = useDisclosure();
   const [ newData, setNewData ] = useState({image: null, ...user})
   const [image, setImage] = useState(null)
   const [ jobData, setJobData ] = useState({})
   const {update, loading} = useUserStore()
 
-  const getImage = async (id) => {
-      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/users/images/${id}`, {
-      responseType: 'blob',  
-      });
-      return URL.createObjectURL(response.data);
-  }
   
   const [isLoading, setLoading] = useState(false)
   const fetchJobData = async () =>{
@@ -38,13 +32,12 @@ export default function UpdateUser({user}) {
         })
 
       }
-      setLoading(false)
   }
 
   useEffect(() =>{
     const load = async () => {
       await fetchJobData() 
-      user.image_id? setImage(await getImage(user.image_id)) : null
+      setLoading(false)
     }
 
     load()
@@ -68,34 +61,43 @@ export default function UpdateUser({user}) {
   }
 
   const upload = async () => {
+    let imageID;
       if (newData.image !== '') {
         try {
           const result = await UploadImage(newData.image);
           console.log(result);
-          return result
+          imageID = result
         } catch (error) {
-          console.error(`Error uploading ${key}:`, error);
+          console.error(`Error uploading :`, error);
         }
       }
-      return null
-    // submit(contractID, preEmploymentID, certID)
+      onSubmit(imageID)
   };
 
-  const onSubmit = async () => {
-    const result = await update(user.id, {image_id: await upload(), ...newData})
+  const onSubmit = async (imageID) => {
+    await upload()
+    console.log(imageID);
+    
+    const result = await update(user.id, {...newData, image_id: imageID})
     console.log(result.data.message)
+    onClose()
+    setImage("")
   }
   return (
     <>
       <Button onPress={onOpen} isIconOnly variant='light'><BiEditAlt className='h-5 w-5 text-gray-600'/></Button>
-      <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="xl" scrollBehavior='outside'>
+      <Modal isOpen={isOpen} onClose={onClose} size="xl" scrollBehavior='outside'>
         <ModalContent >
-          {(onClose) => (
+          {() => (
             <>
               <ModalBody>
                 <div>
-                <Avatar className="w-20 h-20">
-                    <AvatarImage src={'/male-avatar.png'} alt="@shadcn" />
+                <Avatar className="w-20 h-20" isLoading={isLoading}>
+                  {imageUrl? (
+                    <AvatarImage src={imageUrl} />
+                  ) : (
+                    <AvatarImage src={user.gender === 'male'? '/male-avatar.png' : '/female-avatar.png' } />
+                  )}
                     <AvatarFallback>l</AvatarFallback>
                 </Avatar>
                 </div>
@@ -126,7 +128,13 @@ export default function UpdateUser({user}) {
                 <div className='flex items-start gap-5'>
                   <span>Profile photo</span>
                   <Avatar className="w-20 h-20">
-                      <AvatarImage src={image? image : '/male-avatar.png'} alt="@shadcn" />
+                    {image? (
+                      <AvatarImage src={image} />
+                    ) : imageUrl? (
+                      <AvatarImage src={imageUrl} />
+                    ): (
+                      <AvatarImage src={user.gender === 'male'? '/male-avatar.png' : '/female-avatar.png' } />
+                    )}
                       <AvatarFallback>l</AvatarFallback>
                   </Avatar>
                   <label for="image" className='p-2 bg-gray-300 rounded-xl '>Click to replace</label>

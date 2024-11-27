@@ -31,6 +31,7 @@ import CreateUser from "@/app/components/adminComponents/employee/CreateUser";
 import ViewDetails from "@/app/components/adminComponents/employee/ViewDetails";
 import DeleteUser from "@/app/components/adminComponents/employee/deleteUser"
 import UpdateUser from "../../components/adminComponents/employee/UpdateUser";
+import axios from "axios";
 
 const statusColorMap = {
   active: "success",
@@ -97,8 +98,8 @@ export default function Employee() {
       case "name":
         return (
           <div>
-            {user.image? (
-              <User avatarProps={{ radius: "lg", src: user.image }} description={user.id_number} name={user.name}>
+            {user.imageUrl? (
+              <User avatarProps={{ radius: "lg", src: user.imageUrl }} description={user.id_number} name={user.name}>
                 {user.id_number}
               </User>
             ) : (

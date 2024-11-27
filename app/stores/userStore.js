@@ -78,15 +78,33 @@ export const useUserStore = create((set) => ({
     ],
     users: [],
     fetchUsers: async () => {
-        set({ loading: true });
-        try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users`); 
-        if (!response.ok) throw new Error('Network response was not ok');
-        const data = await response.json();
-        set({ users: data, loading: false });
-        } catch (error) {
-        set({ error: error.message, loading: false });
-        }
-    },
+      set({ loading: true });
+      try {
+          const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users`);
+          if (!response.ok) throw new Error('Network response was not ok');
+          const data = await response.json();
+
+          const usersData = await Promise.all(
+              data.map(async (user) => {
+                  if (user.image_id) {
+                      const response = await axios.get(
+                          `${process.env.NEXT_PUBLIC_API_URL}/users/images/${user.image_id}`,
+                          {
+                              responseType: 'blob',
+                          }
+                      );
+                      const imageUrl = URL.createObjectURL(response.data);
+                      return { ...user, imageUrl };
+                  } else {
+                      return { ...user, imageUrl: '' };
+                  }
+              })
+          );
+  
+          set({ users: usersData, loading: false });
+      } catch (error) {
+          set({ error: error.message, loading: false });
+      }
+  },  
 }));
 
