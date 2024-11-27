@@ -66,6 +66,7 @@ const INITIAL_VISIBLE_COLUMNS = [
   'payment_options',
   'payment_method',
   'sales_person',
+  'balance',
   'remarks',
 ];
 // const INITIAL_VISIBLE_COLUMNS_ALL = [
@@ -230,13 +231,38 @@ export default function AllTransaction() {
             {cellValue}
           </Chip>
         );
+      case 'unit_cost':
+        return (
+          <div className="flex flex-col">
+            <p className="text-bold text-sm capitalize">
+              ₱ {cellValue.toFixed(2)}
+            </p>
+          </div>
+        );
+      case 'sub_total':
+        return (
+          <div className="flex flex-col">
+            <p className="text-bold text-small capitalize">
+              ₱ {cellValue.toFixed(2)}
+            </p>
+          </div>
+        );
       case 'discount':
         return (
           <div className="flex flex-col">
-            <p className="text-bold text-small capitalize">{cellValue}%</p>
+            <p className="text-bold text-small capitalize">
+              {cellValue.toFixed(2)}
+            </p>
           </div>
         );
-
+      case 'total_amount':
+        return (
+          <div className="flex flex-col">
+            <p className="text-bold text-small capitalize">
+              ₱ {cellValue.toFixed(2)}
+            </p>
+          </div>
+        );
       case 'customer_type':
         return (
           <Chip
@@ -446,7 +472,7 @@ export default function AllTransaction() {
     <div>
       {topContent}
       <div className="max-w-[82rem] overflow-x-scroll">
-        <Modal size="lg" isOpen={isOpen} onClose={onClose}>
+        <Modal size="4xl" isOpen={isOpen} onClose={onClose} scrollBehavior='outside'>
           <ModalHeader></ModalHeader>
           <ModalContent>
             <ModalBody className="max-w-md mx-auto">
