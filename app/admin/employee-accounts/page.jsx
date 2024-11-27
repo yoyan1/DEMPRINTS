@@ -41,7 +41,7 @@ const statusColorMap = {
 const INITIAL_VISIBLE_COLUMNS = ["name", "job_title", "status", "actions"];
 
 export default function Employee() {
-  const { columns, statusOptions, users, loading, fetchUsers } = useUserStore();
+  const { columns, statusOptions, users, loading, fetchUsers, revokeImageUrls } = useUserStore();
   const [filterValue, setFilterValue] = useState("");
   const [selectedKeys, setSelectedKeys] = useState(new Set([]));
   const [visibleColumns, setVisibleColumns] = useState(new Set(INITIAL_VISIBLE_COLUMNS));
@@ -50,8 +50,10 @@ export default function Employee() {
   const [sortDescriptor, setSortDescriptor] = useState({ column: "age", direction: "ascending" });
   const [page, setPage] = useState(1);
 
+
   useEffect(() => {
     fetchUsers();
+
   }, [fetchUsers]);
 
   const hasSearchFilter = Boolean(filterValue);
@@ -133,7 +135,7 @@ export default function Employee() {
             </Tooltip>
             <Tooltip content="Edit user status">
               <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
-                <UpdateUser user={user}/>
+                <UpdateUser user={user} refresh={fetchUsers}/>
               </span>
             </Tooltip>
             <DeleteUser id={user.id} refresh={fetchUsers}/>

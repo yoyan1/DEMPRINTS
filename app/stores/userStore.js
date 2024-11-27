@@ -78,7 +78,7 @@ export const useUserStore = create((set) => ({
     ],
     users: [],
     fetchUsers: async () => {
-      set({ loading: true });
+      set({ users: [], loading: true });
       try {
           const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users`);
           if (!response.ok) throw new Error('Network response was not ok');
@@ -106,5 +106,15 @@ export const useUserStore = create((set) => ({
           set({ error: error.message, loading: false });
       }
   },  
+  revokeImageUrls: () => {
+    set((state) => {
+      state.users.forEach((user) => {
+        if (user.imageUrl) {
+          URL.revokeObjectURL(user.imageUrl);
+        }
+      });
+      return { users: [] };
+    });
+  }
 }));
 

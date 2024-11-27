@@ -8,7 +8,7 @@ import axios from 'axios';
 import { useUserStore } from '../../../stores/userStore';
 import { UploadImage } from '@/app/composables/uploadImage'
 
-export default function UpdateUser({user}) {
+export default function UpdateUser({user, refresh}) {
   const {isOpen, onOpen, onClose} = useDisclosure();
   const [ newData, setNewData ] = useState({image: null, ...user})
   const [image, setImage] = useState(null)
@@ -60,6 +60,7 @@ export default function UpdateUser({user}) {
     }
   }
 
+  const [loadSubmit, setLoad] = useState(false)
   const upload = async () => {
     let imageID;
       if (newData.image !== '') {
@@ -75,13 +76,14 @@ export default function UpdateUser({user}) {
   };
 
   const onSubmit = async (imageID) => {
+    setLoad(true)
     await upload()
-    console.log(imageID);
     
     const result = await update(user.id, {...newData, image_id: imageID})
-    console.log(result.data.message)
     onClose()
     setImage("")
+    refresh("done")
+    setLoad(false)
   }
   return (
     <>
@@ -174,7 +176,7 @@ export default function UpdateUser({user}) {
                 <Button color="danger" variant="light" onPress={onClose}>
                   Close
                 </Button>
-                <Button color="primary" isLoading={loading} onPress={onSubmit}>
+                <Button color="primary" isLoading={loadSubmit} onPress={onSubmit}>
                   Submit
                 </Button>
               </ModalFooter>
