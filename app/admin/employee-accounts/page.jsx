@@ -132,7 +132,7 @@ export default function Employee() {
             </Tooltip>
             <Tooltip content="Edit user status">
               <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
-                <UpdateUser />
+                <UpdateUser user={user}/>
               </span>
             </Tooltip>
             <DeleteUser id={user.id} refresh={fetchUsers}/>

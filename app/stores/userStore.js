@@ -19,6 +19,12 @@ export const useUserStore = create((set) => ({
       set({ loading: false });
       return response
     },
+    update: async (id, data) =>{
+      set({ loading: true });
+      const response = await axios.post(process.env.NEXT_PUBLIC_API_URL+'/users/update/'+id, data);
+      set({ loading: false });
+      return response
+    },
     login: async (data) =>{
       set({ loading: true });
       const response = await axios.post(process.env.NEXT_PUBLIC_API_URL+'/users/login', data);

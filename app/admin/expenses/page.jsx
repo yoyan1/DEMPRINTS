@@ -1,33 +1,196 @@
-"use client"
-import React, { useEffect } from 'react'
-import AdminLayout from '../layout/layout'
-import {useSalesStore} from '@/app/stores/transactionStore'
+"use client";
+import React, { useEffect, useState, useMemo } from 'react'
 import ExpensesTable from '@/app/components/adminComponents/expenses/ExpensesTable'
+import { useExpensesStore } from '@/app/stores/ExpensesStore'
+import AdminLayout from '../layout/layout'
+import { getDateAndTime } from '@/app/composables/dateAndTime'
+import { formatDate } from '@/app/composables/formateDateAndTime';
+import { BiLineChart, BiLineChartDown } from "react-icons/bi";
+import { DateRangePicker, Select, SelectItem } from '@nextui-org/react';
+import { IoMdCloseCircle } from "react-icons/io";
+import {parseDate} from "@internationalized/date";
+import { decodeToken } from '@/app/utils/decodeToken'
+import { paymentStore } from '../../stores/paymentStore';
 
-export default function page() {
-  const {columns, itemOptions, typeOptions, transactions, loading, fetchTransactions } = useSalesStore();
 
-  useEffect(()=>{
-    fetchTransactions()
-  }, [fetchTransactions])
+export default function Sales() {
+  const {categoryList, fetchExpensesCategory, columns, loading, expenses, fetchExpenses,} = useExpensesStore()
+  const {options, fetchPayment} = paymentStore()
+  const [selectedKey, setSelectedKey] = useState("today")
+  const {date} = getDateAndTime()
+  const [user, setUser] = useState({})
+  const [value, setValue] = React.useState({
+    start: parseDate(date),
+    end: parseDate(date),
+  });
+
+  useEffect(() =>{
+    fetchPayment()
+    fetchExpenses()
+    fetchExpensesCategory()
+    const loadUser = async () =>{
+
+      const token = localStorage.getItem("token");
+  
+      if (token) {
+        const decode = await decodeToken(token)
+        setUser(decode);
+      }
+    }
+    loadUser()
+  }, [fetchExpenses])
+
+  const isDateInRange = (date, startDate, endDate) => {
+    return date >= startDate && date <= endDate;
+  };
+  
+  const getTotalExpensesInRange = (expenses, selectedKey, startDate, endDate, categoryList) => {
+    return expenses.reduce(
+      (acc, item) => {
+        if(selectedKey === 'today'){
+          if(item.date === date) {
+            acc.totalExpensesToday += item.total;
+            categoryList.forEach((row) => {
+              if(row.name === item.category)
+              acc[row.name] = (acc[row.name] || 0) + item.total;
+            });
+          }
+
+        } else if(selectedKey === 'date range'){
+          const itemDate = new Date(item.date); 
+          if (isDateInRange(itemDate, startDate, endDate)) {
+            acc.totalExpensesInRange += item.total;
+            categoryList.forEach((row) => {
+              if(row.name === item.category)
+              acc[row.name] = (acc[row.name] || 0) + item.total;
+            });
+          }
+        } else{
+          acc.totalExpenses += item.total;
+          categoryList.forEach((row) => {
+            if(row.name === item.category)
+            acc[row.name] = (acc[row.name] || 0) + item.total;
+          });
+        }
+        return acc;
+      },
+      { totalExpensesToday: 0, totalExpensesInRange: 0, totalExpenses: 0 }
+    );
+  };
+  
+  
+
+  const filteredexpenses = useMemo(() => {
+    const start = new Date(value.start);
+    const end = new Date(value.end);
+  
+    return expenses.filter((transaction) => {
+      const transactionDate = new Date(transaction.date);
+      if(selectedKey === "today"){
+        return transaction.date === date;
+      } else if(selectedKey === "date range"){
+        return transactionDate >= start && transactionDate <= end;
+      } else{
+        return transaction
+      }
+    });
+  }, [expenses, selectedKey, value.start, value.end]);
+  
+
+  const totals = useMemo(() => {
+    const start = new Date(value.start);
+    const end = new Date(value.end);
+    return getTotalExpensesInRange(expenses, selectedKey, start, end, categoryList);
+  }, [expenses, selectedKey, value.start, value.end, categoryList]);
+  
+  const { totalExpensesToday, totalExpensesInRange, totalExpenses, ...salesBycategoryList } = totals;
+  
+
+
   return (
     <AdminLayout>
-      <main className="flex flex-1 rounded-md flex-col gap-4 m-4 lg:gap-6 lg:m-6">
-        <div className='flex flex-col gap-2'>
-          <div className="flex justify-between items-start rounded-lg bg-white dark:bg-gray-900 p-5">
-            <div>
-              <h1 className="font-bold text-2xl">Expenses Overview</h1>
-              <span className="text-sm text-slate-400">{"Let's"} see the current statistic performance</span>
+        <main className="flex flex-1 rounded-md flex-col gap-4 m-4 lg:gap-6 lg:m-6">
+          <div className='flex flex-col gap-2'>
+            <div className=" rounded-xl bg-white dark:bg-gray-900 p-5">
+              <div className='flex gap-5'>
+                <div>
+                  <h1 className="font-bold text-2xl text-blue-950 dark:text-blue-600">Expenses Overview</h1>
+                  <span className="text-sm text-slate-400">{"Let's"} see the current statistic performance</span>
+                  <Select
+                  label="Filter Expenses"
+                  defaultSelectedKeys={[selectedKey]}
+                  value={selectedKey}
+                  onChange={(e)=> setSelectedKey(e.target.value)}
+                  >
+                    <SelectItem key="today">Today</SelectItem>
+                    <SelectItem key="date range">Date Range</SelectItem>
+                    <SelectItem key="all">All</SelectItem>
+                  </Select>
+                </div>
+                <div className='w-full'>
+                  <div className='p-3 shadow-sm rounded-xl bg-gradient-to-r from-blue-900 to-blue-600 flex flex-col gap-2 w-full'>
+                    <div className='text-sm text-blue-900 rounded-xl bg-white p-2 flex justify-between items-end'>
+                      {selectedKey === "date range"? (
+                        <div className='mt-2'>
+                          <DateRangePicker
+                            value={value}
+                            onChange={setValue}
+                            color='primary'
+                            size='sm'
+                            startContent={
+                              <div>
+                                <IoMdCloseCircle 
+                                className='cursor-pointer hover:text-red-400' 
+                                onClick={()=>(setValue({
+                                    start: parseDate(date),
+                                    end: parseDate(date),
+                                  })
+                                )}
+                            /></div>
+                            }
+                          />
+                      </div>
+                      ) : null}
+                      <span>{formatDate(value.start)} - {formatDate(value.end)}</span>
+                    </div>
+                      <div className='flex items-start gap-5'>
+                        <span className='font-sans font-semibold text-slate-100'>Expenses: </span>
+                        {selectedKey === 'today'? (
+                          <span className='text-slate-200 text-md font-bold'>₱{ totalExpensesToday.toFixed(2) }</span>
+                        ) : selectedKey === 'date range'? (
+                          <span className='text-slate-200 text-md font-bold'>₱{ totalExpensesInRange.toFixed(2) }</span>
+                        ) : (
+                          <span className='text-slate-200 text-md font-bold'>₱{ totalExpenses.toFixed(2) }</span>
+                        )}
+                        <div className='flex items-start gap-5 bg-white w-full'>
+                          {categoryList.length > 0? (
+                            <div className='border border-blue-600 p-3 rounded-md w-full'>
+                              {/* <span>Payment Method Breakdown</span> */}
+                              <div className='grid grid-cols-5 gap-4'>
+                                  {categoryList.map((transactioncategoryList) => (
+                                    salesBycategoryList[transactioncategoryList.name] > 0? (
+                                      <div className='flex flex-col'>
+                                        <span className='font-sans text-slate-700 dark:text-slate-200 text-sm flex items-center'><div className="w-2 h-2 bg-blue-400 rounded-full"></div> {transactioncategoryList.name}:</span>                 
+                                        <span className='font-sans text-slate-700 dark:text-slate-200 text-sm'> ₱{salesBycategoryList[transactioncategoryList.name] ? salesBycategoryList[transactioncategoryList.name].toFixed(2) : 0}</span>                 
+                                      </div>
+                                    ) : null
+                                  ))}
+                              </div>
+                            </div>
+                          ): null}
+
+                        </div>
+                      </div>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div>
-              <span className="text-sm py-1 px-2 border rounded-full">October 16, 2024</span>
+            <div className='bg-white dark:bg-gray-900 rounded-lg p-5'>
+              <ExpensesTable categoryList={categoryList} columns={columns}  expenses={filteredexpenses} loading={loading} refresh={fetchExpenses}/>
+              {/* <TransactionTable columns={columns} expenses={filteredexpenses} itemcategoryList={itemOptions} typeOptions={typeOptions} loading={loading} isMaximized={false} user={user} refresh={fetchexpenses}/> */}
             </div>
           </div>
-          <div className='bg-white dark:bg-gray-900 p-5 rounded-lg'>
-            <ExpensesTable columns={columns} transactions={transactions} itemOptions={itemOptions} typeOptions={typeOptions} loading={loading} isMaximized={false} refresh={fetchTransactions}/>
-          </div>
-        </div>
-      </main>
-  </AdminLayout>
+        </main>
+    </AdminLayout>
   )
 }
