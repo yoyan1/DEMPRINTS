@@ -6,12 +6,13 @@ import { useRouter } from 'next/navigation'
 import { decodeToken } from "../utils/decodeToken"
 import { IoEye } from "react-icons/io5";
 import { IoIosEyeOff } from "react-icons/io";
+import ForgotPassword from './user/forgotPassword'
 
 
 export function LoginForm() {
   const { login, loading } = useUserStore()
   const [ credentials, setCredentials ] = useState({id_number: '', password: ''})
-  const [errorMessage, setErrorMessage] = useState()
+  const [errorMessage, setErrorMessage] = useState({})
   const [mounted, setMounted] = useState(false); 
   const [isVisible, setIsVisible] = useState(false);
 
@@ -37,7 +38,7 @@ export function LoginForm() {
     e.preventDefault()
     const response = await login(credentials)
     if(!response.data.err){
-      setErrorMessage(response.data.message)
+      setErrorMessage({err: response.data.err, msg: `${response.data.message}. Please wait...`})
       if (typeof window !== "undefined") { 
         localStorage.setItem("token", response.data.token)
         const decode = await decodeToken(response.data.token)
@@ -47,12 +48,11 @@ export function LoginForm() {
         } else if(decode.role === 'staff'){
           router.push('/staff')
         } else{
-          setErrorMessage("Role not found")
+          setErrorMessage({err: true, msg: "Role not found"})
         }
       }
     } else{
-      setErrorMessage(response.data.message)
-      console.log(response.data.message)
+      setErrorMessage({err: response.data.err, msg: response.data.message})
     }
   }
 
@@ -66,7 +66,11 @@ export function LoginForm() {
           </h2>
           <p className="mt-4 text-center text-gray-400">Sign in to continue</p>
           <form onSubmit={submit} className="mt-8 space-y-6">
-            <span className="w-full text-center">{errorMessage}</span>
+            <div className="flex justify-center">
+              {errorMessage.msg? (
+                <span className={`min-w-xl text-center p-3 border ${errorMessage.err? 'text-red-600 border-red-600 bg-red-200' : 'text-green-600 border-green-600 bg-green-200'}`}>{errorMessage.msg}</span>
+              ) : null}
+            </div>
             <div className="rounded-md shadow-sm flex flex-col gap-3">
               <div>
                 <Input 
@@ -120,7 +124,7 @@ export function LoginForm() {
                   className="font-medium text-indigo-500 hover:text-indigo-400"
                   href="#"
                 >
-                  Forgot your password?
+                  <ForgotPassword/>
                 </a>
               </div>
             </div>

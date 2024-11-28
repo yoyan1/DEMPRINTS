@@ -33,16 +33,7 @@ import { GoArrowSwitch } from "react-icons/go";
 import { useRouter } from "next/navigation"
 import { Link } from "@nextui-org/react"
 
-export function NavUser({
-  user,
-}: {
-  user: {
-    name: string,
-    role: string,
-    id_number: string
-    avatar: string
-  }
-}) {
+export function NavUser({user}) {
   const { isMobile } = useSidebar()
   const router = useRouter()
 
