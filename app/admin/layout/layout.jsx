@@ -23,7 +23,8 @@ export default function AdminLayout({ children }) {
   
       if (token) {
         const decode = await decodeToken(token)
-        setUser(decode);
+        const imageUrl = `${process.env.NEXT_PUBLIC_API_URL}/users/images/${decode.image_id}`;
+        setUser({...decode, imageUrl: imageUrl});
   
         if(user){
           // const currentTime = Math.floor(Date.now() / 1000);

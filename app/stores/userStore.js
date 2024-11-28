@@ -87,16 +87,11 @@ export const useUserStore = create((set) => ({
           const usersData = await Promise.all(
               data.map(async (user) => {
                   if (user.image_id) {
-                      const response = await axios.get(
-                          `${process.env.NEXT_PUBLIC_API_URL}/users/images/${user.image_id}`,
-                          {
-                              responseType: 'blob',
-                          }
-                      );
-                      const imageUrl = URL.createObjectURL(response.data);
+                      const imageUrl = `${process.env.NEXT_PUBLIC_API_URL}/users/images/${user.image_id}`;
                       return { ...user, imageUrl };
                   } else {
-                      return { ...user, imageUrl: '' };
+                      const imageUrl = user.gender === 'male'? '/male-avatar.png' : '/female-avatar.png'
+                      return { ...user, imageUrl: imageUrl };
                   }
               })
           );
@@ -105,7 +100,13 @@ export const useUserStore = create((set) => ({
       } catch (error) {
           set({ error: error.message, loading: false });
       }
-  },  
+  }, 
+  findUser: async (data) =>{
+    set({ loading: true });
+    const response = await axios.post(process.env.NEXT_PUBLIC_API_URL+'/users/findUser', data);
+    set({ loading: false });
+    return response.data
+  },
   revokeImageUrls: () => {
     set((state) => {
       state.users.forEach((user) => {

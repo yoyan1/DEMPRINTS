@@ -41,7 +41,7 @@ const statusColorMap = {
 const INITIAL_VISIBLE_COLUMNS = ["name", "job_title", "status", "actions"];
 
 export default function Employee() {
-  const { columns, statusOptions, users, loading, fetchUsers, revokeImageUrls } = useUserStore();
+  const { columns, statusOptions, users, loading, fetchUsers } = useUserStore();
   const [filterValue, setFilterValue] = useState("");
   const [selectedKeys, setSelectedKeys] = useState(new Set([]));
   const [visibleColumns, setVisibleColumns] = useState(new Set(INITIAL_VISIBLE_COLUMNS));

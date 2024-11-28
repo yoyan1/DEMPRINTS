@@ -22,7 +22,7 @@ export default function SalesRepresentative() {
           <TableRow key="1">
               <TableCell>
                 <User
-                  avatarProps={{radius: "lg", src: ""}}
+                  avatarProps={{radius: "lg", src: user.imageUrl}}
                   description={user.id_number}
                   name={user.name}
                 >

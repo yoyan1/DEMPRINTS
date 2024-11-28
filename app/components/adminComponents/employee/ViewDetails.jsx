@@ -28,12 +28,12 @@ export default function ViewDetails({data}) {
     }
 
     const loadImage = async() =>{
-        const contract =data.contract? await getImage(data.contract) : ''
-        setContractImage(contract)
-        const pre_employment = data.pre_employment? await getImage(data.pre_employment) : ''
-        setPreEmploymentImage(pre_employment)
-        const certificates = data.certificates? await getImage(data.certificates) : ''
-        setCertificatesImage(certificates)
+        // const contract =data.contract? await getImage(data.contract) : ''
+        // setContractImage(contract)
+        // const pre_employment = data.pre_employment? await getImage(data.pre_employment) : ''
+        // setPreEmploymentImage(pre_employment)
+        // const certificates = data.certificates? await getImage(data.certificates) : ''
+        // setCertificatesImage(certificates)
     }
 
     useEffect(()=>{

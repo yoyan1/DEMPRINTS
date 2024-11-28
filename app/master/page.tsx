@@ -22,7 +22,7 @@ import { useRouter } from 'next/navigation'
 
 export default function page() {
     const router = useRouter();
-    const [user, setUser] = useState({id_number: "", name: ""})
+    const [user, setUser] = useState({id_number: "", name: "", imageUrl: ""})
     const [loading, setLoading] = useState(false)
   
     useEffect(() => {
@@ -33,7 +33,9 @@ export default function page() {
     
         if (token) {
           const decode = await decodeToken(token)
-          setUser(decode);
+          const image = `${process.env.NEXT_PUBLIC_API_URL}/users/images/${decode.image_id}`;
+          const imageUrl = image? image : decode.gender === 'male'? '/male-avatar.png' : '/female-avatar.png'
+          setUser({...decode, imageUrl: imageUrl});
     
           if(user){
             // const currentTime = Math.floor(Date.now() / 1000);
@@ -84,7 +86,7 @@ export default function page() {
                               as="button"
                               avatarProps={{
                               isBordered: true,
-                              src: "https://i.pravatar.cc/150?u=a042581f4e29026024d",
+                              src: user.imageUrl,
                               }}
                               className="transition-transform"
                               description={user.id_number}

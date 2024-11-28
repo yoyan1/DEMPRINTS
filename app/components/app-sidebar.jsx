@@ -32,7 +32,7 @@ export function AppSidebar({ ...props }) {
       name: props.user.name? props.user.name : '',
       role:  props.user.role,
       id_number: props.user.id_number? props.user.id_number : '',
-      avatar: "/avatars/shadcn.jpg",
+      avatar: props.user.imageUrl? props.user.imageUrl : props.user.gender === 'male'? '/male-avatar.png' : '/female-avatar.png' ,
     },
     teams: [
       {

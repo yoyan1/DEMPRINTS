@@ -60,31 +60,35 @@ export default function UpdateUser({user, refresh}) {
     }
   }
 
-  const [loadSubmit, setLoad] = useState(false)
+  const [loadSubmit, setLoad] = useState(false);
+
   const upload = async () => {
     let imageID;
-      if (newData.image !== '') {
-        try {
-          const result = await UploadImage(newData.image);
-          console.log(result);
-          imageID = result
-        } catch (error) {
-          console.error(`Error uploading :`, error);
-        }
+    if (newData.image !== '') {
+      try {
+        const result = await UploadImage(newData.image);
+        console.log(result);
+        imageID = result; 
+      } catch (error) {
+        console.error(`Error uploading :`, error);
       }
-      onSubmit(imageID)
+    }
+    return imageID;
   };
-
+  
   const onSubmit = async (imageID) => {
-    setLoad(true)
-    await upload()
-    
-    const result = await update(user.id, {...newData, image_id: imageID})
-    onClose()
-    setImage("")
-    refresh("done")
-    setLoad(false)
-  }
+    setLoad(true);
+    const uploadedImageID = await upload(); 
+  
+    // if (uploadedImageID) {
+      const result = await update(user.id, { ...newData, image_id: uploadedImageID });
+      onClose();
+      setImage(""); 
+      refresh("done");
+    // }
+    setLoad(false); 
+  };
+  
   return (
     <>
       <Button onPress={onOpen} isIconOnly variant='light'><BiEditAlt className='h-5 w-5 text-gray-600'/></Button>
