@@ -42,7 +42,7 @@ export default function DeleteSale({ id, label, refresh }) {
         <ModalContent>
           {(onClose) => (
             <>
-              <ModalHeader className="flex gap-1 items-center"><CiWarning className="bg-warning-200 p-1 h-7 w-7 text-warning-950 border border-warning rounded"/>Delete user</ModalHeader>
+              <ModalHeader className="flex gap-1 items-center"><CiWarning className="bg-warning-200 p-1 h-7 w-7 text-warning-950 border border-warning rounded"/>Delete transaction</ModalHeader>
               <ModalBody>
                 <span>Are you sure you want to delete this transaction?</span>
               </ModalBody>

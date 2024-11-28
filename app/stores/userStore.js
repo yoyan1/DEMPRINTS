@@ -87,13 +87,13 @@ export const useUserStore = create((set) => ({
           const usersData = await Promise.all(
               data.map(async (user) => {
                   if (user.image_id) {
-                      const response = await axios.get(
-                          `${process.env.NEXT_PUBLIC_API_URL}/users/images/${user.image_id}`,
-                          {
-                              responseType: 'blob',
-                          }
-                      );
-                      const imageUrl = URL.createObjectURL(response.data);
+                      // const response = await axios.get(
+                      //     `${process.env.NEXT_PUBLIC_API_URL}/users/images/${user.image_id}`,
+                      //     {
+                      //         responseType: 'blob',
+                      //     }
+                      // );
+                      const imageUrl = `${process.env.NEXT_PUBLIC_API_URL}/users/images/${user.image_id}`;
                       return { ...user, imageUrl };
                   } else {
                       return { ...user, imageUrl: '' };
