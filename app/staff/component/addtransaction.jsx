@@ -61,7 +61,7 @@ export default function Addtransaction() {
   const [products, setProduct] = useState(['']);
   // const [unit, setUnit] = useState(['']);
   const [setTransaction] = useState(['']);
-  const [categories, setCategory] = useState([' ']);
+  const [categories, setCategory] = useState([]);
   const [sub_total, setSubTotal] = useState(unit_cost * quantity);
   const [selectedProductName, setSelectedProductName] = useState('');
 
@@ -74,7 +74,7 @@ export default function Addtransaction() {
   // ------------------------
   const [filteredVariants, setFilteredVariants] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
-  const [filteredUnit, setFilteredUnit] = useState([])
+  const [filteredUnit, setFilteredUnit] = useState([]);
   const [filteredMeasurements, setFilteredMeasurements] = useState([]);
   // ------------------------
   const [isSubmiting, setisSubmmiting] = useState(false);
@@ -410,40 +410,40 @@ export default function Addtransaction() {
     total_amount: 0,
     amount_paid: 0,
   });
-  const [productsCategory] = useState([])
+  const [productsCategory] = useState([]);
 
   const handleChangeItemCode = (e) => {
     const code = e.target.value;
     setItemCode(code);
-  
+
     const findProduct = products.filter((item) => item.item_code === code);
-  
+
     if (findProduct.length > 0) {
       const product = findProduct[0]; // Get the first matching product
       const findCategory = productsCategory.filter(
-        (category) => category.name === product.category
+        (category) => category.name === product.category,
       );
-  
+
       const updatedData = {
         price_type: 'custom',
-        category: findCategory.length > 0 ? findCategory[0] : '',
+        categories: findCategory.length > 0 ? findCategory[0] : '',
         item_no: code,
         item_name: product.name,
         measurement: product.unit,
         variants: product.variants,
         unit_cost: product.price,
-        quantity: 1,  // Default quantity is set to 1
+        quantity: 1, // Default quantity is set to 1
         sub_total: product.price * 1, // Price * quantity
         total_amount: product.price * 1, // Price * quantity
         amount_paid: 0, // Default amount paid is 0
       };
-  
+
       // Set state for pre-filled data
       setFilteredProducts(findProduct);
       setFilteredVariants(findProduct);
       setFilteredUnit(findProduct);
       setPrevData((prevData) => ({ ...prevData, ...updatedData }));
-  
+
       // Pre-fill relevant fields (item_name, unit_cost, category, etc.)
       setItemName(product.name);
       setUnitCost(product.price);
@@ -451,12 +451,12 @@ export default function Addtransaction() {
       setCategory(product.category);
       setVariant(product.variants);
       setSubTotal(product.price);
-      setTotalAmount(product.price);
+      setTotal(product.price);
     } else {
       // Reset data if no product is found
       const resetData = {
         price_type: 'fixed',
-        category: '',
+        categories: '',
         item_no: '',
         item_name: '',
         measurement: '',
@@ -468,17 +468,16 @@ export default function Addtransaction() {
         amount_paid: 0,
       };
       setPrevData((prevData) => ({ ...prevData, ...resetData }));
-  
+
       // Reset form fields when no product is found
       setItemName('');
       setUnitCost(0);
       setMeasurement('');
-      setVariants('');
+      setVariant('');
       setSubTotal(0);
-      setTotalAmount(0);
+      setTotal(0);
     }
   };
-  
 
   // ----------------------------------
 
@@ -501,7 +500,7 @@ export default function Addtransaction() {
               }
             />
           </div>
-          
+
           <div className=" flex gap-6 ">
             <div className="flex-1 max-w-4xl mx-auto">
               <Select
@@ -512,10 +511,11 @@ export default function Addtransaction() {
                 isRequired
                 variant="bordered"
                 color="primary"
+                // key={[category.name]}
                 style={{ color: 'black' }}
-                onChange={(e) => setSelectedCategory(e.target.value)} // Track selected category
+                onChange={(e) => setSelectedCategory(e.target.value)}
               >
-                {categories.map((category, index) =>
+                {Array.isArray(categories) &&   categories.map((category, index) =>
                   (index > 0 && category.name !== categories[index - 1].name) ||
                   index === 0 ? (
                     <SelectItem

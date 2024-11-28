@@ -31,6 +31,7 @@ import CreateUser from "@/app/components/adminComponents/employee/CreateUser";
 import ViewDetails from "@/app/components/adminComponents/employee/ViewDetails";
 import DeleteUser from "@/app/components/adminComponents/employee/deleteUser"
 import UpdateUser from "../../components/adminComponents/employee/UpdateUser";
+import axios from "axios";
 
 const statusColorMap = {
   active: "success",
@@ -40,7 +41,7 @@ const statusColorMap = {
 const INITIAL_VISIBLE_COLUMNS = ["name", "job_title", "status", "actions"];
 
 export default function Employee() {
-  const { columns, statusOptions, users, loading, fetchUsers } = useUserStore();
+  const { columns, statusOptions, users, loading, fetchUsers, revokeImageUrls } = useUserStore();
   const [filterValue, setFilterValue] = useState("");
   const [selectedKeys, setSelectedKeys] = useState(new Set([]));
   const [visibleColumns, setVisibleColumns] = useState(new Set(INITIAL_VISIBLE_COLUMNS));
@@ -49,8 +50,10 @@ export default function Employee() {
   const [sortDescriptor, setSortDescriptor] = useState({ column: "age", direction: "ascending" });
   const [page, setPage] = useState(1);
 
+
   useEffect(() => {
     fetchUsers();
+
   }, [fetchUsers]);
 
   const hasSearchFilter = Boolean(filterValue);
@@ -97,8 +100,8 @@ export default function Employee() {
       case "name":
         return (
           <div>
-            {user.image? (
-              <User avatarProps={{ radius: "lg", src: user.image }} description={user.id_number} name={user.name}>
+            {user.imageUrl? (
+              <User avatarProps={{ radius: "lg", src: user.imageUrl }} description={user.id_number} name={user.name}>
                 {user.id_number}
               </User>
             ) : (
@@ -132,7 +135,7 @@ export default function Employee() {
             </Tooltip>
             <Tooltip content="Edit user status">
               <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
-                <UpdateUser />
+                <UpdateUser user={user} refresh={fetchUsers}/>
               </span>
             </Tooltip>
             <DeleteUser id={user.id} refresh={fetchUsers}/>

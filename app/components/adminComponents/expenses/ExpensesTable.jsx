@@ -8,6 +8,8 @@ import {
   TableRow,
   TableCell,
   Input,
+  Select,
+  SelectItem,
   Button,
   DropdownTrigger,
   Dropdown,
@@ -38,20 +40,19 @@ const typeColorMap = {
 };
 
 const INITIAL_VISIBLE_COLUMNS = ["date", "transaction_no", "item_name", "category", "type", "unit_cost", "quantity", "total"];
-
-export default function Transaction() {
-  const {categoryList, fetchExpensesCategory, columns, loading, expenses, fetchExpenses,} = useExpensesStore()
-  useEffect(()=>{
-    fetchExpenses()
-  }, [fetchExpenses])
-  useEffect(()=>{
-    fetchExpensesCategory()
-  }, [fetchExpensesCategory])
+const SEARCH_SELECTION = [
+  {name:"Transaction Number", key: "transaction_no", },
+  {name:"Item name", key: "item_name", },
+  {name:"Category", key: "category", },
+  {name:"Type", key: "type", },
+]
+export default function Transaction({categoryList, columns, expenses, loading, refresh}) {
   const [filterValue, setFilterValue] = useState("");
   const [selectedKeys, setSelectedKeys] = useState(new Set([]));
   const [visibleColumns] = useState(new Set(INITIAL_VISIBLE_COLUMNS));
-  const [categoryFilter, setcategoryFilter] = useState("all");
+  const [categoryFilter, setCategoryFilter] = useState("all");
   const [typeFilter] = useState("all");
+  const [filterSelection, setFilterSelection] = useState('')
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [sortDescriptor, setSortDescriptor] = useState({
     column: "age",
@@ -59,6 +60,9 @@ export default function Transaction() {
   });
   const [page, setPage] = useState(1);
 
+  const refreshExpenses = (data) =>{
+    refresh(data)
+  }
   const hasSearchFilter = Boolean(filterValue);
 
   const headerColumns = useMemo(() => {
@@ -75,14 +79,16 @@ export default function Transaction() {
         item.item_name.toLowerCase().includes(filterValue.toLowerCase()),
       );
     }
-    if (categoryFilter !== "all" && Array.from(categoryFilter).length !== categoryList.length) {
-      filteredExpenses = filteredExpenses.filter((item) =>
-        Array.from(categoryFilter).includes(item.category),
-      );
+    if ( categoryFilter !== "all" &&
+      Array.from(categoryFilter).length !== expenses.length
+    ) {
+        filteredExpenses = filteredExpenses.filter((expense) =>
+            Array.from(categoryFilter).includes(expense[filterSelection])
+        );
     }
 
     return filteredExpenses;
-  }, [expenses, filterValue, categoryFilter,]);
+  }, [expenses, filterValue, filterSelection, categoryFilter,]);
 
   const pages = Math.ceil(filteredItems.length / rowsPerPage);
 
@@ -137,21 +143,13 @@ export default function Transaction() {
         //     {cellValue}
         //   </Chip>
         // );
-        case "discount":
+        case "unit_cost":
         return (
-          <div>{cellValue}%</div>
+          <div className="text-left">₱{cellValue.toFixed(2)}</div>
         );
-        case "customer_name":
+        case "total":
         return (
-          <div className="text-left">{cellValue}</div>
-        );
-        case "sales_person":
-        return (
-          <div className="text-left">{cellValue}</div>
-        );
-        case "remarks":
-        return (
-          <div className="text-left">{cellValue}</div>
+          <div className="text-left">₱{cellValue.toFixed(2)}</div>
         );
         default:
             return cellValue;
@@ -189,63 +187,54 @@ export default function Transaction() {
     setPage(1)
   },[])
 
+  const handleSelectionChange = React.useCallback((e)=>{
+    setFilterSelection(e.target.value)
+    setCategoryFilter('all')
+}, [])
   const topContent = useMemo(() => {
     return (
       <div className="flex flex-col gap-4 ">
         <div className="flex justify-between gap-3 items-end">
-          <Input
-            isClearable
-            className="w-full sm:max-w-[44%]"
-            placeholder="Search by name..."
-            startContent={<CiSearch />}
-            value={filterValue}
-            onClear={() => onClear()}
-            onValueChange={onSearchChange}
-          />
+          <Select 
+            placeholder="Filter selection" 
+            className="w-full max-w-lg" 
+            value={filterSelection}
+            onChange={handleSelectionChange}
+            size="md"
+          >
+            {SEARCH_SELECTION.map((item) => (
+              <SelectItem key={item.key}>
+                {item.name}
+              </SelectItem>
+            ))}
+          </Select>
+          {filterSelection? (
+            <Select 
+            placeholder={filterSelection}
+            className="w-full" 
+            value={categoryFilter}
+            selectionMode="multiple"
+            onSelectionChange={setCategoryFilter}
+            size="md"
+          >
+            {(() => {
+              const seen = new Set();
+              return expenses.map((item) => {
+                const value = item[filterSelection];
+                if (seen.has(value)) return null; 
+                seen.add(value);
+                return (
+                  <DropdownItem key={value} className="capitalize">
+                    {capitalize(value)}
+                  </DropdownItem>
+                );
+              });
+            })()}
+          </Select>
+           
+          ): null}
           <div className="flex gap-3">
-            {/* <Dropdown>
-              <DropdownTrigger className="hidden sm:flex">
-                <Button endContent={<IoChevronDown className="text-small" />} variant="flat">
-                  type
-                </Button>
-              </DropdownTrigger>
-              <DropdownMenu
-                disallowEmptySelection
-                aria-label="Table Columns"
-                closeOnSelect={false}
-                selectedKeys={typeFilter}
-                selectionMode="multiple"
-                onSelectionChange={setTypeFilter}
-              >
-                {typeOptions.map((type) => (
-                  <DropdownItem key={type.dataKey} className="capitalize">
-                    {capitalize(type.name)}
-                  </DropdownItem>
-                ))}
-              </DropdownMenu>
-            </Dropdown> */}
-            <Dropdown>
-              <DropdownTrigger className="hidden sm:flex">
-                <Button endContent={<IoChevronDown className="text-small" />} variant="flat" isLoading={loading}>
-                  category
-                </Button>
-              </DropdownTrigger>
-              <DropdownMenu
-                disallowEmptySelection
-                aria-label="Table Columns"
-                closeOnSelect={false}
-                selectedKeys={categoryFilter}
-                selectionMode="multiple"
-                onSelectionChange={setcategoryFilter}
-              >
-                {categoryList.map((item) => (
-                  <DropdownItem key={item.name} className="capitalize">
-                    {capitalize(item.name)}
-                  </DropdownItem>
-                ))}
-              </DropdownMenu>
-            </Dropdown>
-            <CreateTransaction isSubmit={fetchExpenses}/>
+            <CreateTransaction isSubmit={refreshExpenses}/>
             {/* <ExportToPdf rows={sortedItems}/>
             {!isMaximized? (
                 <ExpandTransaction columns={columns} expenses={expenses} itemOptions={itemOptions} typeOptions={typeOptions} />
@@ -270,10 +259,11 @@ export default function Transaction() {
     );
   }, [
     filterValue,
+    filterSelection,
     categoryFilter,
     visibleColumns,
     onRowsPerPageChange,
-    expenses.length,
+    expenses,
     onSearchChange,
     hasSearchFilter,
   ]);

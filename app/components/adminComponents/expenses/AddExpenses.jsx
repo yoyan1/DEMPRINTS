@@ -76,6 +76,7 @@ export default function CreateTransaction({isSubmit}) {
       console.log(response.data.message)
       console.log(updateId.data)
       fetchAll()
+      onClose()
       isSubmit("done")
       setExpensesData({
         date: "",
@@ -87,7 +88,6 @@ export default function CreateTransaction({isSubmit}) {
         quantity: 0,
         total: 0,
       })
-      onClose()
     } catch(e){
       console.log(e);
     }

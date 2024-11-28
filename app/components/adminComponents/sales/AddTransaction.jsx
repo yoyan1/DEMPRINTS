@@ -71,7 +71,7 @@ export default function CreateTransaction({user, refresh}) {
       setSalesData((prevData)=>(
         {
           ...prevData, 
-          price_type: 'custom',
+          price_type: 'fixed',
           category: findCategory.length > 0? findCategory[0] : '',
           item_no: e.target.value,
           item_name: findProduct[0].name, 

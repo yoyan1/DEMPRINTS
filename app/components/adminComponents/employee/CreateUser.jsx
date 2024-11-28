@@ -162,7 +162,7 @@ export default function CreateOrUpdate({done}) {
 
   const handleFileChange = (e) => {
     const {name, value} = e.target
-    const file = event.target.files[0];
+    const file = e.target.files[0];
     if (file) {
       const reader = new FileReader();
       reader.onload = () => {
