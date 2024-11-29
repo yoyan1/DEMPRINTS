@@ -181,7 +181,7 @@ const getTotal = (combinedData) => {
                 </div>
                 <div className='w-full'>
                   <div className='p-3 shadow-sm rounded-xl bg-gradient-to-r from-blue-900 to-blue-600 flex flex-col gap-2 w-full'>
-                    <div className='text-sm text-blue-900 rounded-xl bg-white p-2 flex justify-between items-end'>
+                    <div className='text-sm font-bold text-slate-100 rounded-xl  p-2 flex justify-between items-end'>
                       {selectedKey === "date range"? (
                         <div className='mt-2'>
                           <DateRangePicker
@@ -211,8 +211,8 @@ const getTotal = (combinedData) => {
                         <span>{formatDate(value.start)} - {formatDate(value.end)}</span>
                       ): null}
                     </div>
-                      <div className='flex items-start gap-5'>
-                        <span className='font-sans font-semibold text-slate-100'>Net: { totalSales - totalExpenses }</span>
+                      <div className='flex flex-col items-start gap-2'>
+                        <span className='font-sans font-semibold text-slate-100'>Net: <span>₱ {formattedNumber(totalSales - totalExpenses)}</span></span>
                         {/* {selectedKey === 'today'? (
                           <span className='text-slate-200 text-md font-bold'>₱{ formattedNumber(totalSalesToday) }</span>
                         ) : selectedKey === 'date range'? (
@@ -229,11 +229,11 @@ const getTotal = (combinedData) => {
                                     {/* salesByOptions[transactionOptions.name] > 0? ( */}
                                       <div className='flex  gap-1 items-center'>
                                         <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
-                                        <span className='font-sans text-slate-700 dark:text-slate-200 text-sm flex items-center'> Sales: ₱ {totalSales} </span>                              
+                                        <span className='font-sans text-slate-700 dark:text-slate-200 text-sm flex items-center'> Sales: ₱ {formattedNumber(totalSales)} </span>                              
                                       </div>
                                       <div className='flex  gap-1 items-center'>
                                         <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
-                                        <span className='font-sans text-slate-700 dark:text-slate-200 text-sm flex items-center'> Expenses: ₱ {totalExpenses} </span>                              
+                                        <span className='font-sans text-slate-700 dark:text-slate-200 text-sm flex items-center'> Expenses: ₱ {formattedNumber(totalExpenses)} </span>                              
                                       </div>
                                     {/* ) : null */}
                                   {/* ))} */}
