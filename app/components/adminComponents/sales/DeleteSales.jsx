@@ -20,10 +20,6 @@ export default function DeleteSale({ id, label, refresh }) {
     console.log(id)
     try{
         const response = await deleteTransaction(id)
-        const responseID = await fetchTransactionId()
-        const generatedID = responseID.data.length > 0? responseID.data : [{_id: '', count: 0}]
-        const newId = generatedID[0].count-1
-        const updateId = await updateTransactionId({id: generatedID[0]._id, count: newId})
         refresh("done")
     } catch(e){
         console.log(e.message)

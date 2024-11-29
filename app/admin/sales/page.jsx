@@ -11,6 +11,7 @@ import { IoMdCloseCircle } from "react-icons/io";
 import {parseDate} from "@internationalized/date";
 import { decodeToken } from '@/app/utils/decodeToken'
 import { paymentStore } from '../../stores/paymentStore';
+import { formattedNumber } from '@/app/composables/CurrencyFormat'
 
 
 export default function Sales() {
@@ -155,11 +156,11 @@ export default function Sales() {
                       <div className='flex items-start gap-5'>
                         <span className='font-sans font-semibold text-slate-100'>Sales: </span>
                         {selectedKey === 'today'? (
-                          <span className='text-slate-200 text-md font-bold'>₱{ totalSalesToday.toFixed(2) }</span>
+                          <span className='text-slate-200 text-md font-bold'>₱{ formattedNumber(totalSalesToday) }</span>
                         ) : selectedKey === 'date range'? (
-                          <span className='text-slate-200 text-md font-bold'>₱{ totalSalesInRange.toFixed(2) }</span>
+                          <span className='text-slate-200 text-md font-bold'>₱{ formattedNumber(totalSalesInRange) }</span>
                         ) : (
-                          <span className='text-slate-200 text-md font-bold'>₱{ totalSales.toFixed(2) }</span>
+                          <span className='text-slate-200 text-md font-bold'>₱{ formattedNumber(totalSales) }</span>
                         )}
                         <div className='flex items-start gap-5 bg-white w-full'>
                           {options.length > 0? (
@@ -168,9 +169,9 @@ export default function Sales() {
                               <div className='grid grid-cols-5 gap-4'>
                                   {options.map((transactionOptions) => (
                                     salesByOptions[transactionOptions.name] > 0? (
-                                      <div className='flex gap-1 items-center'>
-                                        <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
-                                        <span className='font-sans text-slate-700 dark:text-slate-200 text-sm'> {transactionOptions.name}: ₱{salesByOptions[transactionOptions.name] ? salesByOptions[transactionOptions.name].toFixed(2) : 0}</span>                 
+                                      <div className='flex flex-col gap-1 items-start'>
+                                        <span className='font-sans text-slate-700 dark:text-slate-200 text-sm flex items-center'><div className="w-2 h-2 bg-blue-400 rounded-full"></div> {transactionOptions.name}: </span>                 
+                                        <span className='font-sans text-slate-700 dark:text-slate-200 text-sm'> ₱{salesByOptions[transactionOptions.name] ? formattedNumber(salesByOptions[transactionOptions.name]) : 0}</span>                 
                                       </div>
                                     ) : null
                                   ))}

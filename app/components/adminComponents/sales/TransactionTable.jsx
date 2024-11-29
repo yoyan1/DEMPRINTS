@@ -33,6 +33,7 @@ import CreateTransaction from './AddTransaction'
 import DeleteSale from "./DeleteSales";
 import UpdateSale from "./PatialUpdate";
 import { formatDate, formatTime } from "@/app/composables/formateDateAndTime";
+import { formattedNumber } from "@/app/composables/CurrencyFormat"
 
 const itemColorMap = {
   tarpaulin: "warning",
@@ -83,7 +84,8 @@ export default function Transaction({columns, transactions, itemOptions, typeOpt
 
     if (hasSearchFilter) {
       filteredTransactions = filteredTransactions.filter((item) =>
-        item.item_name.toLowerCase().includes(filterValue.toLowerCase()),
+        item.item_name.toLowerCase().includes(filterValue.toLowerCase()) ||
+        item.customer_name.toLowerCase().includes(filterValue.toLowerCase())
       );
     }
     if ( statusFilter !== "all" &&
@@ -165,23 +167,23 @@ export default function Transaction({columns, transactions, itemOptions, typeOpt
         );
         case "unit_cost":
         return (
-          <div>₱{cellValue.toFixed(2)}</div>
+          <div>₱{formattedNumber(cellValue)}</div>
         );
         case "total_amount":
         return (
-          <div>₱{cellValue.toFixed(2)}</div>
+          <div>₱{formattedNumber(cellValue)}</div>
         );
         case "sub_total":
         return (
-          <div>₱{cellValue.toFixed(2)}</div>
+          <div>₱{formattedNumber(cellValue)}</div>
         );
         case "amount_paid":
         return (
-          <div>₱{cellValue.toFixed(2)}</div>
+          <div>₱{formattedNumber(cellValue)}</div>
         );
         case "balance":
         return (
-          <div>₱{cellValue.toFixed(2)}</div>
+          <div>₱{formattedNumber(cellValue)}</div>
         );
         case "customer_name":
         return (
@@ -214,14 +216,12 @@ export default function Transaction({columns, transactions, itemOptions, typeOpt
                   </DropdownTrigger>
                   <DropdownMenu>
                     <DropdownSection title="Actions">
-                      <DropdownItem color="primary"><UpdateSale data={item} isPartial={true}  refresh={fetch}/></DropdownItem>
-                      <DropdownItem color="success"><UpdateSale data={item} isPartial={false}  refresh={fetch}/></DropdownItem>
-                      </DropdownSection> 
-                    {user.role === 'super admin'? (
-                      <DropdownSection title="Danger">
-                        <DropdownItem color="danger"><DeleteSale id={item._id}  label="Delete" refresh={fetch}/></DropdownItem>
-                      </DropdownSection> 
-                    ) : null}
+                      <DropdownItem color="primary" className="text-primary"><UpdateSale data={item} isPartial={true}  refresh={fetch}/></DropdownItem>
+                      <DropdownItem color="success" className="text-success"><UpdateSale data={item} isPartial={false}  refresh={fetch}/></DropdownItem>
+                      {user.role === 'super admin'? (
+                        <DropdownItem color="danger" className="text-danger"><DeleteSale id={item._id}  label="Delete" refresh={fetch}/></DropdownItem>
+                      ) : null}
+                    </DropdownSection> 
                   </DropdownMenu>
                 </Dropdown>
               </div>
@@ -316,7 +316,7 @@ export default function Transaction({columns, transactions, itemOptions, typeOpt
           <Input
             isClearable
             className="w-full sm:max-w-[44%]"
-            placeholder="Search by item name..."
+            placeholder="Search by item or customer name..."
             variant="bordered"
             startContent={<CiSearch />}
             value={filterValue}

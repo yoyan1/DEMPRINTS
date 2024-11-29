@@ -13,6 +13,7 @@ import { FaUsers, FaChartPie } from "react-icons/fa";
 import { GiExpense } from "react-icons/gi";
 import { NavMain } from "@/app/components/nav-main"
 import { NavUser } from "@/app/components/nav-user"
+import { GrMoney } from "react-icons/gr";
 import { TeamSwitcher } from "@/app/components/team-switcher"
 import {
   Sidebar,
@@ -59,6 +60,12 @@ export function AppSidebar({ ...props }) {
         url: "expenses",
         icon: GiExpense,
         isActive: path === '/admin/expenses'? true : false
+      },
+      {
+        title: "Finance",
+        url: "finance",
+        icon: GrMoney,
+        isActive: path === '/admin/finance'? true : false
       },
       {
         title: "Accounts",

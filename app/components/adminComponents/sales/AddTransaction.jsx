@@ -11,6 +11,7 @@ import { paymentStore } from "@/app/stores/paymentStore";
 import { useCustomerStore } from "@/app//stores/customerStore";
 import { useSalesStore } from "@/app/stores/transactionStore";
 import { useIdStore } from "@/app/stores/idStore";
+import { formattedNumber } from "@/app/composables/CurrencyFormat"
 
 export default function CreateTransaction({user, refresh}) {
   const {users, fetchUsers} = useUserStore()
@@ -78,6 +79,7 @@ export default function CreateTransaction({user, refresh}) {
           measurement: findProduct[0].unit,
           variants: findProduct[0].variants,
           unit_cost: findProduct[0].price,
+          product_price: findProduct[0].price,
           quantity: 1,
           sub_total: findProduct[0].price * 1,
           total_amount: findProduct[0].price * 1,
@@ -98,6 +100,7 @@ export default function CreateTransaction({user, refresh}) {
           measurement: "",
           variants: "",
           unit_cost: 0,
+          product_price: 0,
           quantity: 1,
           sub_total: 0,
           total_amount: 0,
@@ -348,7 +351,7 @@ export default function CreateTransaction({user, refresh}) {
 
   return (
     <>
-      <Button onPress={onOpen} className="bg-blue-900 text-slate-200"><MdAdd/> sale</Button>
+      <Button onPress={onOpen} className="bg-green-600 text-slate-200"><MdAdd/> sale</Button>
       <Modal 
         isOpen={isOpen} 
         onClose={onClose}
@@ -472,7 +475,7 @@ export default function CreateTransaction({user, refresh}) {
                         isInvalid={errorMessage.measurement? true : false}
                         color={errorMessage.measurement ? "danger" : ""}
                         errorMessage={errorMessage.measurement}
-                        // value={salesData.measurement}
+                        value={salesData.measurement}
                         onChange={handleMeasurementChange}
                       >
                         
@@ -623,7 +626,13 @@ export default function CreateTransaction({user, refresh}) {
                               value={salesData.price_type}
                               onChange={(e)=>{
                                 setSalesData((prevData)=>({...prevData, price_type: e.target.value}))
-                                e.target.value === 'fixed'? setSalesData((prevData) => ({...prevData, unit_cost: salesData.product_price})) : null
+                                e.target.value === 'fixed'? setSalesData((prevData) => ({
+                                  ...prevData, 
+                                  unit_cost: salesData.product_price,
+                                  total_amount: salesData.product_price * salesData.quantity, 
+                                  sub_total: salesData.product_price * salesData.quantity,
+                                  discount: 0
+                                })) : null
                               }}
                             >
                                 <SelectItem key='fixed'>
@@ -641,7 +650,7 @@ export default function CreateTransaction({user, refresh}) {
                               onChange={priceChange}
                               />
                             ): (
-                              <span>₱{salesData.unit_cost.toFixed(2)}</span>
+                              <span>₱{formattedNumber(salesData.unit_cost)}</span>
                             )}
                           </div>
 
@@ -649,7 +658,7 @@ export default function CreateTransaction({user, refresh}) {
                       </div>
                       <div className="flex justify-between">
                         <span>Total Amount </span>
-                        ₱{salesData.sub_total.toFixed(2)}
+                        ₱{formattedNumber(salesData.sub_total)}
                       </div>
                       <div className="flex justify-between items-center">
                         <span>Discount </span>
@@ -691,16 +700,16 @@ export default function CreateTransaction({user, refresh}) {
                       </div>
                       <div className="flex justify-between">
                         <span>Discount Applied </span>
-                        ₱{(salesData.sub_total - salesData.total_amount).toFixed(2)}
+                        ₱{formattedNumber(salesData.sub_total - salesData.total_amount)}
                       </div>
                       <div className="flex justify-between">
                         <span>Total Amount After Discount </span>
-                        ₱{salesData.total_amount.toFixed(2)}
+                        ₱{formattedNumber(salesData.total_amount)}
                       </div>
                       {salesData.amount_paid? (
                         <div className="flex justify-between">
                           <span>Balance </span>
-                          ₱{(salesData.total_amount-salesData.amount_paid).toFixed(2)}
+                          ₱{formattedNumber(salesData.total_amount-salesData.amount_paid)}
                         </div>
                       ): null}
                     </div>
