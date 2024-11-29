@@ -1,8 +1,16 @@
 
-export const getDateAndTime = () =>{
-    const currentDate = new Date();
-    const date = currentDate.toISOString().split("T")[0]; // Format date as YYYY-MM-DD
-    const time = currentDate.toTimeString().split(" ")[0];
+export const getDateAndTime = () => {
+    
+    const today = new Date();
+    const date = today.getFullYear() + '-' + 
+                     String(today.getMonth() + 1).padStart(2, '0') + '-' + 
+                     String(today.getDate()).padStart(2, '0');
 
+    const hours = today.getHours();
+    const minutes = today.getMinutes();
+    const seconds = today.getSeconds();
+    
+    const time = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        
     return {date, time}
-}
+};

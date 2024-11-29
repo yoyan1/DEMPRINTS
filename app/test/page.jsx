@@ -27,12 +27,14 @@
 import React from 'react'
 import { Select, SelectItem, Input } from '@nextui-org/react'
 import { onFileChange } from '../composables/fileHandler';
+import { getDateAndTime } from '../composables/dateAndTime'
+import { formatDate, formatTime } from '../composables/formateDateAndTime'
 
 const INITIAL_VISIBLE_COLUMNS = ["transaction_no", "item_name", "unit_cost",  "customer_type", "customer_name", "payment_type", "sales_person", "actions"];
 export default function page() {
   const [filterSelection, setFilterSelection] = React.useState("")
   const [image, setImage] = React.useState(null)
-
+  const {date, time} = getDateAndTime()
 
   return (
     <div>
@@ -90,6 +92,7 @@ export default function page() {
           </div>
         </div>
       </div>
+      {formatDate(date)} -  {formatTime(time)}
     </div>
   )
 }
