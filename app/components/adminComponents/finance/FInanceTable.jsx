@@ -18,9 +18,9 @@ export default function FinanceTable({combinedData, loading}) {
             {Object.entries(combinedData).map(([date, data]) => (
                 <TableRow key={date}>
                     <TableCell>{formatDate(date)}</TableCell>
-                    <TableCell>{formattedNumber(data.totalSales)}</TableCell>
-                    <TableCell>{formattedNumber(data.totalExpenses)}</TableCell>
-                    <TableCell>{formattedNumber(data.totalSales - data.totalExpenses)}</TableCell>
+                    <TableCell>₱ {formattedNumber(data.totalSales)}</TableCell>
+                    <TableCell>₱ {formattedNumber(data.totalExpenses)}</TableCell>
+                    <TableCell>₱ {formattedNumber(data.totalSales - data.totalExpenses)}</TableCell>
                 </TableRow>
             ))}
         </TableBody>
