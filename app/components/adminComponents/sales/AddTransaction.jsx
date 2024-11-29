@@ -597,7 +597,7 @@ export default function CreateTransaction({user, refresh}) {
                           </SelectItem>
                         ))}
                       </Select>
-                      {salesData.payment_type.toLocaleLowerCase() === 'down payment'? (
+                      {salesData.payment_type.toLowerCase() === 'down payment'? (
                         <Input
                           autoFocus
                           label="Partial"
