@@ -114,7 +114,7 @@ export default function Sales() {
             <div className=" rounded-xl bg-white dark:bg-gray-900 p-5">
               <div className='flex gap-5'>
                 <div>
-                  <h1 className="font-bold text-2xl text-blue-950 dark:text-blue-600">Sales Overview</h1>
+                  <h1 className="font-bold text-2xl text-blue-950 dark:text-blue-600">Summary Report</h1>
                   <span className="text-sm text-slate-400">{"Let's"} see the current statistic performance</span>
                   <Select
                   label="Filter Sales"
