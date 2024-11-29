@@ -77,9 +77,9 @@ export default function Sidebar() {
       </button>
       <aside
         id="cta-button-sidebar"
-        className="fixed top-0 left-0 z-40 w-64 h-screen transition-transform -translate-x-full sm:translate-x-0"
+        className="fixed top-0 left-0 z-40 w-64 h-screen transition-transform -translate-x-full sm:translate-x-0 bg-blue-900"
         aria-label="Sidebar"
-        style={{ backgroundColor: '#191970' }}
+       
       >
         <div className="h-full px-3 py-4 overflow-y-auto dark:bg-gray-800">
           <a href="" className="flex items-center justify-start mr-3 mb-5">
@@ -104,7 +104,7 @@ export default function Sidebar() {
             <Dropdown className="mt-3">
               <DropdownTrigger className="rounded-full justify-start">
                 <Button
-                  className="flex text-sm  items-center gap-3 rounded-lg px-3 py-2 bg-transparent text-white dark:text-white"
+                  className="flex text-sm  items-center gap-3 rounded-lg px-3 py-2 bg-transparent text-black dark:text-white"
                   aria-label="Open user menu"
                 >
                   <Image
@@ -116,7 +116,7 @@ export default function Sidebar() {
               </DropdownTrigger>
               <DropdownMenu aria-label="User Menu">
                 <DropdownItem key="username">
-                  <span className="text-black"> {user?.name}</span>
+                  <span className="text-black dark:text-white"> {user?.name}</span>
                 </DropdownItem>
                 
                 <DropdownItem
@@ -125,7 +125,7 @@ export default function Sidebar() {
                   key="logout"
                   startContent={
                     <>
-                     <MdLogout /> <span className="text-black">Logout</span>
+                     <MdLogout /> <span className="text-black dark:text-white">Logout</span>
                     </>
                   }
                 ></DropdownItem>

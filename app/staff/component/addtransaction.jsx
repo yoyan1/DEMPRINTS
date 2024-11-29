@@ -20,6 +20,7 @@ import {
 import { useRouter } from 'next/navigation';
 import { decodeToken } from '@/app/utils/decodeToken';
 import { useUserStore } from '@/app/stores/userStore';
+import { FaSearch } from "react-icons/fa";
 import axios from 'axios';
 // import { formatDate } from "../../composables/formateDateAndTime";
 
@@ -432,19 +433,19 @@ export default function Addtransaction() {
         measurement: product.unit,
         variants: product.variants,
         unit_cost: product.price,
-        quantity: 1, // Default quantity is set to 1
-        sub_total: product.price * 1, // Price * quantity
-        total_amount: product.price * 1, // Price * quantity
-        amount_paid: 0, // Default amount paid is 0
+        quantity: 1,
+        sub_total: product.price * 1, 
+        total_amount: product.price * 1, 
+        amount_paid: 0,
       };
 
-      // Set state for pre-filled data
+      
       setFilteredProducts(findProduct);
       setFilteredVariants(findProduct);
       setFilteredUnit(findProduct);
       setPrevData((prevData) => ({ ...prevData, ...updatedData }));
 
-      // Pre-fill relevant fields (item_name, unit_cost, category, etc.)
+      
       setItemName(product.name);
       setUnitCost(product.price);
       setMeasurement(product.unit);
@@ -453,7 +454,7 @@ export default function Addtransaction() {
       setSubTotal(product.price);
       setTotal(product.price);
     } else {
-      // Reset data if no product is found
+      
       const resetData = {
         price_type: 'fixed',
         categories: '',
@@ -469,7 +470,6 @@ export default function Addtransaction() {
       };
       setPrevData((prevData) => ({ ...prevData, ...resetData }));
 
-      // Reset form fields when no product is found
       setItemName('');
       setUnitCost(0);
       setMeasurement('');
@@ -496,7 +496,7 @@ export default function Addtransaction() {
               value={item_code}
               onChange={handleChangeItemCode}
               label={
-                <span className="text-black dark:text-white">Item Code</span>
+                <span className="text-black dark:text-white"> <FaSearch/> Item Code</span>
               }
             />
           </div>
@@ -505,13 +505,13 @@ export default function Addtransaction() {
             <div className="flex-1 max-w-4xl mx-auto">
               <Select
                 size="sm"
-                label={<span className="text-black">Select Category</span>}
+                label={<span className="text-black dark:-white">Select Category</span>}
                 className="mb-2"
                 autoFocus
                 isRequired
                 variant="bordered"
                 color="primary"
-                // key={[category.name]}
+               
                 style={{ color: 'black' }}
                 onChange={(e) => setSelectedCategory(e.target.value)}
               >
@@ -521,7 +521,7 @@ export default function Addtransaction() {
                     <SelectItem
                       key={category.name}
                       variant="bordered"
-                      style={{ color: 'black' }}
+                    
                     >
                       {category.name}
                     </SelectItem>
@@ -533,23 +533,23 @@ export default function Addtransaction() {
                 <div className="flex gap-3 mb-2">
                   <Select
                     size="sm"
-                    label={<span className="text-black">Select Item</span>}
+                    label={<span className="text-black dark:text-white">Select Item</span>}
                     className="w-full max-w-md mx-auto text-black relative z-0 mb-2"
                     autoFocus
                     isRequired
                     value={item_name}
                     variant="bordered"
                     color="primary"
-                    style={{ color: 'black' }}
+                  
                     onChange={(e) => {
                       const selectedProductName = e.target.value;
                       const selectedProduct = products.find(
                         (product) => product.name === selectedProductName,
                       );
 
-                      // Update state for selected product details
+                      
                       setItemName(selectedProductName);
-                      // setUnitCost(selectedProduct?.price || 0);
+                     ;
 
                       const filteredVariants = products.filter(
                         (product) =>
@@ -558,10 +558,10 @@ export default function Addtransaction() {
                       );
 
                       setFilteredVariants(filteredVariants);
-                      setMeasurement(''); // Reset measurement when item changes
+                      setMeasurement('');
                       setAmount(0);
                       setTotal(0);
-                      setSelectedProductName(selectedProductName); // Track selected product name
+                      setSelectedProductName(selectedProductName); 
                     }}
                   >
                     {products
@@ -581,7 +581,7 @@ export default function Addtransaction() {
                           key={product.id || product.name}
                           value={product.name}
                           variant="bordered"
-                          style={{ color: 'black' }}
+                        
                         >
                           {product.name}
                         </SelectItem>
@@ -591,14 +591,14 @@ export default function Addtransaction() {
                   {item_name && (
                     <Select
                       size="sm"
-                      label={<span className="text-black">Select Variant</span>}
+                      label={<span className="text-black dark:text-white">Select Variant</span>}
                       className="w-full max-w-md mx-auto text-black relative z-0 mb-2"
                       autoFocus
                       isRequired
                       value={variants}
                       variant="bordered"
                       color="primary"
-                      style={{ color: 'black' }}
+                    
                       onChange={(e) => {
                         const selectedProductVariants = e.target.value;
                         const selectedProduct = products.find(
@@ -640,7 +640,7 @@ export default function Addtransaction() {
                             key={product.variants}
                             value={product.variants}
                             variant="bordered"
-                            style={{ color: 'black' }}
+                          
                           >
                             {product.variants}
                           </SelectItem>
@@ -652,7 +652,7 @@ export default function Addtransaction() {
                     <Select
                       size="sm"
                       label={
-                        <span className="text-black">Unit of Measurement</span>
+                        <span className="text-black dark:text-white ">Measurement</span>
                       }
                       className="w-full max-w-md mx-auto text-black relative z-0 mb-2"
                       placeholder="Select unit"
@@ -690,11 +690,11 @@ export default function Addtransaction() {
                 <Input
                   size="sm"
                   className="w-full max-w-md mx-auto text-black relative z-0 mb-2"
-                  style={{ color: 'black' }}
+                
                   autoFocus
                   isRequired
                   value={quantity}
-                  label={<span className="text-black">Quantity</span>}
+                  label={<span className="text-black dark:text-white">Quantity</span>}
                   variant="bordered"
                   color="primary"
                   type="number"
@@ -711,7 +711,7 @@ export default function Addtransaction() {
                     className="flex-1"
                     value={discount}
                     name="discount"
-                    label={<span className="text-black">Discount</span>}
+                    label={<span className="text-black dark:text-white">Discount</span>}
                     variant="bordered"
                     color="primary"
                     autoFocus
@@ -735,21 +735,21 @@ export default function Addtransaction() {
                 {/* Customer Type Select */}
                 <Select
                   size="sm"
-                  label={<span className="text-black">Costumer Type</span>}
+                  label={<span className="text-black dark:text-white">Costumer Type</span>}
                   className="w-full max-w-md mx-auto text-black relative z-0 mb-2"
                   autoFocus
                   isRequired
                   variant="bordered"
                   color="primary"
                   value={customer_type}
-                  style={{ color: 'black' }}
+                
                   onChange={(event) => setCostumerType(event.target.value)}
                 >
                   {costumerType.map((type) => (
                     <SelectItem
                       key={type.name}
                       variant="bordered"
-                      style={{ color: 'black' }}
+                    
                     >
                       {type.name}
                     </SelectItem>
@@ -760,12 +760,12 @@ export default function Addtransaction() {
                 <Input
                   size="sm"
                   className="w-full max-w-md mx-auto text-black relative z-0 mb-2"
-                  style={{ color: 'black' }}
+                
                   autoFocus
                   isRequired
                   type="text"
                   value={customer_name}
-                  label={<span className="text-black">Costumer Name</span>}
+                  label={<span className="text-black dark:text-white">Costumer Name</span>}
                   variant="bordered"
                   color="primary"
                   onChange={(event) => setCostumerName(event.target.value)}
@@ -774,21 +774,21 @@ export default function Addtransaction() {
               <div className="flex gap-3 mb-2">
                 <Select
                   size="sm"
-                  label={<span className="text-black">Payment Option</span>}
+                  label={<span className="text-black dark:text-white">Payment Option</span>}
                   className="w-full max-w-md mx-auto text-black relative z-0 mb-2"
                   autoFocus
                   isRequired
                   variant="bordered"
                   color="primary"
                   value={payment_options}
-                  style={{ color: 'black' }}
+                
                   onChange={(event) => setPaymentMethod(event.target.value)}
                 >
                   {payment.map((method) => (
                     <SelectItem
                       key={method.name}
                       variant="bordered"
-                      style={{ color: 'black' }}
+                    
                     >
                       {method.name}
                     </SelectItem>
@@ -809,7 +809,7 @@ export default function Addtransaction() {
                     <SelectItem
                       key={type.name}
                       variant="bordered"
-                      style={{ color: 'black' }}
+                    
                     >
                       {type.name}
                     </SelectItem>
@@ -827,12 +827,12 @@ export default function Addtransaction() {
                     variant="bordered"
                     color="primary"
                     className="w-full text-black relative z-0"
-                    style={{ color: 'black' }}
+                  
                     autoFocus
                     isRequired
                     type="number"
                     value={amount_paid}
-                    label={<span>Amount paid</span>}
+                    label={<span className='text-black dark:text-white'>Amount paid</span>}
                     onChange={(e) => handlePaidAmount(e.target.value)}
                   />
                 </div>
@@ -846,7 +846,7 @@ export default function Addtransaction() {
               </div>
 
               <div className="flex justify-between mb-5">
-                <span>Total Amount (Pre-Discount):</span>
+                <span>Total Amount:</span>
                 <span>₱{Number(sub_total).toFixed(2)}</span>
               </div>
 
