@@ -24,7 +24,8 @@ import {
   Pagination,
   Spinner,
   DateRangePicker,
-  Divider,
+  Select,
+  SelectItem,
 } from '@nextui-org/react';
 import { CiSearch } from 'react-icons/ci';
 import { IoChevronDown } from 'react-icons/io5';
@@ -173,7 +174,14 @@ export default function Transaction() {
     }
 
     return filteredTransactions;
-  }, [transactions, filterValue, statusFilter, typeFilter, selectedDate]);
+  }, [
+    transactions,
+    filterValue,
+    statusFilter,
+    typeFilter,
+    selectedDate.start,
+    selectedDate.end,
+  ]);
 
   const isDateInRange = (date, start, end) => {
     return date >= start && date <= end;
@@ -201,7 +209,8 @@ export default function Transaction() {
     const start = new Date(selectedDate.start);
     const end = new Date(selectedDate.end);
     return getTotalSalesInRange(transactions, start, end, options);
-  }, [transactions, options]);
+  }, [selectedDate, transactions, options]);
+
   const { totalSales, ...salesByOptions } = totals;
 
   const pages = Math.ceil(filteredItems.length / rowsPerPage);
@@ -222,10 +231,6 @@ export default function Transaction() {
       return sortDescriptor.direction === 'descending' ? -cmp : cmp;
     });
   }, [sortDescriptor, items]);
-
-
-
- 
 
   const renderCell = React.useCallback((user, columnKey) => {
     const cellValue = user[columnKey];
@@ -310,6 +315,17 @@ export default function Transaction() {
     setPage(1);
   }, []);
 
+  const onDateRange = (e) => {
+    const { name, value } = e.target;
+
+    setSelectedDate((prev) => ({
+      ...prev,
+      [name]: new Date(value),
+    }));
+
+    setPage(1);
+  };
+
   const onSearchChange = React.useCallback((value) => {
     if (value) {
       setFilterValue(value);
@@ -334,7 +350,7 @@ export default function Transaction() {
   const topContent = useMemo(() => {
     return (
       <>
-        <div className="flex col items-center gap-3">
+        <div className="flex  items-center justify-between ">
           <span className="flex flex-col  text-2xl">
             <div className="flex items-center gap-2">
               <FaChartLine className="text-2xl" />
@@ -343,39 +359,80 @@ export default function Transaction() {
             <small className="text-base">
               A Complete Record of Your Financial Activity
             </small>
+            <Select
+              isRequired
+              label="Sales Filter"
+              placeholder="Select an animal"
+              defaultSelectedKeys='Today'
+              className="max-w-xs"
+            >
+              {/* {animals.map((animal) => ( */}
+              <SelectItem 
+              // key={animal.key}
+              >
+                {/* {animal.label} */}
+                Today
+              </SelectItem>
+              {/* ))} */}
+            </Select>
           </span>
-        </div>
-        <div className="flex justify-end">
-          <div className="max-w-[400px] border border-gray-700 shadow-none p-5 bg-[#37AFE1] rounded-lg">
-            <div className="flex gap-3">
-              <span className="text-white dark: text-white">
-                {formatDate(selectedDate.start)} -{' '}
-                {formatDate(selectedDate.end)}
-              </span>
-            </div>
-            <Divider />
-            <div>
-              <span className="text-lg text-white dark:text-white">
-                Sales: ₱ {totalSales.toFixed(2)}
-              </span>
-
-              <div className="flex gap-2">
-                {options.map((transactionOptions) => (
-                    <div
-                      key={transactionOptions.name}
-                      className="flex text-white dark:text-white p-2"
-                    >
-                      <span className="text-sm">
-                        {transactionOptions.name}:
-                        {salesByOptions[transactionOptions.name] || 0}
-                      </span>
+          <div className="flex justify-end">
+            <div className=" bg-blue-900 p-2 rounded w-full">
+              <div className="  p-2 rounded bg-white justify-between flex">
+                {' '}
+                <DateRangePicker
+                  className="w-45 mr-5"
+                  size="sm"
+                  value={selectedDate}
+                  onChange={setSelectedDate}
+                  variant="bordered"
+                  color="primary"
+                  startContent={
+                    <div>
+                      <IoMdCloseCircle
+                        className="cursor-pointer hover:text-red-400"
+                        onClick={() =>
+                          onDateRange({
+                            start: parseDate(date),
+                            end: parseDate(date),
+                          })
+                        }
+                      />
                     </div>
-                  ))}
+                  }
+                />
+                <span className="item-center text-black dark:text-white">
+                  {formatDate(selectedDate.start)} -{' '}
+                  {formatDate(selectedDate.end)}
+                </span>
+              </div>
+              <div className=" p-2 flex justify-between ">
+                <div className="p-2">
+                 
+                  <span className="text-lg text-white dark:text-white">
+                    Sales: ₱ {totalSales.toFixed(2)}
+                  </span>
+                </div>
+                <div className=" rounded p-2 bg-white">
+                  <div className="flex gap-2">
+                    {options.map((transactionOptions) => (
+                      <div
+                        key={transactionOptions.name}
+                        className="flex text-black dark:text-white p-2"
+                      >
+                        <span className="text-sm">
+                       <span className='text-blue-500'>●</span> {transactionOptions.name}:
+                          ₱ {(salesByOptions[transactionOptions.name] || 0).toFixed(2)}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
             </div>
-            <Divider />
           </div>
         </div>
+
         <div className="flex flex-col gap-4 m-2 mt-3">
           <div className="flex justify-between gap-3 items-end">
             <Input
@@ -389,25 +446,7 @@ export default function Transaction() {
               onClear={() => onClear()}
               onValueChange={onSearchChange}
             />
-            <DateRangePicker
-              value={selectedDate}
-              onChange={setSelectedDate}
-              variant="bordered"
-              color="primary"
-              startContent={
-                <div>
-                  <IoMdCloseCircle
-                    className="cursor-pointer hover:text-red-400"
-                    onClick={() =>
-                      setSelectedDate({
-                        start: parseDate(date),
-                        end: parseDate(date),
-                      })
-                    }
-                  />
-                </div>
-              }
-            />
+
             <div className="flex gap-3">
               {/* <Dropdown>
               <DropdownTrigger className="hidden sm:flex">
@@ -512,6 +551,7 @@ export default function Transaction() {
     transactions.length,
     onSearchChange,
     hasSearchFilter,
+    onDateRange,
   ]);
 
   const bottomContent = useMemo(() => {
@@ -600,12 +640,12 @@ export default function Transaction() {
           aria-label="Example table with custom cells, pagination and sorting"
           isHeaderSticky
           bottomContentPlacement="outside"
-          classNames=""
-          // selectedKeys={selectedKeys}
-          // selectionMode="multiple"
-          // sortDescriptor={sortDescriptor}
+          classNames={{ wrapper: 'max-h-[382px]', th: 'bg-blue-300 text-dark' }}
+          selectedKeys={selectedKeys}
+          selectionMode="multiple"
+          sortDescriptor={sortDescriptor}
           topContentPlacement="outside"
-          // onSelectionChange={setSelectedKeys}
+          onSelectionChange={setSelectedKeys}
           onSortChange={setSortDescriptor}
         >
           <TableHeader columns={headerColumns}>
@@ -614,7 +654,6 @@ export default function Transaction() {
                 key={column.dataKey}
                 align="center"
                 allowsSorting={column.sortable}
-                style={{ backgroundColor: '#191970', color: '#ffff' }}
               >
                 {column.name}
               </TableColumn>
