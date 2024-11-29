@@ -1,7 +1,8 @@
 "use client";
 import React, { useEffect, useState, useMemo } from 'react'
-import TransactionTable from '@/app/components/adminComponents/sales/TransactionTable'
+import FinanceTable from '@/app/components/adminComponents/finance/FInanceTable'
 import {useSalesStore} from '@/app/stores/transactionStore'
+import { useExpensesStore } from '@/app/stores/ExpensesStore'
 import AdminLayout from '../layout/layout'
 import { getDateAndTime } from '@/app/composables/dateAndTime'
 import { formatDate } from '@/app/composables/formateDateAndTime';
@@ -16,8 +17,9 @@ import { formattedNumber } from '@/app/composables/CurrencyFormat'
 
 export default function Sales() {
   const {columns, itemOptions, typeOptions, transactions, loading, fetchTransactions } = useSalesStore();
+  const {categoryList, fetchExpensesCategory, expenses, fetchExpenses,} = useExpensesStore()
   const {options, fetchPayment} = paymentStore()
-  const [selectedKey, setSelectedKey] = useState("today")
+  const [selectedKey, setSelectedKey] = useState("this month")
   const {date} = getDateAndTime()
   const [user, setUser] = useState({})
   const [value, setValue] = React.useState({
@@ -28,6 +30,7 @@ export default function Sales() {
   useEffect(() =>{
     fetchPayment()
     fetchTransactions()
+    fetchExpenses()
     const loadUser = async () =>{
 
       const token = localStorage.getItem("token");
@@ -40,71 +43,128 @@ export default function Sales() {
     loadUser()
   }, [fetchTransactions])
 
-  const isDateInRange = (date, startDate, endDate) => {
-    return date >= startDate && date <= endDate;
-  };
+const dateParser = (dateString) => new Date(dateString);
   
-  const getTotalSalesInRange = (transactions, selectedKey, startDate, endDate, options) => {
-    return transactions.reduce(
-      (acc, item) => {
-        if(selectedKey === 'today'){
-          if(item.date === date) {
-            acc.totalSalesToday += item.amount_paid;
-            options.forEach((row) => {
-              if(row.name === item.payment_options)
-              acc[row.name] = (acc[row.name] || 0) + item.amount_paid;
+const filteredTransactions = useMemo(() => {
+    const year = 2024
+    if(selectedKey === 'this year'){
+        const filterByYear = transactions.filter(sale => dateParser(sale.date).getFullYear() === year);
+        return filterByYear
+    } 
+    else if (selectedKey === 'this month'){
+        const now = new Date();
+        const currentYear = now.getFullYear();
+        const currentMonth = now.getMonth(); 
+        const filterByCurrentMonth = transactions.filter(sale => {
+                const saleDate = dateParser(sale.date);
+                return saleDate.getFullYear() === currentYear && saleDate.getMonth() === currentMonth;
             });
-          }
 
-        } else if(selectedKey === 'date range'){
-          const itemDate = new Date(item.date); 
-          if (isDateInRange(itemDate, startDate, endDate)) {
-            acc.totalSalesInRange += item.amount_paid;
-            options.forEach((row) => {
-              if(row.name === item.payment_options)
-              acc[row.name] = (acc[row.name] || 0) + item.amount_paid;
+        return filterByCurrentMonth
+    } else{
+        return transactions
+    }
+
+}, [transactions, selectedKey]);
+
+const filteredexpenses = useMemo(() => {
+    const year = 2024
+    if(selectedKey === 'this year'){
+        const filterByYear = expenses.filter(expense => dateParser(expense.date).getFullYear() === year);
+        return filterByYear
+    } 
+    else if (selectedKey === 'this month'){
+        const now = new Date();
+        const currentYear = now.getFullYear();
+        const currentMonth = now.getMonth(); 
+        const filterByCurrentMonth = expenses.filter(expense => {
+                const expenseDate = dateParser(expense.date);
+                return expenseDate.getFullYear() === currentYear && expenseDate.getMonth() === currentMonth;
             });
-          }
-        } else{
-          acc.totalSales += item.amount_paid;
-          options.forEach((row) => {
-            if(row.name === item.payment_options)
-            acc[row.name] = (acc[row.name] || 0) + item.amount_paid;
-          });
+
+        return filterByCurrentMonth
+    } else{
+        return expenses
+    }
+
+}, [expenses, selectedKey]);
+
+const calculateTotal = (sales) => sales.reduce((total, sale) => total + sale.amount, 0);
+
+// const getTotalSalesDaily = useMemo(() => {
+    
+// }, [filteredTransactions])
+
+const groupSalesByDay = useMemo(() => {
+    const salesByDay = filteredTransactions.reduce((acc, sale) => {
+        const date = sale.date; 
+        if (!acc[date]) {
+            acc[date] = { totalSales: 0, totalExpenses: 0 };
         }
+        acc[date].totalSales += sale.amount_paid;
         return acc;
-      },
-      { totalSalesToday: 0, totalSalesInRange: 0, totalSales: 0 }
-    );
-  };
-  
-  
+    }, {});
 
-  const filteredTransactions = useMemo(() => {
-    const start = new Date(value.start);
-    const end = new Date(value.end);
-  
-    return transactions.filter((transaction) => {
-      const transactionDate = new Date(transaction.date);
-      if(selectedKey === "today"){
-        return transaction.date === date;
-      } else if(selectedKey === "date range"){
-        return transactionDate >= start && transactionDate <= end;
-      } else{
-        return transaction
-      }
+    const expensesByDay = filteredexpenses.reduce((acc, expense) => {
+        const date = expense.date; 
+        if (!acc[date]) {
+            acc[date] = { totalSales: 0, totalExpenses: 0 };
+        }
+        acc[date].totalExpenses += expense.total;
+        return acc;
+    }, {});
+
+    const combinedData = { ...salesByDay };
+    Object.keys(expensesByDay).forEach((date) => {
+        if (!combinedData[date]) {
+            combinedData[date] = { totalSales: 0, totalExpenses: 0 };
+        }
+        combinedData[date].totalExpenses += expensesByDay[date].totalExpenses;
     });
-  }, [transactions, selectedKey, value.start, value.end]);
-  
 
-  const totals = useMemo(() => {
-    const start = new Date(value.start);
-    const end = new Date(value.end);
-    return getTotalSalesInRange(transactions, selectedKey, start, end, options);
-  }, [transactions, selectedKey, value.start, value.end, options]);
-  
-  const { totalSalesToday, totalSalesInRange, totalSales, ...salesByOptions } = totals;
-  
+    return combinedData;
+    
+}, [filteredTransactions, filteredexpenses]);
+
+// const getTotalSalesInRange = (combinedData, selectedKey, startDate, endDate, options) => {
+//     return combinedData.reduce(
+//       (acc, item) => {
+//         if(selectedKey === 'today'){
+//           if(item.date === date) {
+//             acc.totalSalesToday += item.amount_paid;
+//             options.forEach((row) => {
+//               if(row.name === item.payment_options)
+//               acc[row.name] = (acc[row.name] || 0) + item.amount_paid;
+//             });
+//           }
+
+//         } else if(selectedKey === 'date range'){
+//           const itemDate = new Date(item.date); 
+//           if (isDateInRange(itemDate, startDate, endDate)) {
+//             acc.totalSalesInRange += item.amount_paid;
+//             options.forEach((row) => {
+//               if(row.name === item.payment_options)
+//               acc[row.name] = (acc[row.name] || 0) + item.amount_paid;
+//             });
+//           }
+//         } else{
+//           acc.totalSales += item.amount_paid;
+//           options.forEach((row) => {
+//             if(row.name === item.payment_options)
+//             acc[row.name] = (acc[row.name] || 0) + item.amount_paid;
+//           });
+//         }
+//         return acc;
+//       },
+//       { totalSalesToday: 0, totalSalesInRange: 0, totalSales: 0 }
+//     );
+//   };
+
+//   const totals = useMemo(() => {
+//     const start = new Date(value.start);
+//     const end = new Date(value.end);
+//     return getTotalSalesInRange(groupSalesByDay, selectedKey, start, end, options);
+//   }, [groupSalesByDay, selectedKey, value.start, value.end, options]);
 
 
   return (
@@ -122,7 +182,8 @@ export default function Sales() {
                   value={selectedKey}
                   onChange={(e)=> setSelectedKey(e.target.value)}
                   >
-                    <SelectItem key="today">Today</SelectItem>
+                    <SelectItem key="this mont">This Month</SelectItem>
+                    <SelectItem key="this year">This Year</SelectItem>
                     <SelectItem key="date range">Date Range</SelectItem>
                     <SelectItem key="all">All</SelectItem>
                   </Select>
@@ -155,29 +216,29 @@ export default function Sales() {
                     </div>
                       <div className='flex items-start gap-5'>
                         <span className='font-sans font-semibold text-slate-100'>Sales: </span>
-                        {selectedKey === 'today'? (
+                        {/* {selectedKey === 'today'? (
                           <span className='text-slate-200 text-md font-bold'>₱{ formattedNumber(totalSalesToday) }</span>
                         ) : selectedKey === 'date range'? (
                           <span className='text-slate-200 text-md font-bold'>₱{ formattedNumber(totalSalesInRange) }</span>
                         ) : (
                           <span className='text-slate-200 text-md font-bold'>₱{ formattedNumber(totalSales) }</span>
-                        )}
+                        )} */}
                         <div className='flex items-start gap-5 bg-white w-full'>
-                          {options.length > 0? (
+                          {/* {options.length > 0? ( */}
                             <div className='border border-blue-600 p-3 rounded-md w-full'>
                               {/* <span>Payment Method Breakdown</span> */}
                               <div className='grid grid-cols-5 gap-4'>
-                                  {options.map((transactionOptions) => (
-                                    salesByOptions[transactionOptions.name] > 0? (
+                                  {/* {options.map((transactionOptions) => ( */}
+                                    {/* salesByOptions[transactionOptions.name] > 0? ( */}
                                       <div className='flex flex-col gap-1 items-start'>
-                                        <span className='font-sans text-slate-700 dark:text-slate-200 text-sm flex items-center'><div className="w-2 h-2 bg-blue-400 rounded-full"></div> {transactionOptions.name}: </span>                 
-                                        <span className='font-sans text-slate-700 dark:text-slate-200 text-sm'> ₱{salesByOptions[transactionOptions.name] ? formattedNumber(salesByOptions[transactionOptions.name]) : 0}</span>                 
+                                        <span className='font-sans text-slate-700 dark:text-slate-200 text-sm flex items-center'><div className="w-2 h-2 bg-blue-400 rounded-full"></div> Sales: </span>                 
+                                        <span className='font-sans text-slate-700 dark:text-slate-200 text-sm'> ₱ 100,00</span>                 
                                       </div>
-                                    ) : null
-                                  ))}
+                                    {/* ) : null */}
+                                  {/* ))} */}
                               </div>
                             </div>
-                          ): null}
+                          {/* ): null} */}
 
                         </div>
                       </div>
@@ -186,7 +247,7 @@ export default function Sales() {
               </div>
             </div>
             <div className='bg-white dark:bg-gray-900 rounded-lg p-5'>
-              <TransactionTable columns={columns} transactions={filteredTransactions} itemOptions={itemOptions} typeOptions={typeOptions} loading={loading} isMaximized={false} user={user} refresh={fetchTransactions}/>
+              <FinanceTable combinedData={groupSalesByDay} loading={loading}/>
             </div>
           </div>
         </main>
