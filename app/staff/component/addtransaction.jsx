@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 
 import {
   // Checkbox,
@@ -44,7 +44,7 @@ export default function Addtransaction() {
   const [amount_paid, setPaidAmount] = useState(0);
   const [amount, setAmount] = useState(0);
   const [total_amount, setTotal] = useState(0);
-  const [balance, setBalance] = useState(0)
+  const [balance, setBalance] = useState(0);
   const [remarks, setRemarks] = useState(' ');
   const [payment_options, setPaymentMethod] = useState(' ');
   const [sales_person, setSalesPerson] = useState(' ');
@@ -61,10 +61,11 @@ export default function Addtransaction() {
   const [products, setProduct] = useState(['']);
   // const [unit, setUnit] = useState(['']);
   const [setTransaction] = useState(['']);
-  const [categories, setCategory] = useState(['']);
+  const [categories, setCategory] = useState([]);
   const [sub_total, setSubTotal] = useState(unit_cost * quantity);
-
   const [selectedProductName, setSelectedProductName] = useState('');
+
+  const [item_code, setItemCode] = useState([]);
   // const [selectedVariant, setSelectedVariant] = useState('');
   // const [selectedMeasurement, setSelectedMeasurement] = useState([]);
 
@@ -73,6 +74,7 @@ export default function Addtransaction() {
   // ------------------------
   const [filteredVariants, setFilteredVariants] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
+  const [filteredUnit, setFilteredUnit] = useState([]);
   const [filteredMeasurements, setFilteredMeasurements] = useState([]);
   // ------------------------
   const [isSubmiting, setisSubmmiting] = useState(false);
@@ -84,6 +86,7 @@ export default function Addtransaction() {
   // ----------------------
   const [selectedCategory, setSelectedCategory] = useState([]);
   // ---------------------------
+  // const []
 
   useEffect(() => {
     // getAuthenticateUser();
@@ -255,14 +258,13 @@ export default function Addtransaction() {
         }
       };
 
-      
       const selectedProduct = products.find((item) => item.name === item_name);
       const finalUnitCost = selectedProduct ? selectedProduct.price : unit_cost; // Use the product's price from the DB
-      
+
       const findUser = sales_person
         ? users.filter((row) => sales_person === row.name)
         : [];
-      
+
       const updateId = await axios.post(
         'https://demprints-backend.vercel.app/api/collection/updateID',
         { id: idGenerated[0]._id, count: newId },
@@ -281,6 +283,7 @@ export default function Addtransaction() {
           discount: discount,
           discount_type: isPercentage ? '%' : '₱',
           total_amount: total_amount,
+          amount_paid: amount_paid > 0 ? amount_paid : total_amount,
           balance: balance,
           customer_type,
           customer_name,
@@ -317,7 +320,7 @@ export default function Addtransaction() {
   const handleQuantityChange = (newQuantity) => {
     const parsedQuantity = parseFloat(newQuantity) || 0;
     const totalItemCost = unit_cost * parsedQuantity;
-  
+
     setQuantity(parsedQuantity);
     setSubTotal(totalItemCost);
 
@@ -394,6 +397,88 @@ export default function Addtransaction() {
     fetchTransactions();
   }, []);
 
+  const [prevData, setPrevData] = useState({
+    price_type: 'fixed',
+    category: '',
+    item_no: '',
+    item_name: '',
+    measurement: '',
+    variants: '',
+    unit_cost: 0,
+    quantity: 1,
+    sub_total: 0,
+    total_amount: 0,
+    amount_paid: 0,
+  });
+  const [productsCategory] = useState([]);
+
+  const handleChangeItemCode = (e) => {
+    const code = e.target.value;
+    setItemCode(code);
+
+    const findProduct = products.filter((item) => item.item_code === code);
+
+    if (findProduct.length > 0) {
+      const product = findProduct[0]; // Get the first matching product
+      const findCategory = productsCategory.filter(
+        (category) => category.name === product.category,
+      );
+
+      const updatedData = {
+        price_type: 'custom',
+        categories: findCategory.length > 0 ? findCategory[0] : '',
+        item_no: code,
+        item_name: product.name,
+        measurement: product.unit,
+        variants: product.variants,
+        unit_cost: product.price,
+        quantity: 1, // Default quantity is set to 1
+        sub_total: product.price * 1, // Price * quantity
+        total_amount: product.price * 1, // Price * quantity
+        amount_paid: 0, // Default amount paid is 0
+      };
+
+      // Set state for pre-filled data
+      setFilteredProducts(findProduct);
+      setFilteredVariants(findProduct);
+      setFilteredUnit(findProduct);
+      setPrevData((prevData) => ({ ...prevData, ...updatedData }));
+
+      // Pre-fill relevant fields (item_name, unit_cost, category, etc.)
+      setItemName(product.name);
+      setUnitCost(product.price);
+      setMeasurement(product.unit);
+      setCategory(product.category);
+      setVariant(product.variants);
+      setSubTotal(product.price);
+      setTotal(product.price);
+    } else {
+      // Reset data if no product is found
+      const resetData = {
+        price_type: 'fixed',
+        categories: '',
+        item_no: '',
+        item_name: '',
+        measurement: '',
+        variants: '',
+        unit_cost: 0,
+        quantity: 1,
+        sub_total: 0,
+        total_amount: 0,
+        amount_paid: 0,
+      };
+      setPrevData((prevData) => ({ ...prevData, ...resetData }));
+
+      // Reset form fields when no product is found
+      setItemName('');
+      setUnitCost(0);
+      setMeasurement('');
+      setVariant('');
+      setSubTotal(0);
+      setTotal(0);
+    }
+  };
+
   // ----------------------------------
 
   return (
@@ -401,21 +486,36 @@ export default function Addtransaction() {
       <ModalContent>
         <ModalHeader>Add Transaction</ModalHeader>
         <ModalBody className="">
+          <div>
+            <Input
+              autoFocus
+              type="search"
+              variant="bordered"
+              color="primary"
+              size="sm"
+              value={item_code}
+              onChange={handleChangeItemCode}
+              label={
+                <span className="text-black dark:text-white">Item Code</span>
+              }
+            />
+          </div>
+
           <div className=" flex gap-6 ">
             <div className="flex-1 max-w-4xl mx-auto">
-            
               <Select
                 size="sm"
-                label={<span className='text-black'>Select Category</span>}
+                label={<span className="text-black">Select Category</span>}
                 className="mb-2"
                 autoFocus
                 isRequired
                 variant="bordered"
-                color='primary'
+                color="primary"
+                // key={[category.name]}
                 style={{ color: 'black' }}
-                onChange={(e) => setSelectedCategory(e.target.value)} // Track selected category
+                onChange={(e) => setSelectedCategory(e.target.value)}
               >
-                {categories.map((category, index) =>
+                {Array.isArray(categories) &&   categories.map((category, index) =>
                   (index > 0 && category.name !== categories[index - 1].name) ||
                   index === 0 ? (
                     <SelectItem
@@ -433,13 +533,13 @@ export default function Addtransaction() {
                 <div className="flex gap-3 mb-2">
                   <Select
                     size="sm"
-                    label={<span className='text-black'>Select Item</span>}
+                    label={<span className="text-black">Select Item</span>}
                     className="w-full max-w-md mx-auto text-black relative z-0 mb-2"
                     autoFocus
                     isRequired
                     value={item_name}
                     variant="bordered"
-                    color='primary'
+                    color="primary"
                     style={{ color: 'black' }}
                     onChange={(e) => {
                       const selectedProductName = e.target.value;
@@ -491,13 +591,13 @@ export default function Addtransaction() {
                   {item_name && (
                     <Select
                       size="sm"
-                      label={<span className='text-black'>Select Variant</span>}
+                      label={<span className="text-black">Select Variant</span>}
                       className="w-full max-w-md mx-auto text-black relative z-0 mb-2"
                       autoFocus
                       isRequired
                       value={variants}
                       variant="bordered"
-                      color='primary'
+                      color="primary"
                       style={{ color: 'black' }}
                       onChange={(e) => {
                         const selectedProductVariants = e.target.value;
@@ -551,11 +651,13 @@ export default function Addtransaction() {
                   {variants && (
                     <Select
                       size="sm"
-                      label={<span className='text-black'>Unit of Measurement</span>}
+                      label={
+                        <span className="text-black">Unit of Measurement</span>
+                      }
                       className="w-full max-w-md mx-auto text-black relative z-0 mb-2"
                       placeholder="Select unit"
-                      variant='bordered'
-                      color='primary'
+                      variant="bordered"
+                      color="primary"
                       isDisabled={filteredVariants.length === 0}
                       value={measurement}
                       onChange={(e) => {
@@ -567,6 +669,7 @@ export default function Addtransaction() {
                         );
 
                         setUnitCost(selectedUnitProduct?.price || 0);
+                        setSubTotal(selectedUnitProduct?.price || 0);
                       }}
                     >
                       {[
@@ -591,15 +694,14 @@ export default function Addtransaction() {
                   autoFocus
                   isRequired
                   value={quantity}
-                  label={<span className='text-black'>Quantity</span>}
+                  label={<span className="text-black">Quantity</span>}
                   variant="bordered"
-                  color='primary'
+                  color="primary"
                   type="number"
                   name="quantity"
-                  onChange={(e) => { 
-                    handleQuantityChange(e.target.value)
-                    setMeasurement()
-                   
+                  onChange={(e) => {
+                    handleQuantityChange(e.target.value);
+                    setMeasurement();
                   }}
                 />
 
@@ -609,9 +711,9 @@ export default function Addtransaction() {
                     className="flex-1"
                     value={discount}
                     name="discount"
-                    label={<span className='text-black'>Discount</span>}
+                    label={<span className="text-black">Discount</span>}
                     variant="bordered"
-                    color='primary'
+                    color="primary"
                     autoFocus
                     placeholder="Enter your discount"
                     isRequired
@@ -633,12 +735,12 @@ export default function Addtransaction() {
                 {/* Customer Type Select */}
                 <Select
                   size="sm"
-                  label={<span className='text-black'>Costumer Type</span>}
+                  label={<span className="text-black">Costumer Type</span>}
                   className="w-full max-w-md mx-auto text-black relative z-0 mb-2"
                   autoFocus
                   isRequired
                   variant="bordered"
-                  color='primary'
+                  color="primary"
                   value={customer_type}
                   style={{ color: 'black' }}
                   onChange={(event) => setCostumerType(event.target.value)}
@@ -647,7 +749,6 @@ export default function Addtransaction() {
                     <SelectItem
                       key={type.name}
                       variant="bordered"
-
                       style={{ color: 'black' }}
                     >
                       {type.name}
@@ -664,22 +765,21 @@ export default function Addtransaction() {
                   isRequired
                   type="text"
                   value={customer_name}
-                  label={<span className='text-black'>Costumer Name</span>}
+                  label={<span className="text-black">Costumer Name</span>}
                   variant="bordered"
-                  color='primary'
+                  color="primary"
                   onChange={(event) => setCostumerName(event.target.value)}
                 />
               </div>
               <div className="flex gap-3 mb-2">
-               
                 <Select
                   size="sm"
-                  label={<span className='text-black'>Payment Option</span>}
+                  label={<span className="text-black">Payment Option</span>}
                   className="w-full max-w-md mx-auto text-black relative z-0 mb-2"
                   autoFocus
                   isRequired
                   variant="bordered"
-                  color='primary'
+                  color="primary"
                   value={payment_options}
                   style={{ color: 'black' }}
                   onChange={(event) => setPaymentMethod(event.target.value)}
@@ -695,13 +795,12 @@ export default function Addtransaction() {
                   ))}
                 </Select>
 
-               
                 <Select
                   size="sm"
-                  label={<span className='text-black'>Payment Type</span>}
+                  label={<span className="text-black">Payment Type</span>}
                   className="w-full max-w-md mx-auto text-black relative z-0 mb-2"
                   variant="bordered"
-                  color='primary'
+                  color="primary"
                   autoFocus
                   value={payment_type}
                   onChange={(event) => setPaymentType(event.target.value)}
@@ -725,17 +824,15 @@ export default function Addtransaction() {
                 <div className="w-full max-w-md mx-auto text-black relative z-0 mb-2">
                   <Input
                     size="sm"
-                    
-                    variant='bordered'
-                    color='primary'
+                    variant="bordered"
+                    color="primary"
                     className="w-full text-black relative z-0"
                     style={{ color: 'black' }}
                     autoFocus
                     isRequired
-                   type='number'
+                    type="number"
                     value={amount_paid}
                     label={<span>Amount paid</span>}
-                    
                     onChange={(e) => handlePaidAmount(e.target.value)}
                   />
                 </div>
@@ -787,15 +884,17 @@ export default function Addtransaction() {
               )}
             </div>
           </div>
-          <Textarea
-            isRequired
-            autoFocus
-            variant='bordered'
-            color='primary'
-            placeholder="Write Remarks...."
-            className="w-full"
-            onChange={(e) => setRemarks(e.target.value)}
-          />
+          <div>
+            <Textarea
+              isRequired
+              autoFocus
+              variant="bordered"
+              color="primary"
+              placeholder="Write Remarks...."
+              className="w-full"
+              onChange={(e) => setRemarks(e.target.value)}
+            />
+          </div>
           {success_message && (
             <div className="flex items-center w-full max-w-xs p-1 mb-3">
               <div className="text-sm font-normal text-green-900">
@@ -805,6 +904,9 @@ export default function Addtransaction() {
           )}
         </ModalBody>
         <ModalFooter className=" justify-end">
+          <Button variant="danger" onClick={isSubmiting}>
+            Close
+          </Button>
           <Button
             color="primary"
             style={{ width: '4rem' }}

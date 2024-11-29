@@ -251,7 +251,7 @@ export default function AllTransaction() {
         return (
           <div className="flex flex-col">
             <p className="text-bold text-small capitalize">
-              {cellValue.toFixed(2)}
+              {cellValue.toFixed(2)}{user.discount_type}
             </p>
           </div>
         );
