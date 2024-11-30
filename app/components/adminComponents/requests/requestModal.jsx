@@ -31,7 +31,7 @@ export default function Requests() {
             key={row.id}
             description="Request changing password"
             startContent={<FaCodePullRequest className={iconClasses} />}
-            endContent={<Action data={row}/>}
+            endContent={<Action data={row} refresh={fetchRequest}/>}
           >
             {row.name}
           </DropdownItem>
