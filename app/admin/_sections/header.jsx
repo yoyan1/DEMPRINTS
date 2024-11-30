@@ -17,7 +17,7 @@ export default function Header (){
     return(
       <div className='flex justify-between px-5 py-2 bg-white dark:bg-gray-900'>
         <SidebarTrigger className="-ml-1" />
-        <div>
+        <div className='flex items-center'>
           <Requests/>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

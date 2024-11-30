@@ -1,55 +1,43 @@
 "use client"
-import React, { useEffect } from "react";
-import {Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure, Listbox, ListboxItem} from "@nextui-org/react";
+import React, {useEffect} from "react";
+import {Dropdown, DropdownTrigger, DropdownMenu, DropdownSection, DropdownItem, Button, User} from "@nextui-org/react";
+import { IoNotificationsCircle } from "react-icons/io5";
 import { FaCodePullRequest } from "react-icons/fa6";
-import { useRequestStore } from "../../../stores/requestStore";
+import { useRequestStore } from "@/app/stores/requestStore"
+import Action from './Action'
 
 export default function Requests() {
-  const {isOpen, onOpen, onOpenChange} = useDisclosure();
-  const {loading, error, requestData, fetchRequest} = useRequestStore()
+  const iconClasses = "text-xl text-default-500 pointer-events-none flex-shrink-0";
+  const { requestData, fetchRequest } = useRequestStore()
 
   useEffect(()=> {
     fetchRequest()
-    console.log(requestData)
-  }, [])
+  }, [requestData])
 
   return (
-    <>
-      <Button onPress={onOpen}>Open Modal</Button>
-      <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
-        <ModalContent>
-          {(onClose) => (
-            <>
-              <ModalHeader className="flex flex-col gap-1">User Requests</ModalHeader>
-              <ModalBody>
-                <span>{error}</span>
-                {requestData? (
-                    <Listbox variant="flat" aria-label="Listbox menu with descriptions" >
-                        {requestData.map((item) => {
-                            <ListboxItem
-                            key="new"
-                            description={`${item.name} request change password`}
-                            startContent={<FaCodePullRequest className="bg-gray-200 p-2" />}
-                            >
-                            Change Password Request
-                            </ListboxItem>
-                        })}
-                    </Listbox>
-
-                ) : null}
-              </ModalBody>
-              <ModalFooter>
-                <Button color="danger" variant="light" onPress={onClose}>
-                  Close
-                </Button>
-                <Button color="primary" onPress={onClose}>
-                  Action
-                </Button>
-              </ModalFooter>
-            </>
-          )}
-        </ModalContent>
-      </Modal>
-    </>
+    <Dropdown>
+      <DropdownTrigger>
+        <Button 
+          variant="light" 
+          isIconOnly
+        >
+          <IoNotificationsCircle className="h-8 w-8"/>
+        </Button>
+      </DropdownTrigger>
+      <DropdownMenu variant="faded" aria-label="Dropdown menu with description" closeOnSelect={false}>
+      <DropdownSection title="Notifications" showDivider>
+        {requestData.map((row) => (
+          <DropdownItem
+            key={row.id}
+            description="Request changing password"
+            startContent={<FaCodePullRequest className={iconClasses} />}
+            endContent={<Action data={row}/>}
+          >
+            {row.name}
+          </DropdownItem>
+        ))}
+        </DropdownSection>
+      </DropdownMenu>
+    </Dropdown>
   );
 }
