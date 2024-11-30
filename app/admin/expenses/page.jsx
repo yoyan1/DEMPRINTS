@@ -129,7 +129,7 @@ export default function Sales() {
                 </div>
                 <div className='w-full'>
                   <div className='p-3 shadow-sm rounded-xl bg-gradient-to-r from-blue-900 to-blue-600 flex flex-col gap-2 w-full'>
-                    <div className='text-sm text-blue-900 rounded-xl bg-white p-2 flex justify-between items-end'>
+                    <div className='text-sm text-blue-900 dark:text-blue-300 rounded-xl bg-white dark:bg-gray-800 p-2 flex justify-between items-end'>
                       {selectedKey === "date range"? (
                         <div className='mt-2'>
                           <DateRangePicker
@@ -162,7 +162,7 @@ export default function Sales() {
                         ) : (
                           <span className='text-slate-200 text-md font-bold'>₱{ totalExpenses.toFixed(2) }</span>
                         )}
-                        <div className='flex items-start gap-5 bg-white w-full'>
+                        <div className='flex items-start gap-5 bg-white dark:bg-gray-800 w-full'>
                           {categoryList.length > 0? (
                             <div className='border border-blue-600 p-3 rounded-md w-full'>
                               {/* <span>Payment Method Breakdown</span> */}

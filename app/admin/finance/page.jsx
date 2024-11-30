@@ -220,7 +220,7 @@ const getTotal = (combinedData) => {
                         ) : (
                           <span className='text-slate-200 text-md font-bold'>₱{ formattedNumber(totalSales) }</span>
                         )} */}
-                        <div className='flex items-start gap-5 bg-white w-full'>
+                        <div className='flex items-start gap-5 bg-white dark:bg-gray-800 w-full'>
                           {/* {options.length > 0? ( */}
                             <div className='border border-blue-600 p-3 rounded-md w-full'>
                               {/* <span>Payment Method Breakdown</span> */}
