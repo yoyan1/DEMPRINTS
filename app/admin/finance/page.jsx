@@ -13,12 +13,14 @@ import {parseDate} from "@internationalized/date";
 import { decodeToken } from '@/app/utils/decodeToken'
 import { paymentStore } from '../../stores/paymentStore';
 import { formattedNumber } from '@/app/composables/CurrencyFormat'
+import { useBalanceStore } from '../../stores/balanceStore';
 
 
 export default function Sales() {
   const {columns, itemOptions, typeOptions, transactions, loading, fetchTransactions } = useSalesStore();
   const {categoryList, fetchExpensesCategory, expenses, fetchExpenses,} = useExpensesStore()
   const {options, fetchPayment} = paymentStore()
+  const { loadBalance, balance, fetchBalance} = useBalanceStore()
   const [selectedKey, setSelectedKey] = useState("this month")
   const {date} = getDateAndTime()
   const [user, setUser] = useState({})
@@ -28,22 +30,29 @@ export default function Sales() {
   });
 
   const [isLoading, setIsLoading] = useState(false)
+  const loadData = async () =>{
+    setIsLoading(true)
+    await fetchPayment()
+    await fetchTransactions()
+    await fetchExpenses()
+    await fetchBalance()
+    setIsLoading(false)
+  }
+  
   useEffect(() =>{
-    const loadData = async () =>{
-      setIsLoading(true)
-      await fetchPayment()
-      await fetchTransactions()
-      await fetchExpenses()
+    
+    const loadUser = async() => {
       const token = localStorage.getItem("token");
       
       if (token) {
         const decode = await decodeToken(token)
         setUser(decode);
       }
-      setIsLoading(false)
+      
     }
+    loadUser()
     loadData()
-  }, [fetchTransactions])
+  }, [])
 
 const dateParser = (dateString) => new Date(dateString);
   
@@ -148,7 +157,7 @@ const getTotal = (combinedData) => {
             acc.totalExpenses += data.totalExpenses;
         return acc;
       },
-      { totalSales: 0, totalExpenses: 0}
+      { totalSales: 0, totalExpenses: 0,}
     );
   };
 
@@ -157,6 +166,15 @@ const getTotal = (combinedData) => {
   }, [groupSalesByDay]);
 
   const { totalSales, totalExpenses} = totals
+
+  const totalBalance = useMemo(() => {
+     let total_bal = 0
+     balance.map((row) => {
+      total_bal = +row.amount
+     })
+
+     return total_bal
+  }, [balance])
 
   return (
     <AdminLayout>
@@ -248,7 +266,7 @@ const getTotal = (combinedData) => {
               </div>
             </div>
             <div className='bg-white dark:bg-gray-900 rounded-lg p-5'>
-              <FinanceTable combinedData={groupSalesByDay} loading={isLoading}/>
+              <FinanceTable combinedData={groupSalesByDay} loading={isLoading} totalBalance={totalBalance} done={loadData}/>
             </div>
           </div>
         </main>

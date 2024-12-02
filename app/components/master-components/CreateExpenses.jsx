@@ -30,7 +30,7 @@ export default function CreateExpenses() {
       const responseOptions = await axios.get(process.env.NEXT_PUBLIC_API_URL+'/master/paymentSource')
       setPaymentSourceList(responseOptions.data)
     } catch(e){
-      consol.log(e)
+      console.log(e)
     }
   }
 
