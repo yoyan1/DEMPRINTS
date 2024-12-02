@@ -33,6 +33,12 @@ export default function Delete({ id, type, done, collection }) {
       onDeleted(response.data)
       done(response.data)
     }
+    if(collection === 'source'){
+      const response = await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/master/deletePaymentSource/${id}`)
+      console.log(response.data);
+      onDeleted(response.data)
+      done(response.data)
+    }
     
     if(collection === 'expenses'){
       const response = await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/master/deleteExpensesCategory/${id}`)
