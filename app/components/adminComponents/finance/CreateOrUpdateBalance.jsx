@@ -45,7 +45,7 @@ export default function CreateOrUpdate() {
   }
   return (
     <>
-      <Button onPress={onOpen} color="primary"><MdAdd className="h-6 w-6"/> Balance</Button>
+      <Button onPress={onOpen} className="bg-green-600 text-slate-200" size='sm'><MdAdd className="h-6 w-6"/> Balance</Button>
 
         <Modal 
           isOpen={isOpen} 

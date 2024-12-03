@@ -10,7 +10,9 @@ export default function CreateTransaction({isSubmit}) {
   const {isOpen, onOpen, onClose} = useDisclosure();
   const { categoryList, loading, fetchExpensesCategory} = useExpensesStore()
   const [category, setCategory] = useState([])
+  const [ paymentSourceList, setPaymentSourceList ] = useState([])
   const [idGenerated, setIdGenerated] = useState([{_id: '', count: 0}])
+  const [errorMessages, setErrorMessages] = useState({})
   const {date} = getDateAndTime()
   const [expensesData, setExpensesData] = useState({
                                           date: date,
@@ -21,12 +23,16 @@ export default function CreateTransaction({isSubmit}) {
                                           unit_cost: 0, 
                                           quantity: 1, 
                                           total: 0,
+                                          payment_source: ''
                                       })
                                       
+
 
   const fetchAll = async  () =>{
     const result = await axios.get(process.env.NEXT_PUBLIC_API_URL+'/master/getExpensesCategory');
     setCategory(result.data); 
+    const responseOptions = await axios.get(process.env.NEXT_PUBLIC_API_URL+'/master/paymentSource')
+    setPaymentSourceList(responseOptions.data)
     const responseID = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/collection/getIDExpenses`)
     if(responseID.data.length > 0){
       setIdGenerated(responseID.data)
@@ -39,6 +45,18 @@ export default function CreateTransaction({isSubmit}) {
     fetchExpensesCategory()
   }, [])
 
+  const isValid = () => {
+    const errors = {};
+    if(!expensesData.category) errors.category = "This field must not be empty."
+    if(!expensesData.type) errors.type = "This field must not be empty."
+    if(!expensesData.item_name) errors.item_name = "This field must not be empty."
+    if(expensesData.unit_cost <= 0) errors.unit_cost = "Invalid."
+    if(expensesData.quantity <= 0) errors.quantity = "Invalid."
+    if(!expensesData.payment_source) errors.payment_source = "This field must not be empty."
+
+    setErrorMessages(errors);
+    return errors;    
+  }
 
   const handleChange = (e) =>{
     const {name, value} = e.target
@@ -53,9 +71,15 @@ export default function CreateTransaction({isSubmit}) {
       
     }
   }
-  
+
   const [isLoading, setIsLoading] = useState(false)
   const submit = async () => {
+
+    const errors = isValid()
+    if(Object.keys(errors).length !== 0){
+      return
+    }
+
     setIsLoading(true)
     const newId = idGenerated[0].count+1
     const transaction_no =  `000${newId}`
@@ -68,6 +92,7 @@ export default function CreateTransaction({isSubmit}) {
       unit_cost: expensesData.unit_cost, 
       quantity: expensesData.quantity,
       total: expensesData.total,
+      payment_source: expensesData.payment_source
     }
     console.log(newData)
     try{
@@ -96,7 +121,7 @@ export default function CreateTransaction({isSubmit}) {
 
   return (
     <>
-      <Button onPress={onOpen} color="primary"><MdAdd/> Expenses</Button>
+      <Button onPress={onOpen} className="bg-green-600 text-slate-200" size="sm"><MdAdd/> Expenses</Button>
       <Modal 
         isOpen={isOpen} 
         onClose={onClose}
@@ -110,6 +135,9 @@ export default function CreateTransaction({isSubmit}) {
                 <Select 
                   label="Category" 
                   defaultSelectedKeys={[expensesData.category]}
+                  isInvalid={errorMessages.category? true : false}
+                  color={errorMessages.category ? "danger" : ""}
+                  errorMessage={errorMessages.category}
                   value={expensesData.category}
                   onChange={(e) =>(setExpensesData((prevData)=>({...prevData, category: e.target.value, type: ""})))}
                   isLoading={loading}
@@ -122,6 +150,9 @@ export default function CreateTransaction({isSubmit}) {
                   <Select 
                     label="Type" 
                     defaultSelectedKeys={[expensesData.type]}
+                    isInvalid={errorMessages.type? true : false}
+                    color={errorMessages.type ? "danger" : ""}
+                    errorMessage={errorMessages.type}
                     value={expensesData.type}
                     onChange={(e) =>(setExpensesData((prevData)=>({...prevData, type: e.target.value})))}
                   >
@@ -138,6 +169,9 @@ export default function CreateTransaction({isSubmit}) {
                   label="Item Name"
                   placeholder="Enter item name"
                   variant="bordered"
+                  isInvalid={errorMessages.item_name? true : false}
+                  color={errorMessages.item_name ? "danger" : ""}
+                  errorMessage={errorMessages.item_name}
                   value={expensesData.item_name}
                   onChange={(e)=>(setExpensesData((prevData)=>({...prevData, item_name: e.target.value})))}
                 />
@@ -147,6 +181,9 @@ export default function CreateTransaction({isSubmit}) {
                   type="number"
                   variant="bordered"
                   name="unit_cost"
+                  isInvalid={errorMessages.unit_cost? true : false}
+                  color={errorMessages.unit_cost ? "danger" : ""}
+                  errorMessage={errorMessages.unit_cost}
                   value={expensesData.unit_cost}
                   onChange={handleChange}
                 />
@@ -155,9 +192,24 @@ export default function CreateTransaction({isSubmit}) {
                   placeholder="Enter item quantity"
                   variant="bordered"
                   name="quantity"
+                  isInvalid={errorMessages.quantity? true : false}
+                  color={errorMessages.quantity ? "danger" : ""}
+                  errorMessage={errorMessages.quantity}
                   value={expensesData.quantity}
                   onChange={handleChange}
                 />
+                  <Select 
+                    label="Payment From" 
+                    isInvalid={errorMessages.payment_source? true : false}
+                    color={errorMessages.payment_source ? "danger" : ""}
+                    errorMessage={errorMessages.payment_source}
+                    value={expensesData.payment_source}
+                    onChange={(e) =>(setExpensesData((prevData)=>({...prevData, payment_source: e.target.value})))}
+                  >
+                    {paymentSourceList.map((item) =>(
+                      <SelectItem key={item.name}>{item.name}</SelectItem>
+                    ))}
+                  </Select>
                 <div>
                   total amount: {expensesData.total}
                 </div>
