@@ -8,7 +8,7 @@ const MyComponent = () => {
   const [variant, setVariant] = useState('');
 
   // Placeholder for findCategory
-  const findCategory = products.map(product => product.category);
+  const findCategory = products.map((product) => product.category);
 
   const FilterItemCode = useMemo(() => {
     if (!Array.isArray(products)) return [];

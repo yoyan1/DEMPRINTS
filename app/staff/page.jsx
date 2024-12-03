@@ -44,6 +44,7 @@ import { getDateAndTime } from '@/app/composables/dateAndTime';
 import { FaRegCircleXmark } from 'react-icons/fa6';
 import { IoMdCloseCircle } from 'react-icons/io';
 import { formatDate } from '../composables/formateDateAndTime';
+import { isNonNullExpression } from 'typescript';
 
 // import { formatDate, formatTime } from "../../composables/formateDateAndTime";
 
@@ -116,6 +117,7 @@ export default function Transaction() {
     start: parseDate(date),
     end: parseDate(date),
   });
+  const [selectedRange, setSelectedRange] = useState('Today');
   const [sortDescriptor, setSortDescriptor] = useState({
     column: 'age',
     direction: 'ascending',
@@ -167,9 +169,17 @@ export default function Transaction() {
     if (selectedDate?.start && selectedDate?.end) {
       const start = new Date(selectedDate.start);
       const end = new Date(selectedDate.end);
+
       return filteredTransactions.filter((transaction) => {
         const transactionDate = new Date(transaction.date);
-        return transactionDate >= start && transactionDate <= end;
+
+        if (selectedRange === 'Today') {
+          return transaction.date === date;
+        } else if (selectedRange === 'Date Range') {
+          return transactionDate >= start && transactionDate <= end;
+        } else {
+          return transaction;
+        }
       });
     }
 
@@ -179,6 +189,7 @@ export default function Transaction() {
     filterValue,
     statusFilter,
     typeFilter,
+    selectedRange,
     selectedDate.start,
     selectedDate.end,
   ]);
@@ -187,22 +198,48 @@ export default function Transaction() {
     return date >= start && date <= end;
   };
 
-  const getTotalSalesInRange = (transactions, start, end, options) => {
-    return transactions.reduce(
+  const getTotalSalesInRange = (
+    transactions,
+    start,
+    end,
+    options,
+    selectedRange,
+  ) => {
+    const result = transactions.reduce(
       (acc, item) => {
-        const itemDate = new Date(item.date);
-        if (isDateInRange(itemDate, start, end)) {
-          acc.totalSales += item.total_amount;
+        if (selectedRange === 'Today') {
+          if (isDateInRange(itemDate, start, end)) {
+            acc.totalSalesToday += item.total_amount;
+            options.forEach((row) => {
+              if (row.name === item.payment_options) {
+                acc[row.name] = (acc[row.name] || 0) + item.total_amount;
+              }
+            });
+          }
+        } else if (selectedRange === 'Date Range') {
+          const itemDate = new Date(item.date);
+          if (isDateInRange(itemDate, start, end)) {
+            acc.totalDateRangeSales += item.total_amount;
+            options.forEach((row) => {
+              if (row.name === item.payment_options) {
+                acc[row.name] = (acc[row.name] || 0) + item.total_amount;
+              }
+            });
+          }
+        } else {
+          acc.overAllSales += item.amount_paid;
           options.forEach((row) => {
-            if (row.name === item.payment_options) {
-              acc[row.name] = (acc[row.name] || 0) + item.total_amount;
-            }
+            if (row.name === item.payment_options)
+              acc[row.name] = (acc[row.name] || 0) + item.amount_paid;
           });
         }
+
         return acc;
       },
-      { totalSales: 0 },
+      { totalSalesToday: 0, totalDateRangeSales: 0, overAllSales: 0 },
     );
+
+    return result;
   };
 
   const totals = useMemo(() => {
@@ -211,7 +248,12 @@ export default function Transaction() {
     return getTotalSalesInRange(transactions, start, end, options);
   }, [selectedDate, transactions, options]);
 
-  const { totalSales, ...salesByOptions } = totals;
+  const {
+    totalSalesToday,
+    totalDateRangeSales,
+    overAllSales,
+    ...salesByOptions
+  } = totals;
 
   const pages = Math.ceil(filteredItems.length / rowsPerPage);
 
@@ -261,18 +303,7 @@ export default function Transaction() {
         );
       case 'unit_cost':
         return (
-          <Chip
-            className="capitalize"
-            // color={
-            //   itemColorMap[
-            //     user.item_name.toLowerCase() === 'photo print'
-            //       ? 'photoprint'
-            //       : user.item_name.toLowerCase()
-            //   ]
-            // }
-            size="sm"
-            variant="flat"
-          >
+          <Chip className="capitalize" size="sm" variant="flat">
             ₱ {cellValue.toFixed(2)}
           </Chip>
         );
@@ -310,19 +341,30 @@ export default function Transaction() {
     }
   }, [page]);
 
-  const onRowsPerPageChange = React.useCallback((e) => {
-    setRowsPerPage(Number(e.target.value));
-    setPage(1);
-  }, []);
+  // const onRowsPerPageChange = React.useCallback((e) => {
+  //   setRowsPerPage(Number(e.target.value));
+  //   setPage(1);
+  // }, []);
 
   const onDateRange = (e) => {
     const { name, value } = e.target;
-
+    setRowsPerPage(Number(e.target.value));
+    // setSelectedRange(e.target.value);
     setSelectedDate((prev) => ({
       ...prev,
       [name]: new Date(value),
     }));
 
+    setPage(1);
+  };
+
+  const onSelectRange = (e) => {
+    const { value } = e.target;
+    setRowsPerPage(Number(e.target.value));
+    setSelectedRange((prev) => ({
+      ...prev,
+      [name]: new Date(value),
+    }));
     setPage(1);
   };
 
@@ -362,67 +404,79 @@ export default function Transaction() {
             <Select
               isRequired
               label="Sales Filter"
-              placeholder="Select an animal"
-              defaultSelectedKeys='Today'
-              className="max-w-xs"
+              placeholder="Select Range"
+              defaultSelectedKeys="Today"
+              onChange={(e) => setSelectedRange(e.target.value)}
+              className="max-w-xs mr-1"
             >
-              {/* {animals.map((animal) => ( */}
-              <SelectItem 
-              // key={animal.key}
-              >
-                {/* {animal.label} */}
-                Today
-              </SelectItem>
-              {/* ))} */}
+              <SelectItem key="Today">Today</SelectItem>
+              <SelectItem key="Date Range">Date Range</SelectItem>
+              <SelectItem key="All">All</SelectItem>
             </Select>
           </span>
           <div className="flex justify-end">
-            <div className=" bg-blue-900 p-2 rounded w-full">
-              <div className="  p-2 rounded bg-white justify-between flex">
-                {' '}
-                <DateRangePicker
-                  className="w-45 mr-5"
-                  size="sm"
-                  value={selectedDate}
-                  onChange={setSelectedDate}
-                  variant="bordered"
-                  color="primary"
-                  startContent={
-                    <div>
-                      <IoMdCloseCircle
-                        className="cursor-pointer hover:text-red-400"
-                        onClick={() =>
-                          onDateRange({
-                            start: parseDate(date),
-                            end: parseDate(date),
-                          })
-                        }
-                      />
-                    </div>
-                  }
-                />
+            <div className=" bg-blue-900 p-1 rounded w-full">
+              <div className="   rounded bg-white justify-between flex">
+                {selectedRange === 'Date Range' ? (
+                  <div>
+                    <DateRangePicker
+                      className="w-45 mr-5 "
+                      size="sm"
+                      value={selectedDate}
+                      onChange={setSelectedDate}
+                      variant="bordered"
+                      color="primary"
+                      startContent={
+                        <div>
+                          <IoMdCloseCircle
+                            className="cursor-pointer hover:text-red-400"
+                            onClick={() =>
+                              onDateRange({
+                                start: parseDate(date),
+                                end: parseDate(date),
+                              })
+                            }
+                          />
+                        </div>
+                      }
+                    />
+                  </div>
+                ) : null}
+
                 <span className="item-center text-black dark:text-white">
                   {formatDate(selectedDate.start)} -{' '}
                   {formatDate(selectedDate.end)}
                 </span>
               </div>
-              <div className=" p-2 flex justify-between ">
-                <div className="p-2">
-                 
-                  <span className="text-lg text-white dark:text-white">
-                    Sales: ₱ {totalSales.toFixed(2)}
-                  </span>
+              <div className=" p-1 flex justify-between ">
+                <div className="p-1">
+                  {selectedRange === 'Today' ? (
+                    <span className="text-lg text-white dark:text-white">
+                      Sales: ₱ {totalSalesToday.toFixed(2)}
+                    </span>
+                  ) : selectedRange === 'Date Range' ? (
+                    <span className="text-lg text-white dark:text-white">
+                      Sales: ₱ {totalDateRangeSales.toFixed(2)}
+                    </span>
+                  ) : (
+                    <span className="text-lg text-white dark:text-white">
+                      Sales: ₱ {overAllSales.toFixed(2)}
+                    </span>
+                  )}
                 </div>
-                <div className=" rounded p-2 bg-white">
+                <div className=" rounded p- bg-white">
                   <div className="flex gap-2">
                     {options.map((transactionOptions) => (
                       <div
                         key={transactionOptions.name}
-                        className="flex text-black dark:text-white p-2"
+                        className="flex text-black dark:text-white p-1"
                       >
                         <span className="text-sm">
-                       <span className='text-blue-500'>●</span> {transactionOptions.name}:
-                          ₱ {(salesByOptions[transactionOptions.name] || 0).toFixed(2)}
+                          <span className="text-blue-500">●</span>{' '}
+                          {transactionOptions.name}: ₱{' '}
+                          {(
+                            salesByOptions[transactionOptions.name] || 0
+                          ).toFixed(2)}
                         </span>
                       </div>
                     ))}
@@ -532,11 +586,17 @@ export default function Transaction() {
               Rows per page:
               <select
                 className="bg-transparent outline-none text-default-400 text-small"
-                onChange={onRowsPerPageChange}
+                onChange={onDateRange}
               >
-                <option value="30">30</option>
-                <option value="60">60</option>
-                <option value="100">100</option>
+                <option className="text-blue-400" value="30">
+                  30
+                </option>
+                <option className="text-blue-400" value="60">
+                  60
+                </option>
+                <option className="text-blue-400" value="100">
+                  100
+                </option>
               </select>
             </label>
           </div>
@@ -547,10 +607,11 @@ export default function Transaction() {
     filterValue,
     statusFilter,
     visibleColumns,
-    onRowsPerPageChange,
+    // onRowsPerPageChange,
     transactions.length,
     onSearchChange,
     hasSearchFilter,
+    onSelectRange,
     onDateRange,
   ]);
 

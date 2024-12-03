@@ -16,7 +16,7 @@ export default function Layout({ children }) {
       </div>
       <div class="p-4 sm:ml-64">
      
-        <div class="p-4 border-2 border-gray-200 border-lined rounded-lg dark:border-gray-700">
+        <div class="p-4 ">
         
           {children}
         </div>

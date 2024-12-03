@@ -100,6 +100,17 @@ export default function Sidebar() {
                 Transaction
               </span>
             </Link>
+            <Link
+              href="/staff/time_inOut"
+              className={`flex text-sm mb-5  items-center gap-3 rounded-lg px-3 py-2 text-white transition-all hover:text-blue-200 text-md ${
+                pathname === '/staff' ? 'bg-blue-900 text-dark rounded-lg' : ''
+              }`}
+            >
+              <FaClipboardList className="flex-shrink-0 w-6 h-6 text-sm " />
+              <span className="flex-1 ml-3 text-left whitespace-nowrap">
+                Time-in and Time-out
+              </span>
+            </Link>
             <Divider className="bg-white mt-5" />
             <Dropdown className="mt-3">
               <DropdownTrigger className="rounded-full justify-start">

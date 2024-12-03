@@ -20,7 +20,7 @@ import {
 import { useRouter } from 'next/navigation';
 import { decodeToken } from '@/app/utils/decodeToken';
 import { useUserStore } from '@/app/stores/userStore';
-import { FaSearch } from "react-icons/fa";
+import { FaSearch } from 'react-icons/fa';
 import axios from 'axios';
 // import { formatDate } from "../../composables/formateDateAndTime";
 
@@ -85,7 +85,7 @@ export default function Addtransaction() {
   // const [selected, setSelected] = useState(false);
   const [isPercentage, setIsPercentage] = useState(false);
   // ----------------------
-  const [selectedCategory, setSelectedCategory] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState();
   // ---------------------------
   // const []
 
@@ -427,34 +427,31 @@ export default function Addtransaction() {
 
       const updatedData = {
         price_type: 'custom',
-        categories: findCategory.length > 0 ? findCategory[0] : '',
+        categories: findCategory.length > 0 ? findCategory : '',
         item_no: code,
         item_name: product.name,
         measurement: product.unit,
         variants: product.variants,
         unit_cost: product.price,
         quantity: 1,
-        sub_total: product.price * 1, 
-        total_amount: product.price * 1, 
+        sub_total: product.price * 1,
+        total_amount: product.price * 1,
         amount_paid: 0,
       };
 
-      
       setFilteredProducts(findProduct);
       setFilteredVariants(findProduct);
       setFilteredUnit(findProduct);
       setPrevData((prevData) => ({ ...prevData, ...updatedData }));
 
-      
       setItemName(product.name);
       setUnitCost(product.price);
       setMeasurement(product.unit);
-      setCategory(product.category);
+
       setVariant(product.variants);
       setSubTotal(product.price);
       setTotal(product.price);
     } else {
-      
       const resetData = {
         price_type: 'fixed',
         categories: '',
@@ -496,7 +493,7 @@ export default function Addtransaction() {
               value={item_code}
               onChange={handleChangeItemCode}
               label={
-                <span className="text-black dark:text-white"> <FaSearch/> Item Code</span>
+                <span className="text-black dark:text-white"> Item Code</span>
               }
             />
           </div>
@@ -505,196 +502,193 @@ export default function Addtransaction() {
             <div className="flex-1 max-w-4xl mx-auto">
               <Select
                 size="sm"
-                label={<span className="text-black dark:-white">Select Category</span>}
+                label={
+                  <span className="text-black dark:-white">
+                    Select Category
+                  </span>
+                }
+                defaultSelectedKeys={[selectedCategory]}
                 className="mb-2"
                 autoFocus
                 isRequired
                 variant="bordered"
                 color="primary"
-               
                 style={{ color: 'black' }}
                 onChange={(e) => setSelectedCategory(e.target.value)}
               >
-                {Array.isArray(categories) &&   categories.map((category, index) =>
+                {categories.map((category, index) =>
                   (index > 0 && category.name !== categories[index - 1].name) ||
                   index === 0 ? (
-                    <SelectItem
-                      key={category.name}
-                      variant="bordered"
-                    
-                    >
+                    <SelectItem key={category.name} variant="bordered">
                       {category.name}
                     </SelectItem>
                   ) : null,
                 )}
               </Select>
 
-              {selectedCategory && (
-                <div className="flex gap-3 mb-2">
+              {/* {selectedCategory && ( */}
+              <div className="flex gap-3 mb-2">
+                <Select
+                  size="sm"
+                  label={
+                    <span className="text-black dark:text-white">
+                      Select Item
+                    </span>
+                  }
+                  // defaultSelectedKeys={[item_name]}
+                  className="w-full max-w-md mx-auto text-black relative z-0 mb-2"
+                  autoFocus
+                  isRequired
+                  value={item_name}
+                  //  defaultSelectedKeys={[products.name]}
+                  variant="bordered"
+                  color="primary"
+                  onChange={(e) => {
+                    const selectedProductName = e.target.value;
+                    const selectedProduct = products.find(
+                      (product) => product.name === selectedProductName,
+                    );
+
+                    setItemName(selectedProductName);
+                    const filteredVariants = products.filter(
+                      (product) =>
+                        product.name === selectedProductName &&
+                        product.category === selectedCategory,
+                    );
+
+                    setFilteredVariants(filteredVariants);
+                    setMeasurement('');
+                    setAmount(0);
+                    setTotal(0);
+                    setSelectedProductName(selectedProductName);
+                  }}
+                >
+                  {useMemo(() => {
+                    const seen = new Set();
+                    const findProducts = products.filter(
+                      (item) => item.category === selectedCategory,
+                    );
+                    console.log(selectedCategory);
+                    return findProducts.map((item) => {
+                      const value = item.name;
+                      if (seen.has(value)) return null;
+                      seen.add(value);
+                      return <SelectItem key={value}>{value}</SelectItem>;
+                    });
+                  }, [products, selectedCategory])}
+                </Select>
+
+                {item_name && (
                   <Select
                     size="sm"
-                    label={<span className="text-black dark:text-white">Select Item</span>}
+                    label={
+                      <span className="text-black dark:text-white">
+                        Select Variant
+                      </span>
+                    }
                     className="w-full max-w-md mx-auto text-black relative z-0 mb-2"
                     autoFocus
                     isRequired
-                    value={item_name}
+                    value={variants}
+                    defaultSelectedKeys={[variants]}
                     variant="bordered"
                     color="primary"
-                  
                     onChange={(e) => {
-                      const selectedProductName = e.target.value;
+                      const selectedProductVariants = e.target.value;
                       const selectedProduct = products.find(
-                        (product) => product.name === selectedProductName,
+                        (product) =>
+                          product.variants === selectedProductVariants &&
+                          product.name === selectedProductName,
                       );
 
-                      
-                      setItemName(selectedProductName);
-                     ;
+                      if (!selectedProduct) return;
+
+                      setVariant(selectedProductVariants);
 
                       const filteredVariants = products.filter(
                         (product) =>
-                          product.name === selectedProductName &&
-                          product.category === selectedCategory,
+                          product.variants === selectedProductVariants &&
+                          product.name === selectedProductName,
                       );
 
                       setFilteredVariants(filteredVariants);
-                      setMeasurement('');
-                      setAmount(0);
-                      setTotal(0);
-                      setSelectedProductName(selectedProductName); 
+                      setVariant(selectedProduct);
                     }}
                   >
                     {products
-                      .filter(
-                        (product) => product.category === selectedCategory,
-                      )
-                      .reduce((uniqueProducts, product) => {
+                      .filter((product) => product.name === selectedProductName)
+                      .reduce((uniqueVariants, product) => {
                         if (
-                          !uniqueProducts.find((p) => p.name === product.name)
+                          !uniqueVariants.find(
+                            (p) => p.variants === product.variants,
+                          )
                         ) {
-                          uniqueProducts.push(product);
+                          uniqueVariants.push(product);
                         }
-                        return uniqueProducts;
+                        return uniqueVariants;
                       }, [])
                       .map((product) => (
                         <SelectItem
-                          key={product.id || product.name}
-                          value={product.name}
+                          key={product.variants}
+                          value={product.variants}
                           variant="bordered"
-                        
                         >
-                          {product.name}
+                          {product.variants}
                         </SelectItem>
                       ))}
                   </Select>
+                )}
 
-                  {item_name && (
-                    <Select
-                      size="sm"
-                      label={<span className="text-black dark:text-white">Select Variant</span>}
-                      className="w-full max-w-md mx-auto text-black relative z-0 mb-2"
-                      autoFocus
-                      isRequired
-                      value={variants}
-                      variant="bordered"
-                      color="primary"
-                    
-                      onChange={(e) => {
-                        const selectedProductVariants = e.target.value;
-                        const selectedProduct = products.find(
-                          (product) =>
-                            product.variants === selectedProductVariants &&
-                            product.name === selectedProductName,
-                        );
+                {variants && (
+                  <Select
+                    size="sm"
+                    label={
+                      <span className="text-black dark:text-white ">
+                        Measurement
+                      </span>
+                    }
+                    className="w-full max-w-md mx-auto text-black relative z-0 mb-2"
+                    placeholder="Select unit"
+                    variant="bordered"
+                    color="primary"
+                    isDisabled={filteredVariants.length === 0}
+                    value={measurement}
+                    onChange={(e) => {
+                      const selectedUnit = e.target.value;
+                      setMeasurement(selectedUnit);
 
-                        if (!selectedProduct) return;
+                      const selectedUnitProduct = filteredVariants.find(
+                        (product) => product.unit === selectedUnit,
+                      );
 
-                        setVariant(selectedProductVariants);
-
-                        const filteredVariants = products.filter(
-                          (product) =>
-                            product.variants === selectedProductVariants &&
-                            product.name === selectedProductName,
-                        );
-
-                        setFilteredVariants(filteredVariants);
-                        setVariant(selectedProduct);
-                      }}
-                    >
-                      {products
-                        .filter(
-                          (product) => product.name === selectedProductName,
-                        )
-                        .reduce((uniqueVariants, product) => {
-                          if (
-                            !uniqueVariants.find(
-                              (p) => p.variants === product.variants,
-                            )
-                          ) {
-                            uniqueVariants.push(product);
-                          }
-                          return uniqueVariants;
-                        }, [])
-                        .map((product) => (
-                          <SelectItem
-                            key={product.variants}
-                            value={product.variants}
-                            variant="bordered"
-                          
-                          >
-                            {product.variants}
-                          </SelectItem>
-                        ))}
-                    </Select>
-                  )}
-
-                  {variants && (
-                    <Select
-                      size="sm"
-                      label={
-                        <span className="text-black dark:text-white ">Measurement</span>
-                      }
-                      className="w-full max-w-md mx-auto text-black relative z-0 mb-2"
-                      placeholder="Select unit"
-                      variant="bordered"
-                      color="primary"
-                      isDisabled={filteredVariants.length === 0}
-                      value={measurement}
-                      onChange={(e) => {
-                        const selectedUnit = e.target.value;
-                        setMeasurement(selectedUnit);
-
-                        const selectedUnitProduct = filteredVariants.find(
-                          (product) => product.unit === selectedUnit,
-                        );
-
-                        setUnitCost(selectedUnitProduct?.price || 0);
-                        setSubTotal(selectedUnitProduct?.price || 0);
-                      }}
-                    >
-                      {[
-                        ...new Set(
-                          filteredVariants.map((product) => product.unit),
-                        ),
-                      ].map((unit) => (
-                        <SelectItem key={unit} value={unit}>
-                          {unit}
-                        </SelectItem>
-                      ))}
-                    </Select>
-                  )}
-                </div>
-              )}
+                      setUnitCost(selectedUnitProduct?.price || 0);
+                      setSubTotal(selectedUnitProduct?.price || 0);
+                    }}
+                  >
+                    {[
+                      ...new Set(
+                        filteredVariants.map((product) => product.unit),
+                      ),
+                    ].map((unit) => (
+                      <SelectItem key={unit} value={unit}>
+                        {unit}
+                      </SelectItem>
+                    ))}
+                  </Select>
+                )}
+              </div>
+              {/* )} */}
 
               <div className="flex gap-3 mb-2">
                 <Input
                   size="sm"
                   className="w-full max-w-md mx-auto text-black relative z-0 mb-2"
-                
                   autoFocus
                   isRequired
                   value={quantity}
-                  label={<span className="text-black dark:text-white">Quantity</span>}
+                  label={
+                    <span className="text-black dark:text-white">Quantity</span>
+                  }
                   variant="bordered"
                   color="primary"
                   type="number"
@@ -711,7 +705,11 @@ export default function Addtransaction() {
                     className="flex-1"
                     value={discount}
                     name="discount"
-                    label={<span className="text-black dark:text-white">Discount</span>}
+                    label={
+                      <span className="text-black dark:text-white">
+                        Discount
+                      </span>
+                    }
                     variant="bordered"
                     color="primary"
                     autoFocus
@@ -735,22 +733,21 @@ export default function Addtransaction() {
                 {/* Customer Type Select */}
                 <Select
                   size="sm"
-                  label={<span className="text-black dark:text-white">Costumer Type</span>}
+                  label={
+                    <span className="text-black dark:text-white">
+                      Costumer Type
+                    </span>
+                  }
                   className="w-full max-w-md mx-auto text-black relative z-0 mb-2"
                   autoFocus
                   isRequired
                   variant="bordered"
                   color="primary"
                   value={customer_type}
-                
                   onChange={(event) => setCostumerType(event.target.value)}
                 >
                   {costumerType.map((type) => (
-                    <SelectItem
-                      key={type.name}
-                      variant="bordered"
-                    
-                    >
+                    <SelectItem key={type.name} variant="bordered">
                       {type.name}
                     </SelectItem>
                   ))}
@@ -760,12 +757,15 @@ export default function Addtransaction() {
                 <Input
                   size="sm"
                   className="w-full max-w-md mx-auto text-black relative z-0 mb-2"
-                
                   autoFocus
                   isRequired
                   type="text"
                   value={customer_name}
-                  label={<span className="text-black dark:text-white">Costumer Name</span>}
+                  label={
+                    <span className="text-black dark:text-white">
+                      Costumer Name
+                    </span>
+                  }
                   variant="bordered"
                   color="primary"
                   onChange={(event) => setCostumerName(event.target.value)}
@@ -774,22 +774,21 @@ export default function Addtransaction() {
               <div className="flex gap-3 mb-2">
                 <Select
                   size="sm"
-                  label={<span className="text-black dark:text-white">Payment Option</span>}
+                  label={
+                    <span className="text-black dark:text-white">
+                      Payment Option
+                    </span>
+                  }
                   className="w-full max-w-md mx-auto text-black relative z-0 mb-2"
                   autoFocus
                   isRequired
                   variant="bordered"
                   color="primary"
                   value={payment_options}
-                
                   onChange={(event) => setPaymentMethod(event.target.value)}
                 >
                   {payment.map((method) => (
-                    <SelectItem
-                      key={method.name}
-                      variant="bordered"
-                    
-                    >
+                    <SelectItem key={method.name} variant="bordered">
                       {method.name}
                     </SelectItem>
                   ))}
@@ -806,11 +805,7 @@ export default function Addtransaction() {
                   onChange={(event) => setPaymentType(event.target.value)}
                 >
                   {paymentTypes.map((type) => (
-                    <SelectItem
-                      key={type.name}
-                      variant="bordered"
-                    
-                    >
+                    <SelectItem key={type.name} variant="bordered">
                       {type.name}
                     </SelectItem>
                   ))}
@@ -827,12 +822,15 @@ export default function Addtransaction() {
                     variant="bordered"
                     color="primary"
                     className="w-full text-black relative z-0"
-                  
                     autoFocus
                     isRequired
                     type="number"
                     value={amount_paid}
-                    label={<span className='text-black dark:text-white'>Amount paid</span>}
+                    label={
+                      <span className="text-black dark:text-white">
+                        Amount paid
+                      </span>
+                    }
                     onChange={(e) => handlePaidAmount(e.target.value)}
                   />
                 </div>
