@@ -14,12 +14,14 @@ import { decodeToken } from '@/app/utils/decodeToken'
 import { paymentStore } from '../../stores/paymentStore';
 import { formattedNumber } from '@/app/composables/CurrencyFormat'
 import { useBalanceStore } from '../../stores/balanceStore';
+import axios from 'axios';
 
 
 export default function Sales() {
   const {columns, itemOptions, typeOptions, transactions, loading, fetchTransactions } = useSalesStore();
   const {categoryList, fetchExpensesCategory, expenses, fetchExpenses,} = useExpensesStore()
   const {options, fetchPayment} = paymentStore()
+  const [paymentSourceList, setPaymentSourceList] = useState([])
   const { loadBalance, balance, fetchBalance} = useBalanceStore()
   const [selectedKey, setSelectedKey] = useState("this month")
   const {date} = getDateAndTime()
@@ -34,6 +36,8 @@ export default function Sales() {
     setIsLoading(true)
     await fetchPayment()
     await fetchTransactions()
+    const responseOptions = await axios.get(process.env.NEXT_PUBLIC_API_URL+'/master/paymentSource')
+    setPaymentSourceList(responseOptions.data)
     await fetchExpenses()
     await fetchBalance()
     setIsLoading(false)
@@ -123,8 +127,14 @@ const groupSalesByDay = useMemo(() => {
     const salesByDay = transactions.reduce((acc, sale) => {
         const date = sale.date; 
         if (!acc[date]) {
-            acc[date] = { totalSales: 0, totalExpenses: 0 };
+            acc[date] = { totalSales: 0, totalExpenses: 0, payment_source: {}, sales_source: {} };
         }
+        options.map((row) => {
+          const newName = row.name.replace(/([a-z])([A-Z])/g, '$1_$2') .replace(/\s+/g, '_').replace(/-+/g, '_').toLowerCase();
+          acc[date].sales_source[newName] = acc[date].sales_source[newName] || 0
+          if(row.name === sale.payment_options)
+          acc[date].sales_source[newName] = (acc[date].sales_source[newName] || 0) + sale.amount_paid;    
+        });
         acc[date].totalSales += sale.amount_paid;
         return acc;
     }, {});
@@ -132,8 +142,14 @@ const groupSalesByDay = useMemo(() => {
     const expensesByDay = expenses.reduce((acc, expense) => {
         const date = expense.date; 
         if (!acc[date]) {
-            acc[date] = { totalSales: 0, totalExpenses: 0 };
+          acc[date] = { totalSales: 0, totalExpenses: 0, payment_source: {} };
         }
+        paymentSourceList.map((row) => {
+          const newName = row.name.replace(/([a-z])([A-Z])/g, '$1_$2') .replace(/\s+/g, '_').replace(/-+/g, '_').toLowerCase();
+          acc[date].payment_source[newName] = acc[date].payment_source[newName] || 0
+          if(row.name === expense.payment_source)
+          acc[date].payment_source[newName] = (acc[date].payment_source[newName] || 0) + expense.total;    
+        });
         acc[date].totalExpenses += expense.total;
         return acc;
     }, {});
@@ -141,14 +157,15 @@ const groupSalesByDay = useMemo(() => {
     const combinedData = { ...salesByDay };
     Object.keys(expensesByDay).forEach((date) => {
         if (!combinedData[date]) {
-            combinedData[date] = { totalSales: 0, totalExpenses: 0 };
+            combinedData[date] = { totalSales: 0, totalExpenses: 0, payment_source: {} };
         }
         combinedData[date].totalExpenses += expensesByDay[date].totalExpenses;
+        combinedData[date].payment_source = {...expensesByDay[date].payment_source}
     });
-
+    
     return combinedData;
     
-}, [transactions, expenses]);
+}, [transactions, expenses, paymentSourceList]);
 
 const getTotal = (combinedData) => {
     return Object.entries(combinedData).reduce(
@@ -167,14 +184,38 @@ const getTotal = (combinedData) => {
 
   const { totalSales, totalExpenses} = totals
 
-  const totalBalance = useMemo(() => {
-     let total_bal = 0
-     balance.map((row) => {
-      total_bal = +row.amount
-     })
+  const balanceData = useMemo(() => {
+    return balance.reduce(
+      (acc, item) => {
+        acc.totalBalance += item.amount;
+        paymentSourceList.forEach((row) => {
+          const newName = row.name.replace(/([a-z])([A-Z])/g, '$1_$2') .replace(/\s+/g, '_').replace(/-+/g, '_').toLowerCase();
+          if(row.name.toLowerCase().includes(item.type.toLowerCase()))
+          acc[newName] = (acc[newName] || 0) + item.amount;
+        });
+        return acc
+      },
+      {totalBalance: 0}
+     )
 
-     return total_bal
-  }, [balance])
+  }, [balance, paymentSourceList])
+
+  const {totalBalance, ...saleSourceType} = balanceData
+
+  const salesSourceTypeBalance = useMemo(() => {
+    let newData = []
+    paymentSourceList.map((row) => {
+      const newName = row.name
+          .replace(/([a-z])([A-Z])/g, '$1_$2') 
+          .replace(/\s+/g, '_')                
+          .replace(/-+/g, '_')                 
+          .toLowerCase();
+      newData.push({[newName]: saleSourceType[newName]})
+    })
+    return newData
+  }, [paymentSourceList, saleSourceType])
+
+  // console.log(salesSourceTypeBalance)
 
   const financeData = useMemo(()=> {
     let fixedData = []
@@ -189,6 +230,8 @@ const getTotal = (combinedData) => {
       fixedData.push({
         date,
         totalSales: data.totalSales,
+        sales_source: data.sales_source,
+        payment_source: data.payment_source,
         totalExpenses: data.totalExpenses
       })
     })
@@ -203,7 +246,9 @@ const getTotal = (combinedData) => {
           date: data.date,
           totalSales: data.totalSales,
           totalExpenses: data.totalExpenses,
-          net: data.totalSales - data.totalExpenses ,
+          net: data.totalSales - data.totalExpenses,
+          sales_source: data.sales_source,
+          payment_source: data.payment_source,
           prevBalance: newData[index-1].endBalance,
           endBalance:  newPrevBal + net
         })
@@ -213,6 +258,8 @@ const getTotal = (combinedData) => {
           totalSales: data.totalSales,
           totalExpenses: data.totalExpenses,
           net: data.totalSales - data.totalExpenses,
+          sales_source: data.sales_source,
+          payment_source: data.payment_source,
           prevBalance: totalBalance,
           endBalance: totalBalance + (data.totalSales - data.totalExpenses), 
         }]
@@ -345,7 +392,7 @@ const filteredData = useMemo(() => {
               </div>
             </div>
             <div className='bg-white dark:bg-gray-900 rounded-lg p-5'>
-              <FinanceTable financeData={filteredData} loading={isLoading} totalBalance={totalBalance} done={loadData}/>
+              <FinanceTable financeData={filteredData} loading={isLoading} totalBalance={totalBalance} paymentSourceList={paymentSourceList} options={options} done={loadData}/>
             </div>
           </div>
         </main>

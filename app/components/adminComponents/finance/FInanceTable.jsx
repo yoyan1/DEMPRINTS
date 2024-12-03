@@ -7,15 +7,15 @@ import CreateOrUpdate from "./CreateOrUpdateBalance";
 import ViewReport from "./ViewReport"
 import { FaSync } from "react-icons/fa";
 
-export default function FinanceTable({financeData, loading, totalBalance, done}) {
-  
+export default function FinanceTable({financeData, loading, paymentSourceList, options, done}) {
+  console.log(financeData)
   const sortedFinanceDescending = financeData.sort((a, b) => new Date(b.date) - new Date(a.date))
   return (
     <div>
       <div className="py-3 flex justify-between">
-        <CreateOrUpdate />
+        <CreateOrUpdate done={done}/>
         <div className="flex gap-5">
-          <ViewReport/>
+          <ViewReport financeData={financeData} loading={loading} paymentSourceList={paymentSourceList} options={options} done={done}/>
           <Button isIconOnly color="success" onPress={done} size='sm'><FaSync className="w-4 h-4 text-white"/></Button>
         </div>
       </div>

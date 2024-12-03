@@ -1,36 +1,65 @@
 "use client"
 import React from 'react'
-import {Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure} from "@nextui-org/react";
+import {Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Spinner} from "@nextui-org/react";
+import { formatDate, formatTime } from "@/app/composables/formateDateAndTime";
+import { formattedNumber } from "@/app/composables/CurrencyFormat"
+import CreateOrUpdate from "./CreateOrUpdateBalance";
+import { FaSync } from "react-icons/fa";
 
-export default function App() {
+export default function App({financeData, loading, paymentSourceList, options, done}) {
   const {isOpen, onOpen, onOpenChange} = useDisclosure();
-
+  const sortedFinanceDescending = financeData.sort((a, b) => new Date(b.date) - new Date(a.date))
   return (
     <>
       <Button onPress={onOpen} color="primary" size='sm'>View all</Button>
-      <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+      <Modal isOpen={isOpen} onOpenChange={onOpenChange} size='full'>
         <ModalContent>
           {(onClose) => (
             <>
-              <ModalHeader className="flex flex-col gap-1">Modal Title</ModalHeader>
+              <ModalHeader className="flex flex-col gap-1">Report Summary</ModalHeader>
               <ModalBody>
-                <p> 
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                  Nullam pulvinar risus non risus hendrerit venenatis.
-                  Pellentesque sit amet hendrerit risus, sed porttitor quam.
-                </p>
-                <p>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                  Nullam pulvinar risus non risus hendrerit venenatis.
-                  Pellentesque sit amet hendrerit risus, sed porttitor quam.
-                </p>
-                <p>
-                  Magna exercitation reprehenderit magna aute tempor cupidatat consequat elit
-                  dolor adipisicing. Mollit dolor eiusmod sunt ex incididunt cillum quis. 
-                  Velit duis sit officia eiusmod Lorem aliqua enim laboris do dolor eiusmod. 
-                  Et mollit incididunt nisi consectetur esse laborum eiusmod pariatur 
-                  proident Lorem eiusmod et. Culpa deserunt nostrud ad veniam.
-                </p>
+              <div className="py-3 flex justify-between">
+                <CreateOrUpdate />
+                <div className="flex gap-5">
+                  <Button isIconOnly color="success" onPress={done} size='sm'><FaSync className="w-4 h-4 text-white"/></Button>
+                </div>
+              </div>
+                <Table removeWrapper aria-label="Example static collection table">
+                  <TableHeader 
+                      classNames={{
+                          th: "bg-blue-300 text-dark"
+                      }}>
+                    <TableColumn>DATE</TableColumn>
+                    <TableColumn>Beggining Balance</TableColumn>
+                    {options.map((row) => <TableColumn className='bg-primary text-white w-60'>{row.name} PAYMENT</TableColumn>)}
+                    <TableColumn className='bg-primary text-white w-60'>TOTAL SALES</TableColumn>
+                    {paymentSourceList.map((row) => <TableColumn className='bg-warning text-white w-60'>{row.name}</TableColumn>)}
+                    <TableColumn className='bg-warning text-white w-60'>TOTAL EXPENSES</TableColumn>
+                    <TableColumn>NET</TableColumn>
+                    <TableColumn>End day Balance</TableColumn>
+                  </TableHeader>
+                  <TableBody isLoading={loading} loadingContent={<Spinner label="Loading..." />}>
+                        {sortedFinanceDescending.map((data) => (
+                            <TableRow key={data.date}>
+                                <TableCell>{formatDate(data.date)}</TableCell>
+                                <TableCell>₱ {formattedNumber(data.prevBalance)}</TableCell>
+                                {options.map((row) => {
+                                  const newName = row.name.replace(/([a-z])([A-Z])/g, '$1_$2') .replace(/\s+/g, '_').replace(/-+/g, '_').toLowerCase();
+                                  return <TableCell className='bg-primary text-white'>₱ {formattedNumber(data.sales_source[newName])}</TableCell>
+                                })}
+                                <TableCell className='bg-primary text-white'>₱ {formattedNumber(data.totalSales)}</TableCell>
+                                {paymentSourceList.map((row) => {
+                                  const newName = row.name.replace(/([a-z])([A-Z])/g, '$1_$2') .replace(/\s+/g, '_').replace(/-+/g, '_').toLowerCase();
+                                  return <TableCell className='bg-warning'>₱ {formattedNumber(data.payment_source[newName])}</TableCell>
+                                })}
+                                <TableCell className='bg-warning'>₱ {formattedNumber(data.totalExpenses)}</TableCell>
+                                <TableCell>₱ {formattedNumber(data.net)}</TableCell>
+                                <TableCell>₱ {formattedNumber(data.endBalance)}</TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                    
+                </Table>
               </ModalBody>
               <ModalFooter>
                 <Button color="danger" variant="light" onPress={onClose}>
