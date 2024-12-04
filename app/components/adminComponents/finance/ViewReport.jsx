@@ -12,8 +12,8 @@ export default function App({financeData, loading, paymentSourceList, options, d
   return (
     <>
       <Button onPress={onOpen} color="primary" size='sm'>View all</Button>
-      <Modal isOpen={isOpen} onOpenChange={onOpenChange} size='full'>
-        <ModalContent>
+      <Modal isOpen={isOpen} onOpenChange={onOpenChange} size='full' scrollBehavior='inside'>
+        <ModalContent >
           {(onClose) => (
             <>
               <ModalHeader className="flex flex-col gap-1">Report Summary</ModalHeader>
@@ -24,24 +24,31 @@ export default function App({financeData, loading, paymentSourceList, options, d
                   <Button isIconOnly color="success" onPress={done} size='sm'><FaSync className="w-4 h-4 text-white"/></Button>
                 </div>
               </div>
+              <div className='overflow-x-scroll max-w-screen'>
                 <Table removeWrapper aria-label="Example static collection table">
                   <TableHeader 
                       classNames={{
                           th: "bg-blue-300 text-dark"
                       }}>
                     <TableColumn>DATE</TableColumn>
+                    {paymentSourceList.map((row) => <TableColumn>{row.name}</TableColumn>)}
                     <TableColumn>Beggining Balance</TableColumn>
                     {options.map((row) => <TableColumn className='bg-primary text-white w-60'>{row.name} PAYMENT</TableColumn>)}
                     <TableColumn className='bg-primary text-white w-60'>TOTAL SALES</TableColumn>
                     {paymentSourceList.map((row) => <TableColumn className='bg-warning text-white w-60'>{row.name}</TableColumn>)}
                     <TableColumn className='bg-warning text-white w-60'>TOTAL EXPENSES</TableColumn>
                     <TableColumn>NET</TableColumn>
+                    {paymentSourceList.map((row) => <TableColumn className='bg-blue-300 '>{row.name}</TableColumn>)}
                     <TableColumn>End day Balance</TableColumn>
                   </TableHeader>
                   <TableBody isLoading={loading} loadingContent={<Spinner label="Loading..." />}>
                         {sortedFinanceDescending.map((data) => (
                             <TableRow key={data.date}>
                                 <TableCell>{formatDate(data.date)}</TableCell>
+                                {paymentSourceList.map((row) => {
+                                  const newName = row.name.replace(/([a-z])([A-Z])/g, '$1_$2') .replace(/\s+/g, '_').replace(/-+/g, '_').toLowerCase();
+                                  return <TableCell>₱ {formattedNumber(data.prev_source_balance[newName])}</TableCell>
+                                })}
                                 <TableCell>₱ {formattedNumber(data.prevBalance)}</TableCell>
                                 {options.map((row) => {
                                   const newName = row.name.replace(/([a-z])([A-Z])/g, '$1_$2') .replace(/\s+/g, '_').replace(/-+/g, '_').toLowerCase();
@@ -54,12 +61,17 @@ export default function App({financeData, loading, paymentSourceList, options, d
                                 })}
                                 <TableCell className='bg-warning'>₱ {formattedNumber(data.totalExpenses)}</TableCell>
                                 <TableCell>₱ {formattedNumber(data.net)}</TableCell>
+                                {paymentSourceList.map((row) => {
+                                  const newName = row.name.replace(/([a-z])([A-Z])/g, '$1_$2') .replace(/\s+/g, '_').replace(/-+/g, '_').toLowerCase();
+                                  return <TableCell className='bg-blue-300'>₱ {formattedNumber(data.end_source_balance[newName])}</TableCell>
+                                })}
                                 <TableCell>₱ {formattedNumber(data.endBalance)}</TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
                     
                 </Table>
+              </div>
               </ModalBody>
               <ModalFooter>
                 <Button color="danger" variant="light" onPress={onClose}>
