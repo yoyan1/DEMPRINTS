@@ -19,7 +19,21 @@ export default function FinanceTable({financeData, loading, paymentSourceList, o
           <Button isIconOnly color="success" onPress={done} size='sm'><FaSync className="w-4 h-4 text-white"/></Button>
         </div>
       </div>
-      <Table removeWrapper aria-label="Example static collection table">
+      <Table isCompact removeWrapper aria-label="Example static collection table" classNames={()=> ({
+        wrapper: ["max-h-[382px]", "max-w-3xl"],
+        th: ["bg-transparent", "text-default-500", "border-b", "border-divider", "w-96"],
+        td: [
+          // changing the rows border radius
+          // first
+          "group-data-[first=true]:first:before:rounded-none",
+          "group-data-[first=true]:last:before:rounded-none",
+          // middle
+          "group-data-[middle=true]:before:rounded-none",
+          // last
+          "group-data-[last=true]:first:before:rounded-none",
+          "group-data-[last=true]:last:before:rounded-none",
+        ],
+      })}>
         <TableHeader 
             classNames={{
                 th: "bg-blue-300 text-dark"

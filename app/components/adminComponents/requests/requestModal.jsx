@@ -1,6 +1,6 @@
 "use client"
 import React, {useEffect, useState} from "react";
-import {Dropdown, DropdownTrigger, DropdownMenu, DropdownSection, DropdownItem, Button, User} from "@nextui-org/react";
+import {Dropdown, DropdownTrigger, DropdownMenu, DropdownSection, DropdownItem, Button, Badge} from "@nextui-org/react";
 import { IoNotificationsCircle } from "react-icons/io5";
 import { FaCodePullRequest } from "react-icons/fa6";
 import { useRequestStore } from "@/app/stores/requestStore"
@@ -35,12 +35,14 @@ export default function Requests() {
   return (
     <Dropdown>
       <DropdownTrigger>
-        <Button 
-          variant="light" 
-          isIconOnly
-        >
-          <IoNotificationsCircle className="h-8 w-8"/>
-        </Button>
+        <Badge color="danger" content={requestData.length} isInvisible={Boolean(requestData)} shape="circle">
+          <Button 
+            variant="light" 
+            isIconOnly
+          >
+            <IoNotificationsCircle className="h-8 w-8"/>
+          </Button>
+        </Badge>
       </DropdownTrigger>
       <DropdownMenu variant="faded" aria-label="Dropdown menu with description" closeOnSelect={false}>
       <DropdownSection title="Notifications" showDivider>

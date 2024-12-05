@@ -233,6 +233,8 @@ const getTotal = (combinedData) => {
     })
 
     const sortedData = fixedData.sort((a, b) => new Date(a.date) - new Date(b.date))
+    const sortedPaymentSourceList = paymentSourceList.sort((a, b) => a.name - b.name)
+    const sortedOptionsList = options.sort((a, b) => a.name - b.name)
 
     sortedData.map((data) => {
 
@@ -253,13 +255,14 @@ const getTotal = (combinedData) => {
         }
 
         if(options.length > 0 && paymentSourceList.length > 0) {
-          const netBalanceFromSource =  options.reduce(
+          const netBalanceFromSource =  sortedOptionsList.reduce(
               (acc, item) => {
                 const optionName = item.name.replace(/([a-z])([A-Z])/g, '$1_$2') .replace(/\s+/g, '_').replace(/-+/g, '_').toLowerCase();
-                paymentSourceList.map((row) => {
+                sortedPaymentSourceList.map((row) => {
                   const newName = row.name.replace(/([a-z])([A-Z])/g, '$1_$2') .replace(/\s+/g, '_').replace(/-+/g, '_').toLowerCase();
                   acc[newName] = (acc[newName] || 0)
-                  if(row.name.toLowerCase().includes(item.name.toLowerCase())){
+                  const itemName = item.name.toLowerCase() === 'cash'? ['cash in the box', 'cash in box'] : [item.name.toLowerCase()]
+                  if(itemName.includes(row.name.toLowerCase())){
                     const total = newData[index-1].sales_source[optionName] - newData[index-1].payment_source[newName] + saleSourceType[newName] 
                     acc[newName] = total
                   }
@@ -272,16 +275,15 @@ const getTotal = (combinedData) => {
               const netBalanceFromSourceToday =  options.reduce(
                 (acc, item) => {
                   const optionName = item.name.replace(/([a-z])([A-Z])/g, '$1_$2') .replace(/\s+/g, '_').replace(/-+/g, '_').toLowerCase();
-                  paymentSourceList.map((row) => {
+                  sortedPaymentSourceList.map((row) => {
                     const newName = row.name.replace(/([a-z])([A-Z])/g, '$1_$2') .replace(/\s+/g, '_').replace(/-+/g, '_').toLowerCase();
                     acc[newName] = (acc[newName] || 0)
-                    if(row.name.toLowerCase().includes(item.name.toLowerCase())){
+                    const itemName = item.name.toLowerCase() === 'cash'? ['cash in the box', 'cash in box'] : [item.name.toLowerCase()]
+                    if(itemName.includes(row.name.toLowerCase())){
                       const total = data.sales_source[optionName] - data.payment_source[newName] + netBalanceFromSource[newName] 
                       acc[newName] = total
                     }
                   })
-                  console.log(acc);
-                  
                   return acc
                 }, {}
               )
