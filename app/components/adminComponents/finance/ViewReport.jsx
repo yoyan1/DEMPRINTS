@@ -9,6 +9,8 @@ import { FaSync } from "react-icons/fa";
 export default function App({financeData, loading, paymentSourceList, options, done}) {
   const {isOpen, onOpen, onOpenChange} = useDisclosure();
   const sortedFinanceDescending = financeData.sort((a, b) => new Date(b.date) - new Date(a.date))
+  const sortedPaymentSourceList = paymentSourceList.sort((a, b) => a.name - b.name)
+  const sortedOptionsList = options.sort((a, b) => a.name - b.name)
   return (
     <>
       <Button onPress={onOpen} color="primary" size='sm'>View all</Button>
@@ -31,41 +33,41 @@ export default function App({financeData, loading, paymentSourceList, options, d
                           th: "bg-blue-300 text-dark"
                       }}>
                     <TableColumn>DATE</TableColumn>
-                    {paymentSourceList.map((row) => <TableColumn>{row.name}</TableColumn>)}
+                    {sortedPaymentSourceList.map((row) => <TableColumn>{row.name}</TableColumn>)}
                     <TableColumn>Beggining Balance</TableColumn>
-                    {options.map((row) => <TableColumn className='bg-primary text-white w-60'>{row.name} PAYMENT</TableColumn>)}
+                    {sortedOptionsList.map((row) => <TableColumn className='bg-primary text-white w-60'>{row.name} PAYMENT</TableColumn>)}
                     <TableColumn className='bg-primary text-white w-60'>TOTAL SALES</TableColumn>
-                    {paymentSourceList.map((row) => <TableColumn className='bg-warning text-white w-60'>{row.name}</TableColumn>)}
+                    {sortedPaymentSourceList.map((row) => <TableColumn className='bg-warning text-white w-60'>{row.name}</TableColumn>)}
                     <TableColumn className='bg-warning text-white w-60'>TOTAL EXPENSES</TableColumn>
                     <TableColumn>NET</TableColumn>
-                    {paymentSourceList.map((row) => <TableColumn className='bg-blue-300 '>{row.name}</TableColumn>)}
+                    {sortedPaymentSourceList.map((row) => <TableColumn className='bg-blue-300 '>{row.name}</TableColumn>)}
                     <TableColumn>End day Balance</TableColumn>
                   </TableHeader>
                   <TableBody isLoading={loading} loadingContent={<Spinner label="Loading..." />}>
                         {sortedFinanceDescending.map((data) => (
                             <TableRow key={data.date}>
-                                <TableCell>{formatDate(data.date)}</TableCell>
-                                {paymentSourceList.map((row) => {
+                                <TableCell><div className="w-[80px]">{formatDate(data.date)}</div></TableCell>
+                                {sortedPaymentSourceList.map((row) => {
                                   const newName = row.name.replace(/([a-z])([A-Z])/g, '$1_$2') .replace(/\s+/g, '_').replace(/-+/g, '_').toLowerCase();
-                                  return <TableCell>₱ {formattedNumber(data.prev_source_balance[newName])}</TableCell>
+                                  return <TableCell><div className="w-[80px]">₱ {formattedNumber(data.prev_source_balance[newName])}</div></TableCell>
                                 })}
                                 <TableCell>₱ {formattedNumber(data.prevBalance)}</TableCell>
-                                {options.map((row) => {
+                                {sortedOptionsList.map((row) => {
                                   const newName = row.name.replace(/([a-z])([A-Z])/g, '$1_$2') .replace(/\s+/g, '_').replace(/-+/g, '_').toLowerCase();
-                                  return <TableCell className='bg-primary text-white'>₱ {formattedNumber(data.sales_source[newName])}</TableCell>
+                                  return <TableCell className='bg-primary text-white'><div className="w-[80px]">₱ {formattedNumber(data.sales_source[newName])}</div></TableCell>
                                 })}
-                                <TableCell className='bg-primary text-white'>₱ {formattedNumber(data.totalSales)}</TableCell>
-                                {paymentSourceList.map((row) => {
+                                <TableCell className='bg-primary text-white'><div className="w-[80px]">₱ {formattedNumber(data.totalSales)}</div></TableCell>
+                                {sortedPaymentSourceList.map((row) => {
                                   const newName = row.name.replace(/([a-z])([A-Z])/g, '$1_$2') .replace(/\s+/g, '_').replace(/-+/g, '_').toLowerCase();
-                                  return <TableCell className='bg-warning'>₱ {formattedNumber(data.payment_source[newName])}</TableCell>
+                                  return <TableCell className='bg-warning'><div className="w-[80px]">₱ {formattedNumber(data.payment_source[newName])}</div></TableCell>
                                 })}
                                 <TableCell className='bg-warning'>₱ {formattedNumber(data.totalExpenses)}</TableCell>
                                 <TableCell>₱ {formattedNumber(data.net)}</TableCell>
-                                {paymentSourceList.map((row) => {
+                                {sortedPaymentSourceList.map((row) => {
                                   const newName = row.name.replace(/([a-z])([A-Z])/g, '$1_$2') .replace(/\s+/g, '_').replace(/-+/g, '_').toLowerCase();
-                                  return <TableCell className='bg-blue-300'>₱ {formattedNumber(data.end_source_balance[newName])}</TableCell>
+                                  return <TableCell className='bg-blue-300'><div className="w-[80px]">₱ {formattedNumber(data.end_source_balance[newName])}</div></TableCell>
                                 })}
-                                <TableCell>₱ {formattedNumber(data.endBalance)}</TableCell>
+                                <TableCell><div className="w-[150px]">₱ {formattedNumber(data.endBalance)}</div></TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
@@ -73,14 +75,6 @@ export default function App({financeData, loading, paymentSourceList, options, d
                 </Table>
               </div>
               </ModalBody>
-              <ModalFooter>
-                <Button color="danger" variant="light" onPress={onClose}>
-                  Close
-                </Button>
-                <Button color="primary" onPress={onClose}>
-                  Action
-                </Button>
-              </ModalFooter>
             </>
           )}
         </ModalContent>
