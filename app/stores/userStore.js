@@ -116,6 +116,18 @@ export const useUserStore = create((set) => ({
       });
       return { users: [] };
     });
+  },
+
+  refreshToken: async (token) => {
+    if(token){
+      const response = await axios.get(process.env.NEXT_PUBLIC_API_URL+'/users/refreshToken', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        }
+      });
+      return response.data
+    }
   }
 }));
 

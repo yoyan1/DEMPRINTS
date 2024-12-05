@@ -27,7 +27,7 @@ export default function App({financeData, loading, paymentSourceList, options, d
                 </div>
               </div>
               <div className='overflow-x-scroll max-w-screen'>
-                <Table removeWrapper aria-label="Example static collection table">
+                <Table isHeaderSticky removeWrapper aria-label="Example static collection table">
                   <TableHeader 
                       classNames={{
                           th: "bg-blue-300 text-dark"
@@ -46,7 +46,7 @@ export default function App({financeData, loading, paymentSourceList, options, d
                   <TableBody isLoading={loading} loadingContent={<Spinner label="Loading..." />}>
                         {sortedFinanceDescending.map((data) => (
                             <TableRow key={data.date}>
-                                <TableCell><div className="w-[80px]">{formatDate(data.date)}</div></TableCell>
+                                <TableCell><div className="w-[150px]">{formatDate(data.date)}</div></TableCell>
                                 {sortedPaymentSourceList.map((row) => {
                                   const newName = row.name.replace(/([a-z])([A-Z])/g, '$1_$2') .replace(/\s+/g, '_').replace(/-+/g, '_').toLowerCase();
                                   return <TableCell><div className="w-[80px]">₱ {formattedNumber(data.prev_source_balance[newName])}</div></TableCell>
@@ -61,8 +61,8 @@ export default function App({financeData, loading, paymentSourceList, options, d
                                   const newName = row.name.replace(/([a-z])([A-Z])/g, '$1_$2') .replace(/\s+/g, '_').replace(/-+/g, '_').toLowerCase();
                                   return <TableCell className='bg-warning'><div className="w-[80px]">₱ {formattedNumber(data.payment_source[newName])}</div></TableCell>
                                 })}
-                                <TableCell className='bg-warning'>₱ {formattedNumber(data.totalExpenses)}</TableCell>
-                                <TableCell>₱ {formattedNumber(data.net)}</TableCell>
+                                <TableCell className='bg-warning'><div className="w-[150px]">₱ {formattedNumber(data.totalExpenses)}</div></TableCell>
+                                <TableCell><div className="w-[150px]">₱ {formattedNumber(data.net)}</div></TableCell>
                                 {sortedPaymentSourceList.map((row) => {
                                   const newName = row.name.replace(/([a-z])([A-Z])/g, '$1_$2') .replace(/\s+/g, '_').replace(/-+/g, '_').toLowerCase();
                                   return <TableCell className='bg-blue-300'><div className="w-[80px]">₱ {formattedNumber(data.end_source_balance[newName])}</div></TableCell>

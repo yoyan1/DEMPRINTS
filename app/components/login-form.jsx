@@ -10,7 +10,7 @@ import ForgotPassword from './user/forgotPassword'
 
 
 export function LoginForm() {
-  const { login, loading } = useUserStore()
+  const { login, loading, refreshToken} = useUserStore()
   const [ credentials, setCredentials ] = useState({id_number: '', password: ''})
   const [errorMessage, setErrorMessage] = useState({})
   const [mounted, setMounted] = useState(false); 
@@ -18,6 +18,31 @@ export function LoginForm() {
 
   const toggleVisibility = () => setIsVisible(!isVisible);
 
+  const router = useRouter()
+  const getToken = async (token) => {
+    if (typeof window !== "undefined") { 
+      const decode = await decodeToken(token)
+
+      // const currentTime = Math.floor(Date.now() / 1000);
+      // if (decode.exp < currentTime) {
+      //   const newToken = await refreshToken(token)
+      //   if(!newToken.err){
+      //     localStorage.setItem("token", newToken.token)
+      //   } else{
+      //     console.log(newToken.message)
+      //     router.push('/')
+      //   }
+      // }
+
+      if(['admin', 'super admin'].includes(decode.role)){
+        router.push('/admin')
+      } else if(decode.role === 'staff'){
+        router.push('/staff')
+      } else{
+        setErrorMessage({err: true, msg: "Role not found"})
+      }
+    }
+  }
   
   useEffect(() => {
     setMounted(true)
@@ -27,30 +52,21 @@ export function LoginForm() {
   if (!mounted) {
     return <div>Loading...</div>; 
   }
-  const router = useRouter()
 
   const handleChange = (e) => {
     const { name, value } = e.target
     setCredentials((prevData) => ({...prevData, [name] : value}))
     
   }
+
+
   const submit = async (e) =>{
     e.preventDefault()
     const response = await login(credentials)
     if(!response.data.err){
       setErrorMessage({err: response.data.err, msg: `${response.data.message}. Please wait...`})
-      if (typeof window !== "undefined") { 
-        localStorage.setItem("token", response.data.token)
-        const decode = await decodeToken(response.data.token)
-
-        if(['admin', 'super admin'].includes(decode.role)){
-          router.push('/admin')
-        } else if(decode.role === 'staff'){
-          router.push('/staff')
-        } else{
-          setErrorMessage({err: true, msg: "Role not found"})
-        }
-      }
+      localStorage.setItem("token", response.data.token)
+      getToken(response.data.token)
     } else{
       setErrorMessage({err: response.data.err, msg: response.data.message})
     }

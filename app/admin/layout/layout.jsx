@@ -9,23 +9,25 @@ import {
 import { useRouter } from "next/navigation";
 import { Spinner } from "@nextui-org/react";
 import { decodeToken } from '@/app/utils/decodeToken'
+import { useUserStore } from "@/app/stores/userStore"
 
 export default function AdminLayout({ children }) {
   const router = useRouter();
   const [user, setUser] = useState({})
   const [loading, setLoading] = useState(false)
+  const {refreshToken} = useUserStore()
 
   useEffect(() => {
     setLoading(true)
     const loadUser = async () =>{
 
       const token = localStorage.getItem("token");
-  
+      
       if (token) {
         const decode = await decodeToken(token)
         const imageUrl = `${process.env.NEXT_PUBLIC_API_URL}/users/images/${decode.image_id}`;
         setUser({...decode, imageUrl: imageUrl});
-  
+        
         if(user){
           // const currentTime = Math.floor(Date.now() / 1000);
           // if (decode.exp < currentTime) {
@@ -33,12 +35,19 @@ export default function AdminLayout({ children }) {
           //   router.replace("/"); 
           //   return;
           // }
-    
+          
           if(!['admin', 'super admin'].includes(decode.role)){
             router.replace('/')
             localStorage.removeItem("token");
-            
           }
+
+          // const newToken = await refreshToken(token)
+          // if(!newToken.err){
+          //   localStorage.setItem("token", newToken.token)
+          // } else{
+          //   console.log(newToken.message)
+          //   router.replace('/')
+          // }
         }
         setLoading(false)
       } else{
