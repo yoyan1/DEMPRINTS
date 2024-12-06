@@ -212,6 +212,8 @@ const getTotal = (combinedData) => {
 
   const {totalBalance, ...saleSourceType} = balanceData
 
+  const sortedPaymentSourceList = paymentSourceList.sort((a, b) => a.name - b.name)
+  const sortedOptionsList = options.sort((a, b) => a.name - b.name)
 
   const financeData = useMemo(()=> {
     let fixedData = []
@@ -233,9 +235,7 @@ const getTotal = (combinedData) => {
     })
 
     const sortedData = fixedData.sort((a, b) => new Date(a.date) - new Date(b.date))
-    const sortedPaymentSourceList = paymentSourceList.sort((a, b) => a.name - b.name)
-    const sortedOptionsList = options.sort((a, b) => a.name - b.name)
-
+    
     sortedData.map((data) => {
 
       if(index > 0){
@@ -254,25 +254,49 @@ const getTotal = (combinedData) => {
           endBalance:  newPrevBal + net
         }
 
-        if(options.length > 0 && paymentSourceList.length > 0) {
-          const netBalanceFromSource =  sortedOptionsList.reduce(
-              (acc, item) => {
-                const optionName = item.name.replace(/([a-z])([A-Z])/g, '$1_$2') .replace(/\s+/g, '_').replace(/-+/g, '_').toLowerCase();
-                sortedPaymentSourceList.map((row) => {
-                  const newName = row.name.replace(/([a-z])([A-Z])/g, '$1_$2') .replace(/\s+/g, '_').replace(/-+/g, '_').toLowerCase();
-                  acc[newName] = (acc[newName] || 0)
-                  const itemName = item.name.toLowerCase() === 'cash'? ['cash in the box', 'cash in box'] : [item.name.toLowerCase()]
-                  if(itemName.includes(row.name.toLowerCase())){
-                    const total = newData[index-1].sales_source[optionName] - newData[index-1].payment_source[newName] + saleSourceType[newName] 
-                    acc[newName] = total
-                  }
-                })
-                return acc
-              }, {}
-            )
+        if(sortedPaymentSourceList.length > 0 && sortedOptionsList.length > 0) {
+          const netBalanceFromSource = sortedOptionsList.reduce((acc, item) => {
+            const optionName = item.name
+              .replace(/([a-z])([A-Z])/g, '$1_$2')
+              .replace(/\s+/g, '_')
+              .replace(/-+/g, '_')
+              .toLowerCase();
+          
+            let matched = false; 
+            sortedPaymentSourceList.map((row) => {
+              const newName = row.name
+                .replace(/([a-z])([A-Z])/g, '$1_$2')
+                .replace(/\s+/g, '_')
+                .replace(/-+/g, '_')
+                .toLowerCase();
+          
+              acc[newName] = acc[newName] || 0; 
+          
+              const itemName =
+                item.name.toLowerCase() === 'cash'
+                  ? ['cash in the box', 'cash in box']
+                  : [item.name.toLowerCase()];
+          
+              if (itemName.includes(row.name.toLowerCase())) {
+                matched = true; 
+                const total =
+                  newData[index - 1].sales_source[optionName] -
+                  newData[index - 1].payment_source[newName] +
+                  saleSourceType[newName];
+                acc[newName] = total;
+              }
+            });
+          
+            if (!matched) {
+              acc.others = (acc.others || 0) + newData[index - 1].sales_source[optionName];
+            }
+          
+            return acc;
+          }, {});
+          
 
             if(netBalanceFromSource){
-              const netBalanceFromSourceToday = options.reduce((acc, item) => {
+              const netBalanceFromSourceToday = sortedOptionsList.reduce((acc, item) => {
                 const optionName = item.name
                   .replace(/([a-z])([A-Z])/g, '$1_$2')
                   .replace(/\s+/g, '_')
@@ -280,7 +304,6 @@ const getTotal = (combinedData) => {
                   .toLowerCase();
               
                 let matched = false; 
-              
                 sortedPaymentSourceList.forEach((row) => {
                   const newName = row.name
                     .replace(/([a-z])([A-Z])/g, '$1_$2')
@@ -290,10 +313,12 @@ const getTotal = (combinedData) => {
               
                   acc[newName] = acc[newName] || 0; 
               
-                  const itemName =
-                    item.name.toLowerCase() === 'cash'
-                      ? ['cash in the box', 'cash in box']
-                      : [item.name.toLowerCase()];
+                  const aliases = {
+                    cash: ['cash in the box', 'cash in box'],
+                    gcash: ['gcash'],
+                  };
+                  
+                  const itemName = aliases[item.name.toLowerCase()] || [item.name.toLowerCase()];
               
                   if (itemName.includes(row.name.toLowerCase())) {
                     matched = true; 
@@ -305,8 +330,8 @@ const getTotal = (combinedData) => {
                   }
                 });
               
-                if (!matched) {
-                  acc.others += data.sales_source[optionName];
+                if (optionName === 'fee') {
+                  acc.others += data.sales_source[optionName] + netBalanceFromSource.others;
                 }
               
                 return acc;
@@ -318,7 +343,7 @@ const getTotal = (combinedData) => {
         }
         
       } else{
-        const netBalanceFromSourceToday =  options.reduce(
+        const netBalanceFromSourceToday =  sortedOptionsList.reduce(
           (acc, item) => {
             const optionName = item.name.replace(/([a-z])([A-Z])/g, '$1_$2') .replace(/\s+/g, '_').replace(/-+/g, '_').toLowerCase();
             paymentSourceList.map((row) => {
@@ -329,6 +354,10 @@ const getTotal = (combinedData) => {
                 acc[newName] = total
               }
             })
+
+            if (optionName === 'fee') {
+              acc.others += data.sales_source[optionName];
+            }
             return acc
           }, {}
         )
@@ -350,7 +379,7 @@ const getTotal = (combinedData) => {
     })
 
     return newData
-  }, [groupSalesByDay, totalBalance, options, paymentSourceList])
+  }, [groupSalesByDay, totalBalance, saleSourceType, sortedOptionsList, sortedPaymentSourceList])
 
 const filteredData = useMemo(() => {
     const now = new Date();
@@ -473,7 +502,7 @@ const filteredData = useMemo(() => {
               </div>
             </div>
             <div className='bg-white dark:bg-gray-900 rounded-lg p-5'>
-              <FinanceTable financeData={filteredData} loading={isLoading} totalBalance={totalBalance} paymentSourceList={paymentSourceList} options={options} done={loadData}/>
+              <FinanceTable financeData={filteredData} loading={isLoading} totalBalance={totalBalance} paymentSourceList={sortedPaymentSourceList} options={sortedOptionsList} done={loadData}/>
             </div>
           </div>
         </main>
