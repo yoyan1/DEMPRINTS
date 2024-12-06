@@ -12,6 +12,7 @@ import axios from "axios";
 import { formatDate } from '@/app/composables/formateDateAndTime'
 import ViewImage from "./Image";
 
+
 export default function ViewDetails({data}) {
   const {isOpen, onOpen, onOpenChange} = useDisclosure();
     const name = data.name.split(" ")
@@ -52,17 +53,11 @@ export default function ViewDetails({data}) {
               <ModalBody>
                 <div className="flex flex-col gap-5">
                     <div className="flex items-center gap-2 border p-4 rounded-xl">
-                    {data.image? (
+                    <ViewImage imageUrl={data.imageUrl} image={
                         <Avatar className="w-20 h-20">
-                            <AvatarImage src={data.image} alt="@shadcn" />
+                            <AvatarImage src={data.imageUrl} alt="@shadcn" />
                             <AvatarFallback>{data.firstname[0]}{data.lastname[0]}</AvatarFallback>
-                        </Avatar>
-                    ) : (
-                        <Avatar className="w-20 h-20">
-                            <AvatarImage src={data.gender === 'female'? '/female-avatar.png' : '/male-avatar.png'} alt="@shadcn" />
-                            <AvatarFallback>{data.firstname[0]}{data.lastname[0]}</AvatarFallback>
-                        </Avatar>
-                    )}
+                        </Avatar>}/>
                         <div className="flex-1 flex justify-between">
                             <div>
                                 <h3>{data.name}</h3>
