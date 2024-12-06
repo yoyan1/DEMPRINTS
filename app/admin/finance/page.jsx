@@ -272,21 +272,46 @@ const getTotal = (combinedData) => {
             )
 
             if(netBalanceFromSource){
-              const netBalanceFromSourceToday =  options.reduce(
-                (acc, item) => {
-                  const optionName = item.name.replace(/([a-z])([A-Z])/g, '$1_$2') .replace(/\s+/g, '_').replace(/-+/g, '_').toLowerCase();
-                  sortedPaymentSourceList.map((row) => {
-                    const newName = row.name.replace(/([a-z])([A-Z])/g, '$1_$2') .replace(/\s+/g, '_').replace(/-+/g, '_').toLowerCase();
-                    acc[newName] = (acc[newName] || 0)
-                    const itemName = item.name.toLowerCase() === 'cash'? ['cash in the box', 'cash in box'] : [item.name.toLowerCase()]
-                    if(itemName.includes(row.name.toLowerCase())){
-                      const total = data.sales_source[optionName] - data.payment_source[newName] + netBalanceFromSource[newName] 
-                      acc[newName] = total
-                    }
-                  })
-                  return acc
-                }, {}
-              )
+              const netBalanceFromSourceToday = options.reduce((acc, item) => {
+                const optionName = item.name
+                  .replace(/([a-z])([A-Z])/g, '$1_$2')
+                  .replace(/\s+/g, '_')
+                  .replace(/-+/g, '_')
+                  .toLowerCase();
+              
+                let matched = false; 
+              
+                sortedPaymentSourceList.forEach((row) => {
+                  const newName = row.name
+                    .replace(/([a-z])([A-Z])/g, '$1_$2')
+                    .replace(/\s+/g, '_')
+                    .replace(/-+/g, '_')
+                    .toLowerCase();
+              
+                  acc[newName] = acc[newName] || 0; 
+              
+                  const itemName =
+                    item.name.toLowerCase() === 'cash'
+                      ? ['cash in the box', 'cash in box']
+                      : [item.name.toLowerCase()];
+              
+                  if (itemName.includes(row.name.toLowerCase())) {
+                    matched = true; 
+                    const total =
+                      data.sales_source[optionName] -
+                      data.payment_source[newName] +
+                      (netBalanceFromSource[newName] || 0); 
+                    acc[newName] = total;
+                  }
+                });
+              
+                if (!matched) {
+                  acc.others += data.sales_source[optionName];
+                }
+              
+                return acc;
+              }, {});
+              
 
               newData.push({...combined, prev_source_balance: {...netBalanceFromSource}, end_source_balance: netBalanceFromSourceToday,})
             }

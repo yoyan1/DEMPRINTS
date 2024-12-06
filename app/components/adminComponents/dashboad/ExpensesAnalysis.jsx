@@ -59,7 +59,7 @@ export default function Component(props) {
       expenses
     }));
   
-    if (newChartData[10].expenses > 0) {
+    if (newChartData[11].expenses > 0) {
       setChartData(newChartData);
     }
   };

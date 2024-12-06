@@ -1,9 +1,8 @@
 // Function to format date as "January 1, 2024"
 export function formatDate(dateString) {
-    const date = new Date(dateString);
-    
-    const options = { year: 'numeric', month: 'long', day: 'numeric' };
-    return date.toLocaleDateString('en-US', options);
+    const d = new Date(dateString);
+    const options = { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' };
+    return d.toLocaleDateString('en-US', options);
   }
   
 
