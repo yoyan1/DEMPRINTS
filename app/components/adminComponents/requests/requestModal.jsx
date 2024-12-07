@@ -35,14 +35,14 @@ export default function Requests() {
   return (
     <Dropdown>
       <DropdownTrigger>
-        <Badge color="danger" content={requestData.length} isInvisible={Boolean(requestData)} shape="circle">
           <Button 
             variant="light" 
             isIconOnly
-          >
-            <IoNotificationsCircle className="h-8 w-8"/>
+            >
+            <Badge color="danger" content={requestData.length} isInvisible={requestData.length === 0? true : false} shape="circle">
+              <IoNotificationsCircle className="h-8 w-8"/>
+            </Badge>
           </Button>
-        </Badge>
       </DropdownTrigger>
       <DropdownMenu variant="faded" aria-label="Dropdown menu with description" closeOnSelect={false}>
       <DropdownSection title="Notifications" showDivider>
