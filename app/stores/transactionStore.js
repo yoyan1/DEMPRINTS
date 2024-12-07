@@ -55,8 +55,8 @@ export const useSalesStore = create((set) => ({
         const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/collection/getTransaction`); 
         // if (!response.ok) throw new Error('Network response was not ok');
         const data = await response.data;
-        let descending = data.sort((a, b) => b.transaction_no - a.transaction_no);
-        set({ transactions: descending, loading: false });
+        // let descending = data.sort((a, b) => b.transaction_no - a.transaction_no);
+        set({ transactions: data, loading: false });
         } catch (error) {
         set({ error: error.message, loading: false });
         }

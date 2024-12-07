@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { FaClipboardList } from 'react-icons/fa';
+import { FaUserClock } from "react-icons/fa";
 import Link from 'next/link';
 import {
   Divider,
@@ -90,9 +91,9 @@ export default function Sidebar() {
           </a>
           <ul className="space-y-2 font-medium mb-5">
             <Link
-              href="/staff/transactions"
+              href="/staff"
               className={`flex text-sm mb-5  items-center gap-3 rounded-lg px-3 py-2 text-white transition-all hover:text-blue-200 text-md ${
-                pathname === '/staff' ? 'bg-blue-900 text-dark rounded-lg' : ''
+                pathname === '/staff' ? 'bg-blue-500 text-dark rounded-lg' : ''
               }`}
             >
               <FaClipboardList className="flex-shrink-0 w-6 h-6 text-sm " />
@@ -103,10 +104,10 @@ export default function Sidebar() {
             <Link
               href="/staff/time_inOut"
               className={`flex text-sm mb-5  items-center gap-3 rounded-lg px-3 py-2 text-white transition-all hover:text-blue-200 text-md ${
-                pathname === '/staff' ? 'bg-blue-900 text-dark rounded-lg' : ''
+                pathname === '/staff/time_inOut' ? 'bg-blue-500 text-dark rounded-lg' : ''
               }`}
             >
-              <FaClipboardList className="flex-shrink-0 w-6 h-6 text-sm " />
+              <FaUserClock className="flex-shrink-0 w-6 h-6 text-sm " />
               <span className="flex-1 ml-3 text-left whitespace-nowrap">
                 Time-in and Time-out
               </span>
@@ -115,12 +116,12 @@ export default function Sidebar() {
             <Dropdown className="mt-3">
               <DropdownTrigger className="rounded-full justify-start">
                 <Button
-                  className="flex text-sm  items-center gap-3 rounded-lg px-3 py-2 bg-transparent text-black dark:text-white"
+                  className="flex text-sm  items-center gap-3 rounded-full px-3 py-2 bg-transparent text-black dark:text-white"
                   aria-label="Open user menu"
                 >
                   <Image
                     className="bordered rounded-full w-5 h-5"
-                    src="/image.png"
+                    src="/male-avatar.png"
                   />
                   {user?.name} <BsThreeDotsVertical />
                 </Button>

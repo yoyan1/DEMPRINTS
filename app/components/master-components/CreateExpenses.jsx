@@ -16,12 +16,27 @@ export default function CreateExpenses() {
   const [ errorMessage, setErrorMessages ] = useState({})
   const [selected, setSelected] = useState("operational");
   const [category, setCategory] = useState({name: '', list: []})
+  const [paymentSource, setPaymentSource] = useState([])
+  const [paymentSourceList, setPaymentSourceList] = useState([])
   const [inputValue, setInputValue] = useState('')
   const [selectedKeys, setSelectedKeys] = useState(new Set(["1"]));
 
   const handleOpen = () => {
     onOpen();
   }
+
+  const getPaymentMethod = async () =>{
+    try{
+      const responseOptions = await axios.get(process.env.NEXT_PUBLIC_API_URL+'/master/paymentSource')
+      setPaymentSourceList(responseOptions.data)
+    } catch(e){
+      console.log(e)
+    }
+  }
+
+  useEffect(()=>{
+    getPaymentMethod()
+  }, [])
 
   const handleNameChange = (e) => {
     setCategory({ ...category, name: e.target.value });
@@ -95,6 +110,34 @@ export default function CreateExpenses() {
         }
     } 
   
+    const sourceIsValid = () => {
+        const errors = {};
+        if(!paymentSource) errors.options = "This field must not be empty."
+        setErrorMessages(errors);
+        return errors;
+      }
+
+      
+    const submitPaymentSource = async () =>{
+        
+        const errors = sourceIsValid()
+          if(Object.keys(errors).length !== 0){
+            return
+        }
+        setIsLoading(true)
+        const response = await axios.post(process.env.NEXT_PUBLIC_API_URL+'/master/createPaymentSource', {name: paymentSource})
+        console.log(response)
+        toast({
+          variant: "outline",
+          title: "Success!",
+          color: "success",
+          description: response.data.message,
+        })
+        setPaymentSource('')
+        setIsLoading(false)
+        getPaymentMethod()
+      }
+
 
     useEffect(()=>{
         fetchExpensesCategory()
@@ -251,6 +294,68 @@ export default function CreateExpenses() {
                                                 </Accordion>
                                             </div>
                                         </Tab>
+                                        <Tab key="options" title="Options">
+                                            <Listbox
+                                            aria-label="Listbox Variants"
+                                            color="solid" 
+                                            topContent={<span>Payment Source</span>}
+                                            >
+                                                {paymentSourceList.map((item) =>(
+                                                <ListboxItem showDivider key={item}>
+                                                    <div className="flex justify-between items-center">
+                                                    {item.name} 
+                                                    <div>
+                                                        {/* <UpdatdePayment data={item} type="Options" done={done}/> */}
+                                                        <Delete id={item._id} type="Payment Source" done={getPaymentMethod} collection="source"/>
+                                                    </div>
+                                                    </div>
+                                                </ListboxItem>
+                                                ))}
+                                            </Listbox>
+                                            <form className="flex flex-col gap-4">
+                                                <span>Create new Payment Source</span>
+                                                <Input 
+                                                label="source" 
+                                                placeholder="Enter new Payment Source" 
+                                                isInvalid={errorMessage.options? true : false}
+                                                color={errorMessage.options ? "danger" : ""}
+                                                errorMessage={errorMessage.options}
+                                                value={paymentSource} onChange={(e)=>(setPaymentSource(e.target.value))}/>
+                                                <div className="flex gap-2 justify-end">
+                                                <Button 
+                                                fullWidth 
+                                                color="primary"
+                                                type="submit" 
+                                                isLoading={isLoading}
+                                                onPress={submitPaymentSource}
+                                                spinner={
+                                                    <svg
+                                                        className="animate-spin h-5 w-5 text-current"
+                                                        fill="none"
+                                                        viewBox="0 0 24 24"
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                    >
+                                                        <circle
+                                                        className="opacity-25"
+                                                        cx="12"
+                                                        cy="12"
+                                                        r="10"
+                                                        stroke="currentColor"
+                                                        strokeWidth="4"
+                                                        />
+                                                        <path
+                                                        className="opacity-75"
+                                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                                        fill="currentColor"
+                                                        />
+                                                    </svg>
+                                                    }
+                                                >
+                                                    Submit
+                                                </Button>
+                                                </div>
+                                            </form>
+                                            </Tab>
                                     </Tabs>
                                 </div>
                             </div>

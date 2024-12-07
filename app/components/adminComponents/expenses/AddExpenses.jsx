@@ -19,7 +19,7 @@ export default function CreateTransaction({isSubmit}) {
                                           transaction_no: "", 
                                           item_name: "", 
                                           unit_cost: 0, 
-                                          quantity: 0, 
+                                          quantity: 1, 
                                           total: 0,
                                       })
                                       
@@ -85,7 +85,7 @@ export default function CreateTransaction({isSubmit}) {
         transaction_no: "", 
         item_name: "",
         unit_cost: 0, 
-        quantity: 0,
+        quantity: 1,
         total: 0,
       })
     } catch(e){

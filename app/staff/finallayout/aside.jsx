@@ -1,9 +1,9 @@
-'use client'
+'use client';
 
 import React from 'react';
 import { usePathname } from 'next/navigation';
 import { FaClipboardList } from 'react-icons/fa';
-import Link from "next/link"
+import Link from 'next/link';
 
 export default function SideNav() {
   const pathname = usePathname();

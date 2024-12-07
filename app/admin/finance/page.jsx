@@ -13,12 +13,14 @@ import {parseDate} from "@internationalized/date";
 import { decodeToken } from '@/app/utils/decodeToken'
 import { paymentStore } from '../../stores/paymentStore';
 import { formattedNumber } from '@/app/composables/CurrencyFormat'
+import { useBalanceStore } from '../../stores/balanceStore';
 
 
 export default function Sales() {
   const {columns, itemOptions, typeOptions, transactions, loading, fetchTransactions } = useSalesStore();
   const {categoryList, fetchExpensesCategory, expenses, fetchExpenses,} = useExpensesStore()
   const {options, fetchPayment} = paymentStore()
+  const { loadBalance, balance, fetchBalance} = useBalanceStore()
   const [selectedKey, setSelectedKey] = useState("this month")
   const {date} = getDateAndTime()
   const [user, setUser] = useState({})
@@ -27,32 +29,41 @@ export default function Sales() {
     end: parseDate(date),
   });
 
-  useEffect(() =>{
-    fetchPayment()
-    fetchTransactions()
-    fetchExpenses()
-    const loadUser = async () =>{
-
-      const token = localStorage.getItem("token");
+  const [isLoading, setIsLoading] = useState(false)
+  const loadData = async () =>{
+    setIsLoading(true)
+    await fetchPayment()
+    await fetchTransactions()
+    await fetchExpenses()
+    await fetchBalance()
+    setIsLoading(false)
+  }
   
+  useEffect(() =>{
+    
+    const loadUser = async() => {
+      const token = localStorage.getItem("token");
+      
       if (token) {
         const decode = await decodeToken(token)
         setUser(decode);
       }
+      
     }
     loadUser()
-  }, [fetchTransactions])
+    loadData()
+  }, [])
 
 const dateParser = (dateString) => new Date(dateString);
   
 const filteredTransactions = useMemo(() => {
-    const year = 2024
+    const now = new Date();
+    const year = now.getFullYear()
     if(selectedKey === 'this year'){
         const filterByYear = transactions.filter(sale => dateParser(sale.date).getFullYear() === year);
         return filterByYear
     } 
     else if (selectedKey === 'this month'){
-        const now = new Date();
         const currentYear = now.getFullYear();
         const currentMonth = now.getMonth(); 
         const filterByCurrentMonth = transactions.filter(sale => {
@@ -61,20 +72,29 @@ const filteredTransactions = useMemo(() => {
             });
 
         return filterByCurrentMonth
+    }else if (selectedKey === 'date range'){
+        const start = new Date(value.start);
+        const end = new Date(value.end);
+        const filterByDateRange = transactions.filter(sales => {
+                const salesDate = new Date(sales.date);
+                  return salesDate >= start && salesDate <= end;;
+            });
+
+        return filterByDateRange
     } else{
         return transactions
     }
 
-}, [transactions, selectedKey]);
+}, [transactions, selectedKey, value.start, value.end]);
 
 const filteredexpenses = useMemo(() => {
-    const year = 2024
+    const now = new Date();
+    const year = now.getFullYear()
     if(selectedKey === 'this year'){
         const filterByYear = expenses.filter(expense => dateParser(expense.date).getFullYear() === year);
         return filterByYear
     } 
     else if (selectedKey === 'this month'){
-        const now = new Date();
         const currentYear = now.getFullYear();
         const currentMonth = now.getMonth(); 
         const filterByCurrentMonth = expenses.filter(expense => {
@@ -83,17 +103,21 @@ const filteredexpenses = useMemo(() => {
             });
 
         return filterByCurrentMonth
+    }
+    else if (selectedKey === 'date range'){
+        const start = new Date(value.start);
+        const end = new Date(value.end);
+        const filterByDateRange = expenses.filter(expense => {
+                const expenseDate = new Date(expense.date);
+                  return expenseDate >= start && expenseDate <= end;;
+            });
+
+        return filterByDateRange
     } else{
         return expenses
     }
 
-}, [expenses, selectedKey]);
-
-const calculateTotal = (sales) => sales.reduce((total, sale) => total + sale.amount, 0);
-
-// const getTotalSalesDaily = useMemo(() => {
-    
-// }, [filteredTransactions])
+}, [expenses, selectedKey, value.start, value.end]);
 
 const groupSalesByDay = useMemo(() => {
     const salesByDay = filteredTransactions.reduce((acc, sale) => {
@@ -126,46 +150,31 @@ const groupSalesByDay = useMemo(() => {
     
 }, [filteredTransactions, filteredexpenses]);
 
-// const getTotalSalesInRange = (combinedData, selectedKey, startDate, endDate, options) => {
-//     return combinedData.reduce(
-//       (acc, item) => {
-//         if(selectedKey === 'today'){
-//           if(item.date === date) {
-//             acc.totalSalesToday += item.amount_paid;
-//             options.forEach((row) => {
-//               if(row.name === item.payment_options)
-//               acc[row.name] = (acc[row.name] || 0) + item.amount_paid;
-//             });
-//           }
+const getTotal = (combinedData) => {
+    return Object.entries(combinedData).reduce(
+      (acc, [date, data]) => {
+            acc.totalSales += data.totalSales;
+            acc.totalExpenses += data.totalExpenses;
+        return acc;
+      },
+      { totalSales: 0, totalExpenses: 0,}
+    );
+  };
 
-//         } else if(selectedKey === 'date range'){
-//           const itemDate = new Date(item.date); 
-//           if (isDateInRange(itemDate, startDate, endDate)) {
-//             acc.totalSalesInRange += item.amount_paid;
-//             options.forEach((row) => {
-//               if(row.name === item.payment_options)
-//               acc[row.name] = (acc[row.name] || 0) + item.amount_paid;
-//             });
-//           }
-//         } else{
-//           acc.totalSales += item.amount_paid;
-//           options.forEach((row) => {
-//             if(row.name === item.payment_options)
-//             acc[row.name] = (acc[row.name] || 0) + item.amount_paid;
-//           });
-//         }
-//         return acc;
-//       },
-//       { totalSalesToday: 0, totalSalesInRange: 0, totalSales: 0 }
-//     );
-//   };
+  const totals = useMemo(() => {
+    return getTotal(groupSalesByDay);
+  }, [groupSalesByDay]);
 
-//   const totals = useMemo(() => {
-//     const start = new Date(value.start);
-//     const end = new Date(value.end);
-//     return getTotalSalesInRange(groupSalesByDay, selectedKey, start, end, options);
-//   }, [groupSalesByDay, selectedKey, value.start, value.end, options]);
+  const { totalSales, totalExpenses} = totals
 
+  const totalBalance = useMemo(() => {
+     let total_bal = 0
+     balance.map((row) => {
+      total_bal = +row.amount
+     })
+
+     return total_bal
+  }, [balance])
 
   return (
     <AdminLayout>
@@ -182,7 +191,7 @@ const groupSalesByDay = useMemo(() => {
                   value={selectedKey}
                   onChange={(e)=> setSelectedKey(e.target.value)}
                   >
-                    <SelectItem key="this mont">This Month</SelectItem>
+                    <SelectItem key="this month">This Month</SelectItem>
                     <SelectItem key="this year">This Year</SelectItem>
                     <SelectItem key="date range">Date Range</SelectItem>
                     <SelectItem key="all">All</SelectItem>
@@ -190,7 +199,7 @@ const groupSalesByDay = useMemo(() => {
                 </div>
                 <div className='w-full'>
                   <div className='p-3 shadow-sm rounded-xl bg-gradient-to-r from-blue-900 to-blue-600 flex flex-col gap-2 w-full'>
-                    <div className='text-sm text-blue-900 rounded-xl bg-white p-2 flex justify-between items-end'>
+                    <div className='text-sm font-bold text-slate-100 rounded-xl  p-2 flex justify-between items-end'>
                       {selectedKey === "date range"? (
                         <div className='mt-2'>
                           <DateRangePicker
@@ -212,10 +221,16 @@ const groupSalesByDay = useMemo(() => {
                           />
                       </div>
                       ) : null}
-                      <span>{formatDate(value.start)} - {formatDate(value.end)}</span>
+                      {selectedKey === 'this month'? (
+                        <span>{(formatDate(date)).split(" ")[0]} - {(formatDate(date)).split(" ")[2]}</span>
+                      ) : selectedKey === 'this year'? (
+                        <span>January - December {(formatDate(date)).split(" ")[2]}</span>
+                      ): selectedKey === 'date range'? (
+                        <span>{formatDate(value.start)} - {formatDate(value.end)}</span>
+                      ): null}
                     </div>
-                      <div className='flex items-start gap-5'>
-                        <span className='font-sans font-semibold text-slate-100'>Sales: </span>
+                      <div className='flex flex-col items-start gap-2'>
+                        <span className='font-sans font-semibold text-slate-100'>Net: <span>₱ {formattedNumber(totalSales - totalExpenses)}</span></span>
                         {/* {selectedKey === 'today'? (
                           <span className='text-slate-200 text-md font-bold'>₱{ formattedNumber(totalSalesToday) }</span>
                         ) : selectedKey === 'date range'? (
@@ -223,16 +238,20 @@ const groupSalesByDay = useMemo(() => {
                         ) : (
                           <span className='text-slate-200 text-md font-bold'>₱{ formattedNumber(totalSales) }</span>
                         )} */}
-                        <div className='flex items-start gap-5 bg-white w-full'>
+                        <div className='flex items-start gap-5 bg-white dark:bg-gray-800 w-full'>
                           {/* {options.length > 0? ( */}
                             <div className='border border-blue-600 p-3 rounded-md w-full'>
                               {/* <span>Payment Method Breakdown</span> */}
-                              <div className='grid grid-cols-5 gap-4'>
+                              <div className='grid grid-cols-2 gap-4'>
                                   {/* {options.map((transactionOptions) => ( */}
                                     {/* salesByOptions[transactionOptions.name] > 0? ( */}
-                                      <div className='flex flex-col gap-1 items-start'>
-                                        <span className='font-sans text-slate-700 dark:text-slate-200 text-sm flex items-center'><div className="w-2 h-2 bg-blue-400 rounded-full"></div> Sales: </span>                 
-                                        <span className='font-sans text-slate-700 dark:text-slate-200 text-sm'> ₱ 100,00</span>                 
+                                      <div className='flex  gap-1 items-center'>
+                                        <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                                        <span className='font-sans text-slate-700 dark:text-slate-200 text-sm flex items-center'> Sales: ₱ {formattedNumber(totalSales)} </span>                              
+                                      </div>
+                                      <div className='flex  gap-1 items-center'>
+                                        <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                                        <span className='font-sans text-slate-700 dark:text-slate-200 text-sm flex items-center'> Expenses: ₱ {formattedNumber(totalExpenses)} </span>                              
                                       </div>
                                     {/* ) : null */}
                                   {/* ))} */}
@@ -247,7 +266,7 @@ const groupSalesByDay = useMemo(() => {
               </div>
             </div>
             <div className='bg-white dark:bg-gray-900 rounded-lg p-5'>
-              <FinanceTable combinedData={groupSalesByDay} loading={loading}/>
+              <FinanceTable combinedData={groupSalesByDay} loading={isLoading} totalBalance={totalBalance} done={loadData}/>
             </div>
           </div>
         </main>

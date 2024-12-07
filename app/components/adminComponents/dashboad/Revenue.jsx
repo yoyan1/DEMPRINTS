@@ -28,7 +28,7 @@ const chartConfig = {
   },
   expenses: {
     label: "Expenses",
-    color: "hsl(var(--chart-3))",
+    color: "hsl(var(--chart-4))",
   },
 } 
 
@@ -109,19 +109,19 @@ export default function Revenue(props) {
               content={<ChartTooltipContent indicator="dot" />}
             />
             <Area
-              dataKey="sales"
-              type="natural"
-              fill="var(--color-expenses)"
-              fillOpacity={0.4}
-              stroke="var(--color-expenses)"
-              stackId="a"
-            />
-            <Area
               dataKey="expenses"
               type="natural"
               fill="var(--color-sales)"
               fillOpacity={0.4}
               stroke="var(--color-sales)"
+              stackId="a"
+            />
+            <Area
+              dataKey="sales"
+              type="natural"
+              fill="var(--color-expenses)"
+              fillOpacity={0.4}
+              stroke="var(--color-expenses)"
               stackId="a"
             />
           </AreaChart>

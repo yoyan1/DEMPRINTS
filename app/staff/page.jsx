@@ -466,20 +466,21 @@ export default function Transaction() {
                 </div>
                 <div className=" rounded p- bg-white">
                   <div className="flex gap-2">
-                    {options.map((transactionOptions) => (
-                      <div
-                        key={transactionOptions.name}
-                        className="flex text-black dark:text-white p-1"
-                      >
-                        <span className="text-sm">
-                          <span className="text-blue-500">●</span>{' '}
-                          {transactionOptions.name}: ₱{' '}
-                          {(
-                            salesByOptions[transactionOptions.name] || 0
-                          ).toFixed(2)}
-                        </span>
-                      </div>
-                    ))}
+                    {options.length > 0
+                      ? options.map((transactionOptions) => (
+                          <div
+                            className="flex text-black dark:text-white"
+                            key={transactionOptions.name}
+                          >
+                            <span>
+                              {transactionOptions.name}: ₱{' '}
+                              {(
+                                salesByOptions[transactionOptions.name] || 0
+                              ).toFixed(2)}
+                            </span>
+                          </div>
+                        ))
+                      : null}
                   </div>
                 </div>
               </div>

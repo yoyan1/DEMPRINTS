@@ -8,14 +8,11 @@ export function formatDate(dateString) {
   
 
 export  function formatTime(timeString) {
-    const date = new Date('1970-01-01T' + timeString + 'Z'); 
-    const hours = date.getHours();
-    const minutes = date.getMinutes();
-    
-    const ampm = hours >= 12 ? 'PM' : 'AM';
-    const formattedHours = hours % 12 || 12; 
-    const formattedMinutes = minutes < 10 ? '0' + minutes : minutes;
-  
-    return `${formattedHours}:${formattedMinutes} ${ampm}`;
+    const [hours, minutes, seconds] = timeString.split(":").map(Number);
+
+    const period = hours >= 12 ? "PM" : "AM";
+    const hours12 = hours % 12 || 12; 
+
+    return `${hours12.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')} ${period}`;
   }
   
