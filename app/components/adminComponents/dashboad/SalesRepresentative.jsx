@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import { Button, Table,  TableHeader,  TableBody,  TableColumn,  TableRow,  TableCell, User, Pagination} from "@nextui-org/react";
 import {
   Card,
@@ -9,8 +9,10 @@ import {
   CardTitle,
 } from "@/app/components/ui/card"
 import { useUserStore } from '@/app/stores/userStore'
+import { useSalesStore } from '@/app/stores/transactionStore'
 
 export default function SalesRepresentative() {
+  const {transactions, fetchTransactions } = useSalesStore();
   const { users, loading, fetchUsers } = useUserStore()
   const [selectedKeys, setSelectedKeys] = React.useState(new Set([]));
   const [page, setPage] = React.useState(1);
@@ -19,14 +21,55 @@ export default function SalesRepresentative() {
   const pages = Math.ceil(users.length / rowsPerPage);
   useEffect(()=>{
     fetchUsers()
-  }, [fetchUsers])
+    fetchTransactions()
+  }, [])
+
+  const dateParser = (dateString) => new Date(dateString);
+
+  const filteredTransactions = useMemo(() => {
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const currentMonth = now.getMonth(); 
+    
+    const filterByCurrentMonth = transactions.filter(sale => {
+        const saleDate = dateParser(sale.date);
+        return saleDate.getFullYear() === currentYear && saleDate.getMonth() === currentMonth;
+    });
+
+    return filterByCurrentMonth
+
+  }, [transactions])
+
+  const usersSalesData = (users, transactions) => {
+    const userData = []
+
+    users.map((user) => {
+      const user_id = user.id
+      const filterSales = transactions.filter((sale) => sale.employee_id === user_id)
+      if(filterSales.length > 0) {
+        let totalSales = 0
+        filterSales.map((sale) => {
+          totalSales = totalSales + sale.amount_paid
+        })
+        userData.push({...user, totalSales: totalSales})
+      } else{
+        userData.push({...user, totalSales: 0})
+      }
+    })
+    return userData
+  }
+
+  const userData = useMemo(() => {
+    const data = usersSalesData(users, filteredTransactions)
+    return data.sort((a, b) => b.totalSales - a.totalSales)
+  }, [users, filteredTransactions])
 
   const items = React.useMemo(() => {
     const start = (page - 1) * rowsPerPage;
     const end = start + rowsPerPage;
 
-    return users.slice(start, end);
-  }, [page, users, rowsPerPage]);
+    return userData.slice(start, end);
+  }, [page, userData, rowsPerPage]);
 
   const onNextPage = React.useCallback(() => {
     if (page < pages) {
@@ -39,6 +82,7 @@ export default function SalesRepresentative() {
       setPage(page - 1);
     }
   }, [page]);
+
 
   const bottomContent = React.useMemo(() => {
     return (
@@ -98,7 +142,7 @@ export default function SalesRepresentative() {
                     </User>
                   </TableCell>
                   <TableCell>{user.job_title}</TableCell>
-                  <TableCell>{100 * index}</TableCell>
+                  <TableCell>{user.totalSales}</TableCell>
               </TableRow>
             ))}
           </TableBody>

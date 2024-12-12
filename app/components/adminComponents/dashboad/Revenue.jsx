@@ -16,7 +16,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/app/components/ui/chart"
-import { useEffect, useState } from "react"
+import { useEffect, useState, useMemo } from "react"
 
 export const description = "A stacked area chart"
 
@@ -48,18 +48,45 @@ export default function Revenue(props) {
     { month: "December", sales: 0, expenses: 0 },
   ])
 
+  const dateParser = (dateString) => new Date(dateString);
+
+  const filteredTransactions = useMemo(() => {
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    
+    const filterByCurrentMonth = props.transactions.filter(sale => {
+        const saleDate = dateParser(sale.date);
+        return saleDate.getFullYear() === currentYear;
+    });
+
+    return filterByCurrentMonth
+
+  }, [props.transactions])
+  
+  const filteredExpenses = useMemo(() => {
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    
+    const filterByCurrentMonth = props.expenses.filter(expense => {
+        const expenseDate = dateParser(expense.date);
+        return expenseDate.getFullYear() === currentYear;
+    });
+
+    return filterByCurrentMonth
+
+  }, [props.expenses])
 
   const getData = () => {
     const monthlySales = Array(12).fill(0);
     const monthlyExpenses = Array(12).fill(0);
   
-    props.transactions.forEach(item => {
+    filteredTransactions.forEach(item => {
       const [year, month] = item.date.split('-'); 
       const monthIndex = parseInt(month, 10) - 1; 
       monthlySales[monthIndex] += item.total_amount; 
     });
 
-    props.expenses.forEach(item => {
+    filteredExpenses.forEach(item => {
       const [year, month] = item.date.split('-');
       const monthIndex = parseInt(month, 10) - 1; 
       monthlyExpenses[monthIndex] += item.total; 

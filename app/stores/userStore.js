@@ -128,6 +128,12 @@ export const useUserStore = create((set) => ({
       });
       return response.data
     }
+  },
+  changePassword: async(data) => {
+    set({ loading: true });
+    const response = await axios.post(process.env.NEXT_PUBLIC_API_URL+'/users/changePassword', data);
+    set({ loading: false });
+    return response.data
   }
 }));
 

@@ -9,7 +9,7 @@ import { useUserStore } from '../../../stores/userStore';
 import { UploadImage } from '@/app/composables/uploadImage'
 import ViewImage from './Image';
 
-export default function UpdateUser({user, refresh}) {
+export default function UpdateUser({user, isUser, refresh}) {
   const {isOpen, onOpen, onClose} = useDisclosure();
   const [ newData, setNewData ] = useState({image: null, ...user})
   const [image, setImages] = useState({
@@ -112,7 +112,8 @@ export default function UpdateUser({user, refresh}) {
         preEmployment: null,
         certificates: null
       }); 
-      refresh("done");
+
+      !isUser? refresh("done") : null 
     // }
     setLoad(false); 
   };
@@ -173,7 +174,7 @@ export default function UpdateUser({user, refresh}) {
                       <div className='flex items-start gap-5'>
                         <span>Profile photo</span>
                         <Avatar className="w-20 h-20">
-                          {image? (
+                          {image.profile? (
                             <ViewImage imageUrl={image.profile} image={<AvatarImage src={image.profile} />}/>
                           ) : user.imageUrl? (
                             <ViewImage imageUrl={user.imageUrl} image={<AvatarImage src={user.imageUrl} />}/>
@@ -191,67 +192,69 @@ export default function UpdateUser({user, refresh}) {
                       </div><hr />
                     </div>
                   </Tab>
-                  <Tab name="job" title="Job Details">
-                    <div className='flex flex-col gap-5'>
-                      <div className='flex gap-5'>
-                        <span className='w-full'>Job Title</span>
-                        <Select placeholder='Job title' defaultSelectedKeys={[newData.job_title]} isLoading={isLoading} name='job_title' onChange={handleChange}>
-                          {jobData.job_title.map((job) => (
-                            <SelectItem key={job}>{job}</SelectItem>
-                          ))}
-                        </Select>
-                      </div><hr />
-                      <div className='flex gap-5'>
-                        <span className='w-full'>Department</span>
-                        <Select placeholder='Department' defaultSelectedKeys={[newData.department]} isLoading={isLoading} name='department' onChange={handleChange}>
-                          {jobData.department.map((dep) => (
-                            <SelectItem key={dep}>{dep}</SelectItem>
-                          ))}
-                        </Select>
-                      </div><hr />
-                      <div className='flex gap-5'>
-                        <span className='w-full'>Hire Date</span>
-                        <Input variant='bordered'  value={newData.hire_date} isDisabled/>
-                      </div><hr />
-                      <div className='flex gap-5'>
-                        <span className='w-full'>Compensation and Benefits</span>
-                      </div><hr />
-                      <div className='flex gap-5'>
-                        <span className='w-full'>Hire Date</span>
-                        <Input radius="sm"
-                            type="number"
-                            placeholder="00.00"
-                            label="Wage"
-                            name="wage"
-                            onChange={handleChange}
-                            value={newData.wage}
-                            startContent={
-                            <div className="pointer-events-none flex items-center">
-                                <span className="text-default-400 text-small">
-                                ₱
-                                </span>
-                            </div>
-                            }
-                        />
-                      </div><hr />
-                      <div className='flex gap-5'>
-                        <span className='w-full'>Compensation Basis</span>
-                        <Select placeholder='Basis' defaultSelectedKeys={[newData.basis]} isLoading={isLoading} name='basis' onChange={handleChange}>
-                          {jobData.compensation_basis.map(item => (
-                            <SelectItem key={item}>{item}</SelectItem>
-                          ))}
-                        </Select>
-                      </div><hr />
-                      <div className='flex gap-5'>
-                        <span className='w-full'>Frequency</span>
-                        <Select placeholder='Frequency' defaultSelectedKeys={[newData.frequency]} isLoading={isLoading} name='frequency' onChange={handleChange}>
-                          {jobData.frequency.map(item => (
-                            <SelectItem key={item}>{item}</SelectItem>
+                  {!isUser? (
+                    <Tab name="job" title="Job Details">
+                      <div className='flex flex-col gap-5'>
+                        <div className='flex gap-5'>
+                          <span className='w-full'>Job Title</span>
+                          <Select placeholder='Job title' defaultSelectedKeys={[newData.job_title]} isLoading={isLoading} name='job_title' onChange={handleChange}>
+                            {jobData.job_title.map((job) => (
+                              <SelectItem key={job}>{job}</SelectItem>
                             ))}
-                        </Select>
-                      </div><hr />
-                    </div>
-                  </Tab>
+                          </Select>
+                        </div><hr />
+                        <div className='flex gap-5'>
+                          <span className='w-full'>Department</span>
+                          <Select placeholder='Department' defaultSelectedKeys={[newData.department]} isLoading={isLoading} name='department' onChange={handleChange}>
+                            {jobData.department.map((dep) => (
+                              <SelectItem key={dep}>{dep}</SelectItem>
+                            ))}
+                          </Select>
+                        </div><hr />
+                        <div className='flex gap-5'>
+                          <span className='w-full'>Hire Date</span>
+                          <Input variant='bordered'  value={newData.hire_date} isDisabled/>
+                        </div><hr />
+                        <div className='flex gap-5'>
+                          <span className='w-full'>Compensation and Benefits</span>
+                        </div><hr />
+                        <div className='flex gap-5'>
+                          <span className='w-full'>Hire Date</span>
+                          <Input radius="sm"
+                              type="number"
+                              placeholder="00.00"
+                              label="Wage"
+                              name="wage"
+                              onChange={handleChange}
+                              value={newData.wage}
+                              startContent={
+                              <div className="pointer-events-none flex items-center">
+                                  <span className="text-default-400 text-small">
+                                  ₱
+                                  </span>
+                              </div>
+                              }
+                          />
+                        </div><hr />
+                        <div className='flex gap-5'>
+                          <span className='w-full'>Compensation Basis</span>
+                          <Select placeholder='Basis' defaultSelectedKeys={[newData.basis]} isLoading={isLoading} name='basis' onChange={handleChange}>
+                            {jobData.compensation_basis.map(item => (
+                              <SelectItem key={item}>{item}</SelectItem>
+                            ))}
+                          </Select>
+                        </div><hr />
+                        <div className='flex gap-5'>
+                          <span className='w-full'>Frequency</span>
+                          <Select placeholder='Frequency' defaultSelectedKeys={[newData.frequency]} isLoading={isLoading} name='frequency' onChange={handleChange}>
+                            {jobData.frequency.map(item => (
+                              <SelectItem key={item}>{item}</SelectItem>
+                              ))}
+                          </Select>
+                        </div><hr />
+                      </div>
+                    </Tab>
+                  ) : null}
                   <Tab name="attachment" title="Attachment">
                     <div>
                         <span>Legal Compliance and Audit</span>
@@ -400,16 +403,18 @@ export default function UpdateUser({user, refresh}) {
                         </div>
                     </div>
                   </Tab>
-                  <Tab name="role" title="System Role">
-                    <div className='flex gap-5'>
-                      <span className='w-full'>Role</span>
-                      <Select placeholder='system role' defaultSelectedKeys={[newData.role]} isLoading={isLoading} name='role' onChange={handleChange}>
-                        <SelectItem key="admin">System Admin</SelectItem>
-                        <SelectItem key="super admin">Admin</SelectItem>
-                        <SelectItem key="staff">Staff</SelectItem>
-                      </Select>
-                    </div>
-                  </Tab>
+                  {!isUser? (
+                    <Tab name="role" title="System Role">
+                      <div className='flex gap-5'>
+                        <span className='w-full'>Role</span>
+                        <Select placeholder='system role' defaultSelectedKeys={[newData.role]} isLoading={isLoading} name='role' onChange={handleChange}>
+                          <SelectItem key="admin">System Admin</SelectItem>
+                          <SelectItem key="super admin">Admin</SelectItem>
+                          <SelectItem key="staff">Staff</SelectItem>
+                        </Select>
+                      </div>
+                    </Tab>
+                  ):null}
                 </Tabs>
               </ModalBody>
               <ModalFooter>
