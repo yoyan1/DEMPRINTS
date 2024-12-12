@@ -34,8 +34,8 @@ export const useExpensesStore = create((set) => ({
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/collection/expenses`); 
         if (!response.ok) throw new Error('Network response was not ok');
         const data = await response.json();
-        // let descending = data.sort((a, b) => b.transaction_no - a.transaction_no);
-        set({ expenses: data, loading: false });
+        let descending = data.sort((a, b) => b.transaction_no - a.transaction_no);
+        set({ expenses: descending, loading: false });
         } catch (error) {
         set({ error: error.message, loading: false });
         }

@@ -351,7 +351,7 @@ export default function CreateTransaction({user, refresh}) {
 
   return (
     <>
-      <Button onPress={onOpen} className="bg-green-600 text-slate-200"><MdAdd/> sale</Button>
+      <Button onPress={onOpen} className="bg-green-600 text-slate-200" size="sm"><MdAdd/> sale</Button>
       <Modal 
         isOpen={isOpen} 
         onClose={onClose}

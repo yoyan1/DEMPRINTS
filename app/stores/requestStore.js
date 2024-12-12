@@ -10,15 +10,15 @@ export const useRequestStore = create((set) => ({
         const response = await axios.get(process.env.NEXT_PUBLIC_API_URL+"/users/requests");
         set({loading: false, error: response.data.msg, requestData: response.data.requests})
     },
-    accept: async (data) => {
+    acceptRequest: async (data) => {
         set({loading: true})
         const response = await axios.post(process.env.NEXT_PUBLIC_API_URL+"/users/acceptRequest", data);
         set({false: true})
         return response.data
     },
-    decline: async (id) => {
+    declineRequest: async (id) => {
         set({loading: true})
-        const response = await axios.post(process.env.NEXT_PUBLIC_API_URL+"/users/deleteRequests"+id);
+        const response = await axios.delete(process.env.NEXT_PUBLIC_API_URL+"/users/deleteRequests"+id);
         set({false: true})
         return response.data
     },

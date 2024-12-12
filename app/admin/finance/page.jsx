@@ -14,12 +14,14 @@ import { decodeToken } from '@/app/utils/decodeToken'
 import { paymentStore } from '../../stores/paymentStore';
 import { formattedNumber } from '@/app/composables/CurrencyFormat'
 import { useBalanceStore } from '../../stores/balanceStore';
+import axios from 'axios';
 
 
 export default function Sales() {
   const {columns, itemOptions, typeOptions, transactions, loading, fetchTransactions } = useSalesStore();
   const {categoryList, fetchExpensesCategory, expenses, fetchExpenses,} = useExpensesStore()
   const {options, fetchPayment} = paymentStore()
+  const [paymentSourceList, setPaymentSourceList] = useState([])
   const { loadBalance, balance, fetchBalance} = useBalanceStore()
   const [selectedKey, setSelectedKey] = useState("this month")
   const {date} = getDateAndTime()
@@ -34,6 +36,8 @@ export default function Sales() {
     setIsLoading(true)
     await fetchPayment()
     await fetchTransactions()
+    const responseOptions = await axios.get(process.env.NEXT_PUBLIC_API_URL+'/master/paymentSource')
+    setPaymentSourceList(responseOptions.data)
     await fetchExpenses()
     await fetchBalance()
     setIsLoading(false)
@@ -56,84 +60,101 @@ export default function Sales() {
 
 const dateParser = (dateString) => new Date(dateString);
   
-const filteredTransactions = useMemo(() => {
-    const now = new Date();
-    const year = now.getFullYear()
-    if(selectedKey === 'this year'){
-        const filterByYear = transactions.filter(sale => dateParser(sale.date).getFullYear() === year);
-        return filterByYear
-    } 
-    else if (selectedKey === 'this month'){
-        const currentYear = now.getFullYear();
-        const currentMonth = now.getMonth(); 
-        const filterByCurrentMonth = transactions.filter(sale => {
-                const saleDate = dateParser(sale.date);
-                return saleDate.getFullYear() === currentYear && saleDate.getMonth() === currentMonth;
-            });
+// const filteredTransactions = useMemo(() => {
+//     const now = new Date();
+//     const year = now.getFullYear()
+//     if(selectedKey === 'this year'){
+//         const filterByYear = transactions.filter(sale => dateParser(sale.date).getFullYear() === year);
+//         return filterByYear
+//     } 
+//     else if (selectedKey === 'this month'){
+//         const currentYear = now.getFullYear();
+//         const currentMonth = now.getMonth(); 
+//         const filterByCurrentMonth = transactions.filter(sale => {
+//                 const saleDate = dateParser(sale.date);
+//                 return saleDate.getFullYear() === currentYear && saleDate.getMonth() === currentMonth;
+//             });
 
-        return filterByCurrentMonth
-    }else if (selectedKey === 'date range'){
-        const start = new Date(value.start);
-        const end = new Date(value.end);
-        const filterByDateRange = transactions.filter(sales => {
-                const salesDate = new Date(sales.date);
-                  return salesDate >= start && salesDate <= end;;
-            });
+//         return filterByCurrentMonth
+//     }else if (selectedKey === 'date range'){
+//         const start = new Date(value.start);
+//         const end = new Date(value.end);
+//         const filterByDateRange = transactions.filter(sales => {
+//                 const salesDate = new Date(sales.date);
+//                   return salesDate >= start && salesDate <= end;;
+//             });
 
-        return filterByDateRange
-    } else{
-        return transactions
-    }
+//         return filterByDateRange
+//     } else{
+//         return transactions
+//     }
 
-}, [transactions, selectedKey, value.start, value.end]);
+// }, [transactions, selectedKey, value.start, value.end]);
 
-const filteredexpenses = useMemo(() => {
-    const now = new Date();
-    const year = now.getFullYear()
-    if(selectedKey === 'this year'){
-        const filterByYear = expenses.filter(expense => dateParser(expense.date).getFullYear() === year);
-        return filterByYear
-    } 
-    else if (selectedKey === 'this month'){
-        const currentYear = now.getFullYear();
-        const currentMonth = now.getMonth(); 
-        const filterByCurrentMonth = expenses.filter(expense => {
-                const expenseDate = dateParser(expense.date);
-                return expenseDate.getFullYear() === currentYear && expenseDate.getMonth() === currentMonth;
-            });
+// const filteredexpenses = useMemo(() => {
+//     const now = new Date();
+//     const year = now.getFullYear()
+//     if(selectedKey === 'this year'){
+//         const filterByYear = expenses.filter(expense => dateParser(expense.date).getFullYear() === year);
+//         return filterByYear
+//     } 
+//     else if (selectedKey === 'this month'){
+//         const currentYear = now.getFullYear();
+//         const currentMonth = now.getMonth(); 
+//         const filterByCurrentMonth = expenses.filter(expense => {
+//                 const expenseDate = dateParser(expense.date);
+//                 return expenseDate.getFullYear() === currentYear && expenseDate.getMonth() === currentMonth;
+//             });
 
-        return filterByCurrentMonth
-    }
-    else if (selectedKey === 'date range'){
-        const start = new Date(value.start);
-        const end = new Date(value.end);
-        const filterByDateRange = expenses.filter(expense => {
-                const expenseDate = new Date(expense.date);
-                  return expenseDate >= start && expenseDate <= end;;
-            });
+//         return filterByCurrentMonth
+//     }
+//     else if (selectedKey === 'date range'){
+//         const start = new Date(value.start);
+//         const end = new Date(value.end);
+//         const filterByDateRange = expenses.filter(expense => {
+//                 const expenseDate = new Date(expense.date);
+//                   return expenseDate >= start && expenseDate <= end;;
+//             });
 
-        return filterByDateRange
-    } else{
-        return expenses
-    }
+//         return filterByDateRange
+//     } else{
+//         return expenses
+//     }
 
-}, [expenses, selectedKey, value.start, value.end]);
+// }, [expenses, selectedKey, value.start, value.end]);
 
 const groupSalesByDay = useMemo(() => {
-    const salesByDay = filteredTransactions.reduce((acc, sale) => {
+    const salesByDay = transactions.reduce((acc, sale) => {
         const date = sale.date; 
         if (!acc[date]) {
-            acc[date] = { totalSales: 0, totalExpenses: 0 };
+            acc[date] = { totalSales: 0, totalExpenses: 0, payment_source: {}, sales_source: {} };
         }
+        
+        options.map((row) => {
+          const newName = row.name.replace(/([a-z])([A-Z])/g, '$1_$2') .replace(/\s+/g, '_').replace(/-+/g, '_').toLowerCase();
+          acc[date].sales_source[newName] = acc[date].sales_source[newName] || 0
+          if(row.name === sale.payment_options)
+          acc[date].sales_source[newName] = (acc[date].sales_source[newName] || 0) + sale.amount_paid;    
+        });
         acc[date].totalSales += sale.amount_paid;
+        paymentSourceList.map((row) => {
+          const newName = row.name.replace(/([a-z])([A-Z])/g, '$1_$2') .replace(/\s+/g, '_').replace(/-+/g, '_').toLowerCase();
+          acc[date].payment_source[newName] = acc[date].payment_source[newName] || 0
+        });
         return acc;
     }, {});
 
-    const expensesByDay = filteredexpenses.reduce((acc, expense) => {
+    const expensesByDay = expenses.reduce((acc, expense) => {
         const date = expense.date; 
         if (!acc[date]) {
-            acc[date] = { totalSales: 0, totalExpenses: 0 };
+          acc[date] = { totalSales: 0, totalExpenses: 0, payment_source: {} };
         }
+        paymentSourceList.map((row) => {
+          const newName = row.name.replace(/([a-z])([A-Z])/g, '$1_$2') .replace(/\s+/g, '_').replace(/-+/g, '_').toLowerCase();
+          acc[date].payment_source[newName] = acc[date].payment_source[newName] || 0
+          if(row.name === expense.payment_source)
+          acc[date].payment_source[newName] = (acc[date].payment_source[newName] || 0) + expense.total;    
+        });
         acc[date].totalExpenses += expense.total;
         return acc;
     }, {});
@@ -141,14 +162,19 @@ const groupSalesByDay = useMemo(() => {
     const combinedData = { ...salesByDay };
     Object.keys(expensesByDay).forEach((date) => {
         if (!combinedData[date]) {
-            combinedData[date] = { totalSales: 0, totalExpenses: 0 };
+            combinedData[date] = { totalSales: 0, totalExpenses: 0, payment_source: {}, sales_source: {} };
+            options.map((row) => {
+              const newName = row.name.replace(/([a-z])([A-Z])/g, '$1_$2') .replace(/\s+/g, '_').replace(/-+/g, '_').toLowerCase();
+              combinedData[date].sales_source[newName] =  0
+            });
         }
         combinedData[date].totalExpenses += expensesByDay[date].totalExpenses;
+        combinedData[date].payment_source = {...expensesByDay[date].payment_source}
     });
-
+    
     return combinedData;
     
-}, [filteredTransactions, filteredexpenses]);
+}, [transactions, expenses, paymentSourceList]);
 
 const getTotal = (combinedData) => {
     return Object.entries(combinedData).reduce(
@@ -157,7 +183,7 @@ const getTotal = (combinedData) => {
             acc.totalExpenses += data.totalExpenses;
         return acc;
       },
-      { totalSales: 0, totalExpenses: 0,}
+      { totalSales: 0, totalExpenses: 0,  }
     );
   };
 
@@ -167,15 +193,225 @@ const getTotal = (combinedData) => {
 
   const { totalSales, totalExpenses} = totals
 
-  const totalBalance = useMemo(() => {
-     let total_bal = 0
-     balance.map((row) => {
-      total_bal = +row.amount
-     })
+  const balanceData = useMemo(() => {
+    return balance.reduce(
+      (acc, item) => {
+        acc.totalBalance += item.amount;
+        paymentSourceList.forEach((row) => {
+          const newName = row.name.replace(/([a-z])([A-Z])/g, '$1_$2') .replace(/\s+/g, '_').replace(/-+/g, '_').toLowerCase();
+          if(row.name.toLowerCase().includes(item.type.toLowerCase()))
+          acc[newName] = (acc[newName] || 0) + item.amount;
+        });
+        return acc
+      },
+      {totalBalance: 0}
+     )
 
-     return total_bal
-  }, [balance])
+  }, [balance, paymentSourceList])
 
+
+  const {totalBalance, ...saleSourceType} = balanceData
+
+  const sortedPaymentSourceList = paymentSourceList.sort((a, b) => a.name - b.name)
+  const sortedOptionsList = options.sort((a, b) => a.name - b.name)
+
+  const financeData = useMemo(()=> {
+    let fixedData = []
+    let newData = [{
+      prevBalance: 0,
+      endBalance:  0
+    }]
+
+    let index = 0
+    // const sortedGroup = groupSalesByDay.sort(([a, b]) => a.date - b.date ))
+    Object.entries(groupSalesByDay).map(([date, data]) => {
+      fixedData.push({
+        date,
+        totalSales: data.totalSales,
+        sales_source: data.sales_source,
+        payment_source: data.payment_source,
+        totalExpenses: data.totalExpenses
+      })
+    })
+
+    const sortedData = fixedData.sort((a, b) => new Date(a.date) - new Date(b.date))
+    
+    sortedData.map((data) => {
+
+      if(index > 0){
+        const newPrevBal = newData[index-1].endBalance 
+        const net = data.totalSales - data.totalExpenses
+        let combined = {
+          date: data.date,
+          totalSales: data.totalSales,
+          totalExpenses: data.totalExpenses,
+          net: data.totalSales - data.totalExpenses,
+          sales_source: data.sales_source,
+          payment_source: data.payment_source,
+          prev_source_balance: {},
+          prevBalance: newData[index-1].endBalance,
+          end_source_balance: {},
+          endBalance:  newPrevBal + net
+        }
+
+        if(sortedPaymentSourceList.length > 0 && sortedOptionsList.length > 0) {
+          const netBalanceFromSource = sortedOptionsList.reduce((acc, item) => {
+            const optionName = item.name
+              .replace(/([a-z])([A-Z])/g, '$1_$2')
+              .replace(/\s+/g, '_')
+              .replace(/-+/g, '_')
+              .toLowerCase();
+          
+            let matched = false; 
+            sortedPaymentSourceList.map((row) => {
+              const newName = row.name
+                .replace(/([a-z])([A-Z])/g, '$1_$2')
+                .replace(/\s+/g, '_')
+                .replace(/-+/g, '_')
+                .toLowerCase();
+          
+              acc[newName] = acc[newName] || 0; 
+          
+              const itemName =
+                item.name.toLowerCase() === 'cash'
+                  ? ['cash in the box', 'cash in box']
+                  : [item.name.toLowerCase()];
+          
+              if (itemName.includes(row.name.toLowerCase())) {
+                matched = true; 
+                const total =
+                  newData[index - 1].sales_source[optionName] -
+                  newData[index - 1].payment_source[newName] +
+                  saleSourceType[newName];
+                acc[newName] = total;
+              }
+            });
+          
+            if (!matched) {
+              acc.others = (acc.others || 0) + newData[index - 1].sales_source[optionName];
+            }
+          
+            return acc;
+          }, {});
+          
+
+            if(netBalanceFromSource){
+              const netBalanceFromSourceToday = sortedOptionsList.reduce((acc, item) => {
+                const optionName = item.name
+                  .replace(/([a-z])([A-Z])/g, '$1_$2')
+                  .replace(/\s+/g, '_')
+                  .replace(/-+/g, '_')
+                  .toLowerCase();
+              
+                let matched = false; 
+                sortedPaymentSourceList.forEach((row) => {
+                  const newName = row.name
+                    .replace(/([a-z])([A-Z])/g, '$1_$2')
+                    .replace(/\s+/g, '_')
+                    .replace(/-+/g, '_')
+                    .toLowerCase();
+              
+                  acc[newName] = acc[newName] || 0; 
+              
+                  const aliases = {
+                    cash: ['cash in the box', 'cash in box'],
+                    gcash: ['gcash'],
+                  };
+                  
+                  const itemName = aliases[item.name.toLowerCase()] || [item.name.toLowerCase()];
+              
+                  if (itemName.includes(row.name.toLowerCase())) {
+                    matched = true; 
+                    const total =
+                      data.sales_source[optionName] -
+                      data.payment_source[newName] +
+                      (netBalanceFromSource[newName] || 0); 
+                    acc[newName] = total;
+                  }
+                });
+              
+                if (optionName === 'fee') {
+                  acc.others += data.sales_source[optionName] + netBalanceFromSource.others;
+                }
+              
+                return acc;
+              }, {});
+              
+
+              newData.push({...combined, prev_source_balance: {...netBalanceFromSource}, end_source_balance: netBalanceFromSourceToday,})
+            }
+        }
+        
+      } else{
+        const netBalanceFromSourceToday =  sortedOptionsList.reduce(
+          (acc, item) => {
+            const optionName = item.name.replace(/([a-z])([A-Z])/g, '$1_$2') .replace(/\s+/g, '_').replace(/-+/g, '_').toLowerCase();
+            paymentSourceList.map((row) => {
+              const newName = row.name.replace(/([a-z])([A-Z])/g, '$1_$2') .replace(/\s+/g, '_').replace(/-+/g, '_').toLowerCase();
+              acc[newName] = (acc[newName] || 0)
+              if(row.name.toLowerCase().includes(item.name.toLowerCase())){
+                const total = data.sales_source[optionName] - data.payment_source[newName] + saleSourceType[newName] 
+                acc[newName] = total
+              }
+            })
+
+            if (optionName === 'fee') {
+              acc.others += data.sales_source[optionName];
+            }
+            return acc
+          }, {}
+        )
+        newData = [{
+          date: data.date,
+          totalSales: data.totalSales,
+          totalExpenses: data.totalExpenses,
+          net: data.totalSales - data.totalExpenses,
+          sales_source: data.sales_source,
+          payment_source: data.payment_source,
+          prev_source_balance: saleSourceType,
+          prevBalance: totalBalance,
+          end_source_balance: netBalanceFromSourceToday,
+          endBalance: totalBalance + (data.totalSales - data.totalExpenses), 
+        }]
+      }
+      index++
+      
+    })
+
+    return newData
+  }, [groupSalesByDay, totalBalance, saleSourceType, sortedOptionsList, sortedPaymentSourceList])
+
+const filteredData = useMemo(() => {
+    const now = new Date();
+    const year = now.getFullYear()
+    if(selectedKey === 'this year'){
+        const filterByYear = financeData.filter(finance => dateParser(finance.date).getFullYear() === year);
+        return filterByYear
+    } 
+    else if (selectedKey === 'this month'){
+        const currentYear = now.getFullYear();
+        const currentMonth = now.getMonth(); 
+        const filterByCurrentMonth = financeData.filter(finance => {
+                const financeDate = dateParser(finance.date);
+                return financeDate.getFullYear() === currentYear && financeDate.getMonth() === currentMonth;
+            });
+
+        return filterByCurrentMonth
+    }
+    else if (selectedKey === 'date range'){
+        const start = new Date(value.start);
+        const end = new Date(value.end);
+        const filterByDateRange = financeData.filter(finance => {
+                const financeDate = new Date(finance.date);
+                  return financeDate >= start && financeDate <= end;;
+            });
+
+        return filterByDateRange
+    } else{
+        return financeData
+    }
+
+}, [financeData, selectedKey, value.start, value.end]);
   return (
     <AdminLayout>
         <main className="flex flex-1 rounded-md flex-col gap-4 m-4 lg:gap-6 lg:m-6">
@@ -230,7 +466,7 @@ const getTotal = (combinedData) => {
                       ): null}
                     </div>
                       <div className='flex flex-col items-start gap-2'>
-                        <span className='font-sans font-semibold text-slate-100'>Net: <span>₱ {formattedNumber(totalSales - totalExpenses)}</span></span>
+                        <span className='font-sans font-semibold text-slate-100'>Balance: <span>₱ {formattedNumber(totalBalance + (totalSales - totalExpenses))}</span></span>
                         {/* {selectedKey === 'today'? (
                           <span className='text-slate-200 text-md font-bold'>₱{ formattedNumber(totalSalesToday) }</span>
                         ) : selectedKey === 'date range'? (
@@ -266,7 +502,7 @@ const getTotal = (combinedData) => {
               </div>
             </div>
             <div className='bg-white dark:bg-gray-900 rounded-lg p-5'>
-              <FinanceTable combinedData={groupSalesByDay} loading={isLoading} totalBalance={totalBalance} done={loadData}/>
+              <FinanceTable financeData={filteredData} loading={isLoading} totalBalance={totalBalance} paymentSourceList={sortedPaymentSourceList} options={sortedOptionsList} done={loadData}/>
             </div>
           </div>
         </main>

@@ -71,7 +71,7 @@ export default function Revenue(props) {
       expenses: monthlyExpenses[index],
     }));
   
-    if (newChartData[10].sales > 0 || newChartData[10].expenses > 0) {
+    if (newChartData[11].sales > 0 || newChartData[11].expenses > 0) {
       setChartData(newChartData);
     }
   };

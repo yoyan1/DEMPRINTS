@@ -1,53 +1,43 @@
 "use client"
 import React, { useEffect, useMemo, useState } from "react";
-import {Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Spinner} from "@nextui-org/react";
+import {Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Spinner, Button} from "@nextui-org/react";
 import { formatDate, formatTime } from "@/app/composables/formateDateAndTime";
 import { formattedNumber } from "@/app/composables/CurrencyFormat"
 import CreateOrUpdate from "./CreateOrUpdateBalance";
+import ViewReport from "./ViewReport"
+import { FaSync } from "react-icons/fa";
 
-export default function FinanceTable({combinedData, loading, totalBalance, done}) {
-  const financeData = useMemo(()=> {
-    let newData = [{
-      prevBalance: 0,
-      endBalance:  0
-    }]
-
-    let index = 0
-    Object.entries(combinedData).map(([date, data]) => {
-      if(index > 0){
-        const newPrevBal = newData[index-1].endBalance 
-        const net = data.totalSales - data.totalExpenses
-        newData.push({
-          date,
-          totalSales: data.totalSales,
-          totalExpenses: data.totalExpenses,
-          net: data.totalSales - data.totalExpenses ,
-          prevBalance: newData[index-1].endBalance,
-          endBalance:  newPrevBal + net
-        })
-      } else{
-        newData = [{
-          date,
-          totalSales: data.totalSales,
-          totalExpenses: data.totalExpenses,
-          net: data.totalSales - data.totalExpenses,
-          prevBalance: totalBalance,
-          endBalance: totalBalance + (data.totalSales - data.totalExpenses), 
-        }]
-      }
-      index++
-      
-    })
-
-    return newData
-  }, [combinedData])
+export default function FinanceTable({financeData, loading, paymentSourceList, options, done}) {
+  console.log(financeData)
+  const sortedFinanceDescending = financeData.sort((a, b) => new Date(b.date) - new Date(a.date))
   return (
     <div>
-      <div className="p-3 flex justify-start">
-        <CreateOrUpdate />
+      <div className="py-3 flex justify-between">
+        <CreateOrUpdate done={done}/>
+        <div className="flex gap-5">
+          <ViewReport financeData={financeData} loading={loading} paymentSourceList={paymentSourceList} options={options} done={done}/>
+          <Button isIconOnly color="success" onPress={done} size='sm'><FaSync className="w-4 h-4 text-white"/></Button>
+        </div>
       </div>
-      <Table removeWrapper aria-label="Example static collection table">
-        <TableHeader>
+      <Table isHeaderSticky isCompact removeWrapper aria-label="Example static collection table" classNames={()=> ({
+        wrapper: ["max-h-[382px]", "max-w-3xl"],
+        th: ["bg-transparent", "text-default-500", "border-b", "border-divider", "w-96"],
+        td: [
+          // changing the rows border radius
+          // first
+          "group-data-[first=true]:first:before:rounded-none",
+          "group-data-[first=true]:last:before:rounded-none",
+          // middle
+          "group-data-[middle=true]:before:rounded-none",
+          // last
+          "group-data-[last=true]:first:before:rounded-none",
+          "group-data-[last=true]:last:before:rounded-none",
+        ],
+      })}>
+        <TableHeader 
+            classNames={{
+                th: "bg-blue-300 text-dark"
+            }}>
           <TableColumn>DATE</TableColumn>
           <TableColumn>Beggining Balance</TableColumn>
           <TableColumn>SALES</TableColumn>
@@ -56,7 +46,7 @@ export default function FinanceTable({combinedData, loading, totalBalance, done}
           <TableColumn>End day Balance</TableColumn>
         </TableHeader>
         <TableBody isLoading={loading} loadingContent={<Spinner label="Loading..." />}>
-              {financeData.map((data) => (
+              {sortedFinanceDescending.map((data) => (
                   <TableRow key={data.date}>
                       <TableCell>{formatDate(data.date)}</TableCell>
                       <TableCell>₱ {formattedNumber(data.prevBalance)}</TableCell>

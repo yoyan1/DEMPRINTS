@@ -26,6 +26,7 @@ export default function Scann({ onSucess }) {
   const router = useRouter();
   const [user, setUser] = useState({ name: '', id: '', role: '' });
   const [errorMessage, setErrorMessage] = useState('');
+  const [succesMessage, setSuccessMessage] = useState('');
   const [datee, setDate] = useState('');
   // const { date, time } = getDateAndTime();
   const [log_data, setLogData] = useState({
@@ -101,30 +102,114 @@ export default function Scann({ onSucess }) {
     }
   };
 
+  // let scanStop = false;
+  // const handleScanSuccess = async (result) => {
+  //   const findStaff = users.find((user) => user.id === result);
+
+  //   if (findStaff) {
+  //     console.log('User is found', findStaff);
+
+  //     try {
+  //       const { date, time } = getDateAndTime();
+
+  //       const existingRecord = timeinOut.find(
+  //         (entry) =>
+  //           entry.status === 'time-in' &&
+  //           entry.date === date &&
+  //           entry.employeeID === findStaff.id,
+  //       );
+
+  //       if (existingRecord) {
+  //         const responseUpdate = await axios.put(
+  //           `http://localhost:5000/api/collection/hristimeout/${existingRecord._id}`,
+  //           {
+  //             timeout: time,
+  //             status: 'time-out',
+  //           },
+  //         );
+  //         console.log('Timeout updated:', responseUpdate.data);
+  //         setLogData(responseUpdate.data);
+  //         onSucess('success');
+  //       } else {
+  //         const responseScann = await axios.post(
+  //           `http://localhost:5000/api/collection/hris`,
+  //           {
+  //             date: date,
+  //             timein: time,
+  //             timeout: '',
+  //             status: 'time-in',
+  //             overtime: '',
+  //             employeeID: findStaff.id,
+  //           },
+  //         );
+  //         console.log('Time-in recorded:', responseScann.data);
+  //         setLogData(responseScann.data);
+  //         onSucess('success');
+
+  //         scanStop = true;
+  //         setTimeout(() => {
+  //           scanStop = false;
+  //         }, 30000);
+  //       }
+  //     } catch (error) {
+  //       console.error('Error processing scan:', error);
+  //     }
+  //   } else {
+  //     console.warn('User not found');
+  //   }
+  // };
+
+  let scanStop = false;
   const handleScanSuccess = async (result) => {
     const findStaff = users.find((user) => user.id === result);
 
     if (findStaff) {
       console.log('User is found', findStaff);
+
       try {
         const { date, time } = getDateAndTime();
+
         const existingRecord = timeinOut.find(
-          (entry) => entry.employeeID = findStaff.id && entry.status !== 'time-out' ,
+          (entry) =>
+            entry.status === 'time-in' &&
+            entry.date === date &&
+            entry.employeeID === findStaff.id,
         );
+
+        const latestRecord = timeinOut.find(
+          (entry) =>
+            entry.status === 'time-out' &&
+            entry.date === date &&
+            entry.employeeID === findStaff.id,
+        );
+
         if (existingRecord) {
           const responseUpdate = await axios.put(
-            `http://localhost:5000/api/collection/hristimeout/${existingRecord.id}`,
+            `http://localhost:5000/api/collection/hristimeout/${existingRecord._id}`,
             {
-             
               timeout: time,
               status: 'time-out',
             },
           );
           console.log('Timeout updated:', responseUpdate.data);
           setLogData(responseUpdate.data);
-
           onSucess('success');
-        } else {
+        } else if (latestRecord) {
+          const overtimeResponse = await axios.put(
+            `http://localhost:5000/api/collection/hrisOvertime/${latestRecord._id}`,
+            {
+              overtime: time,
+            },
+          );
+          console.log('Overtime updated:', overtimeResponse.data);
+          setLogData(overtimeResponse.data);
+          onSucess('success');
+
+          scanStop = true;
+          setTimeout(() => {
+            scanStop = false;
+          }, 30000);
+        } else if(latestRecord.overtime) {
           const responseScann = await axios.post(
             `http://localhost:5000/api/collection/hris`,
             {
@@ -132,16 +217,24 @@ export default function Scann({ onSucess }) {
               timein: time,
               timeout: '',
               status: 'time-in',
+              overtime: '',
               employeeID: findStaff.id,
             },
           );
           console.log('Time-in recorded:', responseScann.data);
           setLogData(responseScann.data);
-
           onSucess('success');
+
+          scanStop = true;
+          setTimeout(() => {
+            scanStop = false;
+          }, 30000);
+        }else{
+          console.log('sorry');
+          
         }
       } catch (error) {
-        console.log(error);
+        console.error('Error processing scan:', error);
       }
     } else {
       console.warn('User not found');
@@ -203,7 +296,12 @@ export default function Scann({ onSucess }) {
 
                   {errorMessage && (
                     <div>
-                      <span className="text-red">{errorMessage}</span>
+                      <span className="text-red ">{errorMessage}</span>
+                    </div>
+                  )}
+                  {succesMessage && (
+                    <div>
+                      <span className="text-green">{succesMessage}</span>
                     </div>
                   )}
                   {datee && (

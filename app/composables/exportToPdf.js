@@ -29,7 +29,7 @@ const PdfExport = (data) => {
 
   return (
     <div>
-        <Button  className="bg-blue-900 text-slate-200" endContent={<BiExport />} onPress={exportToPDF}>  Export</Button>
+        <Button  className="bg-blue-900 text-slate-200" size="sm" endContent={<BiExport />} onPress={exportToPDF}>  Export</Button>
     </div>
   );
 };

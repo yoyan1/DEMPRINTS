@@ -7,6 +7,7 @@ import { CiMail } from "react-icons/ci";
 import axios from 'axios';
 import { useUserStore } from '../../../stores/userStore';
 import { UploadImage } from '@/app/composables/uploadImage'
+import ViewImage from './Image';
 
 export default function UpdateUser({user, refresh}) {
   const {isOpen, onOpen, onClose} = useDisclosure();
@@ -100,7 +101,7 @@ export default function UpdateUser({user, refresh}) {
                 <div>
                 <Avatar className="w-20 h-20" isLoading={isLoading}>
                   {user.imageUrl? (
-                    <AvatarImage src={user.imageUrl} />
+                    <ViewImage imageUrl={user.imageUrl} image={<AvatarImage src={user.imageUrl} />}/>
                   ) : (
                     <AvatarImage src={user.gender === 'male'? '/male-avatar.png' : '/female-avatar.png' } />
                   )}
@@ -135,9 +136,9 @@ export default function UpdateUser({user, refresh}) {
                   <span>Profile photo</span>
                   <Avatar className="w-20 h-20">
                     {image? (
-                      <AvatarImage src={image} />
+                      <ViewImage imageUrl={image} image={<AvatarImage src={image} />}/>
                     ) : user.imageUrl? (
-                      <AvatarImage src={user.imageUrl} />
+                      <ViewImage imageUrl={user.imageUrl} image={<AvatarImage src={user.imageUrl} />}/>
                     ): (
                       <AvatarImage src={user.gender === 'male'? '/male-avatar.png' : '/female-avatar.png' } />
                     )}
