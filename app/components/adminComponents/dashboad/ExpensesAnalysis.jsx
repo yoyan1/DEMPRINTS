@@ -17,7 +17,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/app/components/ui/chart"
-import { useEffect, useState } from "react"
+import { useEffect, useState, useMemo } from "react"
 
 
 const chartConfig = {
@@ -45,10 +45,24 @@ export default function Component(props) {
     { month: "December", expenses: 0 },
   ])
 
+  const dateParser = (dateString) => new Date(dateString);
+  const filteredExpenses = useMemo(() => {
+      const now = new Date();
+      const currentYear = now.getFullYear();
+      
+      const filterByCurrentMonth = props.expenses.filter(expense => {
+          const expenseDate = dateParser(expense.date);
+          return expenseDate.getFullYear() === currentYear;
+      });
+  
+      return filterByCurrentMonth
+  
+    }, [props.expenses])
+
   const getData = () => {
     const monthlyExpenses = Array(12).fill(0);
 
-    props.expenses.forEach(item => {
+    filteredExpenses.forEach(item => {
       const [year, month] = item.date.split('-');
       const monthIndex = parseInt(month, 10) - 1; 
       monthlyExpenses[monthIndex] += item.total; 
