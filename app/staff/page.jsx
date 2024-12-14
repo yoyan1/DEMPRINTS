@@ -42,10 +42,10 @@ import AllTransaction from './component/showAllTable';
 import { parseDate, getLocalTimeZone } from '@internationalized/date';
 import { getDateAndTime } from '@/app/composables/dateAndTime';
 import { formattedNumber } from '@/app/composables/CurrencyFormat';
-import { FaRegCircleXmark } from 'react-icons/fa6';
+// import { FaRegCircleXmark } from 'react-icons/fa6';
 import { IoMdCloseCircle } from 'react-icons/io';
 import { formatDate } from '../composables/formateDateAndTime';
-import { isNonNullExpression } from 'typescript';
+// import { isNonNullExpression } from 'typescript';
 
 // import { formatDate, formatTime } from "../../composables/formateDateAndTime";
 

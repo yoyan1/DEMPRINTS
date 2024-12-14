@@ -63,7 +63,7 @@ export default function Scann({ onSucess }) {
   }, [router]);
 
   useEffect(() => {
-    getimeInOutData();
+    // getimeInOutData();
 
     if (isOpen) {
       const readerElement = document.getElementById('reader');
@@ -91,16 +91,16 @@ export default function Scann({ onSucess }) {
     }
   }, [isOpen]);
 
-  const getimeInOutData = async () => {
-    try {
-      const responesTimeInout = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/collection/getTimeinOut`,
-      );
-      setTimeinOut(responesTimeInout.data);
-    } catch (error) {
-      console.log('Faild to fetch', error);
-    }
-  };
+  // const getimeInOutData = async () => {
+  //   try {
+  //     const responesTimeInout = await axios.get(
+  //       `${process.env.NEXT_PUBLIC_API_URL}/collection/getTimeinOut`,
+  //     );
+  //     setTimeinOut(responesTimeInout.data);
+  //   } catch (error) {
+  //     console.log('Faild to fetch', error);
+  //   }
+  // };
 
   let scanStop = false;
   const handleScanSuccess = async (result) => {

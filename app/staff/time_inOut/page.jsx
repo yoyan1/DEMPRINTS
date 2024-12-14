@@ -50,8 +50,7 @@ export default function HRIS() {
 
   const getTimeInOutData = async () => {
     try {
-      const responseTimeInOut = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/collection/getTimeinOut`
+      const responseTimeInOut = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/collection/getTimeinOut`
       );
       let descending = responseTimeInOut.data.sort((a, b) => new Date(b.date) - new Date(a.date));
       setTimeinOut(descending);
