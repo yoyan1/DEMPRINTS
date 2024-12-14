@@ -18,7 +18,6 @@ import { useUserStore } from '@/app/stores/userStore';
 import { getDateAndTime } from '../../composables/dateAndTime';
 import axios from 'axios';
 // import { NextResponse } from 'next/server';
-import useAudio from './sound';
 
 export default function Scann({ onSucess }) {
   const [scanResult, setScanResult] = useState(null);
@@ -64,7 +63,7 @@ export default function Scann({ onSucess }) {
   }, [router]);
 
   useEffect(() => {
-    // getimeInOutData();
+    getimeInOutData();
 
     if (isOpen) {
       const readerElement = document.getElementById('reader');
@@ -92,26 +91,20 @@ export default function Scann({ onSucess }) {
     }
   }, [isOpen]);
 
-  // const getimeInOutData = async () => {
-  //   try {
-  //     const responesTimeInout = await axios.get(
-  //       `${process.env.NEXT_PUBLIC_API_URL}/collection/getTimeinOut`,
-  //     );
-  //     setTimeinOut(responesTimeInout.data);
-  //   } catch (error) {
-  //     console.log('Faild to fetch', error);
-  //   }
-  // };
-
-  const playScanSound = () => {
-    const audio = new Audio('/beep.mp3'); // Path to the file in public folder
-    audio.play();
+  const getimeInOutData = async () => {
+    try {
+      const responesTimeInout = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/collection/getHRIStimeinOut`,
+      );
+      setTimeinOut(responesTimeInout.data);
+    } catch (error) {
+      console.log('Faild to fetch', error);
+    }
   };
 
   let scanStop = false;
   const handleScanSuccess = async (result) => {
     const findStaff = users.find((user) => user.id === result);
-    playScanSound();
 
     if (findStaff) {
       console.log('User is found', findStaff);
@@ -119,6 +112,7 @@ export default function Scann({ onSucess }) {
       try {
         const { date, time } = getDateAndTime();
 
+        
         const existingRecord = timeinOut.find(
           (entry) =>
             entry.status === 'time-in' &&
@@ -127,35 +121,38 @@ export default function Scann({ onSucess }) {
         );
 
         if (existingRecord) {
+          // If record exists, update with "time-out"
           const responseUpdate = await axios.put(
             `${process.env.NEXT_PUBLIC_API_URL}/collection/hristimeout/${existingRecord._id}`,
             {
-              timeout: time,
-              status: 'time-out',
+              timeout: time, // Record time-out
+              status: 'time-out', // Update status to "time-out"
             },
           );
           console.log('Timeout updated:', responseUpdate.data);
+
+          // Update local state with new data
           setLogData(responseUpdate.data);
-          onSucess('success');
-          scanStop = true;
-          setTimeout(() => {
-            scanStop = false;
-          }, 30000);
+          onSucess('Timeout recorded successfully');
         } else {
+          // If no existing record, create a new "time-in" entry
           const responseScann = await axios.post(
             `${process.env.NEXT_PUBLIC_API_URL}/collection/hris`,
             {
-              date: date,
-              timein: time,
-              timeout: '',
-              status: 'time-in',
-              employeeID: findStaff.id,
+              date: date, // Today's date
+              timein: time, // Time-in value
+              timeout: '', // Leave time-out empty
+              status: 'time-in', // Set status to "time-in"
+              employeeID: findStaff.id, // Assign to user
             },
           );
-
           console.log('Time-in recorded:', responseScann.data);
+
+          // Update local state with new data
           setLogData(responseScann.data);
-          onSucess('success');
+          onSucess('Time-in recorded successfully');
+
+          // Prevent scanning for 30 seconds
           scanStop = true;
           setTimeout(() => {
             scanStop = false;
@@ -163,9 +160,13 @@ export default function Scann({ onSucess }) {
         }
       } catch (error) {
         console.error('Error processing scan:', error);
+        onSucess(
+          'An error occurred while processing the scan. Please try again.',
+        );
       }
     } else {
       console.warn('User not found');
+      onSucess('User not found. Please try again.');
     }
   };
 
