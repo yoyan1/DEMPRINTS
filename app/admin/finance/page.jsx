@@ -177,8 +177,8 @@ const groupSalesByDay = useMemo(() => {
 }, [transactions, expenses, paymentSourceList]);
 
 const getTotal = (combinedData) => {
-    return Object.entries(combinedData).reduce(
-      (acc, [date, data]) => {
+    return combinedData.reduce(
+      (acc, data) => {
             acc.totalSales += data.totalSales;
             acc.totalExpenses += data.totalExpenses;
         return acc;
@@ -186,12 +186,6 @@ const getTotal = (combinedData) => {
       { totalSales: 0, totalExpenses: 0,  }
     );
   };
-
-  const totals = useMemo(() => {
-    return getTotal(groupSalesByDay);
-  }, [groupSalesByDay]);
-
-  const { totalSales, totalExpenses} = totals
 
   const balanceData = useMemo(() => {
     return balance.reduce(
@@ -334,6 +328,12 @@ const filteredData = useMemo(() => {
     }
 
 }, [financeData, selectedKey, value.start, value.end]);
+
+const totals = useMemo(() => {
+  return getTotal(filteredData);
+}, [filteredData]);
+
+const { totalSales, totalExpenses} = totals
   return (
     <AdminLayout>
         <main className="flex flex-1 rounded-md flex-col gap-4 m-4 lg:gap-6 lg:m-6">

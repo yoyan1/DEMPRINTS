@@ -14,6 +14,8 @@ import { FaUser } from "react-icons/fa";
 import axios from "axios";
 import { formatDate } from '@/app/composables/formateDateAndTime'
 import ViewImage from '../../components/adminComponents/employee/Image'
+import UpdateUser from '../../components/adminComponents/employee/UpdateUser'
+import ChangePassword from '@/app/components/adminComponents/setting/ChangePassword'
 
 export default function settings() {
   const [user, setUser] = useState({})
@@ -23,21 +25,19 @@ export default function settings() {
   const [preEmploymentImage, setPreEmploymentImage] = useState()
   const [certificatesImage, setCertificatesImage] = useState()
 
-  const getImage = async (id) => {
-      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/users/images/${id}`, {
-      responseType: 'blob',  
-      });
-      return URL.createObjectURL(response.data);
-  }
+    const getImage = async (id) => {
+        const imageUrl = `${process.env.NEXT_PUBLIC_API_URL}/users/images/${id}`;
+        return imageUrl
+    }
 
-  const loadImage = async(data) =>{
-      const contract =data.contract? await getImage(data.contract) : ''
-      setContractImage(contract)
-      const pre_employment = data.pre_employment? await getImage(data.pre_employment) : ''
-      setPreEmploymentImage(pre_employment)
-      const certificates = data.certificates? await getImage(data.certificates) : ''
-      setCertificatesImage(certificates)
-  }
+    const loadImage = async(data) =>{
+        const contract = data.contract? await getImage(data.contract) : ''
+        setContractImage(contract)
+        const pre_employment = data.pre_employment? await getImage(data.pre_employment) : ''
+        setPreEmploymentImage(pre_employment)
+        const certificates = data.certificates? await getImage(data.certificates) : ''
+        setCertificatesImage(certificates)
+    }
 
   useEffect(()=>{
     setLoading(true)
@@ -46,7 +46,8 @@ export default function settings() {
       
       if (token) {
         const decode = await decodeToken(token)
-        setUser(decode);
+        const imageUrl = `${process.env.NEXT_PUBLIC_API_URL}/users/images/${decode.image_id}`
+        setUser({...decode, imageUrl: imageUrl});
         setLoading(false)
         loadImage(decode)
 
@@ -63,14 +64,14 @@ export default function settings() {
   if(!loading && user) {
     return (
       <AdminLayout>
-          <div className="flex w-full flex-col">
-            <Tabs aria-label="Options" isVertical color='primary'>
+          <div className="flex w-full flex-col p-5">
+            <Tabs aria-label="Options"  color='primary'>
               <Tab key="profile" title="My Profile">
                 <Card>
                   <CardBody>
                     <div className="flex items-center gap-2 border p-4 rounded-md w-full">
                         <Avatar className="w-20 h-20">
-                            <AvatarImage src="https://github.com/shadcn.p" alt="@shadcn" />
+                            <AvatarImage src={user.imageUrl} alt="@shadcn" />
                         </Avatar>
                         <div className="flex-1 flex justify-between">
                             <div>
@@ -78,7 +79,7 @@ export default function settings() {
                                 <h5 className="text-default-400 text-sm">{user.job_title}</h5>
                                 <h5 className="text-default-400 text-sm">{user.department}</h5>
                             </div>
-                            <Button isIconOnly variant="faded"><BiEditAlt className="h-5 w-5 text-default-400"/></Button>
+                            <UpdateUser user={user} isUser={true}/>
                         </div>
                     </div>
                     <div className="border p-4 rounded-md">
@@ -192,11 +193,13 @@ export default function settings() {
                         </div>
                     </div>
                     {contractImage || preEmploymentImage || certificatesImage?(
-                        <div className="border p-4 rounded-md">
+                        <div className="border p-4 rounded-xl">
                             <span className="mb-2">Compliance and Audit</span>
-                            {contractImage? <ViewImage imageUrl={contractImage}/> : null}
-                            {preEmploymentImage? <ViewImage imageUrl={preEmploymentImage}/> : null }
-                            {certificatesImage? <ViewImage imageUrl={certificatesImage}/> : null}
+                            <div className="flex gap-2">
+                                {contractImage? <ViewImage imageUrl={contractImage} image={<img src={contractImage} width='200'/>}/> : null}
+                                {preEmploymentImage? <ViewImage imageUrl={preEmploymentImage} image={<img src={preEmploymentImage} width='200'/>}/> : null}
+                                {certificatesImage? <ViewImage imageUrl={certificatesImage} image={<img src={certificatesImage} width='200'/>}/> : null}
+                            </div>
                         </div>
                     ) : null }
                   <div className="flex flex-col gap-5 w-full">
@@ -207,7 +210,7 @@ export default function settings() {
               <Tab key="security" title="Security">
                 <Card>
                   <CardBody>
-                    Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+                    <ChangePassword user={user}/>
                   </CardBody>
                 </Card>  
               </Tab>
