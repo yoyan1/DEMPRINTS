@@ -50,15 +50,20 @@ export default function HRIS() {
 
   const getTimeInOutData = async () => {
     try {
-      const responseTimeInOut = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/collection/getHRIStimeinOut`);
-      let descending = responseTimeInOut.data.sort((a, b) => new Date(b.date) - new Date(a.date));
+      const responseTimeInOut = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/collection/getHRIStimeinOut`,
+      );
+
+      let descending = responseTimeInOut.data.sort(
+        (a, b) => new Date(b.date) - new Date(a.date),
+      );
       setTimeinOut(descending);
-      console.log('hahay kapoi',descending)
+      console.log('hahay kapoi', descending);
     } catch (error) {
       console.log('Failed to fetch', error);
     }
   };
-  
+
   function calculateOvertime(timeIn, timeOut, requiredHours) {
     function timeToSeconds(time) {
       const [hours, minutes, seconds] = time.split(':').map(Number);
@@ -106,10 +111,17 @@ export default function HRIS() {
         data.timeout,
         '8:00:00',
       );
-      newData.push({ ...data, totalHours: totalWorked, overtime: overtime });
+
+      const [hours, minutes] = totalWorked.split(':');
+      const totalHours = `${hours}hr : ${minutes}mins`;
+
+
+      newData.push({ ...data, totalHours: totalHours, overtime: overtime });
     });
+
     return newData;
   }, [timeinOut]);
+
   return (
     <>
       <div className="justify-start w-full mb-3 border border-gray-200 rounded-lg shadow">

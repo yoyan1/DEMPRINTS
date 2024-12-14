@@ -18,6 +18,7 @@ import { useUserStore } from '@/app/stores/userStore';
 import { getDateAndTime } from '../../composables/dateAndTime';
 import axios from 'axios';
 // import { NextResponse } from 'next/server';
+import useAudio from './sound';
 
 export default function Scann({ onSucess }) {
   const [scanResult, setScanResult] = useState(null);
@@ -102,9 +103,15 @@ export default function Scann({ onSucess }) {
   //   }
   // };
 
+  const playScanSound = () => {
+    const audio = new Audio('/beep.mp3'); // Path to the file in public folder
+    audio.play();
+  };
+
   let scanStop = false;
   const handleScanSuccess = async (result) => {
     const findStaff = users.find((user) => user.id === result);
+    playScanSound();
 
     if (findStaff) {
       console.log('User is found', findStaff);
@@ -130,6 +137,10 @@ export default function Scann({ onSucess }) {
           console.log('Timeout updated:', responseUpdate.data);
           setLogData(responseUpdate.data);
           onSucess('success');
+          scanStop = true;
+          setTimeout(() => {
+            scanStop = false;
+          }, 30000);
         } else {
           const responseScann = await axios.post(
             `${process.env.NEXT_PUBLIC_API_URL}/collection/hris`,
@@ -138,14 +149,13 @@ export default function Scann({ onSucess }) {
               timein: time,
               timeout: '',
               status: 'time-in',
-              overtime: '',
               employeeID: findStaff.id,
             },
           );
+
           console.log('Time-in recorded:', responseScann.data);
           setLogData(responseScann.data);
           onSucess('success');
-
           scanStop = true;
           setTimeout(() => {
             scanStop = false;
