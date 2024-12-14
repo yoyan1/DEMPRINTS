@@ -102,13 +102,21 @@ export default function Scann({ onSucess }) {
     }
   };
 
+
+
+  const scannerSound = () =>{
+
+    const audio = new Audio('/beep.mp3')
+    audio.play()
+  }
+
   let scanStop = false;
   const handleScanSuccess = async (result) => {
     const findStaff = users.find((user) => user.id === result);
 
     if (findStaff) {
       console.log('User is found', findStaff);
-
+      scannerSound()
       try {
         const { date, time } = getDateAndTime();
 

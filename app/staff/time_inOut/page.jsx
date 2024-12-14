@@ -102,6 +102,7 @@ export default function HRIS() {
     };
   }
 
+  
   const employeeRecords = useMemo(() => {
     let newData = [];
 
