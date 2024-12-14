@@ -92,7 +92,7 @@ export default function page() {
           </div>
         </div>
       </div>
-      {formatDate("2024-12-06")} -  {time}
+      {formatDate(date)} -  {time}
     </div>
   )
 }

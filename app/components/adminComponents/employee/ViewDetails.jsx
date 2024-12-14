@@ -11,6 +11,7 @@ import { FaUser } from "react-icons/fa";
 import axios from "axios";
 import { formatDate } from '@/app/composables/formateDateAndTime'
 import ViewImage from "./Image";
+import { formattedNumber } from "../../../composables/CurrencyFormat";
 
 
 export default function ViewDetails({data}) {
@@ -22,19 +23,17 @@ export default function ViewDetails({data}) {
     const [certificatesImage, setCertificatesImage] = useState()
 
     const getImage = async (id) => {
-        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/users/images/${id}`, {
-        responseType: 'blob',  
-        });
-        return URL.createObjectURL(response.data);
+        const imageUrl = `${process.env.NEXT_PUBLIC_API_URL}/users/images/${id}`;
+        return imageUrl
     }
 
     const loadImage = async() =>{
-        // const contract =data.contract? await getImage(data.contract) : ''
-        // setContractImage(contract)
-        // const pre_employment = data.pre_employment? await getImage(data.pre_employment) : ''
-        // setPreEmploymentImage(pre_employment)
-        // const certificates = data.certificates? await getImage(data.certificates) : ''
-        // setCertificatesImage(certificates)
+        const contract = data.contract? await getImage(data.contract) : ''
+        setContractImage(contract)
+        const pre_employment = data.pre_employment? await getImage(data.pre_employment) : ''
+        setPreEmploymentImage(pre_employment)
+        const certificates = data.certificates? await getImage(data.certificates) : ''
+        setCertificatesImage(certificates)
     }
 
     useEffect(()=>{
@@ -166,7 +165,6 @@ export default function ViewDetails({data}) {
                     <div className="border p-4 rounded-xl">
                         <div className="flex justify-between items-center">
                             <h3 className="text-lg">Employment Details</h3>
-                            <Button isIconOnly variant="light"><BiEditAlt className="h-5 w-5 text-default-400"/></Button>
                         </div>
                         <div className="flex  justify-between w-full">
                             <div className="flex-1">
@@ -183,24 +181,37 @@ export default function ViewDetails({data}) {
                             </div>
                         </div>
                     </div>
+                    <div className="border p-4 rounded-xl">
+                        <div className="flex justify-between items-center">
+                            <h3 className="text-lg">Compensation and Benefits</h3>
+                        </div>
+                        <div className="flex  justify-between w-full">
+                            <div className="flex-1">
+                                <h4 className="text-sm">Wage</h4>
+                                <span className="text-default-500 text-sm">₱ {formattedNumber(data.wage)}</span>
+                            </div>
+                            <div className="flex-1">
+                                <h4 className="text-sm">Compensation Basis</h4>
+                                <span className="text-default-500 text-sm">{data.basis}</span>
+                            </div>
+                            <div className="flex-1">
+                                <h4 className="text-sm">Frequency</h4>
+                                <span className="text-default-500 text-sm">{data.frequency}</span>
+                            </div>
+                        </div>
+                    </div>
                     {contractImage || preEmploymentImage || certificatesImage?(
                         <div className="border p-4 rounded-xl">
                             <span className="mb-2">Compliance and Audit</span>
-                            {contractImage? <ViewImage imageUrl={contractImage}/> : null}
-                            {preEmploymentImage? <ViewImage imageUrl={preEmploymentImage}/> : null }
-                            {certificatesImage? <ViewImage imageUrl={certificatesImage}/> : null}
+                            <div className="flex gap-2">
+                                {contractImage? <ViewImage imageUrl={contractImage} image={<img src={contractImage} width='200'/>}/> : null}
+                                {preEmploymentImage? <ViewImage imageUrl={preEmploymentImage} image={<img src={preEmploymentImage} width='200'/>}/> : null}
+                                {certificatesImage? <ViewImage imageUrl={certificatesImage} image={<img src={certificatesImage} width='200'/>}/> : null}
+                            </div>
                         </div>
                     ) : null }
                 </div>
               </ModalBody>
-              <ModalFooter>
-                <Button color="danger" variant="light" onPress={onClose}>
-                  Close
-                </Button>
-                <Button color="primary" onPress={onClose}>
-                  Action
-                </Button>
-              </ModalFooter>
             </>
           )}
         </ModalContent>

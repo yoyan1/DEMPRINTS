@@ -1,8 +1,8 @@
 export const getDateAndTime = () => {
     const currentDate = new Date();
-
-    const options = { timeZone: 'Asia/Manila', year: 'numeric', month: '2-digit', day: '2-digit' };
-    const date = new Intl.DateTimeFormat('en-CA', options).format(currentDate); 
+    const date = currentDate.getFullYear() + '-' + 
+                     String(currentDate.getMonth() + 1).padStart(2, '0') + '-' + 
+                     String(currentDate.getDate()).padStart(2, '0');
 
     const hours = currentDate.getHours();
     const minutes = currentDate.getMinutes();

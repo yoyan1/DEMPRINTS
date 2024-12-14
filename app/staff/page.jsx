@@ -41,6 +41,7 @@ import { paymentStore } from '@/app/stores/paymentStore';
 import AllTransaction from './component/showAllTable';
 import { parseDate, getLocalTimeZone } from '@internationalized/date';
 import { getDateAndTime } from '@/app/composables/dateAndTime';
+import { formattedNumber } from '@/app/composables/CurrencyFormat';
 import { FaRegCircleXmark } from 'react-icons/fa6';
 import { IoMdCloseCircle } from 'react-icons/io';
 import { formatDate } from '../composables/formateDateAndTime';
@@ -117,7 +118,7 @@ export default function Transaction() {
     start: parseDate(date),
     end: parseDate(date),
   });
-  const [selectedRange, setSelectedRange] = useState('Today');
+  const [selectedRange, setSelectedRange] = useState('today');
   const [sortDescriptor, setSortDescriptor] = useState({
     column: 'age',
     direction: 'ascending',
@@ -173,9 +174,9 @@ export default function Transaction() {
       return filteredTransactions.filter((transaction) => {
         const transactionDate = new Date(transaction.date);
 
-        if (selectedRange === 'Today') {
+        if (selectedRange === 'today') {
           return transaction.date === date;
-        } else if (selectedRange === 'Date Range') {
+        } else if (selectedRange === 'daterange') {
           return transactionDate >= start && transactionDate <= end;
         } else {
           return transaction;
@@ -205,26 +206,24 @@ export default function Transaction() {
     options,
     selectedRange,
   ) => {
-    const result = transactions.reduce(
+    return transactions.reduce(
       (acc, item) => {
-        if (selectedRange === 'Today') {
-          if (isDateInRange(itemDate, start, end)) {
-            acc.totalSalesToday += item.total_amount;
+        if (selectedRange === 'today') {
+          if (item.date === date) {
+            acc.totalSalesToday += item.amount_paid;
             options.forEach((row) => {
-              if (row.name === item.payment_options) {
-                acc[row.name] = (acc[row.name] || 0) + item.total_amount;
-              }
-            });
+            if (row.name === item.payment_options)
+              acc[row.name] = (acc[row.name] || 0) + item.amount_paid;
+          });
           }
-        } else if (selectedRange === 'Date Range') {
+        } else if (selectedRange === 'daterange') {
           const itemDate = new Date(item.date);
           if (isDateInRange(itemDate, start, end)) {
-            acc.totalDateRangeSales += item.total_amount;
+            acc.totalDateRangeSales += item.amount_paid;
             options.forEach((row) => {
-              if (row.name === item.payment_options) {
-                acc[row.name] = (acc[row.name] || 0) + item.total_amount;
-              }
-            });
+            if (row.name === item.payment_options)
+              acc[row.name] = (acc[row.name] || 0) + item.amount_paid;
+          });
           }
         } else {
           acc.overAllSales += item.amount_paid;
@@ -239,14 +238,14 @@ export default function Transaction() {
       { totalSalesToday: 0, totalDateRangeSales: 0, overAllSales: 0 },
     );
 
-    return result;
+    
   };
 
   const totals = useMemo(() => {
     const start = new Date(selectedDate.start);
     const end = new Date(selectedDate.end);
     return getTotalSalesInRange(transactions, start, end, options);
-  }, [selectedDate, transactions, options]);
+  }, [selectedRange, selectedDate, transactions, options]);
 
   const {
     totalSalesToday,
@@ -392,7 +391,7 @@ export default function Transaction() {
   const topContent = useMemo(() => {
     return (
       <>
-        <div className="flex  items-center justify-between ">
+        <div className="flex  items-center justify-between p-3 ">
           <span className="flex flex-col  text-2xl">
             <div className="flex items-center gap-2">
               <FaChartLine className="text-2xl" />
@@ -405,19 +404,20 @@ export default function Transaction() {
               isRequired
               label="Sales Filter"
               placeholder="Select Range"
-              defaultSelectedKeys="Today"
+              defaultSelectedKeys={[selectedRange]}
+              value={selectedRange}
               onChange={(e) => setSelectedRange(e.target.value)}
               className="max-w-xs mr-1"
             >
-              <SelectItem key="Today">Today</SelectItem>
-              <SelectItem key="Date Range">Date Range</SelectItem>
-              <SelectItem key="All">All</SelectItem>
+              <SelectItem key="today">Today</SelectItem>
+              <SelectItem key="daterange">Date Range</SelectItem>
+              <SelectItem key="all">All</SelectItem>
             </Select>
           </span>
           <div className="flex justify-end">
             <div className=" bg-blue-900 p-1 rounded w-full">
-              <div className="   rounded bg-white justify-between flex">
-                {selectedRange === 'Date Range' ? (
+              <div className="  p-2 rounded bg-white justify-between flex">
+                {selectedRange === 'daterange' ? (
                   <div>
                     <DateRangePicker
                       className="w-45 mr-5 "
@@ -450,24 +450,26 @@ export default function Transaction() {
               </div>
               <div className=" p-1 flex justify-between ">
                 <div className="p-1">
-                  {selectedRange === 'Today' ? (
+                  <span className="font-sans font-semibold text-slate-100">
+                    Sales: ₱
+                  </span>
+                  {selectedRange === 'today' ? (
                     <span className="text-lg text-white dark:text-white">
-                      Sales: ₱ {totalSalesToday.toFixed(2)}
+                      {totalSalesToday.toFixed(2)}
                     </span>
-                  ) : selectedRange === 'Date Range' ? (
+                  ) : selectedRange === 'daterange' ? (
                     <span className="text-lg text-white dark:text-white">
-                      Sales: ₱ {totalDateRangeSales.toFixed(2)}
+                      {totalDateRangeSales.toFixed(2)}
                     </span>
-                  ) : (
+                  ) : selectedRange === 'all' ? (
                     <span className="text-lg text-white dark:text-white">
-                      Sales: ₱ {overAllSales.toFixed(2)}
+                      {overAllSales.toFixed(2)}
                     </span>
-                  )}
+                  ) : null}
                 </div>
                 <div className=" rounded p- bg-white">
                   <div className="flex gap-2">
-                    {options.length > 0
-                      ? options.map((transactionOptions) => (
+                    {/* {options.length > 0? options.map((transactionOptions) => (
                           <div
                             className="flex text-black dark:text-white"
                             key={transactionOptions.name}
@@ -481,6 +483,37 @@ export default function Transaction() {
                           </div>
                         ))
                       : null}
+                  </div> */}
+                    <div className="flex items-start gap-5 bg-white dark:bg-gray-800 w-full">
+                      {options.length > 0 ? (
+                        <div className="border border-blue-600 p-3 rounded-md w-full">
+                          {/* <span>Payment Method Breakdown</span> */}
+                          <div className="grid grid-cols-5 gap-4">
+                            {options.map((transactionOptions) =>
+                              salesByOptions[transactionOptions.name] > 0 ? (
+                                <div className="flex flex-col gap-1 items-start">
+                                  <span className="font-sans text-slate-700 dark:text-slate-200 text-sm flex items-center">
+                                    <div className="w-2 h-2 bg-blue-400 rounded-full"></div>{' '}
+                                    {transactionOptions.name}:{' '}
+                                  </span>
+                                  <span className="font-sans text-slate-700 dark:text-slate-200 text-sm">
+                                    {' '}
+                                    ₱
+                                    {salesByOptions[transactionOptions.name]
+                                      ? formattedNumber(
+                                          salesByOptions[
+                                            transactionOptions.name
+                                          ],
+                                        )
+                                      : 0}
+                                  </span>
+                                </div>
+                              ) : null,
+                            )}
+                          </div>
+                        </div>
+                      ) : null}
+                    </div>
                   </div>
                 </div>
               </div>

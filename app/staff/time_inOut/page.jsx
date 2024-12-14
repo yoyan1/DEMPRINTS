@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 // import QRCode from 'react-qr-code';
 import {
   // Card,
@@ -25,7 +25,7 @@ export default function HRIS() {
   const [timeinOut, setTimeinOut] = useState([]);
 
   useEffect(() => {
-    getimeInOutData();
+    getTimeInOutData();
 
     const loadUser = async () => {
       const token = localStorage.getItem('token');
@@ -48,17 +48,69 @@ export default function HRIS() {
     loadUser();
   }, [router]);
 
-  const getimeInOutData = async () => {
+  const getTimeInOutData = async () => {
     try {
-      const responesTimeInout = await axios.get(
-        `http://localhost:5000/api/collection/getTimeinOut`,
+      const responseTimeInOut = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/collection/getTimeinOut`
       );
-      setTimeinOut(responesTimeInout.data);
+      let descending = responseTimeInOut.data.sort((a, b) => new Date(b.date) - new Date(a.date));
+      setTimeinOut(descending);
     } catch (error) {
-      console.log('Faild to fetch', error);
+      console.log('Failed to fetch', error);
     }
   };
+  
+  function calculateOvertime(timeIn, timeOut, requiredHours) {
+    function timeToSeconds(time) {
+      const [hours, minutes, seconds] = time.split(':').map(Number);
+      return hours * 3600 + minutes * 60 + seconds;
+    }
 
+    const timeInSeconds = timeToSeconds(timeIn);
+    const timeOutSeconds = timeToSeconds(timeOut);
+
+    let totalWorkedSeconds = timeOutSeconds - timeInSeconds;
+
+    if (totalWorkedSeconds < 0) {
+      totalWorkedSeconds += 24 * 3600;
+    }
+
+    const totalWorkedHours = Math.floor(totalWorkedSeconds / 3600);
+    const totalWorkedMinutes = Math.floor((totalWorkedSeconds % 3600) / 60);
+    const totalWorkedSecondsFinal = totalWorkedSeconds % 60;
+
+    const requiredSeconds = timeToSeconds(requiredHours);
+
+    const overtimeSeconds = totalWorkedSeconds - requiredSeconds;
+
+    let overtimeHours = 0,
+      overtimeMinutes = 0,
+      overtimeSecondsFinal = 0;
+    if (overtimeSeconds > 0) {
+      overtimeHours = Math.floor(overtimeSeconds / 3600);
+      overtimeMinutes = Math.floor((overtimeSeconds % 3600) / 60);
+      overtimeSecondsFinal = overtimeSeconds % 60;
+    }
+
+    return {
+      totalWorked: `${totalWorkedHours}:${totalWorkedMinutes}:${totalWorkedSecondsFinal}`,
+      overtime: `${overtimeHours}:${overtimeMinutes}:${overtimeSecondsFinal}`,
+    };
+  }
+
+  const employeeRecords = useMemo(() => {
+    let newData = [];
+
+    timeinOut.map((data) => {
+      const { totalWorked, overtime } = calculateOvertime(
+        data.timein,
+        data.timeout,
+        '8:00:00',
+      );
+      newData.push({ ...data, totalHours: totalWorked, overtime: overtime });
+    });
+    return newData;
+  }, [timeinOut]);
   return (
     <>
       <div className="justify-start w-full mb-3 border border-gray-200 rounded-lg shadow">
@@ -77,11 +129,10 @@ export default function HRIS() {
               {user.role}
             </span>
             <div className="flex mt-2 ">
-             
               <QRcodescann className="inline-flex items-center bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" />
-             
+
               <Scann
-                onSucess={getimeInOutData}
+                onSucess={getTimeInOutData}
                 className="bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
               />
             </div>
@@ -104,13 +155,13 @@ export default function HRIS() {
           <TableColumn>Total hours</TableColumn>
         </TableHeader>
         <TableBody>
-          {timeinOut.map((timeinout) => (
+          {employeeRecords.map((timeinout) => (
             <TableRow key={timeinout.id}>
               <TableCell>{timeinout.date}</TableCell>
               <TableCell>{timeinout.timein}</TableCell>
               <TableCell>{timeinout.timeout}</TableCell>
               <TableCell>{timeinout.overtime}</TableCell>
-              <TableCell></TableCell>
+              <TableCell>{timeinout.totalHours}</TableCell>
             </TableRow>
           ))}
         </TableBody>

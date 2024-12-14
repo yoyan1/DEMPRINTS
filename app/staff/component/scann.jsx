@@ -94,70 +94,13 @@ export default function Scann({ onSucess }) {
   const getimeInOutData = async () => {
     try {
       const responesTimeInout = await axios.get(
-        `http://localhost:5000/api/collection/getTimeinOut`,
+        `${process.env.NEXT_PUBLIC_API_URL}/collection/getTimeinOut`,
       );
       setTimeinOut(responesTimeInout.data);
     } catch (error) {
       console.log('Faild to fetch', error);
     }
   };
-
-  // let scanStop = false;
-  // const handleScanSuccess = async (result) => {
-  //   const findStaff = users.find((user) => user.id === result);
-
-  //   if (findStaff) {
-  //     console.log('User is found', findStaff);
-
-  //     try {
-  //       const { date, time } = getDateAndTime();
-
-  //       const existingRecord = timeinOut.find(
-  //         (entry) =>
-  //           entry.status === 'time-in' &&
-  //           entry.date === date &&
-  //           entry.employeeID === findStaff.id,
-  //       );
-
-  //       if (existingRecord) {
-  //         const responseUpdate = await axios.put(
-  //           `http://localhost:5000/api/collection/hristimeout/${existingRecord._id}`,
-  //           {
-  //             timeout: time,
-  //             status: 'time-out',
-  //           },
-  //         );
-  //         console.log('Timeout updated:', responseUpdate.data);
-  //         setLogData(responseUpdate.data);
-  //         onSucess('success');
-  //       } else {
-  //         const responseScann = await axios.post(
-  //           `http://localhost:5000/api/collection/hris`,
-  //           {
-  //             date: date,
-  //             timein: time,
-  //             timeout: '',
-  //             status: 'time-in',
-  //             overtime: '',
-  //             employeeID: findStaff.id,
-  //           },
-  //         );
-  //         console.log('Time-in recorded:', responseScann.data);
-  //         setLogData(responseScann.data);
-  //         onSucess('success');
-
-  //         scanStop = true;
-  //         setTimeout(() => {
-  //           scanStop = false;
-  //         }, 30000);
-  //       }
-  //     } catch (error) {
-  //       console.error('Error processing scan:', error);
-  //     }
-  //   } else {
-  //     console.warn('User not found');
-  //   }
-  // };
 
   let scanStop = false;
   const handleScanSuccess = async (result) => {
@@ -176,16 +119,9 @@ export default function Scann({ onSucess }) {
             entry.employeeID === findStaff.id,
         );
 
-        const latestRecord = timeinOut.find(
-          (entry) =>
-            entry.status === 'time-out' &&
-            entry.date === date &&
-            entry.employeeID === findStaff.id,
-        );
-
         if (existingRecord) {
           const responseUpdate = await axios.put(
-            `http://localhost:5000/api/collection/hristimeout/${existingRecord._id}`,
+            `${process.env.NEXT_PUBLIC_API_URL}/collection/hristimeout/${existingRecord._id}`,
             {
               timeout: time,
               status: 'time-out',
@@ -194,24 +130,9 @@ export default function Scann({ onSucess }) {
           console.log('Timeout updated:', responseUpdate.data);
           setLogData(responseUpdate.data);
           onSucess('success');
-        } else if (latestRecord) {
-          const overtimeResponse = await axios.put(
-            `http://localhost:5000/api/collection/hrisOvertime/${latestRecord._id}`,
-            {
-              overtime: time,
-            },
-          );
-          console.log('Overtime updated:', overtimeResponse.data);
-          setLogData(overtimeResponse.data);
-          onSucess('success');
-
-          scanStop = true;
-          setTimeout(() => {
-            scanStop = false;
-          }, 30000);
-        } else if(latestRecord.overtime) {
+        } else {
           const responseScann = await axios.post(
-            `http://localhost:5000/api/collection/hris`,
+            `${process.env.NEXT_PUBLIC_API_URL}/collection/hris`,
             {
               date: date,
               timein: time,
@@ -229,9 +150,6 @@ export default function Scann({ onSucess }) {
           setTimeout(() => {
             scanStop = false;
           }, 30000);
-        }else{
-          console.log('sorry');
-          
         }
       } catch (error) {
         console.error('Error processing scan:', error);
