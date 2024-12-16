@@ -8,12 +8,17 @@ import ViewReport from "./ViewReport"
 import { FaSync } from "react-icons/fa";
 
 export default function FinanceTable({financeData, loading, paymentSourceList, options, done}) {
-  console.log(financeData)
-  const sortedFinanceDescending = financeData.sort((a, b) => new Date(b.date) - new Date(a.date))
+
+  const dateOptions = useMemo(() => {
+    let dateList =[]
+    financeData.map((row) => dateList.push(row.date))
+    return dateList
+
+  }, [financeData])
   return (
     <div>
       <div className="py-3 flex justify-between">
-        <CreateOrUpdate done={done}/>
+        <CreateOrUpdate dateOptions={dateOptions} refresh={done}/>
         <div className="flex gap-5">
           <ViewReport financeData={financeData} loading={loading} paymentSourceList={paymentSourceList} options={options} done={done}/>
           <Button isIconOnly color="success" onPress={done} size='sm'><FaSync className="w-4 h-4 text-white"/></Button>
@@ -46,7 +51,7 @@ export default function FinanceTable({financeData, loading, paymentSourceList, o
           <TableColumn>End day Balance</TableColumn>
         </TableHeader>
         <TableBody isLoading={loading} loadingContent={<Spinner label="Loading..." />}>
-              {sortedFinanceDescending.map((data) => (
+              {financeData.map((data) => (
                   <TableRow key={data.date}>
                       <TableCell>{formatDate(data.date)}</TableCell>
                       <TableCell>₱ {formattedNumber(data.prevBalance)}</TableCell>

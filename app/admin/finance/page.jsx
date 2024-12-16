@@ -191,21 +191,46 @@ const getTotal = (combinedData) => {
     return balance.reduce(
       (acc, item) => {
         acc.totalBalance += item.amount;
+  
         paymentSourceList.forEach((row) => {
-          const newName = row.name.replace(/([a-z])([A-Z])/g, '$1_$2') .replace(/\s+/g, '_').replace(/-+/g, '_').toLowerCase();
-          if(row.name.toLowerCase().includes(item.type.toLowerCase()))
-          acc[newName] = (acc[newName] || 0) + item.amount;
+          const newName = row.name
+            .replace(/([a-z])([A-Z])/g, '$1_$2')
+            .replace(/\s+/g, '_')
+            .replace(/-+/g, '_')
+            .toLowerCase();
+  
+          acc[newName] = acc[newName] || 0;
+          const pushItem = (newName, amount) => {
+            const existingSource = acc.salesSource.find((src) => src.date === item.date);
+            if (existingSource) {
+              existingSource[newName] = existingSource[newName] || 0
+              existingSource[newName] = (existingSource[newName] || 0) + amount;
+              existingSource.total += amount
+            } else {
+              acc.salesSource.push({ date: item.date, [newName]: amount, total: amount});
+            }
+          }
+          if (row.name.toLowerCase().includes(item.type.toLowerCase())) {
+            pushItem(newName, item.amount)
+          } else{
+            pushItem(newName, 0)
+          }
+  
         });
-        return acc
+  
+        return acc;
       },
-      {totalBalance: 0}
-     )
+      { totalBalance: 0, salesSource: [] }
+    );
+  }, [balance, paymentSourceList]);
+  
 
-  }, [balance, paymentSourceList])
 
+  const {totalBalance, salesSource} = balanceData
+  console.log(salesSource);
+  
 
-  const {totalBalance, ...saleSourceType} = balanceData
-
+  
   const sortedPaymentSourceList = paymentSourceList.sort((a, b) => a.name - b.name)
   const sortedOptionsList = options.sort((a, b) => a.name - b.name)
 
@@ -220,28 +245,59 @@ const getTotal = (combinedData) => {
   
     const sortedData = fixedData.sort((a, b) => new Date(a.date) - new Date(b.date));
   
-    let previousEndBalance = totalBalance; 
-    let previousSourceBalance = { ...saleSourceType }; 
+    let previousSourceBalance
     const computedData = [];
   
-    sortedData.forEach((data, index) => {
+    sortedData.forEach((data) => {
       const net = data.totalSales - data.totalExpenses;
-  
+      const prevSourceBalance = () => {
+        const existingSource = salesSource.find((src) => src.date === data.date)
+        if(existingSource) {
+          return existingSource; 
+        }
+
+        console.log(existingSource);
+        
+        const reducedResult = paymentSourceList.reduce(
+          (acc, row) => {
+              const newName = row.name.replace(/([a-z])([A-Z])/g, '$1_$2') .replace(/\s+/g, '_').replace(/-+/g, '_').toLowerCase();
+              acc[newName] = 0
+              acc.total = 0
+            return acc
+          },
+          {}
+         )
+        return reducedResult
+      }
+
+      const newPrevBalData = prevSourceBalance()
+      previousSourceBalance = previousSourceBalance 
+        ? paymentSourceList.reduce((acc, row) => {
+            acc[row] = previousSourceBalance[row]  + newPrevBalData[row];
+            return acc;
+          }, { ...previousSourceBalance })
+        : { ...newPrevBalData };
+
+
+      console.log(previousSourceBalance);
+      
+
       const calculateSourceBalance = (sourceList, paymentList, prevSourceBal) => {
         return sourceList.reduce((acc, item) => {
           const optionName = normalizeName(item.name);
           let matched = false;
-  
           paymentList.forEach((row) => {
             const newName = normalizeName(row.name);
             acc[newName] = acc[newName] || 0;
-  
+            
             if (isNameMatch(item.name, row.name)) {
               matched = true;
               acc[newName] =
-                prevSourceBal[newName] +
-                (data.sales_source[optionName] || 0) -
-                (data.payment_source[newName] || 0);
+              prevSourceBal[newName] +
+              (data.sales_source[optionName] || 0) -
+              (data.payment_source[newName] || 0);
+
+              acc.total += acc[newName]
             }
           });
   
@@ -249,15 +305,16 @@ const getTotal = (combinedData) => {
             acc.others = prevSourceBal.others+
                       (data.sales_source[optionName] || 0) -
                       (data.payment_source.others || 0);
+            acc.total += acc.others
           };
   
           return acc;
-        }, {});
+        }, {total: 0});
       };
   
       const currentSourceBalance = calculateSourceBalance(sortedOptionsList, sortedPaymentSourceList, previousSourceBalance);
   
-      const endBalance = previousEndBalance + net;
+      const endBalance = previousSourceBalance.total + net;
   
       computedData.push({
         date: data.date,
@@ -267,17 +324,17 @@ const getTotal = (combinedData) => {
         sales_source: data.sales_source,
         payment_source: data.payment_source,
         prev_source_balance: previousSourceBalance,
-        prevBalance: previousEndBalance,
+        prevBalance: previousSourceBalance.total,
         end_source_balance: currentSourceBalance,
         endBalance,
       });
   
-      previousEndBalance = endBalance;
+    
       previousSourceBalance = currentSourceBalance;
     });
   
     return computedData;
-  }, [groupSalesByDay, totalBalance, saleSourceType, sortedOptionsList, sortedPaymentSourceList]);
+  }, [groupSalesByDay, totalBalance, salesSource, sortedOptionsList, sortedPaymentSourceList]);
   
   function normalizeName(name) {
     return name

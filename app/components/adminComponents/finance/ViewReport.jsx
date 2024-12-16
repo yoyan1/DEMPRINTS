@@ -8,7 +8,6 @@ import { FaSync } from "react-icons/fa";
 
 export default function App({financeData, loading, paymentSourceList, options, done}) {
   const {isOpen, onOpen, onOpenChange} = useDisclosure();
-  const sortedFinanceDescending = financeData.sort((a, b) => new Date(b.date) - new Date(a.date))
   const sortedPaymentSourceList = paymentSourceList.sort((a, b) => a.name - b.name)
   const sortedOptionsList = options.sort((a, b) => a.name - b.name)
   return (
@@ -44,7 +43,7 @@ export default function App({financeData, loading, paymentSourceList, options, d
                     <TableColumn>End day Balance</TableColumn>
                   </TableHeader>
                   <TableBody isLoading={loading} loadingContent={<Spinner label="Loading..." />}>
-                        {sortedFinanceDescending.map((data) => (
+                        {financeData.map((data) => (
                             <TableRow key={data.date}>
                                 <TableCell><div className="w-[150px]">{formatDate(data.date)}</div></TableCell>
                                 {sortedPaymentSourceList.map((row) => {
