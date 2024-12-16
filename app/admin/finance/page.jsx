@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState, useMemo } from 'react'
+import React, { useEffect, useState, useMemo, useCallback } from 'react'
 import FinanceTable from '@/app/components/adminComponents/finance/FInanceTable'
 import {useSalesStore} from '@/app/stores/transactionStore'
 import { useExpensesStore } from '@/app/stores/ExpensesStore'
@@ -247,16 +247,18 @@ const getTotal = (combinedData) => {
   
     let previousSourceBalance
     const computedData = [];
-  
+    previousSourceBalance = null
+
     sortedData.forEach((data) => {
       const net = data.totalSales - data.totalExpenses;
+      console.log(data.date)
       const prevSourceBalance = () => {
         const existingSource = salesSource.find((src) => src.date === data.date)
         if(existingSource) {
-          return existingSource; 
+          console.log("result: ",existingSource);
+          return {...existingSource}; 
         }
 
-        console.log(existingSource);
         
         const reducedResult = paymentSourceList.reduce(
           (acc, row) => {
@@ -271,29 +273,35 @@ const getTotal = (combinedData) => {
       }
 
       const newPrevBalData = prevSourceBalance()
-      previousSourceBalance = previousSourceBalance 
-        ? paymentSourceList.reduce((acc, row) => {
-            acc[row] = previousSourceBalance[row]  + newPrevBalData[row];
+      if(previousSourceBalance !== null) {
+        const combinedPrevAndNew = () => {
+          return previousSourceBalance = paymentSourceList.reduce((acc, row) => {
+            const newName = normalizeName(row.name);
+            acc[newName] = previousSourceBalance[newName] + newPrevBalData[newName];
             return acc;
           }, { ...previousSourceBalance })
-        : { ...newPrevBalData };
-
-
-      console.log(previousSourceBalance);
+        
+        }
+        previousSourceBalance = combinedPrevAndNew()
+  
+      } else {
+        previousSourceBalance = newPrevBalData
+      }
+      console.log("FInal",newPrevBalData.cash_in_box, previousSourceBalance);
       
 
-      const calculateSourceBalance = (sourceList, paymentList, prevSourceBal) => {
-        return sourceList.reduce((acc, item) => {
+      const calculateSourceBalance = () => {
+        return sortedOptionsList.reduce((acc, item) => {
           const optionName = normalizeName(item.name);
           let matched = false;
-          paymentList.forEach((row) => {
+          sortedPaymentSourceList.forEach((row) => {
             const newName = normalizeName(row.name);
             acc[newName] = acc[newName] || 0;
             
             if (isNameMatch(item.name, row.name)) {
               matched = true;
               acc[newName] =
-              prevSourceBal[newName] +
+              previousSourceBalance[newName] +
               (data.sales_source[optionName] || 0) -
               (data.payment_source[newName] || 0);
 
@@ -302,7 +310,7 @@ const getTotal = (combinedData) => {
           });
   
           if (!matched) {
-            acc.others = prevSourceBal.others+
+            acc.others = previousSourceBalance.others+
                       (data.sales_source[optionName] || 0) -
                       (data.payment_source.others || 0);
             acc.total += acc.others
@@ -312,7 +320,10 @@ const getTotal = (combinedData) => {
         }, {total: 0});
       };
   
-      const currentSourceBalance = calculateSourceBalance(sortedOptionsList, sortedPaymentSourceList, previousSourceBalance);
+      const currentSourceBalance = calculateSourceBalance()
+      // const currentSourceBalance = useMemo(() => {
+      //   return calculateSourceBalance();
+      // }, [sortedOptionsList, sortedPaymentSourceList, previousSourceBalance]);
   
       const endBalance = previousSourceBalance.total + net;
   

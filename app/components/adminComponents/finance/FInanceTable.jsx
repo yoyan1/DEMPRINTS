@@ -20,7 +20,7 @@ export default function FinanceTable({financeData, loading, paymentSourceList, o
       <div className="py-3 flex justify-between">
         <CreateOrUpdate dateOptions={dateOptions} refresh={done}/>
         <div className="flex gap-5">
-          <ViewReport financeData={financeData} loading={loading} paymentSourceList={paymentSourceList} options={options} done={done}/>
+          <ViewReport financeData={financeData} loading={loading} paymentSourceList={paymentSourceList} options={options} dateOptions={dateOptions} done={done}/>
           <Button isIconOnly color="success" onPress={done} size='sm'><FaSync className="w-4 h-4 text-white"/></Button>
         </div>
       </div>

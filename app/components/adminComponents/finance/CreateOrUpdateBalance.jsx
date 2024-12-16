@@ -13,8 +13,9 @@ export default function CreateOrUpdate({dateOptions, refresh}) {
   const {isOpen, onOpen, onClose} = useDisclosure();
   const [paymentSourceList, setPaymentSourceList] = useState([])
   const {  addBalance, loadBalance } = useBalanceStore()
+  const {date, time} = getDateAndTime()
   const [ balanceData, setBalanceData ] = useState({
-    date: '',
+    date: date,
     amount: 0,
     type: ""
   })
@@ -84,6 +85,7 @@ export default function CreateOrUpdate({dateOptions, refresh}) {
                     value={balanceData.date}
                     onChange={(e) => setBalanceData((prevData)=> ({...prevData, date: e.target.value}))}
                     >
+                      <SelectItem key={date}>{date}</SelectItem>  
                       {dateOptions.map((row) => (
                         <SelectItem key={row}>{row}</SelectItem>  
                       ))}
