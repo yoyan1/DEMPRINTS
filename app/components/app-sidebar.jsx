@@ -14,6 +14,7 @@ import { GiExpense } from "react-icons/gi";
 import { NavMain } from "@/app/components/nav-main"
 import { NavUser } from "@/app/components/nav-user"
 import { GrMoney } from "react-icons/gr";
+import { CiTimer } from "react-icons/ci";
 import { TeamSwitcher } from "@/app/components/team-switcher"
 import {
   Sidebar,
@@ -72,6 +73,12 @@ export function AppSidebar({ ...props }) {
         url: "employee-accounts",
         icon: FaUsers,
         isActive: path === '/admin/employee-accounts'? true : false
+      },
+      {
+        title: "DTR",
+        url: "dtr",
+        icon: CiTimer,
+        isActive: path === '/admin/dtr'? true : false
       },
       {
         title: "Settings",
