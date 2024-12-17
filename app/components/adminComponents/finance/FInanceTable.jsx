@@ -46,7 +46,7 @@ export default function FinanceTable({financeData, loading, paymentSourceList, o
                 th: "bg-blue-300 text-dark"
             }}>
           <TableColumn>DATE</TableColumn>
-          <TableColumn>Beggining Balance</TableColumn>
+          <TableColumn>Beginning Balance</TableColumn>
           <TableColumn>SALES</TableColumn>
           <TableColumn>EXPENSES</TableColumn>
           <TableColumn>NET</TableColumn>
