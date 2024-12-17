@@ -102,81 +102,83 @@ export default function Scann({ onSucess }) {
     }
   };
 
-
-
-  const scannerSound = () =>{
-
-    const audio = new Audio('/beep.mp3')
-    audio.play()
-  }
+  const scannerSound = () => {
+    const audio = new Audio('/beep.mp3');
+    audio.play();
+  };
 
   let scanStop = false;
   const handleScanSuccess = async (result) => {
     const findStaff = users.find((user) => user.id === result);
-
+  
     if (findStaff) {
-      console.log('User is found', findStaff);
-      scannerSound()
+      console.log("User is found", findStaff);
+      scannerSound();
       try {
-        const { date, time } = getDateAndTime();
-
+        const { date, time } = getDateAndTime(); 
+  
         
         const existingRecord = timeinOut.find(
           (entry) =>
-            entry.status === 'time-in' &&
-            entry.date === date &&
-            entry.employeeID === findStaff.id,
+            entry.employeeID === findStaff.id &&
+            entry.status === "time-in" &&
+            entry.date === date
         );
-
+  
         if (existingRecord) {
-          // If record exists, update with "time-out"
+          
           const responseUpdate = await axios.put(
             `${process.env.NEXT_PUBLIC_API_URL}/collection/hristimeout/${existingRecord._id}`,
             {
-              timeout: time, // Record time-out
-              status: 'time-out', // Update status to "time-out"
-            },
+              date,
+              timeout: time,
+              status: "time-out",
+            }
           );
-          console.log('Timeout updated:', responseUpdate.data);
-
-          // Update local state with new data
+          console.log("Timeout updated:", responseUpdate.data);
+  
           setLogData(responseUpdate.data);
-          onSucess('Timeout recorded successfully');
+          onSucess("Timeout recorded successfully");
         } else {
-          // If no existing record, create a new "time-in" entry
+          
           const responseScann = await axios.post(
             `${process.env.NEXT_PUBLIC_API_URL}/collection/hris`,
             {
-              date: date, // Today's date
-              timein: time, // Time-in value
-              timeout: '', // Leave time-out empty
-              status: 'time-in', // Set status to "time-in"
-              employeeID: findStaff.id, // Assign to user
-            },
+              date: date,
+              timein: time,
+              timeout: "",
+              status: "time-in",
+              employeeID: findStaff.id,
+            }
           );
-          console.log('Time-in recorded:', responseScann.data);
-
-          // Update local state with new data
+          console.log("Time-in recorded:", responseScann.data);
+  
           setLogData(responseScann.data);
-          onSucess('Time-in recorded successfully');
-
-          // Prevent scanning for 30 seconds
+          onSucess("Time-in recorded successfully");
+  
+         
           scanStop = true;
           setTimeout(() => {
             scanStop = false;
           }, 30000);
         }
       } catch (error) {
-        console.error('Error processing scan:', error);
+        console.error("Error processing scan:", error.response?.data || error);
         onSucess(
-          'An error occurred while processing the scan. Please try again.',
+          "An error occurred while processing the scan. Please try again."
         );
       }
+  
+      console.log("User is found");
+      setSuccessMessage("User is found");
     } else {
-      console.warn('User not found');
-      onSucess('User not found. Please try again.');
+      console.warn("User not found");
+      setErrorMessage("User not found");
+  
+      onSucess("User not found. Please try again.");
     }
   };
+  
 
   const handleScanError = (error) => {
     console.warn('QR Code Scan Error:', error);
@@ -190,7 +192,10 @@ export default function Scann({ onSucess }) {
         color="transparent"
         style={{ display: 'flex', alignItems: 'center' }}
       >
-        <RiQrScanLine className="h-6 w-6 mr-2" color="primary" />
+        <RiQrScanLine
+          className="h-6 w-6 mr-2 text-white dark:text-white"
+          color="primary"
+        />
       </Button>
       <Modal
         size="lg"
@@ -239,12 +244,6 @@ export default function Scann({ onSucess }) {
                   {succesMessage && (
                     <div>
                       <span className="text-green">{succesMessage}</span>
-                    </div>
-                  )}
-                  {datee && (
-                    <div className="">
-                      <span className="text-success">Date :{date.date}</span>
-                      <span className="text-success">Time:{date.time}</span>
                     </div>
                   )}
                 </div>
