@@ -31,6 +31,7 @@ import CreateUser from "@/app/components/adminComponents/employee/CreateUser";
 import ViewDetails from "@/app/components/adminComponents/employee/ViewDetails";
 import DeleteUser from "@/app/components/adminComponents/employee/deleteUser"
 import UpdateUser from "../../components/adminComponents/employee/UpdateUser";
+import PreviewQR from '@/app/components/adminComponents/employee/PreviewQR'
 import axios from "axios";
 
 const statusColorMap = {
@@ -139,6 +140,7 @@ export default function Employee() {
               </span>
             </Tooltip>
             <DeleteUser id={user.id} refresh={fetchUsers}/>
+            <PreviewQR user={user}/>
           </div>
         );
       default:
