@@ -9,7 +9,7 @@ import {
   Settings2,
 } from 'lucide-react';
 // import { IoCartOutline } from 'react-icons/io5';
-import { FaBusinessTime } from "react-icons/fa";
+import { FaBusinessTime } from 'react-icons/fa';
 import { FaUsers, FaChartPie } from 'react-icons/fa';
 import { GiExpense } from 'react-icons/gi';
 import { NavMain } from '@/app/components/staffNav-main';
@@ -50,9 +50,9 @@ export function AppSidebar({ ...props }) {
     navMain: [
       {
         title: 'Transactions',
-        url: ' ',
+        url: 'sales',
         icon: FaChartPie,
-        isActive: path === ' ' ? true : false,
+        isActive: path === 'sales' ? true : false,
       },
       {
         title: 'Daily Time Record',
