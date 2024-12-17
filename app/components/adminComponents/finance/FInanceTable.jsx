@@ -1,5 +1,6 @@
 "use client"
 import React, { useEffect, useMemo, useState } from "react";
+import { Link } from "@nextui-org/react"
 import {Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Spinner, Button} from "@nextui-org/react";
 import { formatDate, formatTime } from "@/app/composables/formateDateAndTime";
 import { formattedNumber } from "@/app/composables/CurrencyFormat"
@@ -17,6 +18,7 @@ export default function FinanceTable({financeData, loading, paymentSourceList, o
   }, [financeData])
   return (
     <div>
+      <Link href="/admin/finance/gcash-transactions" className="text-sm">Gcash Transaction {'>>'}</Link>
       <div className="py-3 flex justify-between">
         <CreateOrUpdate dateOptions={dateOptions} refresh={done}/>
         <div className="flex gap-5">
