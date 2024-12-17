@@ -6,9 +6,8 @@ import { formattedNumber } from "@/app/composables/CurrencyFormat"
 import CreateOrUpdate from "./CreateOrUpdateBalance";
 import { FaSync } from "react-icons/fa";
 
-export default function App({financeData, loading, paymentSourceList, options, done}) {
+export default function App({financeData, loading, paymentSourceList, options, dateOptions, done}) {
   const {isOpen, onOpen, onOpenChange} = useDisclosure();
-  const sortedFinanceDescending = financeData.sort((a, b) => new Date(b.date) - new Date(a.date))
   const sortedPaymentSourceList = paymentSourceList.sort((a, b) => a.name - b.name)
   const sortedOptionsList = options.sort((a, b) => a.name - b.name)
   return (
@@ -21,7 +20,7 @@ export default function App({financeData, loading, paymentSourceList, options, d
               <ModalHeader className="flex flex-col gap-1">Report Summary</ModalHeader>
               <ModalBody>
               <div className="py-3 flex justify-between">
-                <CreateOrUpdate />
+                <CreateOrUpdate dateOptions={dateOptions} refresh={done}/>
                 <div className="flex gap-5">
                   <Button isIconOnly color="success" onPress={done} size='sm'><FaSync className="w-4 h-4 text-white"/></Button>
                 </div>
@@ -44,7 +43,7 @@ export default function App({financeData, loading, paymentSourceList, options, d
                     <TableColumn>End day Balance</TableColumn>
                   </TableHeader>
                   <TableBody isLoading={loading} loadingContent={<Spinner label="Loading..." />}>
-                        {sortedFinanceDescending.map((data) => (
+                        {financeData.map((data) => (
                             <TableRow key={data.date}>
                                 <TableCell><div className="w-[150px]">{formatDate(data.date)}</div></TableCell>
                                 {sortedPaymentSourceList.map((row) => {

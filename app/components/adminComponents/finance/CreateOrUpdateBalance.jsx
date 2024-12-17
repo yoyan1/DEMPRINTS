@@ -1,18 +1,21 @@
 "use client"
 import React, { useEffect, useState } from "react";
-import {Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure, Checkbox, Input, Link, Select, SelectItem} from "@nextui-org/react";
+import {Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure, Checkbox, Input, Link, Select, SelectItem, DatePicker} from "@nextui-org/react";
 // import {MailIcon} from './MailIcon.jsx';
 // import {LockIcon} from './LockIcon.jsx';
 import { MdAdd } from "react-icons/md";
 import { TbCurrencyPeso } from "react-icons/tb";
 import axios from "axios";
 import { useBalanceStore } from "../../../stores/balanceStore";
+import { getDateAndTime } from "../../../composables/dateAndTime";
 
-export default function CreateOrUpdate() {
-  const {isOpen, onOpen, onOpenChange} = useDisclosure();
+export default function CreateOrUpdate({dateOptions, refresh}) {
+  const {isOpen, onOpen, onClose} = useDisclosure();
   const [paymentSourceList, setPaymentSourceList] = useState([])
   const {  addBalance, loadBalance } = useBalanceStore()
+  const {date, time} = getDateAndTime()
   const [ balanceData, setBalanceData ] = useState({
+    date: date,
     amount: 0,
     type: ""
   })
@@ -33,15 +36,24 @@ export default function CreateOrUpdate() {
     getPaymentMethod()
   }, [getPaymentMethod])
 
+  // const handleDateChange = (date) => {
+  //   setBalanceData((prevData) => ({
+  //     ...prevData,
+  //     date: `${date.year}-${date.month}-${date.day}`,
+  //   }));
+  // };
+
   const onSubmit = async (e) => {
     e.preventDefault()
     const result = await addBalance(balanceData)
     console.log(result)
     setBalanceData({
+      date: '',
       amount: 0,
       type: ""
     })
-    // done("done")
+    refresh("done")
+    onClose()
   }
   return (
     <>
@@ -49,11 +61,11 @@ export default function CreateOrUpdate() {
 
         <Modal 
           isOpen={isOpen} 
-          onOpenChange={onOpenChange}
+          onClose={onClose}
           placement="top-center"
         >
           <ModalContent>
-            {(onClose) => (
+            {() => (
               <>
                 <ModalHeader className="flex flex-col gap-1">Add Remaining Balance</ModalHeader>
                 <ModalBody>
@@ -61,7 +73,6 @@ export default function CreateOrUpdate() {
                     <Select 
                     label="Cash Source"
                     placeholder="Enter cash source"
-                    isLoading={lazyLoad}
                     value={balanceData.type}
                     onChange={(e) => setBalanceData((prevData)=> ({...prevData, type: e.target.value}))}
                     >
@@ -69,6 +80,17 @@ export default function CreateOrUpdate() {
                         <SelectItem key={item.name}>{item.name}</SelectItem>  
                       ))}
                     </Select>
+                    <Select 
+                    label="Date"
+                    value={balanceData.date}
+                    onChange={(e) => setBalanceData((prevData)=> ({...prevData, date: e.target.value}))}
+                    >
+                      <SelectItem key={date}>{date}</SelectItem>  
+                      {dateOptions.map((row) => (
+                        <SelectItem key={row}>{row}</SelectItem>  
+                      ))}
+                    </Select>
+                    {/* <DatePicker onChange={handleDateChange} clearable showMonthAndYearPickers label="Date" variant="bordered" /> */}
                     <Input
                       topContent={<TbCurrencyPeso/>}
                       autoFocus
