@@ -25,7 +25,7 @@ export default function HRIS() {
 
   const [timeinOut, setTimeinOut] = useState([]);
   const [remarks, setRemarks] = useState([]);
-  
+
   useEffect(() => {
     getTimeInOutData();
 
@@ -117,8 +117,8 @@ export default function HRIS() {
 
       const timeToMinutes = (time) => {
         const [hours, minutes, seconds = 0] = time.split(':').map(Number);
-        return hours * 60 + minutes + seconds / 60; 
-    };
+        return hours * 60 + minutes + seconds / 60;
+      };
 
       // const overtimeMinutes = timeToMinutes(overtime);
       const totalWorkedMinutes = timeToMinutes(totalWorked);
@@ -223,7 +223,10 @@ export default function HRIS() {
         {employeeRecords
           .filter((record) => record.date === date)
           .map((current) => (
-            <div key={current.id} className="flex bg-white  justify-between">
+            <div
+              key={current.id}
+              className="flex flex-col bg-white  justify-between"
+            >
               <p className="text-sm font-medium mr-3 p-1">
                 <span>
                   <strong>• Date: </strong>
@@ -232,36 +235,31 @@ export default function HRIS() {
               </p>
               <p className="text-sm font-medium mr-3 p-1">
                 <span>
-                  {' '}
-                  <strong>• Time-in: </strong>{' '}
+                  <strong>• Time-in: </strong>
                 </span>
                 {formatTime(current.timein)}
               </p>
               <p className="text-sm font-medium mr-3 p-1">
                 <span>
-                  {' '}
-                  <strong>• Time-out: </strong>{' '}
+                  <strong>• Time-out: </strong>
                 </span>
                 {formatTime(current.timeout)}
               </p>
               <p className="text-sm font-medium mr-3 p-1">
                 <span>
-                  {' '}
-                  <strong>• Overtime: </strong>{' '}
+                  <strong>• Overtime: </strong>
                 </span>
                 {current.overtime}
               </p>
               <p className="text-sm font-medium mr-3 p-1">
                 <span>
-                  {' '}
-                  <strong>• Time Counted: </strong>{' '}
+                  <strong>• Time Counted: </strong>
                 </span>
                 {current.timeCounted}
               </p>
-              
+
               <p className="text-sm font-medium mr-3 p-1">
                 <span>
-                  {' '}
                   <strong>• Time-rendered: </strong> {current.totalHours}
                 </span>
               </p>
@@ -298,7 +296,7 @@ export default function HRIS() {
                 {formatTime(timeinout.timeout)}
               </TableCell>
               <TableCell className="text-black dark:text-white">
-              {timeinout.overtime}
+                {timeinout.overtime}
               </TableCell>
               <TableCell className="text-black dark:text-white">
                 {timeinout.timeCounted}
