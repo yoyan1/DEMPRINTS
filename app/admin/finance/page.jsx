@@ -227,7 +227,6 @@ const getTotal = (combinedData) => {
 
 
   const {totalBalance, salesSource} = balanceData
-  console.log(salesSource);
   
 
   
@@ -251,11 +250,9 @@ const getTotal = (combinedData) => {
 
     sortedData.forEach((data) => {
       const net = data.totalSales - data.totalExpenses;
-      console.log(data.date)
       const prevSourceBalance = () => {
         const existingSource = salesSource.find((src) => src.date === data.date)
         if(existingSource) {
-          console.log("result: ",existingSource);
           return {...existingSource}; 
         }
 
@@ -287,7 +284,6 @@ const getTotal = (combinedData) => {
       } else {
         previousSourceBalance = newPrevBalData
       }
-      console.log("FInal",newPrevBalData.cash_in_box, previousSourceBalance);
       
 
       const calculateSourceBalance = () => {

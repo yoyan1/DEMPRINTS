@@ -5,6 +5,7 @@ import {Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Spinner
 import { formatDate, formatTime } from "@/app/composables/formateDateAndTime";
 import { formattedNumber } from "@/app/composables/CurrencyFormat"
 import CreateOrUpdate from "./CreateOrUpdateBalance";
+import TransferBalance from "./TransferBalance";
 import ViewReport from "./ViewReport"
 import { FaSync } from "react-icons/fa";
 
@@ -20,7 +21,10 @@ export default function FinanceTable({financeData, loading, paymentSourceList, o
     <div>
       <Link href="/admin/finance/gcash-transactions" className="text-sm">Gcash Transaction {'>>'}</Link>
       <div className="py-3 flex justify-between">
-        <CreateOrUpdate dateOptions={dateOptions} refresh={done}/>
+        <div className="flex gap-5">
+          <CreateOrUpdate dateOptions={dateOptions} refresh={done}/>
+          <TransferBalance dateOptions={dateOptions} financeData={financeData} refresh={done}/>
+        </div>
         <div className="flex gap-5">
           <ViewReport financeData={financeData} loading={loading} paymentSourceList={paymentSourceList} options={options} dateOptions={dateOptions} done={done}/>
           <Button isIconOnly color="success" onPress={done} size='sm'><FaSync className="w-4 h-4 text-white"/></Button>
