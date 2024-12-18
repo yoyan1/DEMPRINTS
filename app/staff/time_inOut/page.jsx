@@ -141,7 +141,7 @@ export default function HRIS() {
         ...data,
         remark: remark,
         totalHours: totalHours,
-        timeCounted: timeCounted, 
+        timeCounted: timeCounted,
         overtime: overtime,
       });
     });
@@ -155,7 +155,7 @@ export default function HRIS() {
     <>
 
       <div className=" card w-full mb-6 bg-gradient-to-r from-blue-900 to-blue-500 dark:bg-gray-800 rounded-lg shadow p-3">
-        {/* Header Section */}
+       
         <div className="flex justify-between items-center">
           <div className="flex items-center space-x-4">
             <img
@@ -183,7 +183,7 @@ export default function HRIS() {
             .map((current) => (
               <div
                 key={current.id || Math.random()}
-                className="bg-white flex justify-between rounded-lg shadow-md p-4 "
+                className="bg-white flex flex-wrap sm:flex-nowrap flex-col sm:flex-row justify-between rounded-lg shadow-md p-4 gap-4"
               >
                 <p className="text-gray-700 text-sm">
                   <span className="font-semibold">Date:</span>{' '}
@@ -212,6 +212,7 @@ export default function HRIS() {
               </div>
             ))}
         </div>
+
       </div>
 
       <Table

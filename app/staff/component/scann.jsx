@@ -110,23 +110,23 @@ export default function Scann({ onSucess }) {
   let scanStop = false;
   const handleScanSuccess = async (result) => {
     const findStaff = users.find((user) => user.id === result);
-  
+
     if (findStaff) {
       console.log("User is found", findStaff);
       scannerSound();
       try {
-        const { date, time } = getDateAndTime(); 
-  
-        
+        const { date, time } = getDateAndTime();
+
+
         const existingRecord = timeinOut.find(
           (entry) =>
             entry.employeeID === findStaff.id &&
             entry.status === "time-in" &&
             entry.date === date
         );
-  
+
         if (existingRecord) {
-          
+
           const responseUpdate = await axios.put(
             `${process.env.NEXT_PUBLIC_API_URL}/collection/hristimeout/${existingRecord._id}`,
             {
@@ -137,11 +137,11 @@ export default function Scann({ onSucess }) {
             }
           );
           console.log("Timeout updated:", responseUpdate.data);
-  
+
           setLogData(responseUpdate.data);
           onSucess("Timeout recorded successfully");
         } else {
-          
+
           const responseScann = await axios.post(
             `${process.env.NEXT_PUBLIC_API_URL}/collection/hris`,
             {
@@ -154,11 +154,11 @@ export default function Scann({ onSucess }) {
             }
           );
           console.log("Time-in recorded:", responseScann.data);
-  
+
           setLogData(responseScann.data);
           onSucess("Time-in recorded successfully");
-  
-         
+
+
           scanStop = true;
           setTimeout(() => {
             scanStop = false;
@@ -170,36 +170,36 @@ export default function Scann({ onSucess }) {
           "An error occurred while processing the scan. Please try again."
         );
       }
-  
+
       console.log("User is found");
       setSuccessMessage("User is found");
     } else {
       console.warn("User not found");
       setErrorMessage("User not found");
-  
+
       onSucess("User not found. Please try again.");
     }
   };
   // let scanStop = false;
   // const handleScanSuccess = async (result) => {
   //   const findStaff = users.find((user) => user.id === result);
-  
+
   //   if (findStaff) {
   //     console.log("User is found", findStaff);
   //     scannerSound();
   //     try {
   //       const { date, time } = getDateAndTime(); 
-  
-        
+
+
   //       const existingRecord = timeinOut.find(
   //         (entry) =>
   //           entry.employeeID === findStaff.id &&
   //           entry.status === "time-in" &&
   //           entry.date === date
   //       );
-  
+
   //       if (existingRecord) {
-          
+
   //         const responseUpdate = await axios.put(
   //           `${process.env.NEXT_PUBLIC_API_URL}/collection/hristimeout/${existingRecord._id}`,
   //           {
@@ -210,11 +210,11 @@ export default function Scann({ onSucess }) {
   //           }
   //         );
   //         console.log("Timeout updated:", responseUpdate.data);
-  
+
   //         setLogData(responseUpdate.data);
   //         onSucess("Timeout recorded successfully");
   //       } else {
-          
+
   //         const responseScann = await axios.post(
   //           `${process.env.NEXT_PUBLIC_API_URL}/collection/hris`,
   //           {
@@ -227,11 +227,11 @@ export default function Scann({ onSucess }) {
   //           }
   //         );
   //         console.log("Time-in recorded:", responseScann.data);
-  
+
   //         setLogData(responseScann.data);
   //         onSucess("Time-in recorded successfully");
-  
-         
+
+
   //         scanStop = true;
   //         setTimeout(() => {
   //           scanStop = false;
@@ -243,17 +243,17 @@ export default function Scann({ onSucess }) {
   //         "An error occurred while processing the scan. Please try again."
   //       );
   //     }
-  
+
   //     console.log("User is found");
   //     setSuccessMessage("User is found");
   //   } else {
   //     console.warn("User not found");
   //     setErrorMessage("User not found");
-  
+
   //     onSucess("User not found. Please try again.");
   //   }
   // };
-  
+
 
   const handleScanError = (error) => {
     console.warn('QR Code Scan Error:', error);

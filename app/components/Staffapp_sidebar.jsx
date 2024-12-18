@@ -50,15 +50,15 @@ export function AppSidebar({ ...props }) {
     navMain: [
       {
         title: 'Transactions',
-        url: 'sales',
+        url: '',
         icon: FaChartPie,
-        isActive: path === 'sales' ? true : false,
+        isActive: path === '/staff' ? true : false,
       },
       {
         title: 'Daily Time Record',
         url: 'time_inOut',
         icon: FaBusinessTime,
-        isActive: path === 'time_inOut' ? true : false,
+        isActive: path === '/staff/time_inOut' ? true : false,
       },
       {
         title: 'Settings',
