@@ -14,6 +14,7 @@ export default function CreateOrUpdate({dateOptions, refresh}) {
   const [paymentSourceList, setPaymentSourceList] = useState([])
   const {  addBalance, loadBalance } = useBalanceStore()
   const {date, time} = getDateAndTime()
+  const [errorMessages, setErrorMessages] = useState({})
   const [ balanceData, setBalanceData ] = useState({
     date: date,
     amount: 0,
@@ -43,8 +44,23 @@ export default function CreateOrUpdate({dateOptions, refresh}) {
   //   }));
   // };
 
+  const isValid = () => {
+      const errors = {};
+      if(!balanceData.type) errors.type = "Please select cash source."
+      if(!balanceData.date) errors.date = "Please select date."
+      if(balanceData.amount <= 0) errors.amount = "Enter valid amount."
+
+      setErrorMessages(errors);
+      return errors;    
+  }
+
   const onSubmit = async (e) => {
     e.preventDefault()
+    const errors = isValid()
+        if(Object.keys(errors).length !== 0){
+          return
+    }
+
     const result = await addBalance(balanceData)
     console.log(result)
     setBalanceData({
@@ -73,6 +89,9 @@ export default function CreateOrUpdate({dateOptions, refresh}) {
                     <Select 
                     label="Cash Source"
                     placeholder="Enter cash source"
+                    isInvalid={errorMessages.type? true : false}
+                    color={errorMessages.type ? "danger" : ""}
+                    errorMessage={errorMessages.type}
                     value={balanceData.type}
                     onChange={(e) => setBalanceData((prevData)=> ({...prevData, type: e.target.value}))}
                     >
@@ -82,6 +101,9 @@ export default function CreateOrUpdate({dateOptions, refresh}) {
                     </Select>
                     <Select 
                     label="Date"
+                    isInvalid={errorMessages.date? true : false}
+                    color={errorMessages.date ? "danger" : ""}
+                    errorMessage={errorMessages.date}
                     value={balanceData.date}
                     onChange={(e) => setBalanceData((prevData)=> ({...prevData, date: e.target.value}))}
                     >
@@ -98,6 +120,9 @@ export default function CreateOrUpdate({dateOptions, refresh}) {
                       label="Amount"
                       placeholder="Enter amount"
                       variant="bordered"
+                      isInvalid={errorMessages.amount? true : false}
+                      color={errorMessages.amount ? "danger" : ""}
+                      errorMessage={errorMessages.amount}
                       value={balanceData.amount}
                       onChange={(e) => setBalanceData((prevData)=> ({...prevData, amount: e.target.value}))}
                     />

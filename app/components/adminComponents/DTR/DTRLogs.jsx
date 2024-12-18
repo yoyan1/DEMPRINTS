@@ -20,7 +20,7 @@ const columns = [
     { key: "date", label: "DATE",},
     { key: "status", label: "STATUS", },
     { key: "name", label: "NAME", },
-    { key: "time_in", label: "ITME IN", },
+    { key: "time_in", label: "TIME IN", },
     { key: "time_out", label: "TIME OUT", },
     { key: "total", label: "HOURS RENDERED", },
     { key: "overtime",label: "OVERTIME",},

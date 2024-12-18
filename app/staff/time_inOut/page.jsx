@@ -110,8 +110,8 @@ export default function HRIS() {
 
     timeinOut.map((data) => {
       const { totalWorked, overtime } = calculateOvertime(
-        data.timein,
-        data.timeout,
+        data.time_in,
+        data.time_out,
         '8:00:00',
       );
 
@@ -124,7 +124,12 @@ export default function HRIS() {
       const totalWorkedMinutes = timeToMinutes(totalWorked);
 
       const remark =
-        totalWorkedMinutes > requiredHours ? 'OVERTIME' : 'UNDERTIME';
+        totalWorkedMinutes > requiredHours ? (
+          <span className="text-green-500">OVERTIME</span>
+        ) : (
+          <span className="text-red-500">UNDERTIME</span>
+        );
+
 
       const [hours, minutes] = totalWorked.split(':');
 
@@ -136,7 +141,7 @@ export default function HRIS() {
         ...data,
         remark: remark,
         totalHours: totalHours,
-        timeCounted: timeCounted,
+        timeCounted: timeCounted, 
         overtime: overtime,
       });
     });
@@ -148,7 +153,7 @@ export default function HRIS() {
 
   return (
     <>
-      
+
       <div className=" card w-full mb-6 bg-gradient-to-r from-blue-900 to-blue-500 dark:bg-gray-800 rounded-lg shadow p-3">
         {/* Header Section */}
         <div className="flex justify-between items-center">
@@ -171,13 +176,13 @@ export default function HRIS() {
           </div>
         </div>
 
-      
+
         <div className="mt-4 space-y-4">
           {employeeRecords
             .filter((record) => record.date === date)
             .map((current) => (
               <div
-                key={current.id}
+                key={current.id || Math.random()}
                 className="bg-white flex justify-between rounded-lg shadow-md p-4 "
               >
                 <p className="text-gray-700 text-sm">
@@ -186,11 +191,11 @@ export default function HRIS() {
                 </p>
                 <p className="text-gray-700 text-sm">
                   <span className="font-semibold">Time-in:</span>{' '}
-                  {formatTime(current.timein)}
+                  {formatTime(current.time_in)}
                 </p>
                 <p className="text-gray-700 text-sm">
                   <span className="font-semibold">Time-out:</span>{' '}
-                  {formatTime(current.timeout)}
+                  {current.time_out ? formatTime(current.time_out) : null}
                 </p>
                 <p className="text-gray-700 text-sm">
                   <span className="font-semibold">Overtime:</span>{' '}
@@ -227,15 +232,18 @@ export default function HRIS() {
         </TableHeader>
         <TableBody>
           {employeeRecords.map((timeinout) => (
-            <TableRow key={timeinout.id}>
+            <TableRow key={timeinout.id || Math.random()}>
               <TableCell className="text-black dark:text-white">
                 {formatDate(timeinout.date)}
               </TableCell>
+
               <TableCell className="text-black dark:text-white">
-                {formatTime(timeinout.timein)}
+                {formatTime(timeinout.time_in)}
               </TableCell>
-              <TableCell className="text-black dark:text-white">
-                {formatTime(timeinout.timeout)}
+
+
+              <TableCell className="text-black dark:text-white" >
+                {timeinout.time_out ? formatTime(timeinout.time_out) : null}
               </TableCell>
               <TableCell className="text-black dark:text-white">
                 {timeinout.overtime}
