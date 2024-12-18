@@ -163,7 +163,7 @@ export default function Scann({ onSucess }) {
           }, 30000);
         }
       } catch (error) {
-        console.error("Error processing scan:", error.response?.data || error);
+        console.log('SAYUP', error)
         onSucess(
           "An error occurred while processing the scan. Please try again."
         );

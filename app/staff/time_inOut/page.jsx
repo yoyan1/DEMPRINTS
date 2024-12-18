@@ -17,14 +17,14 @@ import { formatDate, formatTime } from '../../composables/formateDateAndTime';
 import { useRouter } from 'next/navigation';
 import { decodeToken } from '@/app/utils/decodeToken';
 import Scann from '../component/scann';
-import QRcodescann from '../component/QRcode';
+// import QRcodescann from '../component/QRcode';
 import axios from 'axios';
 export default function HRIS() {
   const router = useRouter();
   const [user, setUser] = useState({ name: '', id: '', role: '' });
 
   const [timeinOut, setTimeinOut] = useState([]);
-  const [remarks, setRemarks] = useState([]);
+  // const [remarks, setRemarks] = useState([]);
 
   useEffect(() => {
     getTimeInOutData();
@@ -148,33 +148,7 @@ export default function HRIS() {
 
   return (
     <>
-      {/* <div className="justify-start w-full mb-3 border border-gray-200 rounded-lg shadow">
-        <div className="w-full   bg-white  dark:bg-gray-800 dark:border-gray-700">
-          <div className="flex justify-end px-4 pt-4"></div>
-          <div className="flex flex-col items-center pb-5">
-            <img
-              className="w-10 h-10 mb-3 rounded-full shadow-lg"
-              src="/male-avatar.png"
-              alt="Bonnie image"
-            />
-            <h5 className="mb-1 text-lg font-medium text-gray-900 dark:text-white">
-              {user.name}
-            </h5>
-            <span className="text-sm text-gray-500 dark:text-gray-400">
-              {user.role}
-            </span>
-            <div className="flex mt-2 ">
-              <QRcodescann className="inline-flex items-center bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" />
-
-              <Scann
-                onSucess={getTimeInOutData}
-                className="bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
-              />
-            </div>
-          </div>
-        </div>
-      </div> */}
-
+      
       <div className=" card w-full mb-6 bg-gradient-to-r from-blue-900 to-blue-500 dark:bg-gray-800 rounded-lg shadow p-3">
         {/* Header Section */}
         <div className="flex justify-between items-center">
